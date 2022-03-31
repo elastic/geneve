@@ -1,0 +1,38 @@
+name: Build and test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: make prereq
+
+    - name: Lint code
+      run: make lint
+
+    - name: Test units
+      run: make tests
+
+    - name: Build package
+      run: make pkg_build
+
+    - name: Install package
+      run: make pkg_install
+
+    - name: Try package
+      run: make pkg_try
