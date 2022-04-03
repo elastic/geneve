@@ -9,8 +9,8 @@ import os
 import unittest
 
 import tests.utils as tu
-from detection_rules.events_emitter import SourceEvents, guess_from_query
-from detection_rules import jupyter
+from geneve.events_emitter import SourceEvents, guess_from_query
+from . import jupyter
 
 
 event_docs_mappings = {

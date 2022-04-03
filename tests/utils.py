@@ -148,7 +148,7 @@ class QueryTestCase:
 
 class OnlineTestCase:
     """Use Elasticsearch and Kibana in unit tests."""
-    index_template = "detection-rules-ut"
+    index_template = "geneve-ut"
 
     @classmethod
     def read_credentials_csv(cls):

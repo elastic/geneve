@@ -5,7 +5,7 @@ services:
     container_name: es
     environment:
       - node.name=es
-      - cluster.name=detection-rules
+      - cluster.name=geneve-test
       - discovery.type=single-node
       - action.destructive_requires_name=false
       - xpack.security.enabled=true

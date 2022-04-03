@@ -11,8 +11,9 @@ from pathlib import Path
 
 import tests.utils as tu
 from detection_rules.rule_loader import RuleCollection
-from detection_rules.events_emitter import SourceEvents, ast_from_rule
-from detection_rules import utils, jupyter
+from geneve.events_emitter import SourceEvents, ast_from_rule
+from geneve import utils
+from . import jupyter
 
 
 def _get_collection(var_name):
@@ -58,7 +59,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
         with self.nb.chapter("## Skipped rules") as cells:
             cells.append(None)
-            for err in sorted(errors, key=lambda e: len(errors[e]), reverse=True):
+            for err in sorted(sorted(errors), key=lambda e: len(errors[e]), reverse=True):
                 heading = [f"{len(errors[err])} rules:", ""]
                 bullets = []
                 for rule in sorted(errors[err], key=lambda r: r.contents.data.name):
@@ -82,7 +83,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
         with self.nb.chapter("## Generation errors") as cells:
             cells.append(None)
-            for err in sorted(errors, key=lambda e: len(errors[e]), reverse=True):
+            for err in sorted(sorted(errors), key=lambda e: len(errors[e]), reverse=True):
                 heading = [f"{len(errors[err])} rules:"]
                 bullets = []
                 for rule in sorted(errors[err], key=lambda r: r.contents.data.name):
