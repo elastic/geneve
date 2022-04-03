@@ -15,6 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import click
 
+from . import version, SourceEvents
+
+
+@click.command()
+@click.version_option(version=version)
 def main():
-    print("Hello from Genève!")
+    se = SourceEvents()
+    print(f"Hello from Genève! {len(se)}")

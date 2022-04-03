@@ -1,4 +1,5 @@
 build
+click
 eql
 flake8
 nbformat
