@@ -164,7 +164,7 @@ class OnlineTestCase:
     def setUpClass(cls):
         from elasticsearch import Elasticsearch
         from elasticsearch.client import ClusterClient, IndicesClient
-        from detection_rules.kibana import Kibana
+        from .kibana import Kibana
 
         http_auth = cls.read_credentials_csv()
         es_url = os.getenv("TEST_ELASTICSEARCH_URL", "http://elastic:changeit@localhost:29650")
