@@ -4,4 +4,7 @@ eql
 flake8
 nbformat
 pytest
+pytoml
+pyyaml
+requests
 virtualenv

@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "*" ]
 
+env:
+  TEST_SCHEMA_URI: "https://github.com/elastic/ecs/archive/refs/tags/v8.1.0.tar.gz"
+  TEST_DETECTION_RULES_URI: "https://github.com/elastic/detection-rules/archive/refs/tags/v8.1.0.tar.gz"
+
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -21,7 +21,6 @@ import time
 import random
 from collections import namedtuple
 from itertools import chain
-from copy import deepcopy
 
 from .utils import deep_merge
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
@@ -122,15 +121,6 @@ def events_from_branch(branch, schema, timestamp, meta):
 
 def events_from_root(root, schema, timestamp):
     return [events_from_branch(branch, schema, timestamp, root.meta) for branch in root]
-
-
-def load_detection_rules_schema():
-    from .ecs import get_schema, get_max_version
-
-    ecs_version = get_max_version()
-    ecs_schema = get_schema(version=ecs_version)
-    custom_schema = deepcopy(default_custom_schema)
-    return deep_merge(custom_schema, ecs_schema)
 
 
 class SourceEvents:

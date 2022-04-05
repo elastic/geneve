@@ -30,8 +30,8 @@ import itertools
 import subprocess
 
 from . import jupyter
-from geneve.events_emitter import SourceEvents, load_detection_rules_schema
-from geneve.utils import root_dir
+from geneve.events_emitter import SourceEvents
+from geneve.utils import root_dir, load_schema, load_rules
 
 __all__ = (
     "SeededTestCase",
@@ -42,6 +42,24 @@ __all__ = (
 )
 
 verbose = sum(arg.count('v') for arg in sys.argv if arg.startswith("-") and not arg.startswith("--"))
+
+
+def get_test_schema_uri():
+    return os.getenv("TEST_SCHEMA_URI") or \
+        "https://github.com/elastic/ecs/archive/refs/heads/main.tar.gz"
+
+
+def get_test_rules_uri():
+    return os.getenv("TEST_DETECTION_RULES_URI") or \
+        "https://github.com/elastic/detection-rules/archive/refs/heads/main.tar.gz"
+
+
+def load_test_schema():
+    return load_schema(get_test_schema_uri(), "generated/ecs/ecs_flat.yml", root_dir)
+
+
+def load_test_rules():
+    return load_rules(get_test_rules_uri(), "rules/**/*.toml", root_dir)
 
 
 def get_rule_by_id(rules, rule_id):
@@ -126,7 +144,7 @@ class QueryTestCase:
     @classmethod
     def setUpClass(cls):
         super(QueryTestCase, cls).setUpClass()
-        cls.schema = load_detection_rules_schema()
+        cls.schema = load_test_schema()
 
     @classmethod
     def query_cell(cls, query, output, **kwargs):
@@ -215,7 +233,7 @@ class SignalsTestCase:
     multiplying_factor = int(os.getenv("TEST_SIGNALS_MULTI") or 0) or 1
 
     def generate_docs_and_mappings(self, rules, asts):
-        schema = load_detection_rules_schema()
+        schema = load_test_schema()
         se = SourceEvents(schema)
 
         bulk = []

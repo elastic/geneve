@@ -476,6 +476,12 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 On the other hand, you can experiment and modify the queries in the input cells, check the results
                 and, why not?, report any interesting finding. You can also add and remove cells at will.
             """),
+            jupyter.Markdown(f"""
+                ## Test configuration
+
+                Schema URI: {tu.get_test_schema_uri()}
+                Detection rules URI: {tu.get_test_rules_uri()}
+            """),
         ]
 
     def test_len(self):
@@ -594,9 +600,11 @@ class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCas
 
     @classmethod
     def setUpClass(cls):
-        if cls.multiplying_factor > 1:
-            cls.nb.cells.append(jupyter.Markdown(f"""
-                This report was generated with a multiplying factor of {cls.multiplying_factor}.
+        with cls.nb.chapter("## Test configuration") as cells:
+            cells.append(jupyter.Markdown(f"""
+                Detection rules URI: {tu.get_test_rules_uri()}
+                Schema URI: {tu.get_test_schema_uri()}
+                Multiplying factor: {cls.multiplying_factor}
             """))
         super(TestSignalsQueries, cls).setUpClass()
 

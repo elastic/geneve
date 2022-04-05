@@ -7,26 +7,10 @@
 
 import os
 import unittest
-from pathlib import Path
 
 import tests.utils as tu
-from detection_rules.rule_loader import RuleCollection
 from geneve.events_emitter import SourceEvents, ast_from_rule
-from geneve import utils
 from . import jupyter
-
-
-def _get_collection(var_name):
-    var_value = os.getenv(var_name)
-    rules_path = Path(var_value)
-    if var_value.lower() in ("1", "true", "yes"):
-        collection = RuleCollection.default()
-    elif rules_path.exists() and rules_path.is_dir():
-        collection = RuleCollection()
-        collection.load_directory(rules_path)
-    else:
-        raise ValueError(f"path does not exist or is not a directory: {rules_path}")
-    return collection
 
 
 class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
@@ -42,8 +26,13 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     """))
 
     @classmethod
-    def setUpClass(cls):
+    @nb.chapter("## Test configuration")
+    def setUpClass(cls, cells):
         super(TestRules, cls).setUpClass()
+        cells.append(jupyter.Markdown(f"""
+            Schema URI: {tu.get_test_schema_uri()}
+            Detection rules URI: {tu.get_test_rules_uri()}
+        """))
 
     def parse_from_collection(self, collection):
         asts = []
@@ -51,7 +40,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         errors = {}
         for rule in collection:
             try:
-                asts.append(ast_from_rule(rule.contents.data))
+                asts.append(ast_from_rule(rule))
                 rules.append(rule)
             except Exception as e:
                 errors.setdefault(str(e), []).append(rule)
@@ -62,9 +51,8 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             for err in sorted(sorted(errors), key=lambda e: len(errors[e]), reverse=True):
                 heading = [f"{len(errors[err])} rules:", ""]
                 bullets = []
-                for rule in sorted(errors[err], key=lambda r: r.contents.data.name):
-                    path = rule.path.relative_to(utils.ROOT_DIR)
-                    bullets.append(f"* [{rule.contents.data.name}](../../{path})")
+                for rule in sorted(errors[err], key=lambda r: r.name):
+                    bullets.append(f"* {rule.name} ({rule.path})")
                 with self.nb.chapter(f"### {err} ({len(errors[err])})") as cells:
                     cells.append(jupyter.Markdown(heading + sorted(bullets)))
 
@@ -86,14 +74,13 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             for err in sorted(sorted(errors), key=lambda e: len(errors[e]), reverse=True):
                 heading = [f"{len(errors[err])} rules:"]
                 bullets = []
-                for rule in sorted(errors[err], key=lambda r: r.contents.data.name):
-                    path = rule.path.relative_to(utils.ROOT_DIR)
-                    bullets.append(f"* [{rule.contents.data.name}](../../{path})")
+                for rule in sorted(errors[err], key=lambda r: r.name):
+                    bullets.append(f"* {rule.name} ({rule.path})")
                 with self.nb.chapter(f"### {err} ({len(errors[err])})") as cells:
                     cells.append(jupyter.Markdown(heading + sorted(bullets)))
 
     def test_rules_collection(self):
-        collection = RuleCollection.default()
+        collection = tu.load_test_rules()
         rules, asts = self.parse_from_collection(collection)
         self.generate_docs(rules, asts)
 
@@ -116,9 +103,11 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
 
     @classmethod
     def setUpClass(cls):
-        if cls.multiplying_factor > 1:
-            cls.nb.cells.append(jupyter.Markdown(f"""
-                This report was generated with a multiplying factor of {cls.multiplying_factor}.
+        with cls.nb.chapter("## Test configuration") as cells:
+            cells.append(jupyter.Markdown(f"""
+                Detection rules URI: {tu.get_test_rules_uri()}
+                Schema URI: {tu.get_test_schema_uri()}
+                Multiplying factor: {cls.multiplying_factor}
             """))
         super(TestSignalsRules, cls).setUpClass()
 
@@ -127,11 +116,10 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         asts = []
         for i, rule in enumerate(collection):
             try:
-                asts.append(ast_from_rule(rule.contents.data))
+                asts.append(ast_from_rule(rule))
             except Exception:
                 continue
             index_name = "{:s}-{:03d}".format(self.index_template, i)
-            rule = rule.contents.data
             rules.append({
                 "rule_id": rule.rule_id,
                 "risk_score": rule.risk_score,
@@ -152,7 +140,7 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
 
     def test_rules(self):
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
-        collection = _get_collection("TEST_SIGNALS_RULES")
+        collection = tu.load_test_rules()
         rules, asts = self.parse_from_collection(collection)
         pending = self.load_rules_and_docs(rules, asts)
         self.check_signals(rules, pending)

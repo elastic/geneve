@@ -19,8 +19,80 @@
 
 import functools
 import os
+import pytoml
+import requests
+import shutil
+import yaml
+
+from contextlib import contextmanager
+from glob import glob
+from pathlib import Path
+from tempfile import mkdtemp
+from types import SimpleNamespace
+from urllib.parse import urlparse
 
 root_dir = os.path.abspath(os.path.join(os.path.split(__file__)[0], ".."))
+
+
+@contextmanager
+def tempdir():
+    tmpdir = mkdtemp()
+    try:
+        yield tmpdir
+    finally:
+        shutil.rmtree(tmpdir)
+
+
+@contextmanager
+def resource(uri, basedir=None):
+    with tempdir() as tmpdir:
+        uri_parts = urlparse(uri)
+        if uri_parts.scheme.startswith("http"):
+            uri_file = uri_parts.path.split("/")[-1]
+            local_file = os.path.join(tmpdir, uri_file)
+            with open(local_file, "wb") as f:
+                f.write(requests.get(uri).content)
+        elif uri_parts.scheme == "file":
+            if uri_parts.netloc:
+                local_file = os.path.join(basedir or os.getcwd(), uri_parts.netloc + uri_parts.path)
+            else:
+                local_file = uri_parts.path
+        else:
+            raise ValueError(f"uri scheme not supported: {uri_parts.scheme}")
+
+        if os.path.isdir(local_file):
+            tmpdir = local_file
+        else:
+            shutil.unpack_archive(local_file, tmpdir)
+            if uri_parts.scheme != "file":
+                os.unlink(local_file)
+
+        yield tmpdir
+
+
+@functools.lru_cache
+def load_schema(uri, path, basedir=None):
+    with resource(uri, basedir=basedir) as resource_dir:
+        filenames = glob(os.path.join(resource_dir, "*", path), recursive=True)
+        if len(filenames) < 1:
+            raise ValueError(f"File not found in '{resource_dir}': '{path}'")
+        if len(filenames) > 1:
+            raise ValueError(f"Too many files: {filenames}")
+
+        with open(filenames[0]) as f:
+            return yaml.safe_load(f)
+
+
+@functools.lru_cache
+def load_rules(uri, path, basedir=None):
+    rules = []
+    with resource(uri, basedir=basedir) as resource_dir:
+        for filename in glob(os.path.join(resource_dir, "*", path), recursive=True):
+            with open(filename) as f:
+                rule = pytoml.load(f)["rule"]
+            rule["path"] = Path('.').joinpath(*Path(filename).relative_to(resource_dir).parts[1:])
+            rules.append(SimpleNamespace(**rule))
+    return rules
 
 
 def deep_merge(a, b, path=None):
