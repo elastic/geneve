@@ -5,7 +5,7 @@ prereq:
 	python3 -m pip install -r requirements.txt
 
 lint:
-	python3 -m flake8 geneve tests --ignore D203 --max-line-length 120
+	python3 -m flake8 geneve tests --ignore D203 --max-line-length 120 --exclude geneve/kql
 
 tests: tests/*.py
 	python3 -m pytest

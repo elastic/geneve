@@ -51,7 +51,7 @@ def ast_from_eql_query(query):
 
 
 def ast_from_kql_query(query):
-    import kql
+    from . import kql
     return kql.to_eql(query)  # shortcut?
 
 
