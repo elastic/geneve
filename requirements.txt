@@ -1,6 +1,6 @@
 build
 click
-eql
+eql>=0.9.12
 flake8
 nbformat
 pytest
