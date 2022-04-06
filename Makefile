@@ -1,25 +1,31 @@
+ifeq ($(VENV),)
+	PYTHON:=python3
+else
+	PYTHON:=source $(VENV)/bin/activate; python3
+endif
+
 all: lint tests
 
 prereq:
-	python3 -m pip install --upgrade pip
-	python3 -m pip install -r requirements.txt
+	$(PYTHON) -m pip install --upgrade pip
+	$(PYTHON) -m pip install -r requirements.txt
 
 lint:
-	python3 -m flake8 geneve tests --ignore D203 --max-line-length 120 --exclude geneve/kql
+	$(PYTHON) -m flake8 geneve tests --ignore D203 --max-line-length 120 --exclude geneve/kql
 
 tests: tests/*.py
-	python3 -m pytest
+	$(PYTHON) -m pytest
 
 run:
-	python3 -m geneve --version
-	python3 -m geneve --help
-	python3 -m geneve
+	$(PYTHON) -m geneve --version
+	$(PYTHON) -m geneve --help
+	$(PYTHON) -m geneve
 
 pkg_build:
-	python3 -m build
+	$(PYTHON) -m build
 
 pkg_install:
-	python3 -m pip install --force-reinstall dist/geneve-*.whl
+	$(PYTHON) -m pip install --force-reinstall dist/geneve-*.whl
 
 pkg_try:
 	geneve --version
