@@ -41,7 +41,14 @@ __all__ = (
     "assertReportUnchanged",
 )
 
-verbose = sum(arg.count('v') for arg in sys.argv if arg.startswith("-") and not arg.startswith("--"))
+
+def get_test_verbosity():
+    env_verbose = int(os.getenv("TEST_VERBOSITY") or 0)
+    cmd_verbose = sum(arg.count('v') for arg in sys.argv if arg.startswith("-") and not arg.startswith("--"))
+    return cmd_verbose or env_verbose
+
+
+verbose = get_test_verbosity()
 
 
 def get_test_schema_uri():
