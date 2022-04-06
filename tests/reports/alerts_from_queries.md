@@ -4,7 +4,14 @@ This report captures the unit test queries signals generation coverage.
 Here you can learn what queries are supported.
 
 ## Table of contents
+   1. [Test configuration](#test-configuration)
    1. [Rules with the correct signals (48)](#rules-with-the-correct-signals-48)
+
+## Test configuration
+
+Detection rules URI: https://github.com/elastic/detection-rules/archive/refs/tags/v8.1.0.tar.gz
+Schema URI: https://github.com/elastic/ecs/archive/refs/tags/v8.1.0.tar.gz
+Multiplying factor: 1
 
 ## Rules with the correct signals (48)
 
@@ -12,7 +19,7 @@ Here you can learn what queries are supported.
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-000
+Index: geneve-ut-000
 
 ```python
 any where true
@@ -28,7 +35,7 @@ any where true
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-001
+Index: geneve-ut-001
 
 ```python
 any where not false
@@ -44,7 +51,7 @@ any where not false
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-002
+Index: geneve-ut-002
 
 ```python
 any where not (true and false)
@@ -60,7 +67,7 @@ any where not (true and false)
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-003
+Index: geneve-ut-003
 
 ```python
 any where not (false or false)
@@ -76,7 +83,7 @@ any where not (false or false)
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-004
+Index: geneve-ut-004
 
 ```python
 network where source.port > 512 and source.port < 1024
@@ -92,7 +99,7 @@ network where source.port > 512 and source.port < 1024
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-005
+Index: geneve-ut-005
 
 ```python
 network where not (source.port < 512 or source.port > 1024)
@@ -108,7 +115,7 @@ network where not (source.port < 512 or source.port > 1024)
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-006
+Index: geneve-ut-006
 
 ```python
 network where destination.port not in (80, 443)
@@ -124,7 +131,7 @@ network where destination.port not in (80, 443)
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-007
+Index: geneve-ut-007
 
 ```python
 network where not destination.port in (80, 443)
@@ -140,7 +147,7 @@ network where not destination.port in (80, 443)
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-008
+Index: geneve-ut-008
 
 ```python
 network where destination.port == 22 and destination.port in (80, 443) or destination.port == 25
@@ -156,7 +163,7 @@ network where destination.port == 22 and destination.port in (80, 443) or destin
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-009
+Index: geneve-ut-009
 
 ```python
 process where process.name == "regsvr32.exe"
@@ -172,7 +179,7 @@ process where process.name == "regsvr32.exe"
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-010
+Index: geneve-ut-010
 
 ```python
 process where process.name != "regsvr32.exe"
@@ -188,7 +195,7 @@ process where process.name != "regsvr32.exe"
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-011
+Index: geneve-ut-011
 
 ```python
 process where process.pid != 0
@@ -204,7 +211,7 @@ process where process.pid != 0
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-012
+Index: geneve-ut-012
 
 ```python
 process where process.pid >= 0
@@ -220,7 +227,7 @@ process where process.pid >= 0
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-013
+Index: geneve-ut-013
 
 ```python
 process where process.pid > 0
@@ -236,7 +243,7 @@ process where process.pid > 0
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-014
+Index: geneve-ut-014
 
 ```python
 process where process.code_signature.exists == true
@@ -252,7 +259,7 @@ process where process.code_signature.exists == true
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-015
+Index: geneve-ut-015
 
 ```python
 process where process.code_signature.exists != true
@@ -268,7 +275,7 @@ process where process.code_signature.exists != true
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-016
+Index: geneve-ut-016
 
 ```python
 any where network.protocol == "some protocol"
@@ -284,7 +291,7 @@ any where network.protocol == "some protocol"
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-017
+Index: geneve-ut-017
 
 ```python
 any where process.pid == null
@@ -300,7 +307,7 @@ any where process.pid == null
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-018
+Index: geneve-ut-018
 
 ```python
 any where not process.pid != null
@@ -316,7 +323,7 @@ any where not process.pid != null
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-019
+Index: geneve-ut-019
 
 ```python
 any where process.pid != null
@@ -332,7 +339,7 @@ any where process.pid != null
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-020
+Index: geneve-ut-020
 
 ```python
 any where not process.pid == null
@@ -348,7 +355,7 @@ any where not process.pid == null
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-021
+Index: geneve-ut-021
 
 ```python
 process where process.name == "regsvr32.exe" and process.parent.name == "cmd.exe"
@@ -364,7 +371,7 @@ process where process.name == "regsvr32.exe" and process.parent.name == "cmd.exe
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-022
+Index: geneve-ut-022
 
 ```python
 process where process.name : ("*.EXE", "*.DLL")
@@ -380,7 +387,7 @@ process where process.name : ("*.EXE", "*.DLL")
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-023
+Index: geneve-ut-023
 
 ```python
 network where destination.ip == "127.0.0.1"
@@ -396,7 +403,7 @@ network where destination.ip == "127.0.0.1"
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-024
+Index: geneve-ut-024
 
 ```python
 network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
@@ -412,7 +419,7 @@ network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-025
+Index: geneve-ut-025
 
 ```python
 network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
@@ -428,7 +435,7 @@ network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-026
+Index: geneve-ut-026
 
 ```python
 network where destination.ip == "::1"
@@ -444,7 +451,7 @@ network where destination.ip == "::1"
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-027
+Index: geneve-ut-027
 
 ```python
 network where destination.ip == "822e::/16"
@@ -460,7 +467,7 @@ network where destination.ip == "822e::/16"
 
 Branch count: 1  
 Document count: 1  
-Index: detection-rules-ut-028
+Index: geneve-ut-028
 
 ```python
 event.category:network and destination.ip:"822e::/16"
@@ -476,7 +483,7 @@ event.category:network and destination.ip:"822e::/16"
 
 Branch count: 2  
 Document count: 2  
-Index: detection-rules-ut-029
+Index: geneve-ut-029
 
 ```python
 network where not (source.port > 512 and source.port < 1024)
@@ -493,7 +500,7 @@ network where not (source.port > 512 and source.port < 1024)
 
 Branch count: 2  
 Document count: 2  
-Index: detection-rules-ut-030
+Index: geneve-ut-030
 
 ```python
 network where source.port > 512 or source.port < 1024
@@ -510,7 +517,7 @@ network where source.port > 512 or source.port < 1024
 
 Branch count: 2  
 Document count: 2  
-Index: detection-rules-ut-031
+Index: geneve-ut-031
 
 ```python
 network where source.port < 2000 and (source.port > 512 or source.port > 1024)
@@ -527,7 +534,7 @@ network where source.port < 2000 and (source.port > 512 or source.port > 1024)
 
 Branch count: 2  
 Document count: 2  
-Index: detection-rules-ut-032
+Index: geneve-ut-032
 
 ```python
 network where (source.port > 512 or source.port > 1024) and source.port < 2000
@@ -544,7 +551,7 @@ network where (source.port > 512 or source.port > 1024) and source.port < 2000
 
 Branch count: 4  
 Document count: 4  
-Index: detection-rules-ut-033
+Index: geneve-ut-033
 
 ```python
 network where (source.port > 1024 or source.port < 2000) and (source.port < 4000 or source.port > 512)
@@ -563,7 +570,7 @@ network where (source.port > 1024 or source.port < 2000) and (source.port < 4000
 
 Branch count: 2  
 Document count: 2  
-Index: detection-rules-ut-034
+Index: geneve-ut-034
 
 ```python
 network where destination.port in (80, 443)
@@ -580,7 +587,7 @@ network where destination.port in (80, 443)
 
 Branch count: 2  
 Document count: 2  
-Index: detection-rules-ut-035
+Index: geneve-ut-035
 
 ```python
 process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
@@ -597,7 +604,7 @@ process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
 
 Branch count: 3  
 Document count: 3  
-Index: detection-rules-ut-036
+Index: geneve-ut-036
 
 ```python
 process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or process.name == "powershell.exe"
@@ -615,7 +622,7 @@ process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or pro
 
 Branch count: 3  
 Document count: 3  
-Index: detection-rules-ut-037
+Index: geneve-ut-037
 
 ```python
 process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
@@ -633,7 +640,7 @@ process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
 
 Branch count: 3  
 Document count: 3  
-Index: detection-rules-ut-038
+Index: geneve-ut-038
 
 ```python
 process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "powershell.exe"
@@ -651,7 +658,7 @@ process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "po
 
 Branch count: 2  
 Document count: 2  
-Index: detection-rules-ut-039
+Index: geneve-ut-039
 
 ```python
 process where event.type in ("start", "process_started") and process.args : "dump-keychain" and process.args : "-d"
@@ -668,7 +675,7 @@ process where event.type in ("start", "process_started") and process.args : "dum
 
 Branch count: 2  
 Document count: 2  
-Index: detection-rules-ut-040
+Index: geneve-ut-040
 
 ```python
 event.type:(start or process_started) and (process.args:"dump-keychain" and process.args:"-d")
@@ -685,7 +692,7 @@ event.type:(start or process_started) and (process.args:"dump-keychain" and proc
 
 Branch count: 1  
 Document count: 2  
-Index: detection-rules-ut-041
+Index: geneve-ut-041
 
 ```python
 sequence
@@ -704,7 +711,7 @@ sequence
 
 Branch count: 1  
 Document count: 2  
-Index: detection-rules-ut-042
+Index: geneve-ut-042
 
 ```python
 sequence by user.id
@@ -723,7 +730,7 @@ sequence by user.id
 
 Branch count: 1  
 Document count: 2  
-Index: detection-rules-ut-043
+Index: geneve-ut-043
 
 ```python
 sequence
@@ -742,7 +749,7 @@ sequence
 
 Branch count: 2  
 Document count: 4  
-Index: detection-rules-ut-044
+Index: geneve-ut-044
 
 ```python
 sequence
@@ -763,7 +770,7 @@ sequence
 
 Branch count: 2  
 Document count: 4  
-Index: detection-rules-ut-045
+Index: geneve-ut-045
 
 ```python
 sequence by user.id
@@ -784,7 +791,7 @@ sequence by user.id
 
 Branch count: 4  
 Document count: 8  
-Index: detection-rules-ut-046
+Index: geneve-ut-046
 
 ```python
 sequence
@@ -809,7 +816,7 @@ sequence
 
 Branch count: 4  
 Document count: 8  
-Index: detection-rules-ut-047
+Index: geneve-ut-047
 
 ```python
 sequence by user.id
