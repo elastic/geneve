@@ -187,6 +187,8 @@ class OnlineTestCase:
 
     @classmethod
     def setUpClass(cls):
+        super(OnlineTestCase, cls).setUpClass()
+
         from elasticsearch import Elasticsearch
         from elasticsearch.client import ClusterClient, IndicesClient
         from .kibana import Kibana
@@ -216,6 +218,8 @@ class OnlineTestCase:
 
     @classmethod
     def tearDownClass(cls):
+        super(OnlineTestCase, cls).tearDownClass()
+
         cls.kbn.close()
         cls.es.close()
 
