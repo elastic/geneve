@@ -210,3 +210,6 @@ class Notebook:
         if toc:
             toc = [Markdown(["## Table of contents"] + toc)]
         to_file(filename, self.cells + toc + cells)
+
+        del(self.chapters)
+        del(self.cells)
