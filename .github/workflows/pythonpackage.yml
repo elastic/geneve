@@ -2,9 +2,7 @@ name: Build and test
 
 on:
   push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "*" ]
 
 env:
   TEST_SCHEMA_URI: "https://github.com/elastic/ecs/archive/refs/tags/v8.1.0.tar.gz"
@@ -12,7 +10,8 @@ env:
   TEST_VERBOSITY: 2
 
 jobs:
-  build:
+  build-test-publish:
+    name: 🐍 Build, test and publish 🐍
     runs-on: ubuntu-latest
 
     steps:
@@ -41,3 +40,19 @@ jobs:
 
     - name: Try package
       run: make pkg_try
+
+    - name: Publish to TestPyPI
+      uses: pypa/gh-action-pypi-publish@v1.5.0
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags') && github.repository != 'elastic/geneve'
+      with:
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        print_hash: true
+        repository_url: https://test.pypi.org/legacy/
+        skip_existing: true
+
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@v1.5.0
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags') && github.repository == 'elastic/geneve'
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        print_hash: true
