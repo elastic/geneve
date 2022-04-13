@@ -7,8 +7,8 @@ endif
 all: lint tests
 
 prereq:
-	$(PYTHON) -m pip install --upgrade pip
-	$(PYTHON) -m pip install -r requirements.txt
+	$(PYTHON) -m pip install --user --upgrade pip
+	$(PYTHON) -m pip install --user -r requirements.txt
 
 lint:
 	$(PYTHON) -m flake8 geneve tests --ignore D203 --max-line-length 120 --exclude geneve/kql
