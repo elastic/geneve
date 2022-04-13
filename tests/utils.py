@@ -344,10 +344,10 @@ class SignalsTestCase:
             last_execution = rule["execution_summary"]["last_execution"]
             if last_execution["status"] == "succeeded":
                 del(pending[rule_id])
-                successful[rule_id] = last_execution
-            else:
+                successful[rule_id] = None
+            elif last_execution["status"] == "failed":
                 del(pending[rule_id])
-                failed[rule_id] = last_execution
+                failed[rule_id] = last_execution["message"]
 
     def check_rules_legacy(self, pending, successful, failed):
         statuses = self.kbn.find_detection_engine_rules_statuses(pending)
@@ -355,10 +355,10 @@ class SignalsTestCase:
             current_status = rule_status["current_status"]
             if current_status["last_success_at"]:
                 del(pending[rule_id])
-                successful[rule_id] = rule_status
+                successful[rule_id] = None
             elif current_status["last_failure_at"]:
                 del(pending[rule_id])
-                failed[rule_id] = rule_status
+                failed[rule_id] = current_status["last_failure_message"]
 
     def check_docs(self, rule):
         try:
@@ -457,11 +457,8 @@ class SignalsTestCase:
                     if self.multiplying_factor == 1:
                         cells.append(self.query_cell(rule["query"], docs))
                     if type(rule_ids) == dict:
-                        rule_status = rule_ids[rule["id"]].get("current_status", {})
-                        failure_message = rule_status.get("last_failure_message", "")
-                        if failure_message:
-                            failure_message = failure_message.replace(rule["id"], "<i>&lt;redacted&gt;</i>")
-                            cells.append(jupyter.Markdown(f"SDE says:\n> {failure_message}"))
+                        failure_message = rule_ids[rule['id']].replace(rule["id"], "<i>&lt;redacted&gt;</i>")
+                        cells.append(jupyter.Markdown(f"SDE says:\n> {failure_message}"))
 
     def debug_rules(self, rules, rule_ids):
         lines = []
@@ -473,11 +470,9 @@ class SignalsTestCase:
                 lines.append(rule["query"].strip())
                 lines.extend(json.dumps(doc, sort_keys=True) for doc in docs)
                 if type(rule_ids) == dict:
-                    rule_status = rule_ids[rule["id"]].get("current_status", {})
-                    failure_message = rule_status.get("last_failure_message", "")
-                    if failure_message:
-                        lines.append("SDE says:")
-                        lines.append(f"  {failure_message}")
+                    failure_message = rule_ids[rule['id']]
+                    lines.append("SDE says:")
+                    lines.append(f"  {failure_message}")
         return "\n" + "\n".join(lines)
 
     def assertSignals(self, rules, rule_ids, msg):  # noqa: N802
