@@ -32,6 +32,12 @@ jobs:
     - name: Test units
       run: make tests
 
+    - name: Start the stack
+      run: docker compose up --wait --quiet-pull
+
+    - name: Online tests
+      run: make online_tests
+
     - name: Build package
       run: make pkg_build
 
