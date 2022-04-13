@@ -10,6 +10,8 @@ import json
 
 
 class Kibana:
+    exceptions = requests.exceptions
+
     def __init__(self, url, http_auth=None):
         self.url = url
         self.session = requests.Session()
