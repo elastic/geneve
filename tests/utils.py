@@ -226,6 +226,8 @@ class OnlineTestCase:
     def setUp(self):
         super(OnlineTestCase, self).setUp()
 
+        from .kibana import Kibana
+
         self.kbn.delete_detection_engine_rules()
 
         if self.es_indices.exists_index_template(name=self.index_template):
@@ -234,8 +236,9 @@ class OnlineTestCase:
         self.es_indices.delete(index=f"{self.index_template}-*")
         try:
             self.es.delete_by_query(index=self.siem_index_name, body={"query": {"match_all": {}}})
-        except Exception as e:
-            print(e)
+        except Kibana.exceptions.HTTPError as e:
+            if e.response.status_code != 404:
+                raise
 
 
 class SignalsTestCase:
