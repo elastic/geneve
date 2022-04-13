@@ -1,6 +1,7 @@
 build
 click
 eql>=0.9.12
+elasticsearch
 flake8
 nbformat
 pytest

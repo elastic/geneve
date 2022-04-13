@@ -16,6 +16,9 @@ lint:
 tests: tests/*.py
 	$(PYTHON) -m pytest
 
+online_tests: tests/*.py
+	TEST_SIGNALS_QUERIES=1 $(PYTHON) -m pytest tests/test_emitter_*.py
+
 run:
 	$(PYTHON) -m geneve --version
 	$(PYTHON) -m geneve --help
@@ -34,4 +37,4 @@ pkg_try:
 
 package: pkg_build pkg_install pkg_try
 
-.PHONY: lint tests run
+.PHONY: lint tests online_tests run

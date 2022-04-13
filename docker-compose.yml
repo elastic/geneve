@@ -43,6 +43,11 @@ services:
       - 127.0.0.1:65290:5601
     networks:
       - net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -X GET -u elastic:changeit http://kbn:5601/api/task_manager/_health | grep -q '\"status\":\"OK\"'"]
+      interval: 5s
+      retries: 15
+      timeout: 10s
 
 networks:
   net:
