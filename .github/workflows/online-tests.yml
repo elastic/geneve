@@ -1,0 +1,46 @@
+on:
+  workflow_call:
+    inputs:
+      stack-version:
+        required: true
+        type: string
+      schema-uri:
+        required: true
+        type: string
+      detection-rules-uri:
+        required: true
+        type: string
+      python-version:
+        required: true
+        type: string
+
+jobs:
+  online-tests:
+    name: Elastic Stack ${{ inputs.stack-version }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install dependencies
+        run: make prereq
+
+      - name: Start Elastic Stack ${{ inputs.stack-version }}
+        env:
+          TEST_PLATFORM_VERSION: ${{ inputs.stack-version }}
+        run: docker compose up --wait --quiet-pull
+
+      - name: Run online tests
+        env:
+          TEST_SCHEMA_URI: ${{ inputs.schema-uri }}
+          TEST_DETECTION_RULES_URI: ${{ inputs.detection-rules-uri }}
+        run: make online_tests
+
+      - name: Stop Elastic Stack ${{ inputs.stack-version }}
+        run: docker compose down
