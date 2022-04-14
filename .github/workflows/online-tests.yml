@@ -33,7 +33,7 @@ jobs:
 
       - name: Start Elastic Stack ${{ inputs.stack-version }}
         env:
-          TEST_PLATFORM_VERSION: ${{ inputs.stack-version }}
+          TEST_STACK_VERSION: ${{ inputs.stack-version }}
         run: docker compose up --wait --quiet-pull
 
       - name: Run online tests
