@@ -31,6 +31,31 @@ jobs:
       - name: Install dependencies
         run: make prereq
 
+      - name: Setup cache
+        id: elastic-stack-cache
+        uses: actions/cache@v2
+        with:
+          key: elastic-stack-cache-${{ inputs.stack-version }}
+          path: ~/elastic-stack-cache
+
+      - name: Reuse Elastic Stack ${{ inputs.stack-version }} Docker images
+        if: steps.elastic-stack-cache.outputs.cache-hit == 'true'
+        run: |
+          docker load -i ~/elastic-stack-cache/elasticsearch-${{ inputs.stack-version }}.tar
+          docker load -i ~/elastic-stack-cache/kibana-${{ inputs.stack-version }}.tar
+
+      - name: Pull Elastic Stack ${{ inputs.stack-version }} Docker images
+        if: steps.elastic-stack-cache.outputs.cache-hit != 'true'
+        env:
+          TEST_STACK_VERSION: ${{ inputs.stack-version }}
+        run: |
+          mkdir ~/elastic-stack-cache
+          docker compose pull -q
+          docker save -o ~/elastic-stack-cache/elasticsearch-${{ inputs.stack-version }}.tar \
+            docker.elastic.co/elasticsearch/elasticsearch:${{ inputs.stack-version }}
+          docker save -o ~/elastic-stack-cache/kibana-${{ inputs.stack-version }}.tar \
+            docker.elastic.co/kibana/kibana:${{ inputs.stack-version }}
+
       - name: Start Elastic Stack ${{ inputs.stack-version }}
         env:
           TEST_STACK_VERSION: ${{ inputs.stack-version }}
