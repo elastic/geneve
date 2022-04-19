@@ -13,11 +13,14 @@ on:
       python-version:
         required: true
         type: string
+      runs-on:
+        required: true
+        type: string
 
 jobs:
   online-tests:
     name: Elastic Stack ${{ inputs.stack-version }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
 
     steps:
       - name: Checkout code
