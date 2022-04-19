@@ -87,16 +87,20 @@ def load_schema(uri, path, basedir=None):
 
 
 @functools.lru_cache
-def load_rules(uri, path, basedir=None):
+def load_rules(uri, paths, basedir=None):
     import pytoml
+
+    if type(paths) == str:
+        paths = (paths,)
 
     rules = []
     with resource(uri, basedir=basedir) as resource_dir:
-        for filename in glob(os.path.join(resource_dir, "*", path), recursive=True):
-            with open(filename) as f:
-                rule = pytoml.load(f)["rule"]
-            rule["path"] = Path('.').joinpath(*Path(filename).relative_to(resource_dir).parts[1:])
-            rules.append(SimpleNamespace(**rule))
+        for path in paths:
+            for filename in glob(os.path.join(resource_dir, "*", path), recursive=True):
+                with open(filename) as f:
+                    rule = pytoml.load(f)["rule"]
+                rule["path"] = Path('.').joinpath(*Path(filename).relative_to(resource_dir).parts[1:])
+                rules.append(SimpleNamespace(**rule))
     return rules
 
 

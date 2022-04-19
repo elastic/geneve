@@ -124,9 +124,13 @@ def events_from_root(root, schema, timestamp):
 
 
 class SourceEvents:
+    schema = {}
+
     def __init__(self, schema=None):
         self.__roots = []
-        self.schema = schema or {}
+
+        if schema is not None:
+            self.schema = schema
 
     @classmethod
     def from_ast(cls, ast, *, meta=None):
