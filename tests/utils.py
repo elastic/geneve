@@ -298,7 +298,7 @@ class SignalsTestCase:
         with self.nb.chapter("## Rejected documents") as cells:
             pos = 0
             while docs[pos:pos + batch_size]:
-                ret = self.es.bulk(body="\n".join(docs[pos:pos + batch_size]), request_timeout=15)
+                ret = self.es.bulk(body="\n".join(docs[pos:pos + batch_size]), request_timeout=30)
                 for i, item in enumerate(ret["items"]):
                     if item["index"]["status"] != 201:
                         cells.append(jupyter.Markdown(str(item['index'])))
