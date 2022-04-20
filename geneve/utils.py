@@ -17,12 +17,9 @@
 
 """Util functions."""
 
-import functools
 import os
-import pytoml
-import requests
 import shutil
-import yaml
+import functools
 
 from contextlib import contextmanager
 from glob import glob
@@ -45,6 +42,8 @@ def tempdir():
 
 @contextmanager
 def resource(uri, basedir=None):
+    import requests
+
     with tempdir() as tmpdir:
         uri_parts = urlparse(uri)
         if uri_parts.scheme.startswith("http"):
@@ -74,6 +73,8 @@ def resource(uri, basedir=None):
 
 @functools.lru_cache
 def load_schema(uri, path, basedir=None):
+    import yaml
+
     with resource(uri, basedir=basedir) as resource_dir:
         filenames = glob(os.path.join(resource_dir, "*", path), recursive=True)
         if len(filenames) < 1:
@@ -86,14 +87,20 @@ def load_schema(uri, path, basedir=None):
 
 
 @functools.lru_cache
-def load_rules(uri, path, basedir=None):
+def load_rules(uri, paths, basedir=None):
+    import pytoml
+
+    if type(paths) == str:
+        paths = (paths,)
+
     rules = []
     with resource(uri, basedir=basedir) as resource_dir:
-        for filename in glob(os.path.join(resource_dir, "*", path), recursive=True):
-            with open(filename) as f:
-                rule = pytoml.load(f)["rule"]
-            rule["path"] = Path('.').joinpath(*Path(filename).relative_to(resource_dir).parts[1:])
-            rules.append(SimpleNamespace(**rule))
+        for path in paths:
+            for filename in glob(os.path.join(resource_dir, "*", path), recursive=True):
+                with open(filename) as f:
+                    rule = pytoml.load(f)["rule"]
+                rule["path"] = Path('.').joinpath(*Path(filename).relative_to(resource_dir).parts[1:])
+                rules.append(SimpleNamespace(**rule))
     return rules
 
 
