@@ -25,15 +25,6 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         Curious about the inner workings? Read [here](signals_generation.md).
     """))
 
-    @classmethod
-    @nb.chapter("## Test configuration")
-    def setUpClass(cls, cells):
-        super(TestRules, cls).setUpClass()
-        cells.append(jupyter.Markdown(f"""
-            Schema URI: {tu.get_test_schema_uri()}
-            Detection rules URI: {tu.get_test_rules_uri()}
-        """))
-
     def parse_from_collection(self, collection):
         asts = []
         rules = []
@@ -100,16 +91,6 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
 
         Curious about the inner workings? Read [here](signals_generation.md).
     """))
-
-    @classmethod
-    def setUpClass(cls):
-        with cls.nb.chapter("## Test configuration") as cells:
-            cells.append(jupyter.Markdown(f"""
-                Detection rules URI: {tu.get_test_rules_uri()}
-                Schema URI: {tu.get_test_schema_uri()}
-                Multiplying factor: {cls.multiplying_factor}
-            """))
-        super(TestSignalsRules, cls).setUpClass()
 
     def parse_from_collection(self, collection):
         rules = []

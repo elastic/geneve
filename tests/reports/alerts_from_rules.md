@@ -6,16 +6,9 @@ learn what rules are supported and what not and why.
 Curious about the inner workings? Read [here](signals_generation.md).
 
 ## Table of contents
-   1. [Test configuration](#test-configuration)
    1. [Rules with no signals (25)](#rules-with-no-signals-25)
    1. [Rules with too few signals (1)](#rules-with-too-few-signals-1)
    1. [Rules with the correct signals (527)](#rules-with-the-correct-signals-527)
-
-## Test configuration
-
-Detection rules URI: https://github.com/elastic/detection-rules/archive/refs/tags/v8.1.0.tar.gz
-Schema URI: https://github.com/elastic/ecs/archive/refs/tags/v8.1.0.tar.gz
-Multiplying factor: 1
 
 ## Rules with no signals (25)
 

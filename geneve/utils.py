@@ -57,6 +57,8 @@ def resource(uri, basedir=None):
                 local_file = os.path.join(basedir or os.getcwd(), uri_parts.netloc + uri_parts.path)
             else:
                 local_file = uri_parts.path
+        elif uri_parts.scheme == "":
+            local_file = uri_parts.path
         else:
             raise ValueError(f"uri scheme not supported: {uri_parts.scheme}")
 
@@ -64,7 +66,7 @@ def resource(uri, basedir=None):
             tmpdir = local_file
         else:
             shutil.unpack_archive(local_file, tmpdir)
-            if uri_parts.scheme != "file":
+            if uri_parts.scheme.startswith("http"):
                 os.unlink(local_file)
 
         yield tmpdir

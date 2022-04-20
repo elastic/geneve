@@ -6,7 +6,6 @@ can learn what rules are still problematic and for which no documents can be gen
 Curious about the inner workings? Read [here](signals_generation.md).
 
 ## Table of contents
-   1. [Test configuration](#test-configuration)
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (50)](#unsupported-rule-type-machine_learning-50)
       1. [Unsupported rule type: threshold (14)](#unsupported-rule-type-threshold-14)
@@ -23,11 +22,6 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsolvable constraints wildcard: winlog.event_data.AttributeValue (is already '*827D319E-6EAC-11D2-A4EA-00C04F79F83A*', cannot set to '*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*') (1)](#unsolvable-constraints-wildcard-winlogevent_dataattributevalue-is-already-827d319e-6eac-11d2-a4ea-00c04f79f83a-cannot-set-to-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsolvable constraints wildcard: winlog.event_data.AttributeValue (is already '*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*', cannot set to '*AADCED64-746C-4633-A97C-D61349046527*') (1)](#unsolvable-constraints-wildcard-winlogevent_dataattributevalue-is-already-cab54552-deea-4691-817e-ed4a4d1afc72-cannot-set-to-aadced64-746c-4633-a97c-d61349046527-1)
       1. [Unsolvable constraints: process.name (wildcard(s) both included and excluded: 'rundll32.exe') (1)](#unsolvable-constraints-processname-wildcards-both-included-and-excluded-rundll32exe-1)
-
-## Test configuration
-
-Schema URI: https://github.com/elastic/ecs/archive/refs/tags/v8.1.0.tar.gz
-Detection rules URI: https://github.com/elastic/detection-rules/archive/refs/tags/v8.1.0.tar.gz
 
 ## Skipped rules
 

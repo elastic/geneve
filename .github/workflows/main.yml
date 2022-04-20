@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: ["*"]
 
+env:
+  TEST_VERBOSITY: 2
+
 jobs:
   unit-tests:
     name: Unit tests (${{ matrix.python-version }}/${{ matrix.os }})
@@ -34,8 +37,8 @@ jobs:
 
       - name: Run unit tests
         env:
-          TEST_SCHEMA_URI: "https://github.com/elastic/ecs/archive/refs/tags/v8.1.0.tar.gz"
-          TEST_DETECTION_RULES_URI: "https://github.com/elastic/detection-rules/archive/refs/tags/v8.1.0.tar.gz"
+          TEST_SCHEMA_URI: "./etc/ecs-8.1.0.tar.gz"
+          TEST_DETECTION_RULES_URI: "./etc/detection-rules-8.1.0.tar.gz"
         run: make tests
 
   online-tests:
@@ -47,15 +50,15 @@ jobs:
       fail-fast: false
       matrix:
         stack-version: ["8.1.2"]
-        schema-uri: ["https://github.com/elastic/ecs/archive/refs/tags/v8.1.0.tar.gz"]
-        detection-rules-uri: ["https://github.com/elastic/detection-rules/archive/refs/tags/v8.1.0.tar.gz"]
+        schema-uri: ["./etc/ecs-8.1.0.tar.gz"]
+        detection-rules-uri: ["./etc/detection-rules-8.1.0.tar.gz"]
         python-version: ["3.10"]
         os: ["ubuntu-latest"]
 
         include:
           - stack-version: "7.15.0"
-            schema-uri: "https://github.com/elastic/ecs/archive/refs/tags/v8.1.0.tar.gz"
-            detection-rules-uri: "https://github.com/elastic/detection-rules/archive/refs/tags/v8.1.0.tar.gz"
+            schema-uri: "./etc/ecs-8.1.0.tar.gz"
+            detection-rules-uri: "./etc/detection-rules-8.1.0.tar.gz"
             python-version: "3.8"
             os: "ubuntu-18.04"
 

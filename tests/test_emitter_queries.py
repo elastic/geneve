@@ -476,12 +476,6 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 On the other hand, you can experiment and modify the queries in the input cells, check the results
                 and, why not?, report any interesting finding. You can also add and remove cells at will.
             """),
-            jupyter.Markdown(f"""
-                ## Test configuration
-
-                Schema URI: {tu.get_test_schema_uri()}
-                Detection rules URI: {tu.get_test_rules_uri()}
-            """),
         ]
 
     def test_len(self):
@@ -597,16 +591,6 @@ class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCas
         This report captures the unit test queries signals generation coverage.
         Here you can learn what queries are supported.
     """))
-
-    @classmethod
-    def setUpClass(cls):
-        with cls.nb.chapter("## Test configuration") as cells:
-            cells.append(jupyter.Markdown(f"""
-                Detection rules URI: {tu.get_test_rules_uri()}
-                Schema URI: {tu.get_test_schema_uri()}
-                Multiplying factor: {cls.multiplying_factor}
-            """))
-        super(TestSignalsQueries, cls).setUpClass()
 
     def parse_from_queries(self, queries):
         rules = []
