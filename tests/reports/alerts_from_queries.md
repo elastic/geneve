@@ -4,14 +4,7 @@ This report captures the unit test queries signals generation coverage.
 Here you can learn what queries are supported.
 
 ## Table of contents
-   1. [Test configuration](#test-configuration)
    1. [Rules with the correct signals (48)](#rules-with-the-correct-signals-48)
-
-## Test configuration
-
-Detection rules URI: https://github.com/elastic/detection-rules/archive/refs/tags/v8.1.0.tar.gz
-Schema URI: https://github.com/elastic/ecs/archive/refs/tags/v8.1.0.tar.gz
-Multiplying factor: 1
 
 ## Rules with the correct signals (48)
 
