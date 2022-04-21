@@ -28,7 +28,7 @@ from tempfile import mkdtemp
 from types import SimpleNamespace
 from urllib.parse import urlparse
 
-root_dir = os.path.abspath(os.path.join(os.path.split(__file__)[0], ".."))
+root_dir = os.path.abspath(os.path.join(os.path.split(__file__)[0], "..", ".."))
 
 
 @contextmanager
