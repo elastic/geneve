@@ -1,7 +1,7 @@
 version: '3'
 services:
   es:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-7.15.2}
+    image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-7.15.2}}
     environment:
       - node.name=es
       - cluster.name=geneve-test
@@ -28,7 +28,7 @@ services:
       timeout: 10s
   kbn:
     depends_on: [es]
-    image: docker.elastic.co/kibana/kibana:${TEST_STACK_VERSION:-7.15.2}
+    image: ${TEST_KIBANA_IMAGE:-docker.elastic.co/kibana/kibana:${TEST_STACK_VERSION:-7.15.2}}
     environment:
       SERVER_NAME: kbn
       ELASTICSEARCH_HOSTS: http://es:9200
