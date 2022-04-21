@@ -439,9 +439,10 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         This Jupyter Notebook captures the unit test results of documents generation from queries.
         Here you can learn what kind of queries the emitter handles and the documents it generates.
 
-        To edit an input cell, just click in its gray area. To execute it, press Ctrl+Enter.
+        To edit an input cell, just click in its gray area. To execute it, press `Ctrl+Enter`.
 
-        Curious about the inner workings? Read [here](signals_generation.md). Need help in using a Jupyter Notebook?
+        Curious about the inner workings? Read [here](../../docs/events_generation.md).
+        Need help in using a Jupyter Notebook?
         Read [here](https://jupyter-notebook.readthedocs.io/en/stable/notebook.html#structure-of-a-notebook-document).
     """))
 
@@ -451,16 +452,23 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         super(TestQueries, cls).setUpClass()
         cells += [
             jupyter.Markdown("""
-                This is an auxiliary cell, it prepares the environment for all the subsequent cells. It's also
-                a simple example of emitter API usage.
+                This is an auxiliary cell, it prepares the environment for the rest of this notebook.
             """),
             jupyter.Code("""
                 import os; os.chdir('../..')  # use the repo's root as base for local modules import
-                from detection_rules.events_emitter import SourceEvents
+                from geneve.events_emitter import SourceEvents
+                from geneve.utils import load_schema
+
+                # load the ECS schema
+                SourceEvents.schema = load_schema('./etc/ecs-8.1.0.tar.gz', 'generated/ecs/ecs_flat.yml')
 
                 def emit(query, timestamp=False, complete=True):
                     try:
-                        return SourceEvents.from_query(query).emit(timestamp=timestamp, complete=complete)
+                        events = SourceEvents.from_query(query).emit(timestamp=timestamp, complete=complete)
+                        if complete:
+                            return [[event.doc for event in branch] for branch in events]
+                        else:
+                            return [event.doc for event in events]
                     except Exception as e:
                         print(e)
             """),
@@ -576,7 +584,7 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     def test_unchanged(self, cells):
         cells.append(jupyter.Markdown("""
             Did you find anything odd reviewing the report or playing with the documents emitter?
-            We are interested to know.
+            We are interested to know, feel free to [create an issue](https://github.com/elastic/geneve/issues/new).
         """))
         tu.assertReportUnchanged(self, self.nb, "documents_from_queries.ipynb")
 
