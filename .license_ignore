@@ -1,0 +1,19 @@
+*.css
+*.g
+*.ipynb
+*.md
+*.png
+*.tar.gz
+*.toml
+*.yml
+.gitignore
+.license_ignore
+LICENSE.txt
+Makefile
+requirements.txt
+runtime.txt
+setup.cfg
+
+# to be removed as part of https://github.com/elastic/geneve/issues/15
+geneve/kql/*
+tests/kuery/*

@@ -19,6 +19,9 @@ tests: tests/*.py
 online_tests: tests/*.py
 	TEST_SIGNALS_QUERIES=1 $(PYTHON) -m pytest tests/test_emitter_*.py
 
+license_check:
+	bash scripts/license_check.sh
+
 run:
 	$(PYTHON) -m geneve --version
 	$(PYTHON) -m geneve --help
