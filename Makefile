@@ -14,11 +14,9 @@ lint:
 	$(PYTHON) -m flake8 geneve tests --ignore D203 --max-line-length 120 --exclude geneve/kql
 
 tests: tests/*.py
-	$(PYTHON) -m pytest
+	$(PYTHON) -m pytest tests/test_*.py
 
 online_tests: tests/*.py
-	TEST_SIGNALS_QUERIES=1 \
-	TEST_SIGNALS_RULES=1 \
 	$(PYTHON) -m pytest tests/test_emitter_*.py
 
 license_check:
