@@ -250,7 +250,7 @@ class SignalsTestCase:
         se = SourceEvents(schema)
 
         bulk = []
-        for rule, ast in sorted(zip(rules, asts), key=lambda x: x[0]["name"]):
+        for rule, ast in zip(rules, asts):
             with self.subTest(rule["query"]):
                 try:
                     root = se.add_ast(ast, meta={"index": rule["index"][0]})
@@ -478,12 +478,12 @@ class SignalsTestCase:
                     lines.append(f"  {failure_message}")
         return "\n" + "\n".join(lines)
 
-    def assertSignals(self, rules, rule_ids, msg):  # noqa: N802
+    def assertSignals(self, rules, rule_ids, msg, value=0):  # noqa: N802
         if rule_ids:
             self.report_rules(rules, rule_ids, msg)
         with self.subTest(msg):
             msg = None if verbose < 3 else self.debug_rules(rules, rule_ids)
-            self.assertEqual(len(rule_ids), 0, msg=msg)
+            self.assertEqual(len(rule_ids), value, msg=msg)
 
     def check_signals(self, rules, pending):
         successful, failed = self.wait_for_rules(pending)
@@ -498,7 +498,9 @@ class SignalsTestCase:
         rules = sorted(rules, key=lambda rule: rule["name"])
         self.assertSignals(rules, failed, "Failed rules")
         self.assertSignals(rules, unsuccessful, "Unsuccessful rules with signals")
-        self.assertSignals(rules, no_signals, "Rules with no signals")
-        self.assertSignals(rules, too_few_signals, "Rules with too few signals")
+        self.assertSignals(rules, no_signals, "Rules with no signals",
+                           getattr(self, "ack_no_signals", 0))
+        self.assertSignals(rules, too_few_signals, "Rules with too few signals",
+                           getattr(self, "ack_too_few_signals", 0))
         self.assertSignals(rules, too_many_signals, "Rules with too many signals")
         self.report_rules(rules, correct_signals, "Rules with the correct signals")
