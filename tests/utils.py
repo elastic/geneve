@@ -250,7 +250,7 @@ class SignalsTestCase:
         se = SourceEvents(schema)
 
         bulk = []
-        for rule, ast in sorted(zip(rules, asts), key=lambda x: x[0]["name"]):
+        for rule, ast in zip(rules, asts):
             with self.subTest(rule["query"]):
                 try:
                     root = se.add_ast(ast, meta={"index": rule["index"][0]})

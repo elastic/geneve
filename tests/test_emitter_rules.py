@@ -83,7 +83,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                     cells.append(jupyter.Markdown(heading + sorted(bullets)))
 
     def test_rules_collection(self):
-        collection = tu.load_test_rules()
+        collection = sorted(tu.load_test_rules(), key=lambda x: x.name)
         rules, asts = self.parse_from_collection(collection)
         self.generate_docs(rules, asts)
 
@@ -136,7 +136,7 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
 
     def test_rules(self):
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
-        collection = tu.load_test_rules()
+        collection = sorted(tu.load_test_rules(), key=lambda x: x.name)
         rules, asts = self.parse_from_collection(collection)
         pending = self.load_rules_and_docs(rules, asts)
         self.check_signals(rules, pending)
