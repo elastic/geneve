@@ -17,7 +17,9 @@ tests: tests/*.py
 	$(PYTHON) -m pytest
 
 online_tests: tests/*.py
-	TEST_SIGNALS_QUERIES=1 $(PYTHON) -m pytest tests/test_emitter_*.py
+	TEST_SIGNALS_QUERIES=1 \
+	TEST_SIGNALS_RULES=1 \
+	$(PYTHON) -m pytest tests/test_emitter_*.py
 
 license_check:
 	bash scripts/license_check.sh
