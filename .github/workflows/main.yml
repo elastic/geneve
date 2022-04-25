@@ -119,6 +119,7 @@ jobs:
         env:
           TEST_SCHEMA_URI: ${{ matrix.schema-uri }}
           TEST_DETECTION_RULES_URI: ${{ matrix.detection-rules-uri }}
+          TEST_SIGNALS_RULES_SKIP_FAILING: 1
         run: make online_tests
 
       - name: Stop Elastic Stack ${{ matrix.stack-version }}

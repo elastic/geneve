@@ -23,6 +23,7 @@ import functools
 
 from contextlib import contextmanager
 from glob import glob
+from itertools import chain
 from pathlib import Path
 from tempfile import mkdtemp
 from types import SimpleNamespace
@@ -87,7 +88,7 @@ def load_schema(uri, path, basedir=None):
 
 
 @functools.lru_cache
-def load_rules(uri, paths, basedir=None):
+def load_rules(uri, paths, basedir=None, exclude=None):
     import pytoml
 
     if type(paths) == str:
@@ -95,8 +96,12 @@ def load_rules(uri, paths, basedir=None):
 
     rules = []
     with resource(uri, basedir=basedir) as resource_dir:
+        if exclude is not None:
+            exclude = tuple(chain(*(glob(os.path.join(resource_dir, "*", ex), recursive=True) for ex in exclude)))
         for path in paths:
             for filename in glob(os.path.join(resource_dir, "*", path), recursive=True):
+                if exclude and filename in exclude:
+                    continue
                 with open(filename) as f:
                     rule = pytoml.load(f)["rule"]
                 rule["path"] = Path('.').joinpath(*Path(filename).relative_to(resource_dir).parts[1:])

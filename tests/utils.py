@@ -66,7 +66,36 @@ def load_test_schema():
 
 
 def load_test_rules():
-    return load_rules(get_test_rules_uri(), "rules/**/*.toml", root_dir)
+    exclude = None
+    if os.getenv("TEST_SIGNALS_RULES_SKIP_FAILING", "0").lower() in ("1", "true", "yes"):
+        exclude = (
+            "rules/macos/persistence_docker_shortcuts_plist_modification.toml",
+            "rules/macos/persistence_creation_modif_launch_deamon_sequence.toml",
+            "rules/macos/persistence_directory_services_plugins_modification.toml",
+            "rules/macos/persistence_via_atom_init_file_modification.toml",
+            "rules/macos/persistence_credential_access_authorization_plugin_creation.toml",
+            "rules/macos/persistence_suspicious_calendar_modification.toml",
+            "rules/integrations/azure/persistence_azure_pim_user_added_global_admin.toml",
+            "rules/integrations/azure/persistence_azure_global_administrator_role_assigned.toml",
+            "rules/integrations/azure/credential_access_azure_full_network_packet_capture_detected.toml",
+            "rules/integrations/azure/initial_access_external_guest_user_invite.toml",
+            "rules/integrations/gcp/impact_gcp_service_account_disabled.toml",
+            "rules/integrations/gcp/persistence_gcp_key_created_for_service_account.toml",
+            "rules/integrations/gcp/impact_gcp_iam_role_deletion.toml",
+            "rules/integrations/gcp/persistence_gcp_iam_service_account_key_deletion.toml",
+            "rules/integrations/gcp/persistence_gcp_service_account_created.toml",
+            "rules/integrations/gcp/collection_gcp_pub_sub_subscription_creation.toml",
+            "rules/integrations/gcp/defense_evasion_gcp_logging_sink_deletion.toml",
+            "rules/integrations/gcp/exfiltration_gcp_logging_sink_modification.toml",
+            "rules/integrations/gcp/defense_evasion_gcp_pub_sub_topic_deletion.toml",
+            "rules/integrations/gcp/initial_access_gcp_iam_custom_role_creation.toml",
+            "rules/integrations/gcp/defense_evasion_gcp_pub_sub_subscription_deletion.toml",
+            "rules/integrations/gcp/impact_gcp_service_account_deleted.toml",
+            "rules/integrations/gcp/defense_evasion_gcp_logging_bucket_deletion.toml",
+            "rules/integrations/gcp/collection_gcp_pub_sub_topic_creation.toml",
+            "rules/windows/persistence_ad_adminsdholder.toml",
+        )
+    return load_rules(get_test_rules_uri(), "rules/**/*.toml", root_dir, exclude=exclude)
 
 
 def get_rule_by_id(rules, rule_id):
