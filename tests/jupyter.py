@@ -83,7 +83,7 @@ def to_file(filename, cells):
         nbf.write(nb, filename)
     elif ext == "md":
         md = to_markdown(cells)
-        with open(filename, "w") as f:
+        with open(filename, "w", newline="\n") as f:
             f.write(md)
     else:
         raise ValueError(f"unknown extension: {ext}")
