@@ -410,22 +410,22 @@ class SignalsTestCase:
         return signals
 
     def wait_for_signals(self, rules, timeout=15, sleep=5):
-        start = time.time()
         if verbose:
             sys.stderr.write("... ")
             sys.stderr.flush()
         total_count = sum(rule[".test_private"]["branch_count"] for rule in rules if rule["enabled"])
         partial_count = 0
         partial_count_prev = 0
-        while (time.time() - start) < timeout:
+        partial_time = time.time()
+        while (time.time() - partial_time) < timeout:
             if verbose:
                 sys.stderr.write(f"{total_count - partial_count} ")
                 sys.stderr.flush()
             signals = self.get_signals_per_rule(rules)
             partial_count = sum(branch_count for branch_count, _ in signals.values())
             if partial_count != partial_count_prev:
-                start = time.time()
                 partial_count_prev = partial_count
+                partial_time = time.time()
             if total_count - partial_count > 0:
                 time.sleep(sleep)
             else:
