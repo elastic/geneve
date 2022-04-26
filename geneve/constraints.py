@@ -462,9 +462,12 @@ class Constraints:
 
     def solve(self, schema):
         for field, constraints in self.__constraints.items():
+            field_schema = schema.get(field, {})
             value = None
+            if has_wildcards(field):
+                field = field.replace("`", "")
+                field = expand_wildcards(field, string.digits)
             if constraints is not None:
-                field_schema = schema.get(field, {})
                 value = self.solve_constraints(field, constraints, field_schema)
             yield field, value
 
