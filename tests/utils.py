@@ -186,6 +186,10 @@ class OnlineTestCase:
             return tuple(s.strip() for s in http_auth)
 
     @classmethod
+    def get_version(cls):
+        return cls.es.info()["version"]["number"]
+
+    @classmethod
     def setUpClass(cls):
         super(OnlineTestCase, cls).setUpClass()
 
@@ -215,6 +219,9 @@ class OnlineTestCase:
         except Kibana.exceptions.HTTPError as e:
             if e.response.status_code != 404:
                 raise
+
+        if verbose > 1:
+            print(f"Stack version: {cls.get_version()}")
 
     @classmethod
     def tearDownClass(cls):
