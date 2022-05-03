@@ -125,7 +125,7 @@ jobs:
       - name: Start Elastic Stack ${{ matrix.stack-version }}
         env:
           TEST_STACK_VERSION: ${{ matrix.stack-version }}
-        run: docker compose up --wait --quiet-pull
+        run: make up
 
       - name: Run online tests
         env:
@@ -136,7 +136,7 @@ jobs:
         run: make online_tests
 
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
-        run: docker compose down
+        run: make down
 
   publish:
     name: Publish
