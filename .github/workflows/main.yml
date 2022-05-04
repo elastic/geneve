@@ -60,7 +60,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        stack-version: ["8.1.3"]
+        stack-version:
+          - 8.4.0
+          - 8.3.0
+          - 8.2.0
+          - 8.1.0
         schema-uri: ["./etc/ecs-8.1.0.tar.gz"]
         detection-rules-uri: ["./etc/detection-rules-8.1.0.tar.gz"]
         signals_queries: [1]
@@ -69,7 +73,13 @@ jobs:
         os: ["ubuntu-latest"]
 
         include:
-          - stack-version: "7.17.3"
+          - stack-version: "7.17.0"
+            schema-uri: "./etc/ecs-8.1.0.tar.gz"
+            detection-rules-uri: "./etc/detection-rules-8.1.0.tar.gz"
+            signals_queries: 1
+            signals_rules: 0  # https://github.com/elastic/geneve/issues/28
+
+          - stack-version: "7.16.0"
             schema-uri: "./etc/ecs-8.1.0.tar.gz"
             detection-rules-uri: "./etc/detection-rules-8.1.0.tar.gz"
             signals_queries: 1

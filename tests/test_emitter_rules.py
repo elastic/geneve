@@ -143,12 +143,17 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         return rules, asts
 
     ack_no_signals = 5
-    ack_too_few_signals = 1
 
     def test_rules(self):
+        if self.get_version() < "8.2.0":
+            self.ack_too_few_signals = 1  # https://github.com/elastic/kibana/issues/126822
+            pre_8_2_ext = "_pre-8.2"
+        else:
+            pre_8_2_ext = ""
+
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
         collection = sorted(tu.load_test_rules(), key=lambda x: x.name)
         rules, asts = self.parse_from_collection(collection)
         pending = self.load_rules_and_docs(rules, asts)
         self.check_signals(rules, pending)
-        tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")
+        tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{pre_8_2_ext}{mf_ext}.md")

@@ -188,7 +188,9 @@ class OnlineTestCase:
 
     @classmethod
     def get_version(cls):
-        return cls.es.info()["version"]["number"]
+        import semver
+
+        return semver.VersionInfo.parse(cls.es.info()["version"]["number"])
 
     @classmethod
     def setUpClass(cls):
