@@ -33,6 +33,9 @@ run:
 	$(PYTHON) -m geneve --help
 	$(PYTHON) -m geneve
 
+flask:
+	FLASK_APP=geneve/webapi.py $(PYTHON) -m flask run
+
 pkg-build:
 	$(PYTHON) -m build
 
@@ -46,4 +49,4 @@ pkg-try:
 
 package: pkg-build pkg-install pkg-try
 
-.PHONY: lint tests online-tests run stack-up stack-down license-checks package
+.PHONY: lint tests online-tests run flask stack-up stack-down license-checks package

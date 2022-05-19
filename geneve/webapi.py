@@ -15,33 +15,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
-[metadata]
-name = geneve
-version = attr: geneve.version
-description = Generate source events using languages and schemas
-url = https://github.com/elastic/geneve
-license = Apache 2.0
-license_file = LICENSE.txt
+from . import version
 
-[options]
-packages =
-    geneve
-    geneve.kql
-install_requires =
-    click
-    eql>=0.9.12
-    pytoml
-    pyyaml
-    requests
-python_requires = >=3.8.0
+from flask import Flask, jsonify
+app = Flask("geneve")
 
-[options.extras_require]
-webapi =
-    flask
 
-[options.entry_points]
-console_scripts =
-    geneve = geneve.cli:main
-
-[options.package_data]
-* = *.g
+@app.route("/api/v1/version", methods=["GET"])
+def get_version():
+    ret = {
+        "version": version
+    }
+    return jsonify(ret)
