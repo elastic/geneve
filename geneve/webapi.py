@@ -15,9 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from . import version
+from itertools import islice
 
-from flask import Flask, jsonify
+from . import version
+from .events_emitter import SourceEvents
+
+from flask import Flask, request, jsonify
 app = Flask("geneve")
 
 
@@ -27,3 +30,12 @@ def get_version():
         "version": version
     }
     return jsonify(ret)
+
+
+@app.route("/api/v1/emit", methods=["GET"])
+def emit():
+    query = request.args.get("query")
+    count = int(request.args.get("count", 1))
+    se = SourceEvents.from_query(query)
+    docs = [event.doc for events in islice(se, count) for event in events]
+    return jsonify(docs)
