@@ -19,6 +19,9 @@ tests: tests/*.py
 online-tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_emitter_*.py
 
+stack-pull:
+	cd tests && docker compose pull -q
+
 stack-up:
 	cd tests && docker compose up --wait --quiet-pull
 

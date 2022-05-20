@@ -116,7 +116,7 @@ jobs:
           TEST_STACK_VERSION: ${{ matrix.stack-version }}
         run: |
           mkdir ~/elastic-stack-cache
-          docker compose pull -q
+          make stack-pull
           docker save -o ~/elastic-stack-cache/elasticsearch-${{ matrix.stack-version }}.tar \
             docker.elastic.co/elasticsearch/elasticsearch:${{ matrix.stack-version }}
           docker save -o ~/elastic-stack-cache/kibana-${{ matrix.stack-version }}.tar \
