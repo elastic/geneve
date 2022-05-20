@@ -19,11 +19,11 @@ tests: tests/*.py
 online-tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_emitter_*.py
 
-up:
-	docker compose up --wait --quiet-pull
+stack-up:
+	cd tests && docker compose up --wait --quiet-pull
 
-down:
-	docker compose down
+stack-down:
+	cd tests && docker compose down
 
 license-checks:
 	bash scripts/license_check.sh
@@ -46,4 +46,4 @@ pkg-try:
 
 package: pkg-build pkg-install pkg-try
 
-.PHONY: lint tests online-tests run up down license-checks package
+.PHONY: lint tests online-tests run stack-up stack-down license-checks package
