@@ -160,6 +160,31 @@ jobs:
       - name: Run sanity checks
         run: make docker-sanity
 
+  package-sanity:
+    name: Python package sanity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: make prereq
+
+      - name: Build package
+        run: make pkg-build
+
+      - name: Install package
+        run: make pkg-install
+
+      - name: Try package
+        run: make pkg-try
+
   publish:
     name: Publish
     runs-on: ubuntu-latest
@@ -168,6 +193,7 @@ jobs:
       - unit-tests
       - online-tests
       - docker-sanity
+      - package-sanity
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
 
     steps:
