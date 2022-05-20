@@ -15,33 +15,27 @@
 # specific language governing permissions and limitations
 # under the License.
 
-[metadata]
-name = geneve
-version = attr: geneve.version
-description = Generate source events using languages and schemas
-url = https://github.com/elastic/geneve
-license = Apache 2.0
-license_file = LICENSE.txt
+from itertools import islice
 
-[options]
-packages =
-    geneve
-    geneve.kql
-install_requires =
-    click
-    eql>=0.9.12
-    pytoml
-    pyyaml
-    requests
-python_requires = >=3.8.0
+from . import version
+from .events_emitter import SourceEvents
 
-[options.extras_require]
-webapi =
-    flask
+from flask import Flask, request, jsonify
+app = Flask("geneve")
 
-[options.entry_points]
-console_scripts =
-    geneve = geneve.cli:main
 
-[options.package_data]
-* = *.g
+@app.route("/api/v1/version", methods=["GET"])
+def get_version():
+    ret = {
+        "version": version
+    }
+    return jsonify(ret)
+
+
+@app.route("/api/v1/emit", methods=["GET"])
+def emit():
+    query = request.args.get("query")
+    count = int(request.args.get("count", 1))
+    se = SourceEvents.from_query(query)
+    docs = [event.doc for events in islice(se, count) for event in events]
+    return jsonify(docs)

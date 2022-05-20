@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 # Licensed to Elasticsearch B.V. under one or more contributor
 # license agreements. See the NOTICE file distributed with
 # this work for additional information regarding copyright
@@ -15,33 +17,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-[metadata]
-name = geneve
-version = attr: geneve.version
-description = Generate source events using languages and schemas
-url = https://github.com/elastic/geneve
-license = Apache 2.0
-license_file = LICENSE.txt
+FROM python:alpine
+WORKDIR /app
 
-[options]
-packages =
-    geneve
-    geneve.kql
-install_requires =
-    click
-    eql>=0.9.12
-    pytoml
-    pyyaml
-    requests
-python_requires = >=3.8.0
+COPY requirements.txt requirements.txt
+RUN pip3 install --user -r requirements.txt
 
-[options.extras_require]
-webapi =
-    flask
+COPY geneve geneve
 
-[options.entry_points]
-console_scripts =
-    geneve = geneve.cli:main
-
-[options.package_data]
-* = *.g
+ENV FLASK_APP=geneve/webapi.py
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "-p 80" ]
