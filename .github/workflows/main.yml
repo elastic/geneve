@@ -138,6 +138,28 @@ jobs:
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
         run: make stack-down
 
+  docker-sanity:
+    name: Docker image sanity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: make prereq
+
+      - name: Build image
+        run: make docker
+
+      - name: Run sanity checks
+        run: make docker-sanity
+
   publish:
     name: Publish
     runs-on: ubuntu-latest
@@ -145,6 +167,7 @@ jobs:
       - license-checks
       - unit-tests
       - online-tests
+      - docker-sanity
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
 
     steps:

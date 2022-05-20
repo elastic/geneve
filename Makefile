@@ -25,6 +25,18 @@ stack-up:
 stack-down:
 	cd tests && docker compose down
 
+docker: GENEVE_VERSION=$(shell $(PYTHON) -c "import geneve; print(geneve.version)")
+docker:
+	docker build -q -t geneve:$(GENEVE_VERSION) .
+
+docker-sanity: GENEVE_VERSION=$(shell $(PYTHON) -c "import geneve; print(geneve.version)")
+docker-sanity:
+	docker run -p 127.0.0.1:5000:80 --name geneve-test --rm -d geneve:$(GENEVE_VERSION)
+	for n in `seq 5`; do \
+	[ "`curl -s --fail http://localhost:5000/api/v1/version`" = '{"version":"$(GENEVE_VERSION)"}' ] && exit 0 || sleep 1; \
+done; docker container stop geneve-test; exit 1
+	docker container stop geneve-test
+
 license-checks:
 	bash scripts/license_check.sh
 
@@ -49,4 +61,4 @@ pkg-try:
 
 package: pkg-build pkg-install pkg-try
 
-.PHONY: lint tests online-tests run flask stack-up stack-down license-checks package
+.PHONY: lint tests online-tests run flask stack-up stack-down license-checks package docker docker-sanity
