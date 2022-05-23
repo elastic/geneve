@@ -31,6 +31,9 @@ stack-down:
 docker:
 	docker build -q -t geneve .
 
+docker-run:
+	docker run -p 127.0.0.1:5000:80 --name geneve --rm geneve
+
 docker-sanity: GENEVE_VERSION=$(shell $(PYTHON) -c "import geneve; print(geneve.version)")
 docker-sanity:
 	docker run -p 127.0.0.1:5000:80 --name geneve-test --rm -d geneve
