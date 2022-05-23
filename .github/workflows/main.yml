@@ -155,7 +155,7 @@ jobs:
         run: make prereq
 
       - name: Build image
-        run: make docker
+        run: make docker-build
 
       - name: Run sanity checks
         run: make docker-sanity

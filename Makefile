@@ -28,7 +28,8 @@ stack-up:
 stack-down:
 	cd tests && docker compose down
 
-docker:
+docker-build:
+	-docker image rm geneve
 	docker build -q -t geneve .
 
 docker-run:
