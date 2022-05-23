@@ -23,6 +23,7 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip3 install --user -r requirements.txt
 
+COPY etc etc
 COPY geneve geneve
 
 EXPOSE 5000
