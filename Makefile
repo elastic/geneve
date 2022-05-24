@@ -28,17 +28,28 @@ stack-up:
 stack-down:
 	cd tests && docker compose down
 
-docker: GENEVE_VERSION=$(shell $(PYTHON) -c "import geneve; print(geneve.version)")
-docker:
-	docker build -q -t geneve:$(GENEVE_VERSION) .
+docker-build:
+	-docker image rm geneve
+	docker build -q -t geneve .
+
+docker-run:
+	docker run -p 127.0.0.1:5000:5000 --rm --name geneve geneve
 
 docker-sanity: GENEVE_VERSION=$(shell $(PYTHON) -c "import geneve; print(geneve.version)")
 docker-sanity:
-	docker run -p 127.0.0.1:5000:80 --name geneve-test --rm -d geneve:$(GENEVE_VERSION)
-	for n in `seq 5`; do \
+	docker run -p 127.0.0.1:5000:5000 --rm --name geneve-test -d geneve
+	for n in `seq 30`; do \
 	[ "`curl -s --fail http://localhost:5000/api/v1/version`" = '{"version":"$(GENEVE_VERSION)"}' ] && exit 0 || sleep 1; \
 done; docker container stop geneve-test; exit 1
 	docker container stop geneve-test
+
+docker-push: GENEVE_VERSION=$(shell $(PYTHON) -c "import geneve; print(geneve.version)")
+docker-push:
+	docker tag geneve:latest $(DOCKER_REGISTRY)/geneve:latest
+	docker tag geneve:latest $(DOCKER_REGISTRY)/geneve:$(GENEVE_VERSION)
+	docker push -q $(DOCKER_REGISTRY)/geneve:latest
+	docker push -q $(DOCKER_REGISTRY)/geneve:$(GENEVE_VERSION)
+	docker image rm $(DOCKER_REGISTRY)/geneve:latest $(DOCKER_REGISTRY)/geneve:$(GENEVE_VERSION)
 
 license-checks:
 	bash scripts/license_check.sh
