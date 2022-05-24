@@ -25,5 +25,7 @@ RUN pip3 install --user -r requirements.txt
 
 COPY geneve geneve
 
+EXPOSE 5000
+
 ENV FLASK_APP=geneve/webapi.py
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "-p 80" ]
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "-p 5000" ]
