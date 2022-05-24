@@ -51,6 +51,15 @@ docker-push:
 	docker push -q $(DOCKER_REGISTRY)/geneve:$(GENEVE_VERSION)
 	docker image rm $(DOCKER_REGISTRY)/geneve:latest $(DOCKER_REGISTRY)/geneve:$(GENEVE_VERSION)
 
+kind-up:
+	kind create cluster --config=etc/kind-config.yml
+	kind load docker-image geneve
+	kubectl apply -f etc/pods/geneve.yml
+	kubectl apply -f etc/services/geneve.yml
+
+kind-down:
+	kind delete cluster
+
 license-checks:
 	bash scripts/license_check.sh
 
