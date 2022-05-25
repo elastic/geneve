@@ -19,6 +19,11 @@ tests: tests/*.py
 online-tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_emitter_*.py
 
+sanity-checks:
+	for n in `seq 30`; do \
+	curl -s --fail http://localhost:30000/api/v1/version && exit 0 || sleep 1; \
+done; exit 1
+
 stack-pull:
 	cd tests && docker compose pull -q
 
@@ -33,14 +38,13 @@ docker-build:
 	docker build -q -t geneve .
 
 docker-run:
-	docker run -p 127.0.0.1:5000:5000 --rm --name geneve geneve
+	docker run -p 127.0.0.1:30000:5000 --rm --name geneve geneve
 
 docker-sanity: GENEVE_VERSION=$(shell $(PYTHON) -c "import geneve; print(geneve.version)")
 docker-sanity:
-	docker run -p 127.0.0.1:5000:5000 --rm --name geneve-test -d geneve
-	for n in `seq 30`; do \
-	[ "`curl -s --fail http://localhost:5000/api/v1/version`" = '{"version":"$(GENEVE_VERSION)"}' ] && exit 0 || sleep 1; \
-done; docker container stop geneve-test; exit 1
+	docker run -p 127.0.0.1:30000:5000 --rm --name geneve-test -d geneve
+	[ "`$(MAKE) -s sanity-checks`" = '{"version":"$(GENEVE_VERSION)"}' ] || \
+		(docker container stop geneve-test; exit 1)
 	docker container stop geneve-test
 
 docker-push: GENEVE_VERSION=$(shell $(PYTHON) -c "import geneve; print(geneve.version)")

@@ -216,10 +216,7 @@ jobs:
           kubectl get services -o wide
 
       - name: Run sanity checks
-        run: |
-          for n in `seq 30`; do \
-            curl -s --fail http://localhost:30000/api/v1/version && exit 0 || sleep 1; \
-          done; exit 1
+        run: make sanity-checks
 
       - name: Destroy Kind cluster
         run: make kind-down
