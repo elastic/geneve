@@ -4,6 +4,8 @@ else
 	PYTHON:=source $(VENV)/bin/activate; python3
 endif
 
+KIND ?= kind
+
 all: lint tests
 
 prereq:
@@ -56,13 +58,13 @@ docker-push:
 	docker image rm $(DOCKER_REGISTRY)/geneve:latest $(DOCKER_REGISTRY)/geneve:$(GENEVE_VERSION)
 
 kind-up:
-	kind create cluster --config=etc/kind-config.yml
-	kind load docker-image geneve
+	$(KIND) create cluster --config=etc/kind-config.yml
+	$(KIND) load docker-image geneve
 	kubectl apply -f etc/pods/geneve.yml
 	kubectl apply -f etc/services/geneve.yml
 
 kind-down:
-	kind delete cluster
+	$(KIND) delete cluster
 
 license-checks:
 	bash scripts/license_check.sh
