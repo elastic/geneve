@@ -1,11 +1,53 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: geneve
+  name: geneve-linux
   labels:
-    app: geneve
+    app: geneve-linux
 spec:
   containers:
     - name: geneve
       image: geneve
       imagePullPolicy: Never
+      env:
+        - name: GENEVE_RULE_TAGS
+          valueFrom:
+            configMapKeyRef:
+              name: geneve-linux
+              key: rule-tags
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: geneve-macos
+  labels:
+    app: geneve-macos
+spec:
+  containers:
+    - name: geneve
+      image: geneve
+      imagePullPolicy: Never
+      env:
+        - name: GENEVE_RULE_TAGS
+          valueFrom:
+            configMapKeyRef:
+              name: geneve-macos
+              key: rule-tags
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: geneve-windows
+  labels:
+    app: geneve-windows
+spec:
+  containers:
+    - name: geneve
+      image: geneve
+      imagePullPolicy: Never
+      env:
+        - name: GENEVE_RULE_TAGS
+          valueFrom:
+            configMapKeyRef:
+              name: geneve-windows
+              key: rule-tags

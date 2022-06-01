@@ -216,7 +216,7 @@ jobs:
           kubectl get services -o wide
 
       - name: Run sanity checks
-        run: make sanity-checks
+        run: make kind-sanity
 
       - name: Destroy Kind cluster
         run: make kind-down
