@@ -60,8 +60,8 @@ docker-push:
 kind-up:
 	$(KIND) create cluster --config=etc/kind-config.yml
 	$(KIND) load docker-image geneve
-	kubectl apply -f etc/pods/geneve.yml
-	kubectl apply -f etc/services/geneve.yml
+	kubectl apply -f etc/k8s/geneve-pod.yml
+	kubectl apply -f etc/k8s/geneve-svc.yml
 
 kind-down:
 	$(KIND) delete cluster
