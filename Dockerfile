@@ -18,15 +18,17 @@
 # under the License.
 
 FROM python:alpine
+
 WORKDIR /app
-
-COPY requirements.txt requirements.txt
-RUN pip3 install --user -r requirements.txt
-
 COPY etc etc
 COPY geneve geneve
+COPY requirements.txt requirements.txt
 
-EXPOSE 5000
+RUN addgroup -S -g 1234 geneve && adduser -S -u 1234 geneve
+USER geneve:geneve
+
+RUN pip3 install --user -r requirements.txt
 
 ENV FLASK_APP=geneve/webapi.py
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "-p 5000" ]
+EXPOSE 5000
