@@ -160,6 +160,17 @@ jobs:
       - name: Run sanity checks
         run: make docker-sanity
 
+      - name: Check if image scanning is available
+        id: scan_avail
+        run: |
+          docker help scan &&
+          echo "::set-output name=DOCKER_SCAN::1" ||
+          echo "::set-output name=DOCKER_SCAN::0"
+
+      - name: Scan image for vulnerabilities
+        if: steps.scan_avail.outputs.DOCKER_SCAN == 1
+        run: make docker-scan
+
   package-sanity:
     name: Python package sanity
     runs-on: ubuntu-latest

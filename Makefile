@@ -39,6 +39,9 @@ docker-build:
 	-docker image rm geneve
 	docker build -q -t geneve .
 
+docker-scan: Dockerfile
+	docker scan -f Dockerfile geneve
+
 docker-run:
 	docker run -p 127.0.0.1:30000:5000 --rm --name geneve geneve
 
