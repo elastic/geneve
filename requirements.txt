@@ -3,6 +3,7 @@ click
 eql>=0.9.12
 elasticsearch
 flake8
+flask
 nbformat
 pytest
 pytoml
