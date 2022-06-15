@@ -200,6 +200,11 @@ mono_branch_mono_doc = {
     """: [
         [{"event": {"category": ["network"]}, "destination": {"ip": "822e:f477:4aa3:d9c5:7494:c408:2f13:daeb"}}],
     ],
+
+    """azure.auditlogs.properties.target_resources.*.display_name:guest
+    """: [
+        [{"azure": {"auditlogs": {"properties": {"target_resources": {"104203121932": {"display_name": "guest"}}}}}}],
+    ],
 }
 
 multi_branch_mono_doc = {
