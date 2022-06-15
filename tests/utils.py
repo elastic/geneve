@@ -271,7 +271,7 @@ class SignalsTestCase:
 
                 doc_count = 0
                 for event in itertools.chain(*events):
-                    bulk.append(json.dumps({"index": {"_index": event.meta["index"]}}))
+                    bulk.append(json.dumps({"create": {"_index": event.meta["index"]}}))
                     bulk.append(json.dumps(event.doc))
                     if verbose > 2:
                         sys.stderr.write(json.dumps(event.doc, sort_keys=True) + "\n")
@@ -307,10 +307,10 @@ class SignalsTestCase:
             while docs[pos:pos + batch_size]:
                 ret = self.es.bulk(body="\n".join(docs[pos:pos + batch_size]), request_timeout=30)
                 for i, item in enumerate(ret["items"]):
-                    if item["index"]["status"] != 201:
-                        cells.append(jupyter.Markdown(str(item['index'])))
+                    if item["create"]["status"] != 201:
+                        cells.append(jupyter.Markdown(str(item["create"])))
                         if verbose > 1:
-                            sys.stderr.write(f"{str(item['index'])}\n")
+                            sys.stderr.write(f"{str(item['create'])}\n")
                             sys.stderr.flush()
                 pos += batch_size
 
