@@ -21,9 +21,10 @@ tests: tests/*.py
 online-tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_emitter_*.py
 
+sanity-checks: PORT ?= 30000
 sanity-checks:
 	for n in `seq 30`; do \
-	curl -s --fail http://localhost:30000/api/v1/version && exit 0 || sleep 1; \
+	curl -s --fail http://localhost:$(PORT)/api/v1/version && exit 0 || sleep 1; \
 done; exit 1
 
 stack-pull:
@@ -63,8 +64,14 @@ docker-push:
 kind-up:
 	$(KIND) create cluster --config=etc/kind-config.yml
 	$(KIND) load docker-image geneve
-	kubectl apply -f etc/pods/geneve.yml
-	kubectl apply -f etc/services/geneve.yml
+	kubectl apply -f etc/k8s/geneve-cfg.yml
+	kubectl apply -f etc/k8s/geneve-pod.yml
+	kubectl apply -f etc/k8s/geneve-svc.yml
+
+kind-sanity:
+	$(MAKE) sanity-checks PORT=30000
+	$(MAKE) sanity-checks PORT=30001
+	$(MAKE) sanity-checks PORT=30002
 
 kind-down:
 	$(KIND) delete cluster

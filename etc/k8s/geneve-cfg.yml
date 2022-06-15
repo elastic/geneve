@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: geneve-linux
+data:
+  rule-tags: linux
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: geneve-macos
+data:
+  rule-tags: macos
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: geneve-windows
+data:
+  rule-tags: windows
