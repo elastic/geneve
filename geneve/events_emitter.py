@@ -17,18 +17,16 @@
 
 """Functions for generating event documents that would trigger a given rule."""
 
-import time
 import random
+import time
 from collections import namedtuple
 from itertools import chain
 
-from .utils import deep_merge
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
 from .events_emitter_eql import get_ast_stats  # noqa: F401
+from .utils import deep_merge
 
-__all__ = (
-    "SourceEvents",
-)
+__all__ = ("SourceEvents",)
 
 default_custom_schema = {
     "file.Ext.windows.zone_identifier": {
@@ -45,12 +43,14 @@ Event = namedtuple("Event", ["meta", "doc"])
 
 def ast_from_eql_query(query):
     import eql
+
     with eql.parser.elasticsearch_syntax, eql.parser.ignore_missing_functions:
         return eql.parse_query(query)
 
 
 def ast_from_kql_query(query):
     from . import kql
+
     return kql.to_eql(query)  # shortcut?
 
 
@@ -182,15 +182,17 @@ class SourceEvents:
             if root:
                 events = (events_from_root(root, self.schema, timestamp) for _ in range(count))
             else:
-                events = (events_from_root(root, self.schema, timestamp) for _ in range(count)
-                          for root in self.__roots)
+                events = (events_from_root(root, self.schema, timestamp) for _ in range(count) for root in self.__roots)
         else:
             if root:
-                events = (events_from_branch(random.choice(root), self.schema, timestamp, root.meta)
-                          for _ in range(count))
+                events = (
+                    events_from_branch(random.choice(root), self.schema, timestamp, root.meta) for _ in range(count)
+                )
             else:
-                events = (events_from_branch(random.choice(root), self.schema, timestamp, root.meta)
-                          for root in random.choices(self.__roots, k=count))
+                events = (
+                    events_from_branch(random.choice(root), self.schema, timestamp, root.meta)
+                    for root in random.choices(self.__roots, k=count)
+                )
         return list(chain(*events))
 
     def try_emit(self, root):

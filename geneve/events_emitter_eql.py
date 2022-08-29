@@ -17,12 +17,12 @@
 
 """Functions for collecting constraints from an EQL AST."""
 
+from itertools import chain, product
+from typing import Any, List, NoReturn, Tuple, Union
+
 import eql
 
-from itertools import chain, product
-from typing import List, Tuple, Union, Any, NoReturn
-
-from .constraints import Constraints, Branch, Root
+from .constraints import Branch, Constraints, Root
 from .utils import TreeTraverser
 
 __all__ = ()
@@ -39,8 +39,16 @@ def get_ast_stats():
 
 
 def _nope(operation: Any, negate: bool) -> Any:
-    negation = {"==": "!=", "!=": "==", ">=": "<", "<=": ">", ">": "<=", "<": ">=",
-                cc_or_terms: cc_and_terms, cc_and_terms: cc_or_terms}
+    negation = {
+        "==": "!=",
+        "!=": "==",
+        ">=": "<",
+        "<=": ">",
+        ">": "<=",
+        "<": ">=",
+        cc_or_terms: cc_and_terms,
+        cc_and_terms: cc_or_terms,
+    }
     return operation if not negate else negation.get(operation, not operation)
 
 

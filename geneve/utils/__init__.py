@@ -17,10 +17,9 @@
 
 """Util functions."""
 
+import functools
 import os
 import shutil
-import functools
-
 from contextlib import contextmanager
 from glob import glob
 from pathlib import Path
@@ -99,7 +98,7 @@ def load_rules(uri, paths, basedir=None):
             for filename in glob(os.path.join(resource_dir, "*", path), recursive=True):
                 with open(filename) as f:
                     rule = pytoml.load(f)["rule"]
-                rule["path"] = Path('.').joinpath(*Path(filename).relative_to(resource_dir).parts[1:])
+                rule["path"] = Path(".").joinpath(*Path(filename).relative_to(resource_dir).parts[1:])
                 rules.append(SimpleNamespace(**rule))
     return rules
 

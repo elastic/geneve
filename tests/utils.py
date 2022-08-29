@@ -17,21 +17,22 @@
 
 """Test case mixin classes."""
 
-import os
-import sys
 import csv
-import time
-import json
-import random
 import hashlib
-import textwrap
-import unittest
 import itertools
+import json
+import os
+import random
 import subprocess
+import sys
+import textwrap
+import time
+import unittest
+
+from geneve.events_emitter import SourceEvents
+from geneve.utils import load_rules, load_schema, root_dir
 
 from . import jupyter
-from geneve.events_emitter import SourceEvents
-from geneve.utils import root_dir, load_schema, load_rules
 
 __all__ = (
     "SeededTestCase",
@@ -44,7 +45,7 @@ __all__ = (
 
 def get_test_verbosity():
     env_verbose = int(os.getenv("TEST_VERBOSITY") or 0)
-    cmd_verbose = sum(arg.count('v') for arg in sys.argv if arg.startswith("-") and not arg.startswith("--"))
+    cmd_verbose = sum(arg.count("v") for arg in sys.argv if arg.startswith("-") and not arg.startswith("--"))
     return cmd_verbose or env_verbose
 
 
@@ -52,13 +53,14 @@ verbose = get_test_verbosity()
 
 
 def get_test_schema_uri():
-    return os.getenv("TEST_SCHEMA_URI") or \
-        "https://github.com/elastic/ecs/archive/refs/heads/main.tar.gz"
+    return os.getenv("TEST_SCHEMA_URI") or "https://github.com/elastic/ecs/archive/refs/heads/main.tar.gz"
 
 
 def get_test_rules_uri():
-    return os.getenv("TEST_DETECTION_RULES_URI") or \
-        "https://github.com/elastic/detection-rules/archive/refs/heads/main.tar.gz"
+    return (
+        os.getenv("TEST_DETECTION_RULES_URI")
+        or "https://github.com/elastic/detection-rules/archive/refs/heads/main.tar.gz"
+    )
 
 
 def load_test_schema():
@@ -173,6 +175,7 @@ class QueryTestCase:
 
 class OnlineTestCase:
     """Use Elasticsearch and Kibana in unit tests."""
+
     index_template = "geneve-ut"
 
     @classmethod
@@ -195,6 +198,7 @@ class OnlineTestCase:
 
         from elasticsearch import Elasticsearch
         from elasticsearch.client import ClusterClient, IndicesClient
+
         from .kibana import Kibana
 
         http_auth = cls.read_credentials_csv()
@@ -289,9 +293,7 @@ class SignalsTestCase:
         number_of_shards = ret["number_of_data_nodes"]
 
         template = {
-            "index_patterns": [
-                f"{self.index_template}-*"
-            ],
+            "index_patterns": [f"{self.index_template}-*"],
             "template": {
                 "settings": {
                     "number_of_shards": number_of_shards,
@@ -304,8 +306,8 @@ class SignalsTestCase:
 
         with self.nb.chapter("## Rejected documents") as cells:
             pos = 0
-            while docs[pos:pos + batch_size]:
-                ret = self.es.bulk(body="\n".join(docs[pos:pos + batch_size]), request_timeout=30)
+            while docs[pos : pos + batch_size]:
+                ret = self.es.bulk(body="\n".join(docs[pos : pos + batch_size]), request_timeout=30)
                 for i, item in enumerate(ret["items"]):
                     if item["create"]["status"] != 201:
                         cells.append(jupyter.Markdown(str(item["create"])))
@@ -350,10 +352,10 @@ class SignalsTestCase:
 
             last_execution = rule["execution_summary"]["last_execution"]
             if last_execution["status"] == "succeeded":
-                del(pending[rule_id])
+                del pending[rule_id]
                 successful[rule_id] = None
             elif last_execution["status"] == "failed":
-                del(pending[rule_id])
+                del pending[rule_id]
                 failed[rule_id] = last_execution["message"]
 
     def check_rules_legacy(self, pending, successful, failed):
@@ -361,18 +363,16 @@ class SignalsTestCase:
         for rule_id, rule_status in statuses.items():
             current_status = rule_status["current_status"]
             if current_status["last_success_at"]:
-                del(pending[rule_id])
+                del pending[rule_id]
                 successful[rule_id] = None
             elif current_status["last_failure_at"]:
-                del(pending[rule_id])
+                del pending[rule_id]
                 failed[rule_id] = current_status["last_failure_message"]
 
     def check_docs(self, rule):
         try:
             data = {
-                "query": {
-                    "match_all": {}
-                },
+                "query": {"match_all": {}},
                 "sort": {
                     "@timestamp": {"order": "asc"},
                 },
@@ -392,11 +392,7 @@ class SignalsTestCase:
             "query": {
                 "bool": {
                     "must_not": [
-                        {
-                            "exists": {
-                                "field": "signal.rule.building_block_type"
-                            }
-                        },
+                        {"exists": {"field": "signal.rule.building_block_type"}},
                     ]
                 }
             },
@@ -407,7 +403,7 @@ class SignalsTestCase:
                         "size": 10000,
                     }
                 }
-            }
+            },
         }
         ret = self.kbn.search_detection_engine_signals(body)
         signals = {}
@@ -457,17 +453,21 @@ class SignalsTestCase:
                     for doc in docs:
                         t0 = t0 or docs[0]["@timestamp"]
                         doc["@timestamp"] -= t0
-                    cells.append(jupyter.Markdown(f"""
+                    cells.append(
+                        jupyter.Markdown(
+                            f"""
                         ### {rule['name']}
 
                         Branch count: {rule[".test_private"]["branch_count"]}  
                         Document count: {rule[".test_private"]["doc_count"]}  
                         Index: {rule["index"][0]}
-                    """))  # noqa: W291: trailing double space makes a new line in markdown
+                    """
+                        )
+                    )  # noqa: W291: trailing double space makes a new line in markdown
                     if self.multiplying_factor == 1:
                         cells.append(self.query_cell(rule["query"], docs))
                     if type(rule_ids) == dict:
-                        failure_message = rule_ids[rule['id']].replace(rule["id"], "<i>&lt;redacted&gt;</i>")
+                        failure_message = rule_ids[rule["id"]].replace(rule["id"], "<i>&lt;redacted&gt;</i>")
                         cells.append(jupyter.Markdown(f"SDE says:\n> {failure_message}"))
 
     def debug_rules(self, rules, rule_ids):
@@ -480,7 +480,7 @@ class SignalsTestCase:
                 lines.append(rule["query"].strip())
                 lines.extend(json.dumps(doc, sort_keys=True) for doc in docs)
                 if type(rule_ids) == dict:
-                    failure_message = rule_ids[rule['id']]
+                    failure_message = rule_ids[rule["id"]]
                     lines.append("SDE says:")
                     lines.append(f"  {failure_message}")
         return "\n" + "\n".join(lines)
@@ -505,9 +505,9 @@ class SignalsTestCase:
         rules = sorted(rules, key=lambda rule: rule["name"])
         self.assertSignals(rules, failed, "Failed rules")
         self.assertSignals(rules, unsuccessful, "Unsuccessful rules with signals")
-        self.assertSignals(rules, no_signals, "Rules with no signals",
-                           getattr(self, "ack_no_signals", 0))
-        self.assertSignals(rules, too_few_signals, "Rules with too few signals",
-                           getattr(self, "ack_too_few_signals", 0))
+        self.assertSignals(rules, no_signals, "Rules with no signals", getattr(self, "ack_no_signals", 0))
+        self.assertSignals(
+            rules, too_few_signals, "Rules with too few signals", getattr(self, "ack_too_few_signals", 0)
+        )
         self.assertSignals(rules, too_many_signals, "Rules with too many signals")
         self.report_rules(rules, correct_signals, "Rules with the correct signals")

@@ -1,8 +1,10 @@
 ifeq ($(VENV),)
-	PYTHON:=python3
+	ACTIVATE :=
 else
-	PYTHON:=source $(VENV)/bin/activate; python3
+	ACTIVATE := source $(VENV)/bin/activate;
 endif
+
+PYTHON := $(ACTIVATE)python3
 
 all: lint tests
 
@@ -11,7 +13,8 @@ prereq:
 	$(PYTHON) -m pip install --user -r requirements.txt
 
 lint:
-	$(PYTHON) -m flake8 geneve tests --ignore D203 --max-line-length 120 --exclude geneve/kql
+	$(PYTHON) -m black -q --check geneve tests || ($(PYTHON) -m black geneve tests; false)
+	$(PYTHON) -m isort -q --check geneve tests || ($(PYTHON) -m isort geneve tests; false)
 
 tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_*.py

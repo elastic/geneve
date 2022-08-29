@@ -17,8 +17,9 @@
 
 """Helper class for Kibana REST API."""
 
-import requests
 import json
+
+import requests
 
 
 class Kibana:
