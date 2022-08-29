@@ -32,7 +32,7 @@ import ipaddress
 NumberLimits = namedtuple("NumberLimits", ["MIN", "MAX"])
 
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/number.html
-LongLimits = NumberLimits(-2**63, 2**63 - 1)
+LongLimits = NumberLimits(-(2**63), 2**63 - 1)
 
 _max_attempts = 100000
 
@@ -66,7 +66,7 @@ def match_wildcards(values, wildcards):
 def expand_wildcards(value, allowed_chars):
     chars = []
     for c in list(value):
-        if c == '?':
+        if c == "?":
             chars.append(random.choice(allowed_chars))
         elif c == "*":
             chars.extend(random.choices(allowed_chars, k=random.randrange(1, 16)))
@@ -77,12 +77,13 @@ def expand_wildcards(value, allowed_chars):
 
 def delete_by_cond(list, cond):
     for i in reversed([i for i, x in enumerate(list) if cond(x)]):
-        del(list[i])
+        del list[i]
 
 
 def delete_use_once(list):
     def is_use_once(item):
         return len(item) > 2 and item[2] and item[2].get("use_once", False)
+
     delete_by_cond(list, is_use_once)
 
 
@@ -119,11 +120,12 @@ class solver:  # noqa: N801
             value = func(cls, field, value, augmented_constraints, max_attempts + 1)
             if not value["left_attempts"]:
                 raise ConflictError(f"attempts exausted: {max_attempts}", field)
-            del(value["left_attempts"])
+            del value["left_attempts"]
             for field, constraint in join_values:
                 constraint.append_constraint(field, "==", value["value"], {"use_once": True})
             delete_use_once(constraints)
             return value
+
         return _solver
 
 
@@ -417,7 +419,7 @@ class Constraints:
             if len(exclude_values) == 1:
                 raise ConflictError(f"cannot be '{exclude_values.pop()}'", field)
             else:
-                exclude_values = ', '.join(f"'{v}'" for v in sorted(exclude_values))
+                exclude_values = ", ".join(f"'{v}'" for v in sorted(exclude_values))
                 raise ConflictError(f"cannot be any of ({exclude_values})", field)
         if value is not None and exclude_wildcards and match_wildcards(value, exclude_wildcards):
             if len(exclude_wildcards) == 1:
@@ -436,9 +438,11 @@ class Constraints:
             else:
                 include_wildcards = "', '".join(sorted(include_wildcards))
                 raise ConflictError(f"does not match any of ('{include_wildcards}')", field)
-        while left_attempts and (value in (None, [])
-                                 or set(value if type(value) == list else [value]) & exclude_values  # noqa: W503
-                                 or match_wildcards(value, exclude_wildcards)):  # noqa: W503
+        while left_attempts and (
+            value in (None, [])
+            or set(value if type(value) == list else [value]) & exclude_values  # noqa: W503
+            or match_wildcards(value, exclude_wildcards)
+        ):  # noqa: W503
             if include_wildcards:
                 wc = random.choice(include_wildcards)
                 v = expand_wildcards(wc, allowed_chars).lower()

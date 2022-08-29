@@ -70,10 +70,14 @@ def _get_nb_badges(filename):
     if not github_user or not github_repo or not github_branch:
         return []
 
-    return [Markdown(f"""
+    return [
+        Markdown(
+            f"""
         [![nbviewer]({_nbviewer_badge_url})]({_nbviewer_base_url}/{github_user}/{github_repo}/blob/{github_branch}/{path})
         [![Binder]({_binder_badge_url})]({_binder_base_url}/{github_user}/{github_repo}/{github_branch}?labpath={path})
-    """)]
+    """
+        )
+    ]
 
 
 def to_file(filename, cells):
@@ -199,6 +203,7 @@ class Notebook:
             def wrapper(*args, **kwargs):
                 kwargs["cells"] = self.cells
                 return func(*args, **kwargs)
+
             return wrapper
 
         def __enter__(self):
@@ -223,5 +228,5 @@ class Notebook:
             toc = [Markdown(["## Table of contents"] + toc)]
         to_file(filename, self.cells + toc + cells)
 
-        del(self.chapters)
-        del(self.cells)
+        del self.chapters
+        del self.cells

@@ -28,14 +28,18 @@ from . import jupyter
 class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
     nb = jupyter.Notebook()
-    nb.cells.append(jupyter.Markdown("""
+    nb.cells.append(
+        jupyter.Markdown(
+            """
         # Documents generation from detection rules
 
         This report captures the error reported while generating documents from detection rules. Here you
         can learn what rules are still problematic and for which no documents can be generated at the moment.
 
         Curious about the inner workings? Read [here](signals_generation.md).
-    """))
+    """
+        )
+    )
 
     def parse_from_collection(self, collection):
         asts = []
@@ -95,14 +99,18 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
     nb = jupyter.Notebook()
-    nb.cells.append(jupyter.Markdown("""
+    nb.cells.append(
+        jupyter.Markdown(
+            """
         # Alerts generation from detection rules
 
         This report captures the detection rules signals generation coverage. Here you can
         learn what rules are supported and what not and why.
 
         Curious about the inner workings? Read [here](signals_generation.md).
-    """))
+    """
+        )
+    )
 
     def parse_from_collection(self, collection):
         rules = []
@@ -113,22 +121,24 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
             except Exception:
                 continue
             index_name = "{:s}-{:03d}".format(self.index_template, i)
-            rules.append({
-                "rule_id": rule.rule_id,
-                "risk_score": rule.risk_score,
-                "description": rule.description,
-                "name": rule.name,
-                "index": [index_name],
-                "interval": "3s",
-                "from": "now-2h",
-                "severity": rule.severity,
-                "type": rule.type,
-                "query": rule.query,
-                "language": rule.language,
-                "max_signals": 200,
-                "enabled": True,
-                ".test_private": {},  # private test data, not sent to Kibana
-            })
+            rules.append(
+                {
+                    "rule_id": rule.rule_id,
+                    "risk_score": rule.risk_score,
+                    "description": rule.description,
+                    "name": rule.name,
+                    "index": [index_name],
+                    "interval": "3s",
+                    "from": "now-2h",
+                    "severity": rule.severity,
+                    "type": rule.type,
+                    "query": rule.query,
+                    "language": rule.language,
+                    "max_signals": 200,
+                    "enabled": True,
+                    ".test_private": {},  # private test data, not sent to Kibana
+                }
+            )
         return rules, asts
 
     ack_no_signals = 25

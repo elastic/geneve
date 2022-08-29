@@ -39,8 +39,16 @@ def get_ast_stats():
 
 
 def _nope(operation: Any, negate: bool) -> Any:
-    negation = {"==": "!=", "!=": "==", ">=": "<", "<=": ">", ">": "<=", "<": ">=",
-                cc_or_terms: cc_and_terms, cc_and_terms: cc_or_terms}
+    negation = {
+        "==": "!=",
+        "!=": "==",
+        ">=": "<",
+        "<=": ">",
+        ">": "<=",
+        "<": ">=",
+        cc_or_terms: cc_and_terms,
+        cc_and_terms: cc_or_terms,
+    }
     return operation if not negate else negation.get(operation, not operation)
 
 
