@@ -14,6 +14,7 @@ prereq:
 
 lint:
 	$(PYTHON) -m black -q --check geneve tests || ($(PYTHON) -m black geneve tests; false)
+	$(PYTHON) -m isort -q --check geneve tests || ($(PYTHON) -m isort geneve tests; false)
 
 tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_*.py
