@@ -17,15 +17,15 @@
 
 """AST drawing."""
 
-import os
-import sys
-import random
 import hashlib
+import os
+import random
+import sys
 from collections import namedtuple
 from contextlib import contextmanager, nullcontext
 
-import graphviz
 import eql
+import graphviz
 
 Context = namedtuple("Context", ["graph", "colors"])
 colors = ("red", "blue", "green", "orange", "darkorchid", "pink", "brown", "cyan", "purple")

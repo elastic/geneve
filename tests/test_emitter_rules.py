@@ -22,6 +22,7 @@ import unittest
 
 import tests.utils as tu
 from geneve.events_emitter import SourceEvents, ast_from_rule
+
 from . import jupyter
 
 

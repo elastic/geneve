@@ -17,10 +17,9 @@
 
 """Util functions."""
 
+import functools
 import os
 import shutil
-import functools
-
 from contextlib import contextmanager
 from glob import glob
 from pathlib import Path

@@ -17,14 +17,14 @@
 
 """Functions for generating event documents that would trigger a given rule."""
 
-import time
 import random
+import time
 from collections import namedtuple
 from itertools import chain
 
-from .utils import deep_merge
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
 from .events_emitter_eql import get_ast_stats  # noqa: F401
+from .utils import deep_merge
 
 __all__ = ("SourceEvents",)
 

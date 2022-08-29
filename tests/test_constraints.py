@@ -20,7 +20,7 @@
 import unittest
 
 import tests.utils as tu
-from geneve.constraints import Constraints, Branch, LongLimits
+from geneve.constraints import Branch, Constraints, LongLimits
 
 constraints_long = [
     ([], {"value": -447795966606097183, "min": LongLimits.MIN, "max": LongLimits.MAX}),

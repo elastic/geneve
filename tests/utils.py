@@ -17,21 +17,22 @@
 
 """Test case mixin classes."""
 
-import os
-import sys
 import csv
-import time
-import json
-import random
 import hashlib
-import textwrap
-import unittest
 import itertools
+import json
+import os
+import random
 import subprocess
+import sys
+import textwrap
+import time
+import unittest
+
+from geneve.events_emitter import SourceEvents
+from geneve.utils import load_rules, load_schema, root_dir
 
 from . import jupyter
-from geneve.events_emitter import SourceEvents
-from geneve.utils import root_dir, load_schema, load_rules
 
 __all__ = (
     "SeededTestCase",
@@ -197,6 +198,7 @@ class OnlineTestCase:
 
         from elasticsearch import Elasticsearch
         from elasticsearch.client import ClusterClient, IndicesClient
+
         from .kibana import Kibana
 
         http_auth = cls.read_credentials_csv()

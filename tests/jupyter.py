@@ -20,11 +20,12 @@
 import os
 import random
 import string
-import uuid
 import textwrap
-import nbformat as nbf
+import uuid
 from functools import wraps
 from pathlib import Path
+
+import nbformat as nbf
 
 from geneve import utils
 

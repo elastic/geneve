@@ -17,12 +17,12 @@
 
 """Functions for collecting constraints from an EQL AST."""
 
+from itertools import chain, product
+from typing import Any, List, NoReturn, Tuple, Union
+
 import eql
 
-from itertools import chain, product
-from typing import List, Tuple, Union, Any, NoReturn
-
-from .constraints import Constraints, Branch, Root
+from .constraints import Branch, Constraints, Root
 from .utils import TreeTraverser
 
 __all__ = ()

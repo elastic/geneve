@@ -17,7 +17,7 @@
 
 import click
 
-from . import version, SourceEvents
+from . import SourceEvents, version
 
 
 @click.command()

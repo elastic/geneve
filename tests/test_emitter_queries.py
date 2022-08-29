@@ -22,8 +22,8 @@ import unittest
 
 import tests.utils as tu
 from geneve.events_emitter import SourceEvents, guess_from_query
-from . import jupyter
 
+from . import jupyter
 
 event_docs_mappings = {
     """process where process.name == "regsvr32.exe"

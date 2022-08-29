@@ -17,17 +17,17 @@
 
 """Helpers for field value generation with constraints."""
 
-import time
+import copy
+import ipaddress
+import operator
 import random
 import string
-import copy
-import operator
-from typing import List
-from fnmatch import fnmatch
-from functools import wraps, reduce
-from itertools import chain, product
+import time
 from collections import namedtuple
-import ipaddress
+from fnmatch import fnmatch
+from functools import reduce, wraps
+from itertools import chain, product
+from typing import List
 
 NumberLimits = namedtuple("NumberLimits", ["MIN", "MAX"])
 
