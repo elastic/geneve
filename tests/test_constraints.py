@@ -208,6 +208,74 @@ constraints_long = [
     ),
 ]
 
+constraints_long_cardinality = [
+    (
+        [
+            (">=", "0"),
+            ("<=", "10"),
+        ],
+        [
+            {"max": 10, "min": 0, "value": 9},
+            {"max": 10, "min": 0, "value": 7},
+            {"max": 10, "min": 0, "value": 6},
+        ],
+    ),
+    (
+        [
+            (">=", "0"),
+            ("<=", "10"),
+            ("cardinality", 0),
+        ],
+        [
+            {"max": 10, "min": 0, "value": 9},
+            {"max": 10, "min": 0, "value": 7},
+            {"max": 10, "min": 0, "value": 6},
+        ],
+    ),
+    (
+        [
+            (">=", "0"),
+            ("<=", "10"),
+            ("cardinality", 1),
+        ],
+        [
+            {"max": 10, "min": 0, "value": 9},
+            {"max": 10, "min": 0, "value": 9},
+            {"max": 10, "min": 0, "value": 9},
+        ],
+    ),
+    (
+        [
+            (">=", "0"),
+            ("<=", "10"),
+            ("cardinality", 2),
+        ],
+        [
+            {"max": 10, "min": 0, "value": 9},
+            {"max": 10, "min": 0, "value": 7},
+            {"max": 10, "min": 0, "value": 7},
+            {"max": 10, "min": 0, "value": 9},
+            {"max": 10, "min": 0, "value": 7},
+        ],
+    ),
+    (
+        [
+            (">=", "0"),
+            ("<=", "10"),
+            ("cardinality", 3),
+        ],
+        [
+            {"max": 10, "min": 0, "value": 9},
+            {"max": 10, "min": 0, "value": 7},
+            {"max": 10, "min": 0, "value": 6},
+            {"max": 10, "min": 0, "value": 6},
+            {"max": 10, "min": 0, "value": 6},
+            {"max": 10, "min": 0, "value": 9},
+            {"max": 10, "min": 0, "value": 7},
+        ],
+    ),
+]
+
 constraints_long_exceptions = [
     (
         [
@@ -421,6 +489,69 @@ constraints_ip = [
     ),
 ]
 
+constraints_ip_cardinality = [
+    (
+        [
+            ("in", "10.0.0.0/24"),
+        ],
+        [
+            {"value": "10.0.0.214"},
+            {"value": "10.0.0.193"},
+            {"value": "10.0.0.108"},
+        ],
+    ),
+    (
+        [
+            ("in", "10.0.0.0/24"),
+            ("cardinality", 0),
+        ],
+        [
+            {"value": "10.0.0.214"},
+            {"value": "10.0.0.193"},
+            {"value": "10.0.0.108"},
+        ],
+    ),
+    (
+        [
+            ("in", "10.0.0.0/24"),
+            ("cardinality", 1),
+        ],
+        [
+            {"value": "10.0.0.214"},
+            {"value": "10.0.0.214"},
+            {"value": "10.0.0.214"},
+        ],
+    ),
+    (
+        [
+            ("in", "10.0.0.0/24"),
+            ("cardinality", 2),
+        ],
+        [
+            {"value": "10.0.0.214"},
+            {"value": "10.0.0.193"},
+            {"value": "10.0.0.193"},
+            {"value": "10.0.0.214"},
+            {"value": "10.0.0.193"},
+        ],
+    ),
+    (
+        [
+            ("in", "10.0.0.0/24"),
+            ("cardinality", 3),
+        ],
+        [
+            {"value": "10.0.0.214"},
+            {"value": "10.0.0.193"},
+            {"value": "10.0.0.108"},
+            {"value": "10.0.0.193"},
+            {"value": "10.0.0.108"},
+            {"value": "10.0.0.108"},
+            {"value": "10.0.0.214"},
+        ],
+    ),
+]
+
 constraints_ip_exceptions = [
     (
         [
@@ -596,6 +727,63 @@ constraints_keyword = [
     ),
 ]
 
+constraints_keyword_cardinality = [
+    (
+        [],
+        [
+            {"value": "ZFy"},
+            {"value": "XIU"},
+            {"value": "tkN"},
+        ],
+    ),
+    (
+        [
+            ("cardinality", 0),
+        ],
+        [
+            {"value": "ZFy"},
+            {"value": "XIU"},
+            {"value": "tkN"},
+        ],
+    ),
+    (
+        [
+            ("cardinality", 1),
+        ],
+        [
+            {"value": "ZFy"},
+            {"value": "ZFy"},
+            {"value": "ZFy"},
+        ],
+    ),
+    (
+        [
+            ("cardinality", 2),
+        ],
+        [
+            {"value": "ZFy"},
+            {"value": "XIU"},
+            {"value": "XIU"},
+            {"value": "XIU"},
+            {"value": "ZFy"},
+        ],
+    ),
+    (
+        [
+            ("cardinality", 3),
+        ],
+        [
+            {"value": "ZFy"},
+            {"value": "XIU"},
+            {"value": "tkN"},
+            {"value": "tkN"},
+            {"value": "ZFy"},
+            {"value": "XIU"},
+            {"value": "ZFy"},
+        ],
+    ),
+]
+
 constraints_keyword_exceptions = [
     (
         [
@@ -750,6 +938,27 @@ branch_products = [
     ),
 ]
 
+constraints_exceptions = [
+    (
+        [
+            ("cardinality", "a"),
+        ],
+        """invalid literal for int() with base 10: 'a'""",
+    ),
+    (
+        [
+            ("cardinality", ("a")),
+        ],
+        """invalid literal for int() with base 10: 'a'""",
+    ),
+    (
+        [
+            ("cardinality", (0, 1)),
+        ],
+        """Too many arguments for cardinality of 'test_var': (0, 1)""",
+    ),
+]
+
 
 class TestConstraints(tu.SeededTestCase, unittest.TestCase):
     def test_long(self):
@@ -757,39 +966,60 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
 
         for i, (constraints, test_value) in enumerate(constraints_long):
             with self.subTest(constraints, i=i):
-                self.assertEqual(test_value, solver("test_var", None, constraints))
+                c = Constraints()
+                self.assertEqual(test_value, solver(c, "test_var", None, constraints))
 
-        for i, (constraints, msg) in enumerate(constraints_long_exceptions):
+        for i, (constraints, msg) in enumerate(constraints_long_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
-                    self.assertEqual(None, solver("test_var", None, constraints))
+                    c = Constraints()
+                    self.assertEqual(None, solver(c, "test_var", None, constraints))
                 self.assertEqual(msg, str(cm.exception))
+
+        for i, (constraints, test_values) in enumerate(constraints_long_cardinality):
+            with self.subTest(constraints, i=i):
+                c = Constraints()
+                self.assertEqual(test_values, [solver(c, "test_var", None, constraints) for _ in test_values])
 
     def test_ip(self):
         solver = Constraints.solve_ip_constraints
 
         for i, (constraints, test_value) in enumerate(constraints_ip):
             with self.subTest(constraints, i=i):
-                self.assertEqual(test_value, solver("test_var", None, constraints))
+                c = Constraints()
+                self.assertEqual(test_value, solver(c, "test_var", None, constraints))
 
-        for i, (constraints, msg) in enumerate(constraints_ip_exceptions):
+        for i, (constraints, msg) in enumerate(constraints_ip_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
-                    self.assertEqual(None, solver("test_var", None, constraints))
+                    c = Constraints()
+                    self.assertEqual(None, solver(c, "test_var", None, constraints))
                 self.assertEqual(msg, str(cm.exception))
+
+        for i, (constraints, test_values) in enumerate(constraints_ip_cardinality):
+            with self.subTest(constraints, i=i):
+                c = Constraints()
+                self.assertEqual(test_values, [solver(c, "test_var", None, constraints) for _ in test_values])
 
     def test_keyword(self):
         solver = Constraints.solve_keyword_constraints
 
         for i, (constraints, test_value) in enumerate(constraints_keyword):
             with self.subTest(constraints, i=i):
-                self.assertEqual(test_value, solver("test_var", None, constraints))
+                c = Constraints()
+                self.assertEqual(test_value, solver(c, "test_var", None, constraints))
 
-        for i, (constraints, msg) in enumerate(constraints_keyword_exceptions):
+        for i, (constraints, msg) in enumerate(constraints_keyword_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
-                    self.assertEqual(None, solver("test_var", None, constraints))
+                    c = Constraints()
+                    self.assertEqual(None, solver(c, "test_var", None, constraints))
                 self.assertEqual(msg, str(cm.exception))
+
+        for i, (constraints, test_values) in enumerate(constraints_keyword_cardinality):
+            with self.subTest(constraints, i=i):
+                c = Constraints()
+                self.assertEqual(test_values, [solver(c, "test_var", None, constraints) for _ in test_values])
 
 
 class TestBranches(tu.SeededTestCase, unittest.TestCase):
