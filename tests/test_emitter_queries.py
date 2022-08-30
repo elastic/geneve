@@ -413,6 +413,93 @@ exceptions = {
     """: "Unsolvable constraints: process.name (cannot be non-null)",
 }
 
+cardinality = [
+    (
+        """process where process.pid > 0 and process.pid < 100 and _cardinality(process.pid, 0)""",
+        [
+            [{"event": {"category": ["process"]}, "process": {"pid": 35}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 64}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 30}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 99}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 85}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 42}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 95}}],
+        ],
+    ),
+    (
+        """process where process.pid > 0 and process.pid < 100 and _cardinality(process.pid, 1)""",
+        [
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+        ],
+    ),
+    (
+        """process where process.pid > 0 and process.pid < 100 and _cardinality(process.pid, 2)""",
+        [
+            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
+        ],
+    ),
+    (
+        """network where source.ip == "10.0.0.0/24" and _cardinality(source.ip, 2)""",
+        [
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.214"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.214"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.214"}}],
+        ],
+    ),
+    (
+        """network where destination.ip == "1::/112" and _cardinality(destination.ip, 3)""",
+        [
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
+        ],
+    ),
+    (
+        """process where _cardinality(process.name, 3)""",
+        [
+            [{"event": {"category": ["process"]}, "process": {"name": "tQY"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "FmB"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "Iwi"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "Iwi"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "FmB"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "tQY"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "tQY"}}],
+        ],
+    ),
+    (
+        """network where _cardinality(source.ip, 2) and _cardinality(destination.ip, 3)""",
+        [
+            [{"event": {"category": ["network"]}, "source": {"ip": "226.91.52.159"}, "destination": {"ip": "187.226.126.29"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "226.91.52.159"}, "destination": {"ip": "163.166.219.79"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "87.136.142.84"}, "destination": {"ip": "187.226.126.29"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "87.136.142.84"}, "destination": {"ip": "187.226.126.29"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "226.91.52.159"}, "destination": {"ip": "226.91.52.159"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "87.136.142.84"}, "destination": {"ip": "163.166.219.79"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "87.136.142.84"}, "destination": {"ip": "163.166.219.79"}}],
+        ],
+    ),
+]
+
 
 class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
@@ -453,9 +540,9 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 # load the ECS schema
                 SourceEvents.schema = load_schema('./etc/ecs-8.1.0.tar.gz', 'generated/ecs/ecs_flat.yml')
 
-                def emit(query, timestamp=False, complete=True):
+                def emit(query, timestamp=False, complete=True, count=1):
                     try:
-                        events = SourceEvents.from_query(query).emit(timestamp=timestamp, complete=complete)
+                        events = SourceEvents.from_query(query).emit(timestamp=timestamp, complete=complete, count=count)
                         if complete:
                             return [[event.doc for event in branch] for branch in events]
                         else:
@@ -593,6 +680,20 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                     self.assertQuery(query, None)
                 self.assertEqual(msg, str(cm.exception))
                 cells.append(self.query_cell(query, str(cm.exception), output_type="stream"))
+
+    @nb.chapter("## Cardinality")
+    def test_cardinality(self, cells):
+        cells.append(
+            jupyter.Markdown(
+                """
+            Cardinality constraints set an upper bound to the number of different values generated for a given field.
+        """
+            )
+        )
+        for i, (query, docs) in enumerate(cardinality):
+            with self.subTest(query, i=i):
+                self.assertQuery(query, docs, len(docs))
+                cells.append(self.query_cell(query, docs, len(docs)))
 
     @nb.chapter("## Any oddities?")
     def test_unchanged(self, cells):
