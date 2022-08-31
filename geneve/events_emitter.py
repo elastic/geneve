@@ -185,9 +185,7 @@ class SourceEvents:
                 events = (events_from_root(root, self.schema, timestamp) for _ in range(count) for root in self.__roots)
         else:
             if root:
-                events = (
-                    events_from_branch(random.choice(root), self.schema, timestamp, root.meta) for _ in range(count)
-                )
+                events = (events_from_branch(random.choice(root), self.schema, timestamp, root.meta) for _ in range(count))
             else:
                 events = (
                     events_from_branch(random.choice(root), self.schema, timestamp, root.meta)

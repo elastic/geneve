@@ -651,12 +651,7 @@ class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCas
 
     def test_queries(self):
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
-        queries = (
-            tuple(mono_branch_mono_doc)
-            + tuple(multi_branch_mono_doc)
-            + tuple(mono_branch_multi_doc)
-            + tuple(multi_branch_multi_doc)
-        )
+        queries = tuple(mono_branch_mono_doc) + tuple(multi_branch_mono_doc) + tuple(mono_branch_multi_doc) + tuple(multi_branch_multi_doc)
         rules, asts = self.parse_from_queries(queries)
         pending = self.load_rules_and_docs(rules, asts)
         self.check_signals(rules, pending)

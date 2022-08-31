@@ -57,10 +57,7 @@ def get_test_schema_uri():
 
 
 def get_test_rules_uri():
-    return (
-        os.getenv("TEST_DETECTION_RULES_URI")
-        or "https://github.com/elastic/detection-rules/archive/refs/heads/main.tar.gz"
-    )
+    return os.getenv("TEST_DETECTION_RULES_URI") or "https://github.com/elastic/detection-rules/archive/refs/heads/main.tar.gz"
 
 
 def load_test_schema():
@@ -506,8 +503,6 @@ class SignalsTestCase:
         self.assertSignals(rules, failed, "Failed rules")
         self.assertSignals(rules, unsuccessful, "Unsuccessful rules with signals")
         self.assertSignals(rules, no_signals, "Rules with no signals", getattr(self, "ack_no_signals", 0))
-        self.assertSignals(
-            rules, too_few_signals, "Rules with too few signals", getattr(self, "ack_too_few_signals", 0)
-        )
+        self.assertSignals(rules, too_few_signals, "Rules with too few signals", getattr(self, "ack_too_few_signals", 0))
         self.assertSignals(rules, too_many_signals, "Rules with too many signals")
         self.report_rules(rules, correct_signals, "Rules with the correct signals")
