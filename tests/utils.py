@@ -153,8 +153,9 @@ class QueryTestCase:
         cls.schema = load_test_schema()
 
     @classmethod
-    def query_cell(cls, query, output, **kwargs):
-        source = "emit('''\n    " + query.strip() + "\n''')"
+    def query_cell(cls, query, output, count=1, **kwargs):
+        count = "" if count == 1 else f", count={count}"
+        source = "emit('''\n    " + query.strip() + f"\n'''{count})"
         if type(output) != str:
             output = "[[" + "],\n [".join(",\n  ".join(str(doc) for doc in branch) for branch in output) + "]]"
         return jupyter.Code(source, output, **kwargs)
@@ -162,10 +163,10 @@ class QueryTestCase:
     def subTest(self, query, **kwargs):  # noqa: N802
         return super(QueryTestCase, self).subTest(query, **kwargs, seed=query)
 
-    def assertQuery(self, query, docs):  # noqa: N802
+    def assertQuery(self, query, docs, count=1):  # noqa: N802
         se = SourceEvents(self.schema)
         se.add_query(query, meta=query)
-        branches = se.emit(timestamp=False, complete=True)
+        branches = se.emit(timestamp=False, complete=True, count=count)
         _docs = [[event.doc for event in branch] for branch in branches]
         self.assertEqual(docs, _docs)
 

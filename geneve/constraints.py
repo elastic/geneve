@@ -96,13 +96,15 @@ class ConflictError(ValueError):
 class solver:  # noqa: N801
     def __init__(self, field_type, *args):
         self.field_type = field_type
-        self.valid_constraints = ("join_value", "max_attempts") + args
+        self.valid_constraints = ("join_value", "max_attempts", "cardinality") + args
 
     def __call__(self, func):
         @wraps(func)
         def _solver(cls, field, value, constraints):
             join_values = []
             max_attempts = None
+            cardinality = 0
+            history = []
             augmented_constraints = constraints + get_ecs_constraints(field)
             for k, v, *_ in augmented_constraints:
                 if k not in self.valid_constraints:
@@ -115,12 +117,26 @@ class solver:  # noqa: N801
                         raise ValueError(f"max_attempts cannot be negative: {v}")
                     if max_attempts is None or max_attempts > v:
                         max_attempts = v
+                if k == "cardinality":
+                    if type(v) is tuple:
+                        if len(v) > 1:
+                            raise ValueError(f"Too many arguments for cardinality of '{field}': {v}")
+                        v = v[0]
+                    cardinality = int(v)
+                    history = cls.fields_history.setdefault(field, [])
             if max_attempts is None:
                 max_attempts = _max_attempts
-            value = func(cls, field, value, augmented_constraints, max_attempts + 1)
-            if not value["left_attempts"]:
-                raise ConflictError(f"attempts exausted: {max_attempts}", field)
-            del value["left_attempts"]
+            if len(history) < cardinality:
+                augmented_constraints.extend(("!=", v["value"]) for v in history)
+            if not cardinality or len(history) < cardinality:
+                value = func(cls, field, value, augmented_constraints, max_attempts + 1)
+                if not value["left_attempts"]:
+                    raise ConflictError(f"attempts exausted: {max_attempts}", field)
+                del value["left_attempts"]
+                if cardinality:
+                    history.append(value)
+            else:
+                value = random.choice(history[:cardinality])
             for field, constraint in join_values:
                 constraint.append_constraint(field, "==", value["value"], {"use_once": True})
             delete_use_once(constraints)
@@ -131,6 +147,7 @@ class solver:  # noqa: N801
 
 class Constraints:
     def __init__(self, field=None, name=None, value=None):
+        self.fields_history = {}
         self.__constraints = {}
         if field is not None:
             self.append_constraint(field, name, value)
@@ -192,9 +209,8 @@ class Constraints:
             c.extend_constraints(field, constraints)
         return c
 
-    @classmethod
     @solver("boolean", "==", "!=")
-    def solve_boolean_constraints(cls, field, value, constraints, left_attempts):
+    def solve_boolean_constraints(self, field, value, constraints, left_attempts):
         for k, v, *_ in constraints:
             if k == "==":
                 v = bool(v)
@@ -214,9 +230,8 @@ class Constraints:
             left_attempts -= 1
         return {"value": value, "left_attempts": left_attempts}
 
-    @classmethod
     @solver("long", "==", "!=", ">=", "<=", ">", "<")
-    def solve_long_constraints(cls, field, value, constraints, left_attempts):
+    def solve_long_constraints(self, field, value, constraints, left_attempts):
         min_value = LongLimits.MIN
         max_value = LongLimits.MAX
         exclude_values = set()
@@ -267,9 +282,8 @@ class Constraints:
             left_attempts -= 1
         return {"value": value, "min": min_value, "max": max_value, "left_attempts": left_attempts}
 
-    @classmethod
     @solver("date", "==")
-    def solve_date_constraints(cls, field, value, constraints, left_attempts):
+    def solve_date_constraints(self, field, value, constraints, left_attempts):
         for k, v, *_ in constraints:
             if k == "==":
                 if value is None or value == v:
@@ -282,9 +296,8 @@ class Constraints:
             left_attempts -= 1
         return {"value": value, "left_attempts": left_attempts}
 
-    @classmethod
     @solver("ip", "==", "!=", "in", "not in")
-    def solve_ip_constraints(cls, field, value, constraints, left_attempts):
+    def solve_ip_constraints(self, field, value, constraints, left_attempts):
         include_nets = set()
         exclude_nets = set()
         exclude_addrs = set()
@@ -358,9 +371,8 @@ class Constraints:
             left_attempts -= 1
         return {"value": value.compressed, "left_attempts": left_attempts}
 
-    @classmethod
     @solver("keyword", "==", "!=", "wildcard", "not wildcard", "min_length", "allowed_chars")
-    def solve_keyword_constraints(cls, field, value, constraints, left_attempts):
+    def solve_keyword_constraints(self, field, value, constraints, left_attempts):
         allowed_chars = string.ascii_letters
         include_wildcards = set()
         exclude_wildcards = set()
@@ -452,10 +464,9 @@ class Constraints:
             left_attempts -= 1
         return {"value": value, "left_attempts": left_attempts}
 
-    @classmethod
-    def solve_constraints(cls, field, constraints, schema):
+    def solve_constraints(self, field, constraints, schema):
         field_type = schema.get("type", "keyword")
-        solver = getattr(cls, f"solve_{field_type}_constraints", None)
+        solver = getattr(self, f"solve_{field_type}_constraints", None)
         if not solver:
             raise NotImplementedError(f"Constraints solver not implemented: {field_type}")
         if "array" in schema.get("normalize", []):
