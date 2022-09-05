@@ -669,22 +669,22 @@ constraints_keyword = [
         [
             ("wildcard", "*.exe"),
         ],
-        {"value": "xiutkni.exe"},
+        {"value": "XIUtkNI.exe"},
     ),
     (
         [
             ("wildcard", "*.exe"),
-            ("not wildcard", "xiut*.exe"),
+            ("not wildcard", "XIUt*.exe"),
         ],
-        {"value": "ixtflezswueexp.exe"},
+        {"value": "ixTFlEzswuEEXp.exe"},
     ),
     (
         [
             ("wildcard", "*.exe"),
-            ("not wildcard", "xiut*.exe"),
-            ("not wildcard", "ixtf*.exe"),
+            ("not wildcard", "XIUt*.exe"),
+            ("not wildcard", "ixTF*.exe"),
         ],
-        {"value": "n.exe"},
+        {"value": "N.exe"},
     ),
     (
         [
@@ -803,13 +803,6 @@ constraints_keyword_exceptions = [
         [
             ("==", "cmd.exe"),
             ("not wildcard", "*.exe"),
-        ],
-        "Unsolvable constraints: test_var (cannot match '*.exe')",
-    ),
-    (
-        [
-            ("wildcard", "*.exe"),
-            ("not wildcard", "*.EXE"),
         ],
         "Unsolvable constraints: test_var (cannot match '*.exe')",
     ),
@@ -1052,25 +1045,25 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
 
         self.assertEqual(
             [
-                [("process.name", "lbs.exe")],
-                [("process.name", "lwffiaxqgmefk.dll"), ("process.parent.name", "lbs.exe")],
-                [("process.name", "owrl.com"), ("process.parent.name", "lwffiaxqgmefk.dll")],
+                [("process.name", "LbS.exe")],
+                [("process.name", "lwfFIAXQgMefK.dll"), ("process.parent.name", "LbS.exe")],
+                [("process.name", "OWrl.com"), ("process.parent.name", "lwfFIAXQgMefK.dll")],
             ],
             [sorted(x) for x in branch.solve(schema)],
         )
         self.assertEqual(
             [
                 [("process.name", "lywc.exe")],
-                [("process.name", "likqw.dll"), ("process.parent.name", "lywc.exe")],
-                [("process.name", "uxrwqyk.com"), ("process.parent.name", "likqw.dll")],
+                [("process.name", "lIkqw.dll"), ("process.parent.name", "lywc.exe")],
+                [("process.name", "uxRWqYK.com"), ("process.parent.name", "lIkqw.dll")],
             ],
             [sorted(x) for x in branch.solve(schema)],
         )
         self.assertEqual(
             [
-                [("process.name", "gkuauecromcat.exe")],
-                [("process.name", "kpkxksopnatgxr.scr"), ("process.parent.name", "gkuauecromcat.exe")],
-                [("process.name", "lwpdtglbrih.com"), ("process.parent.name", "kpkxksopnatgxr.scr")],
+                [("process.name", "gkUaUecroMCaT.exe")],
+                [("process.name", "KpKXkSopnAtGxR.scr"), ("process.parent.name", "gkUaUecroMCaT.exe")],
+                [("process.name", "lwpDtGLBRIh.com"), ("process.parent.name", "KpKXkSopnAtGxR.scr")],
             ],
             [sorted(x) for x in branch.solve(schema)],
         )

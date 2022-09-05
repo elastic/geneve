@@ -6,45 +6,11 @@ learn what rules are supported and what not and why.
 Curious about the inner workings? Read [here](signals_generation.md).
 
 ## Table of contents
-   1. [Rules with no signals (25)](#rules-with-no-signals-25)
+   1. [Rules with no signals (5)](#rules-with-no-signals-5)
    1. [Rules with too few signals (1)](#rules-with-too-few-signals-1)
-   1. [Rules with the correct signals (527)](#rules-with-the-correct-signals-527)
+   1. [Rules with the correct signals (547)](#rules-with-the-correct-signals-547)
 
-## Rules with no signals (25)
-
-### AdminSDHolder Backdoor
-
-Branch count: 1  
-Document count: 1  
-Index: geneve-ut-060
-
-```python
-event.action:"Directory Service Changes" and event.code:5136 and winlog.event_data.ObjectDN:CN=AdminSDHolder,CN=System*
-```
-
-```python
-[{'event': {'action': 'Directory Service Changes', 'code': 5136}, 'winlog': {'event_data': {'ObjectDN': 'cn=adminsdholder,cn=systemxiutkni'}}, '@timestamp': 0}]
-```
-
-
-
-### Authorization Plugin Modification
-
-Branch count: 1  
-Document count: 1  
-Index: geneve-ut-106
-
-```python
-event.category:file and not event.type:deletion and
-  file.path:(/Library/Security/SecurityAgentPlugins/* and
-  not /Library/Security/SecurityAgentPlugins/TeamViewerAuthPlugin.bundle/Contents/*)
-```
-
-```python
-[{'event': {'category': ['file'], 'type': ['ZFy']}, 'file': {'path': '/library/security/securityagentplugins/uyyfjsvilooohmx'}, '@timestamp': 0}]
-```
-
-
+## Rules with no signals (5)
 
 ### Azure AD Global Administrator Role Assigned
 
@@ -98,8 +64,8 @@ event.outcome:(Success or success)
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'microsoft.network/yxiutknioixtfl/vpnconnections/startpacketcapture/action'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'microsoft.network/zswueexpwqnvr/vpnconnections/startpacketcapture/action'}}, '@timestamp': 1}]
+[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/yXIUtkNIoixTFl/VPNCONNECTIONS/STARTPACKETCAPTURE/ACTION'}}, '@timestamp': 0},
+ {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/zswuEEXpWqNVR/VPNCONNECTIONS/STARTPACKETCAPTURE/ACTION'}}, '@timestamp': 1}]
 ```
 
 
@@ -127,244 +93,6 @@ event.dataset:azure.auditlogs and azure.auditlogs.properties.category:RoleManage
 
 
 
-### GCP IAM Custom Role Creation
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-225
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.CreateRole and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vxiutkni.createrole', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixtflezswueexp.createrole', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP IAM Role Deletion
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-226
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.DeleteRole and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vxiutkni.deleterole', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixtflezswueexp.deleterole', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP IAM Service Account Key Deletion
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-227
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.DeleteServiceAccountKey and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vxiutkni.deleteserviceaccountkey', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixtflezswueexp.deleteserviceaccountkey', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Logging Bucket Deletion
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-229
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.logging.v*.ConfigServiceV*.DeleteBucket and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.logging.vxiutkni.configservicevsvilo.deletebucket', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.logging.vohmxbnleoa.configservicevn.deletebucket', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Logging Sink Deletion
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-230
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.logging.v*.ConfigServiceV*.DeleteSink and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.logging.vxiutkni.configservicevsvilo.deletesink', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.logging.vohmxbnleoa.configservicevn.deletesink', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Logging Sink Modification
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-231
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.logging.v*.ConfigServiceV*.UpdateSink and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.logging.vxiutkni.configservicevsvilo.updatesink', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.logging.vohmxbnleoa.configservicevn.updatesink', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Pub/Sub Subscription Creation
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-232
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.pubsub.v*.Subscriber.CreateSubscription and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.pubsub.vxiutkni.subscriber.createsubscription', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.pubsub.vixtflezswueexp.subscriber.createsubscription', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Pub/Sub Subscription Deletion
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-233
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.pubsub.v*.Subscriber.DeleteSubscription and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.pubsub.vxiutkni.subscriber.deletesubscription', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.pubsub.vixtflezswueexp.subscriber.deletesubscription', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Pub/Sub Topic Creation
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-234
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.pubsub.v*.Publisher.CreateTopic and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.pubsub.vxiutkni.publisher.createtopic', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.pubsub.vixtflezswueexp.publisher.createtopic', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Pub/Sub Topic Deletion
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-235
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.pubsub.v*.Publisher.DeleteTopic and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.pubsub.vxiutkni.publisher.deletetopic', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.pubsub.vixtflezswueexp.publisher.deletetopic', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Service Account Creation
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-236
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.CreateServiceAccount and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vxiutkni.createserviceaccount', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixtflezswueexp.createserviceaccount', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Service Account Deletion
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-237
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.DeleteServiceAccount and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vxiutkni.deleteserviceaccount', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixtflezswueexp.deleteserviceaccount', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Service Account Disabled
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-238
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.DisableServiceAccount and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vxiutkni.disableserviceaccount', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixtflezswueexp.disableserviceaccount', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
-### GCP Service Account Key Creation
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-239
-
-```python
-event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.CreateServiceAccountKey and event.outcome:success
-```
-
-```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vxiutkni.createserviceaccountkey', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixtflezswueexp.createserviceaccountkey', 'outcome': 'success'}, '@timestamp': 1}]
-```
-
-
-
 ### LaunchDaemon Creation or Modification and Immediate Loading
 
 Branch count: 4  
@@ -378,93 +106,14 @@ sequence by host.id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/system/library/launchdaemons/uyyfjsvilooohmx'}, 'host': {'id': 'BnL'}, '@timestamp': 0},
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/System/Library/LaunchDaemons/UyyFjSvILOoOHmx'}, 'host': {'id': 'BnL'}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'BnL'}, '@timestamp': 1},
- {'event': {'type': ['eOA'], 'category': ['file']}, 'file': {'path': '/system/library/launchdaemons/gaifqsyzknyyq'}, 'host': {'id': 'DpU'}, '@timestamp': 2},
+ {'event': {'type': ['eOA'], 'category': ['file']}, 'file': {'path': '/System/Library/LaunchDaemons/gaiFqsyzKNyyQ'}, 'host': {'id': 'DpU'}, '@timestamp': 2},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'DpU'}, '@timestamp': 3},
- {'event': {'type': ['EUD'], 'category': ['file']}, 'file': {'path': '/library/launchdaemons/xvtolwtimrfgt'}, 'host': {'id': 'msh'}, '@timestamp': 4},
+ {'event': {'type': ['EUD'], 'category': ['file']}, 'file': {'path': '/Library/LaunchDaemons/xVTOLWtimrFgT'}, 'host': {'id': 'msh'}, '@timestamp': 4},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'msh'}, '@timestamp': 5},
- {'event': {'type': ['CeL'], 'category': ['file']}, 'file': {'path': '/library/launchdaemons/l'}, 'host': {'id': 'Sjo'}, '@timestamp': 6},
+ {'event': {'type': ['CeL'], 'category': ['file']}, 'file': {'path': '/Library/LaunchDaemons/L'}, 'host': {'id': 'Sjo'}, '@timestamp': 6},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'Sjo'}, '@timestamp': 7}]
-```
-
-
-
-### Persistence via DirectoryService Plugin Modification
-
-Branch count: 1  
-Document count: 1  
-Index: geneve-ut-373
-
-```python
-event.category:file and not event.type:deletion and
-  file.path:/Library/DirectoryServices/PlugIns/*.dsplug
-```
-
-```python
-[{'event': {'category': ['file'], 'type': ['ZFy']}, 'file': {'path': '/library/directoryservices/plugins/uyyfjsvilooohmx.dsplug'}, '@timestamp': 0}]
-```
-
-
-
-### Persistence via Docker Shortcut Modification
-
-Branch count: 1  
-Document count: 1  
-Index: geneve-ut-374
-
-```python
-event.category : file and event.action : modification and 
- file.path : /Users/*/Library/Preferences/com.apple.dock.plist and 
- not process.name : (xpcproxy or cfprefsd or plutil or jamf or PlistBuddy or InstallerRemotePluginService)
-```
-
-```python
-[{'event': {'category': ['file'], 'action': 'modification'}, 'file': {'path': '/users/xiutkni/library/preferences/com.apple.dock.plist'}, 'process': {'name': 'oix'}, '@timestamp': 0}]
-```
-
-
-
-### Potential Persistence via Atom Init Script Modification
-
-Branch count: 1  
-Document count: 1  
-Index: geneve-ut-418
-
-```python
-event.category:"file" and not event.type:"deletion" and
- file.path:/Users/*/.atom/init.coffee and not process.name:(Atom or xpcproxy) and not user.name:root
-```
-
-```python
-[{'event': {'category': ['file'], 'type': ['ZFy']}, 'file': {'path': '/users/uyyfjsvilooohmx/.atom/init.coffee'}, 'process': {'name': 'BnL'}, 'user': {'name': 'eOA'}, '@timestamp': 0}]
-```
-
-
-
-### Suspicious Calendar File Modification
-
-Branch count: 1  
-Document count: 1  
-Index: geneve-ut-543
-
-```python
-event.category:file and event.action:modification and
-  file.path:/Users/*/Library/Calendars/*.calendar/Events/*.ics and
-  process.executable:
-  (* and not 
-    (
-      /System/Library/* or 
-      /System/Applications/Calendar.app/Contents/MacOS/* or 
-      /usr/libexec/xpcproxy or 
-      /sbin/launchd or 
-      /Applications/*
-    )
-  )
-```
-
-```python
-[{'event': {'category': ['file'], 'action': 'modification'}, 'file': {'path': '/users/xiutkni/library/calendars/svilo.calendar/events/ezswu.ics'}, 'process': {'executable': 'EEX'}, '@timestamp': 0}]
 ```
 
 
@@ -870,7 +519,7 @@ sequence by agent.id, user.name with maxspan=1m
 
 
 
-## Rules with the correct signals (527)
+## Rules with the correct signals (547)
 
 ### AWS Access Secret in Secrets Manager
 
@@ -1929,6 +1578,22 @@ process where event.type in ("start", "process_started") and
 
 
 
+### AdminSDHolder Backdoor
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-060
+
+```python
+event.action:"Directory Service Changes" and event.code:5136 and winlog.event_data.ObjectDN:CN=AdminSDHolder,CN=System*
+```
+
+```python
+[{'event': {'action': 'Directory Service Changes', 'code': 5136}, 'winlog': {'event_data': {'ObjectDN': 'CN=AdminSDHolder,CN=SystemXIUtkNI'}}, '@timestamp': 0}]
+```
+
+
+
 ### Administrator Privileges Assigned to an Okta Group
 
 Branch count: 1  
@@ -1975,7 +1640,7 @@ file where event.type == "creation" and
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['file']}, 'file': {'path': 'a:\\program files\\adobe\\acrobat reader dc\\reader\\acrocef\\rdrcef.exe'}, 'process': {'name': 'XIU'}, '@timestamp': 0}]
+[{'event': {'type': ['creation'], 'category': ['file']}, 'file': {'path': 'A:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\AcroCEF\\RdrCEF.exe'}, 'process': {'name': 'XIU'}, '@timestamp': 0}]
 ```
 
 
@@ -2552,6 +2217,24 @@ event.module:auditd and event.action:"opened-too-many-sessions-to"
 
 ```python
 [{'event': {'module': 'auditd', 'action': 'opened-too-many-sessions-to'}, '@timestamp': 0}]
+```
+
+
+
+### Authorization Plugin Modification
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-106
+
+```python
+event.category:file and not event.type:deletion and
+  file.path:(/Library/Security/SecurityAgentPlugins/* and
+  not /Library/Security/SecurityAgentPlugins/TeamViewerAuthPlugin.bundle/Contents/*)
+```
+
+```python
+[{'event': {'category': ['file'], 'type': ['ZFy']}, 'file': {'path': '/Library/Security/SecurityAgentPlugins/UyyFjSvILOoOHmx'}, '@timestamp': 0}]
 ```
 
 
@@ -3212,7 +2895,7 @@ event.category:file and event.type:change and
 ```python
 [{'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'ZFy', 'executable': 'XIU'}, 'file': {'path': '/private/etc/rc.local'}, '@timestamp': 0},
  {'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'tkN', 'executable': 'Ioi'}, 'file': {'path': '/etc/rc.local'}, '@timestamp': 1},
- {'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'xTF', 'executable': 'lEz'}, 'file': {'path': '/home/wuee/.bashrc'}, '@timestamp': 2}]
+ {'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'xTF', 'executable': 'lEz'}, 'file': {'path': '/home/wuEE/.bash_profile'}, '@timestamp': 2}]
 ```
 
 
@@ -3344,8 +3027,8 @@ process.parent.name: (
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'powershell.exe', 'parent': {'name': 'solarwinds.administrationiutknioix.exe'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'netflowserviceohmxbnleoa.exe'}}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'powershell.exe', 'parent': {'name': 'SolarWinds.AdministrationIUtkNIoix.exe'}}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'NetflowDatabaseMaintenanceOHmxBnLeOA.exe'}}, '@timestamp': 1}]
 ```
 
 
@@ -3420,7 +3103,7 @@ network where network.protocol == "dns" and
 ```
 
 ```python
-[{'network': {'protocol': 'dns'}, 'dns': {'question': {'name': 'xiutkniletsencrypt.org'}}, 'process': {'executable': 'c:\\windows\\notepad.exe', 'name': 'SvI'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'network': {'protocol': 'dns'}, 'dns': {'question': {'name': 'XIUtkNIletsencrypt.org'}}, 'process': {'executable': 'C:\\Windows\\System32\\ixTFlEzswuEEXp.exe', 'name': 'WqN'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -3485,7 +3168,7 @@ network where network.protocol == "dns" and
 ```
 
 ```python
-[{'network': {'protocol': 'dns'}, 'process': {'name': 'ZFy', 'executable': 'lEz'}, 'user': {'id': 'XIU'}, 'dns': {'question': {'name': 'knioixtfnotabug.org'}}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'network': {'protocol': 'dns'}, 'process': {'name': 'ZFy', 'executable': 'lEz'}, 'user': {'id': 'XIU'}, 'dns': {'question': {'name': 'kNIoixTFnotabug.org'}}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -3559,7 +3242,7 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/users/fuyyfjsvilo/library/launchagents/.ezswu.plist'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/Users/fUyyFjSvILO/Library/LaunchAgents/.Ezswu.plist'}, '@timestamp': 0}]
 ```
 
 
@@ -3575,7 +3258,7 @@ registry where registry.path : "HKLM\\SAM\\SAM\\Domains\\Account\\Users\\Names\\
 ```
 
 ```python
-[{'registry': {'path': 'hklm\\sam\\sam\\domains\\account\\users\\names\\xiutkni$\\'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'registry': {'path': 'HKLM\\SAM\\SAM\\Domains\\Account\\Users\\Names\\XIUtkNI$\\'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
 ```
 
 
@@ -3607,7 +3290,7 @@ file where event.type != "deletion" and file.name : ("ntds_capi_*.pfx", "ntds_ca
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'name': 'ntds_capi_uyyfjsvilooohmx.pfx'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'name': 'ntds_capi_UyyFjSvILOoOHmx.pfx'}, '@timestamp': 0}]
 ```
 
 
@@ -3630,8 +3313,8 @@ registry where event.type in ("creation", "change") and
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'hklm\\software\\policies\\microsoft\\systemcertificates\\root\\certificates\\xiutkni\\blob'}, '@timestamp': 0},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'hklm\\software\\policies\\microsoft\\systemcertificates\\authroot\\certificates\\ixtflezswueexp\\blob'}, '@timestamp': 1}]
+[{'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\Software\\Policies\\Microsoft\\SystemCertificates\\Root\\Certificates\\XIUtkNI\\Blob'}, '@timestamp': 0},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\Software\\Policies\\Microsoft\\SystemCertificates\\AuthRoot\\Certificates\\ixTFlEzswuEEXp\\Blob'}, '@timestamp': 1}]
 ```
 
 
@@ -3650,7 +3333,7 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': 'y:\\windows\\sysvol\\domain\\policies\\knioixtf\\machine\\preferences\\preferences\\services\\services.xml'}, 'process': {'name': 'lEz'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': 'y:\\Windows\\SYSVOL\\domain\\Policies\\kNIoixTF\\MACHINE\\Preferences\\Preferences\\Services\\Services.xml'}, 'process': {'name': 'lEz'}, '@timestamp': 0}]
 ```
 
 
@@ -4112,7 +3795,7 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/etc/emon.d/rules/uyyfjsvilooohmx.plist'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/etc/emon.d/rules/UyyFjSvILOoOHmx.plist'}, '@timestamp': 0}]
 ```
 
 
@@ -4314,8 +3997,8 @@ iam where event.action == "user-member-enumerated" and
 ```
 
 ```python
-[{'event': {'action': 'user-member-enumerated', 'category': ['iam']}, 'winlog': {'event_data': {'CallerProcessName': 'ZFy'}}, 'group': {'name': 'adminuyyfjsvilooohmx'}, '@timestamp': 0},
- {'event': {'action': 'user-member-enumerated', 'category': ['iam']}, 'winlog': {'event_data': {'CallerProcessName': 'BnL', 'TargetSid': 's-1-5-32-544'}}, '@timestamp': 1}]
+[{'event': {'action': 'user-member-enumerated', 'category': ['iam']}, 'winlog': {'event_data': {'CallerProcessName': 'ZFy'}}, 'group': {'name': 'RemoteDesktopUsers'}, '@timestamp': 0},
+ {'event': {'action': 'user-member-enumerated', 'category': ['iam']}, 'winlog': {'event_data': {'CallerProcessName': 'Utk', 'TargetSid': 'S-1-5-32-544'}}, '@timestamp': 1}]
 ```
 
 
@@ -4396,9 +4079,9 @@ sequence with maxspan=2h
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'NIo'}, 'process': {'name': 'excel.exe'}, 'host': {'id': 'Utk'}, '@timestamp': 0},
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'NIo'}, 'process': {'name': 'MSACCESS.EXE'}, 'host': {'id': 'Utk'}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Utk'}, 'process': {'executable': 'NIo'}, '@timestamp': 1},
- {'event': {'type': ['ixT'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'mxB'}, 'process': {'name': 'msaccess.exe'}, 'host': {'id': 'oOH'}, '@timestamp': 2},
+ {'event': {'type': ['ixT'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'mxB'}, 'process': {'name': 'OUTLOOK.EXE'}, 'host': {'id': 'oOH'}, '@timestamp': 2},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oOH'}, 'process': {'executable': 'mxB'}, '@timestamp': 3}]
 ```
 
@@ -4428,7 +4111,7 @@ sequence with maxspan=2h
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'Utk', 'path': 'ixT'}, 'process': {'name': 'acrord32.exe'}, 'host': {'id': 'NIo'}, '@timestamp': 0},
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'Utk', 'path': 'ixT'}, 'process': {'name': 'AcroRd32.exe'}, 'host': {'id': 'NIo'}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'NIo'}, 'process': {'executable': 'ixT'}, '@timestamp': 1},
  {'event': {'type': ['FlE'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'Hmx', 'path': 'eOA'}, 'process': {'name': 'rdrcef.exe'}, 'host': {'id': 'BnL'}, '@timestamp': 2},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'BnL'}, 'process': {'executable': 'eOA'}, '@timestamp': 3}]
@@ -4749,8 +4432,8 @@ process where event.type in ("start", "process_started") and process.executable 
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': '\\device\\mup\\tsclient\\xiutkni.exe'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': '\\device\\mup\\tsclient\\ixtflezswueexp.exe'}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': '\\Device\\Mup\\tsclient\\XIUtkNI.exe'}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': '\\Device\\Mup\\tsclient\\ixTFlEzswuEEXp.exe'}, '@timestamp': 1}]
 ```
 
 
@@ -4766,7 +4449,7 @@ file where file.extension : "dll" and file.path : "C:\\*\\*.exe.local\\*.dll"
 ```
 
 ```python
-[{'file': {'extension': 'dll', 'path': 'c:\\xiutkni\\svilo.exe.local\\ezswu.dll'}, 'event': {'category': ['file']}, '@timestamp': 0}]
+[{'file': {'extension': 'dll', 'path': 'C:\\XIUtkNI\\SvILO.exe.local\\Ezswu.dll'}, 'event': {'category': ['file']}, '@timestamp': 0}]
 ```
 
 
@@ -4790,7 +4473,7 @@ event.category:process and event.type:(start or process_started) and
  {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'bash'}}, '@timestamp': 3},
  {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'dash'}}, '@timestamp': 4},
  {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'zsh'}}, '@timestamp': 5},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'pythonyxiutknioixtfl'}}, '@timestamp': 6},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'pythonyXIUtkNIoixTFl'}}, '@timestamp': 6},
  {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'ruby'}}, '@timestamp': 7},
  {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'pwsh'}}, '@timestamp': 8},
  {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'osascript'}}, '@timestamp': 9},
@@ -4799,7 +4482,7 @@ event.category:process and event.type:(start or process_started) and
  {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'bash'}}, '@timestamp': 12},
  {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'dash'}}, '@timestamp': 13},
  {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'zsh'}}, '@timestamp': 14},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'pythonzswueexpwqnvr'}}, '@timestamp': 15},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'pythonzswuEEXpWqNVR'}}, '@timestamp': 15},
  {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'ruby'}}, '@timestamp': 16},
  {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'pwsh'}}, '@timestamp': 17}]
 ```
@@ -4924,7 +4607,7 @@ network where network.protocol == "dns" and
 ```
 
 ```python
-[{'network': {'protocol': 'dns'}, 'process': {'name': 'ZFy', 'executable': 'lEz'}, 'user': {'id': 'XIU'}, 'event': {'action': 'lookup_requested', 'category': ['network']}, 'dns': {'question': {'name': 'knioixtfipstack.com'}}, '@timestamp': 0}]
+[{'network': {'protocol': 'dns'}, 'process': {'name': 'ZFy', 'executable': 'lEz'}, 'user': {'id': 'XIU'}, 'event': {'action': 'lookup_requested', 'category': ['network']}, 'dns': {'question': {'name': 'kNIoixTFipstack.com'}}, '@timestamp': 0}]
 ```
 
 
@@ -5092,8 +4775,8 @@ event.dataset:(googlecloud.audit or gcp.audit) and event.action:v*.compute.firew
 ```
 
 ```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'vxiutkni.compute.firewalls.insert'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'vixtflezswueexp.compute.firewalls.insert'}, '@timestamp': 1}]
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'vXIUtkNI.compute.firewalls.insert'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'vixTFlEzswuEEXp.compute.firewalls.insert'}, '@timestamp': 1}]
 ```
 
 
@@ -5109,8 +4792,8 @@ event.dataset:(googlecloud.audit or gcp.audit) and event.action:v*.compute.firew
 ```
 
 ```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'vxiutkni.compute.firewalls.delete'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'vixtflezswueexp.compute.firewalls.delete'}, '@timestamp': 1}]
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'vXIUtkNI.compute.firewalls.delete'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'vixTFlEzswuEEXp.compute.firewalls.delete'}, '@timestamp': 1}]
 ```
 
 
@@ -5126,8 +4809,59 @@ event.dataset:(googlecloud.audit or gcp.audit) and event.action:v*.compute.firew
 ```
 
 ```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'vxiutkni.compute.firewalls.patch'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'vixtflezswueexp.compute.firewalls.patch'}, '@timestamp': 1}]
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'vXIUtkNI.compute.firewalls.patch'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'vixTFlEzswuEEXp.compute.firewalls.patch'}, '@timestamp': 1}]
+```
+
+
+
+### GCP IAM Custom Role Creation
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-225
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.CreateRole and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vXIUtkNI.CreateRole', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixTFlEzswuEEXp.CreateRole', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP IAM Role Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-226
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.DeleteRole and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vXIUtkNI.DeleteRole', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixTFlEzswuEEXp.DeleteRole', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP IAM Service Account Key Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-227
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.DeleteServiceAccountKey and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vXIUtkNI.DeleteServiceAccountKey', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixTFlEzswuEEXp.DeleteServiceAccountKey', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -5146,8 +4880,195 @@ not gcp.audit.authentication_info.principal_email:"system:addon-manager"
 ```
 
 ```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'io.k8s.authorization.rbac.vxiutkni.rolebindings.patch', 'outcome': 'success'}, 'gcp': {'audit': {'authentication_info': {'principal_email': 'oix'}}}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'io.k8s.authorization.rbac.vezswu.clusterrolebindings.patch', 'outcome': 'success'}, 'gcp': {'audit': {'authentication_info': {'principal_email': 'EEX'}}}, '@timestamp': 1}]
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'io.k8s.authorization.rbac.vXIUtkNI.rolebindings.patch', 'outcome': 'success'}, 'gcp': {'audit': {'authentication_info': {'principal_email': 'oix'}}}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'io.k8s.authorization.rbac.vEzswu.clusterrolebindings.patch', 'outcome': 'success'}, 'gcp': {'audit': {'authentication_info': {'principal_email': 'EEX'}}}, '@timestamp': 1}]
+```
+
+
+
+### GCP Logging Bucket Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-229
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.logging.v*.ConfigServiceV*.DeleteBucket and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.logging.vXIUtkNI.ConfigServiceVSvILO.DeleteBucket', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.logging.vOHmxBnLeOA.ConfigServiceVN.DeleteBucket', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP Logging Sink Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-230
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.logging.v*.ConfigServiceV*.DeleteSink and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.logging.vXIUtkNI.ConfigServiceVSvILO.DeleteSink', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.logging.vOHmxBnLeOA.ConfigServiceVN.DeleteSink', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP Logging Sink Modification
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-231
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.logging.v*.ConfigServiceV*.UpdateSink and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.logging.vXIUtkNI.ConfigServiceVSvILO.UpdateSink', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.logging.vOHmxBnLeOA.ConfigServiceVN.UpdateSink', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP Pub/Sub Subscription Creation
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-232
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.pubsub.v*.Subscriber.CreateSubscription and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.pubsub.vXIUtkNI.Subscriber.CreateSubscription', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.pubsub.vixTFlEzswuEEXp.Subscriber.CreateSubscription', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP Pub/Sub Subscription Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-233
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.pubsub.v*.Subscriber.DeleteSubscription and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.pubsub.vXIUtkNI.Subscriber.DeleteSubscription', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.pubsub.vixTFlEzswuEEXp.Subscriber.DeleteSubscription', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP Pub/Sub Topic Creation
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-234
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.pubsub.v*.Publisher.CreateTopic and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.pubsub.vXIUtkNI.Publisher.CreateTopic', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.pubsub.vixTFlEzswuEEXp.Publisher.CreateTopic', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP Pub/Sub Topic Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-235
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.pubsub.v*.Publisher.DeleteTopic and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.pubsub.vXIUtkNI.Publisher.DeleteTopic', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.pubsub.vixTFlEzswuEEXp.Publisher.DeleteTopic', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP Service Account Creation
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-236
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.CreateServiceAccount and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vXIUtkNI.CreateServiceAccount', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixTFlEzswuEEXp.CreateServiceAccount', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP Service Account Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-237
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.DeleteServiceAccount and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vXIUtkNI.DeleteServiceAccount', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixTFlEzswuEEXp.DeleteServiceAccount', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP Service Account Disabled
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-238
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.DisableServiceAccount and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vXIUtkNI.DisableServiceAccount', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixTFlEzswuEEXp.DisableServiceAccount', 'outcome': 'success'}, '@timestamp': 1}]
+```
+
+
+
+### GCP Service Account Key Creation
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-239
+
+```python
+event.dataset:(googlecloud.audit or gcp.audit) and event.action:google.iam.admin.v*.CreateServiceAccountKey and event.outcome:success
+```
+
+```python
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'google.iam.admin.vXIUtkNI.CreateServiceAccountKey', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'google.iam.admin.vixTFlEzswuEEXp.CreateServiceAccountKey', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -5214,8 +5135,8 @@ event.dataset:(googlecloud.audit or gcp.audit) and event.action:v*.compute.netwo
 ```
 
 ```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'vxiutkni.compute.networks.delete', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'vixtflezswueexp.compute.networks.delete', 'outcome': 'success'}, '@timestamp': 1}]
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'vXIUtkNI.compute.networks.delete', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'vixTFlEzswuEEXp.compute.networks.delete', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -5231,9 +5152,9 @@ event.dataset:(googlecloud.audit or gcp.audit) and event.action:(v*.compute.rout
 ```
 
 ```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'vxiutkni.compute.routes.insert'}, '@timestamp': 0},
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'vXIUtkNI.compute.routes.insert'}, '@timestamp': 0},
  {'event': {'dataset': 'googlecloud.audit', 'action': 'beta.compute.routes.insert'}, '@timestamp': 1},
- {'event': {'dataset': 'gcp.audit', 'action': 'vixtflezswueexp.compute.routes.insert'}, '@timestamp': 2},
+ {'event': {'dataset': 'gcp.audit', 'action': 'vixTFlEzswuEEXp.compute.routes.insert'}, '@timestamp': 2},
  {'event': {'dataset': 'gcp.audit', 'action': 'beta.compute.routes.insert'}, '@timestamp': 3}]
 ```
 
@@ -5250,8 +5171,8 @@ event.dataset:(googlecloud.audit or gcp.audit) and event.action:v*.compute.route
 ```
 
 ```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'vxiutkni.compute.routes.delete', 'outcome': 'success'}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'vixtflezswueexp.compute.routes.delete', 'outcome': 'success'}, '@timestamp': 1}]
+[{'event': {'dataset': 'googlecloud.audit', 'action': 'vXIUtkNI.compute.routes.delete', 'outcome': 'success'}, '@timestamp': 0},
+ {'event': {'dataset': 'gcp.audit', 'action': 'vixTFlEzswuEEXp.compute.routes.delete', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -5436,7 +5357,7 @@ any where
 ```
 
 ```python
-[{'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': 'e:\\windows\\system32\\drivers\\etc\\hosts'}, '@timestamp': 0},
+[{'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': 'E:\\Windows\\System32\\drivers\\etc\\hosts'}, '@timestamp': 0},
  {'event': {'category': ['file'], 'type': ['creation']}, 'file': {'path': '/private/etc/hosts'}, '@timestamp': 1},
  {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'nano', 'args': ['/etc/hosts']}, '@timestamp': 2},
  {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'vim', 'args': ['/etc/hosts']}, '@timestamp': 3},
@@ -5743,21 +5664,21 @@ sequence by process.entity_id with maxspan = 5m
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ZFy', 'entity_id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'hklm\\software\\microsoft\\windows nt\\currentversion\\appcompatflags\\custom\\knioixtf.sdb'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\kNIoixTF.sdb'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'lEz', 'entity_id': 'swu'}, '@timestamp': 2},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'hklm\\software\\microsoft\\windows nt\\currentversion\\appcompatflags\\custom\\leoaagaifq.sdb'}, 'process': {'entity_id': 'swu'}, '@timestamp': 3},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\LeOAagaiFq.sdb'}, 'process': {'entity_id': 'swu'}, '@timestamp': 3},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'syz'}, 'entity_id': 'KNy'}, '@timestamp': 4},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'hklm\\software\\microsoft\\windows nt\\currentversion\\appcompatflags\\custom\\qdpueudqxvto.sdb'}, 'process': {'entity_id': 'KNy'}, '@timestamp': 5},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\QDpUEUDqxVTO.sdb'}, 'process': {'entity_id': 'KNy'}, '@timestamp': 5},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'LWt'}, 'entity_id': 'imr'}, '@timestamp': 6},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'hklm\\software\\microsoft\\windows nt\\currentversion\\appcompatflags\\custom\\tm.sdb'}, 'process': {'entity_id': 'imr'}, '@timestamp': 7},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\Tm.sdb'}, 'process': {'entity_id': 'imr'}, '@timestamp': 7},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'shC', 'entity_id': 'eLW'}, '@timestamp': 8},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'hklm\\software\\microsoft\\windows nt\\currentversion\\appcompatflags\\custom\\l.sdb'}, 'process': {'entity_id': 'eLW'}, '@timestamp': 9},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\L.sdb'}, 'process': {'entity_id': 'eLW'}, '@timestamp': 9},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'Sjo', 'entity_id': 'Grm'}, '@timestamp': 10},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'hklm\\software\\microsoft\\windows nt\\currentversion\\appcompatflags\\custom\\wdunrzjeyluzfiz.sdb'}, 'process': {'entity_id': 'Grm'}, '@timestamp': 11},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\wDUNrZjeyLuZfIz.sdb'}, 'process': {'entity_id': 'Grm'}, '@timestamp': 11},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'miE'}, 'entity_id': 'Gga'}, '@timestamp': 12},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'hklm\\software\\microsoft\\windows nt\\currentversion\\appcompatflags\\custom\\k.sdb'}, 'process': {'entity_id': 'Gga'}, '@timestamp': 13},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\K.sdb'}, 'process': {'entity_id': 'Gga'}, '@timestamp': 13},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'EIp'}, 'entity_id': 'duD'}, '@timestamp': 14},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'hklm\\software\\microsoft\\windows nt\\currentversion\\appcompatflags\\custom\\xfeizbtxzjcw.sdb'}, 'process': {'entity_id': 'duD'}, '@timestamp': 15}]
+ {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\xFEiZBTXzJCW.sdb'}, 'process': {'entity_id': 'duD'}, '@timestamp': 15}]
 ```
 
 
@@ -5776,7 +5697,7 @@ registry where
 ```
 
 ```python
-[{'registry': {'path': 'hklm\\system\\xiutknicontrolsetsvilo\\control\\lsa\\security packagesezswu'}, 'process': {'executable': 'EEX'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'registry': {'path': 'HKLM\\SYSTEM\\XIUtkNIControlSetSvILO\\Control\\Lsa\\Security PackagesEzswu'}, 'process': {'executable': 'EEX'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
 ```
 
 
@@ -5838,7 +5759,7 @@ event.action:modified-user-account and event.code:4738 and winlog.event_data.All
 ```
 
 ```python
-[{'event': {'action': 'modified-user-account', 'code': 4738}, 'winlog': {'event_data': {'AllowedToDelegateTo': 'xiutknikrbtgtsvilo'}}, '@timestamp': 0}]
+[{'event': {'action': 'modified-user-account', 'code': 4738}, 'winlog': {'event_data': {'AllowedToDelegateTo': 'XIUtkNIkrbtgtSvILO'}}, '@timestamp': 0}]
 ```
 
 
@@ -5930,7 +5851,7 @@ file where file.name : ("lsass*.dmp", "dumpert.dmp", "Andrew.dmp", "SQLDmpr*.mdm
 ```
 
 ```python
-[{'file': {'name': 'sqldmpryxiutknioixtfl.mdmp'}, 'event': {'category': ['file']}, '@timestamp': 0}]
+[{'file': {'name': 'lsassyXIUtkNIoixTFl.dmp'}, 'event': {'category': ['file']}, '@timestamp': 0}]
 ```
 
 
@@ -5949,10 +5870,10 @@ file where event.type in ("creation", "change") and
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'mstsc.exe'}, 'file': {'path': 'c:\\xiutkni\\microsoft\\windows\\start menu\\programs\\startup\\svilo'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'path': 'c:\\ohmxbnleoa\\microsoft\\windows\\start menu\\programs\\startup\\n'}, '@timestamp': 1},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'name': 'mstsc.exe'}, 'file': {'path': 'c:\\ifqsyzknyyqdpu\\microsoft\\windows\\start menu\\programs\\startup\\mlopzrguvw'}, '@timestamp': 2},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'path': 'c:\\mrf\\microsoft\\windows\\start menu\\programs\\startup\\fha'}, '@timestamp': 3}]
+[{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'mstsc.exe'}, 'file': {'path': 'C:\\XIUtkNI\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\SvILO'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'path': 'C:\\OHmxBnLeOA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\N'}, '@timestamp': 1},
+ {'event': {'type': ['change'], 'category': ['file']}, 'process': {'name': 'mstsc.exe'}, 'file': {'path': 'C:\\iFqsyzKNyyQDpU\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\mlOPZRgUvW'}, '@timestamp': 2},
+ {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'path': 'C:\\mrF\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\fHa'}, '@timestamp': 3}]
 ```
 
 
@@ -5997,9 +5918,9 @@ sequence by host.id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/users/fuyyfjsvilo/library/launchagents/ezswu'}, 'host': {'id': 'EEX'}, '@timestamp': 0},
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/Users/fUyyFjSvILO/Library/LaunchAgents/Ezswu'}, 'host': {'id': 'EEX'}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'EEX'}, '@timestamp': 1},
- {'event': {'type': ['pWq'], 'category': ['file']}, 'file': {'path': '/library/launchagents/aifqsyzknyyqdpu'}, 'host': {'id': 'EUD'}, '@timestamp': 2},
+ {'event': {'type': ['pWq'], 'category': ['file']}, 'file': {'path': '/Library/LaunchAgents/aiFqsyzKNyyQDpU'}, 'host': {'id': 'EUD'}, '@timestamp': 2},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'EUD'}, '@timestamp': 3}]
 ```
 
@@ -6029,13 +5950,13 @@ sequence with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['process']}, 'process': {'name': 'wmic.exe', 'entity_id': 'IUt'}, '@timestamp': 0},
+[{'event': {'type': ['ZFy'], 'category': ['process']}, 'process': {'name': 'winrshost.exe', 'entity_id': 'IUt'}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'kNI'}}, 'parent': {'entity_id': 'IUt'}}, 'winlog': {'event_data': {'IntegrityLevel': 'oix'}}, '@timestamp': 1},
- {'event': {'type': ['TFl'], 'category': ['process']}, 'process': {'name': 'wmiprvse.exe', 'entity_id': 'OHm'}, '@timestamp': 2},
+ {'event': {'type': ['TFl'], 'category': ['process']}, 'process': {'name': 'wmic.exe', 'entity_id': 'OHm'}, '@timestamp': 2},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'xBn'}}, 'parent': {'entity_id': 'OHm'}}, 'winlog': {'event_data': {'IntegrityLevel': 'LeO'}}, '@timestamp': 3},
- {'event': {'type': ['Aag'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'cmd.exe'}, 'entity_id': 'Rcy'}, '@timestamp': 4},
+ {'event': {'type': ['Aag'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'WmiPrvSe.exe'}, 'entity_id': 'Rcy'}, '@timestamp': 4},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'mEE'}}, 'parent': {'entity_id': 'Rcy'}}, 'winlog': {'event_data': {'IntegrityLevel': 'wVP'}}, '@timestamp': 5},
- {'event': {'type': ['YMG'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'winrshost.exe'}, 'entity_id': 'pUE'}, '@timestamp': 6},
+ {'event': {'type': ['YMG'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'rundll32.exe'}, 'entity_id': 'pUE'}, '@timestamp': 6},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'UDq'}}, 'parent': {'entity_id': 'pUE'}}, 'winlog': {'event_data': {'IntegrityLevel': 'xVT'}}, '@timestamp': 7},
  {'event': {'type': ['OLW'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'entity_id': 'tim'}, '@timestamp': 8},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'rFg'}}, 'parent': {'entity_id': 'tim'}}, 'winlog': {'event_data': {'IntegrityLevel': 'Tms'}}, '@timestamp': 9},
@@ -6468,9 +6389,9 @@ sequence by process.entity_id
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
- {'dll': {'name': 'samlib.dll'}, 'event': {'category': ['library']}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1},
+ {'dll': {'name': 'SAMLib.DLL'}, 'event': {'category': ['library']}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'MSBuild.exe'}, 'entity_id': 'Utk'}, '@timestamp': 2},
- {'dll': {'name': 'samlib.dll'}, 'event': {'category': ['library']}, 'process': {'entity_id': 'Utk'}, '@timestamp': 3}]
+ {'dll': {'name': 'SAMLib.DLL'}, 'event': {'category': ['library']}, 'process': {'entity_id': 'Utk'}, '@timestamp': 3}]
 ```
 
 
@@ -6590,7 +6511,7 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'umworkerprocess.exe'}, 'name': 'vCf'}, '@timestamp': 0}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'UMWorkerProcess.exe'}, 'name': 'vCf'}, '@timestamp': 0}]
 ```
 
 
@@ -6619,9 +6540,9 @@ file where event.type == "creation" and
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'umworkerprocess.exe'}, 'file': {'extension': 'php', 'path': 'y:\\inetpub\\wwwroot\\aspnet_client\\knioixtf'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'umservice.exe'}, 'file': {'extension': 'js', 'path': 'p:\\mxbnle\\microsoft\\exchange serverwqnvrcymeewvp\\frontend\\httpproxy\\owa\\auth\\mgznfmlo', 'name': 'PZR'}, '@timestamp': 1},
- {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'umservice.exe'}, 'file': {'extension': 'php', 'path': 'i:\\imz\\microsoft\\exchange servergtmshcelwycys\\frontend\\httpproxy\\ecp\\auth\\o', 'name': 'Grm'}, '@timestamp': 2}]
+[{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'umservice.exe'}, 'file': {'extension': 'php', 'path': 'y:\\inetpub\\wwwroot\\aspnet_client\\kNIoixTF'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'UMWorkerProcess.exe'}, 'file': {'extension': 'js', 'path': 'P:\\mxBnLe\\Microsoft\\Exchange ServerWqNVRcymEEwVP\\FrontEnd\\HttpProxy\\owa\\auth\\MGzNfmlO', 'name': 'PZR'}, '@timestamp': 1},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'UMWorkerProcess.exe'}, 'file': {'extension': 'php', 'path': 'I:\\iMZ\\Microsoft\\Exchange ServergTmshCeLWYcYs\\FrontEnd\\HttpProxy\\ecp\\auth\\o', 'name': 'Grm'}, '@timestamp': 2}]
 ```
 
 
@@ -6898,8 +6819,8 @@ event.category:file and event.type:change and
 ```
 
 ```python
-[{'event': {'category': ['file'], 'type': ['change']}, 'file': {'name': 'pam_xiutkni.so', 'path': 'TFl'}, 'process': {'executable': 'oix'}, '@timestamp': 0},
- {'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/private/etc/pam.d/swueexpwqnv'}, 'process': {'executable': 'Rcy'}, '@timestamp': 1}]
+[{'event': {'category': ['file'], 'type': ['change']}, 'file': {'name': 'pam_XIUtkNI.so', 'path': 'TFl'}, 'process': {'executable': 'oix'}, '@timestamp': 0},
+ {'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/private/etc/pam.d/swuEEXpWqNV'}, 'process': {'executable': 'Rcy'}, '@timestamp': 1}]
 ```
 
 
@@ -7307,8 +7228,8 @@ sequence by process.entity_id
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'regsvr32.exe', 'Ext': {'token': {'integrity_level_name': 'TvC'}}, 'entity_id': 'yFj'}, 'winlog': {'event_data': {'IntegrityLevel': 'fUy'}}, '@timestamp': 0},
- {'process': {'name': 'regasm.exe', 'entity_id': 'yFj'}, 'destination': {'ip': '115.189.242.190'}, 'network': {'protocol': 'ILO'}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'regsvcs.exe', 'parent': {'name': 'Ezs', 'executable': 'wuE'}, 'entity_id': 'EXp'}, '@timestamp': 2},
+ {'process': {'name': 'RegAsm.exe', 'entity_id': 'yFj'}, 'destination': {'ip': '115.189.242.190'}, 'network': {'protocol': 'ILO'}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'RegSvcs.exe', 'parent': {'name': 'Ezs', 'executable': 'wuE'}, 'entity_id': 'EXp'}, '@timestamp': 2},
  {'process': {'name': 'regsvr32.exe', 'entity_id': 'EXp'}, 'destination': {'ip': '0.167.86.71'}, 'network': {'protocol': 'NVR'}, 'event': {'category': ['network']}, '@timestamp': 3}]
 ```
 
@@ -7614,6 +7535,41 @@ process where event.type == "start" and
 
 
 
+### Persistence via DirectoryService Plugin Modification
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-373
+
+```python
+event.category:file and not event.type:deletion and
+  file.path:/Library/DirectoryServices/PlugIns/*.dsplug
+```
+
+```python
+[{'event': {'category': ['file'], 'type': ['ZFy']}, 'file': {'path': '/Library/DirectoryServices/PlugIns/UyyFjSvILOoOHmx.dsplug'}, '@timestamp': 0}]
+```
+
+
+
+### Persistence via Docker Shortcut Modification
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-374
+
+```python
+event.category : file and event.action : modification and 
+ file.path : /Users/*/Library/Preferences/com.apple.dock.plist and 
+ not process.name : (xpcproxy or cfprefsd or plutil or jamf or PlistBuddy or InstallerRemotePluginService)
+```
+
+```python
+[{'event': {'category': ['file'], 'action': 'modification'}, 'file': {'path': '/Users/XIUtkNI/Library/Preferences/com.apple.dock.plist'}, 'process': {'name': 'oix'}, '@timestamp': 0}]
+```
+
+
+
 ### Persistence via Folder Action Script
 
 Branch count: 66  
@@ -7782,7 +7738,7 @@ registry where /* length(registry.data.strings) > 0 and */
 ```
 
 ```python
-[{'registry': {'path': 'hklm\\software\\wow6432node\\microsoft\\windows\\currentversion\\run\\'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'registry': {'path': 'HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
 ```
 
 
@@ -7810,8 +7766,8 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'sh', 'path': '/home/uyyfjsvilooohmx/.kde/autostart/eexpwqnvr'}, '@timestamp': 0},
- {'event': {'type': ['cym'], 'category': ['file']}, 'file': {'extension': 'desktop', 'path': '/root/.local/share/autostart/zknyyqdpue'}, '@timestamp': 1}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'sh', 'path': '/home/UyyFjSvILOoOHmx/.kde/Autostart/EEXpWqNVR'}, '@timestamp': 0},
+ {'event': {'type': ['cym'], 'category': ['file']}, 'file': {'extension': 'desktop', 'path': '/root/.local/share/autostart/zKNyyQDpUE'}, '@timestamp': 1}]
 ```
 
 
@@ -7857,7 +7813,7 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'xlam', 'path': 'c:\\users\\ut\\appdata\\roaming\\microsoft\\word\\startup\\yfjs'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'xlam', 'path': 'C:\\Users\\Ut\\AppData\\Roaming\\Microsoft\\Word\\Startup\\yFjS'}, '@timestamp': 0}]
 ```
 
 
@@ -7874,7 +7830,7 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': 'c:\\users\\uyyfjsvilooohmx\\appdata\\roaming\\microsoft\\outlook\\vbaproject.otm'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': 'C:\\Users\\UyyFjSvILOoOHmx\\AppData\\Roaming\\Microsoft\\Outlook\\VbaProject.OTM'}, '@timestamp': 0}]
 ```
 
 
@@ -7891,7 +7847,7 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': 'y:\\windows\\tasks\\knioixtf', 'extension': 'job'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': 'y:\\Windows\\Tasks\\kNIoixTF', 'extension': 'job'}, '@timestamp': 0}]
 ```
 
 
@@ -7991,8 +7947,8 @@ file where event.type != "deletion" and user.domain != "NT AUTHORITY" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'user': {'domain': 'XIU'}, 'file': {'path': 'c:\\knioixtf\\programs\\startup\\oohm.lnk'}, 'process': {'name': 'wscript.exe'}, '@timestamp': 0},
- {'file': {'path': 'c:\\eexpwqnvr\\programs\\startup\\f.wsf'}, 'event': {'category': ['file']}, '@timestamp': 1}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'user': {'domain': 'XIU'}, 'file': {'path': 'C:\\kNIoixTF\\Programs\\Startup\\oOHm.lnk'}, 'process': {'name': 'wscript.exe'}, '@timestamp': 0},
+ {'file': {'path': 'C:\\EEXpWqNVR\\Programs\\Startup\\F.wsf'}, 'event': {'category': ['file']}, '@timestamp': 1}]
 ```
 
 
@@ -8008,7 +7964,7 @@ registry where registry.path : "HKLM\\SYSTEM\\*ControlSet*\\Services\\PortProxy\
 ```
 
 ```python
-[{'registry': {'path': 'hklm\\system\\xiutknicontrolsetsvilo\\services\\portproxy\\v4tov4\\ezswu'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'registry': {'path': 'HKLM\\SYSTEM\\XIUtkNIControlSetSvILO\\Services\\PortProxy\\v4tov4\\Ezswu'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
 ```
 
 
@@ -8221,7 +8177,7 @@ any where event.action == "Directory Service Access" and
 ```
 
 ```python
-[{'event': {'action': 'Directory Service Access', 'code': '4662'}, 'winlog': {'event_data': {'Properties': 'yxiutknioixtflds-replication-get-changes-allohmxbnleoa', 'AccessMask': '0x100', 'SubjectUserName': 'aga'}}, '@timestamp': 0}]
+[{'event': {'action': 'Directory Service Access', 'code': '4662'}, 'winlog': {'event_data': {'Properties': 'yXIUtkNIoixTFlDS-Replication-Get-Changes-AllOHmxBnLeOA', 'AccessMask': '0x100', 'SubjectUserName': 'aga'}}, '@timestamp': 0}]
 ```
 
 
@@ -8243,7 +8199,7 @@ process where event.code == "10" and
 ```
 
 ```python
-[{'event': {'code': '10', 'category': ['process']}, 'process': {'name': 'lsass.exe'}, 'winlog': {'event_data': {'GrantedAccess': '0x40', 'CallTrace': 'xiutkniunknownsvilo'}}, '@timestamp': 0}]
+[{'event': {'code': '10', 'category': ['process']}, 'process': {'name': 'lsass.exe'}, 'winlog': {'event_data': {'GrantedAccess': '0x40', 'CallTrace': 'XIUtkNIUNKNOWNSvILO'}}, '@timestamp': 0}]
 ```
 
 
@@ -8266,7 +8222,7 @@ process where event.code == "10" and
 ```
 
 ```python
-[{'event': {'code': '10', 'category': ['process']}, 'winlog': {'event_data': {'TargetImage': 'a:\\windows\\system32\\lsass.exe', 'CallTrace': 'uyyfjsvilooohmxdbgcoreeexpwqnvr'}}, 'process': {'executable': 'cym'}, '@timestamp': 0}]
+[{'event': {'code': '10', 'category': ['process']}, 'winlog': {'event_data': {'TargetImage': 'A:\\WINDOWS\\system32\\lsass.exe', 'CallTrace': 'UyyFjSvILOoOHmxdbgcoreEEXpWqNVR'}}, 'process': {'executable': 'cym'}, '@timestamp': 0}]
 ```
 
 
@@ -8440,13 +8396,13 @@ sequence by host.id with maxspan=1m
 [{'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 4052611751}, 'destination': {'port': 1389}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 4052611751}, 'name': 'sh'}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
  {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 906141214}, 'destination': {'port': 389}, 'host': {'id': 'IUt'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 906141214}, 'name': 'rubyfjsvilooohmxb'}, 'host': {'id': 'IUt'}, '@timestamp': 3},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 906141214}, 'name': 'rubyFjSvILOoOHmxB'}, 'host': {'id': 'IUt'}, '@timestamp': 3},
  {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 3305599734}, 'destination': {'port': 1099}, 'host': {'id': 'nLe'}, '@timestamp': 4},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 3305599734}, 'name': 'sh'}, 'host': {'id': 'nLe'}, '@timestamp': 5},
  {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 3588492870}, 'destination': {'port': 53}, 'host': {'id': 'qNV'}, '@timestamp': 6},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 3588492870}, 'name': 'dash'}, 'host': {'id': 'qNV'}, '@timestamp': 7},
  {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 2543124572}, 'destination': {'port': 5353}, 'host': {'id': 'cym'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 2543124572}, 'name': 'rubyzknyyqdpue'}, 'host': {'id': 'cym'}, '@timestamp': 9}]
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 2543124572}, 'name': 'rubyzKNyyQDpUE'}, 'host': {'id': 'cym'}, '@timestamp': 9}]
 ```
 
 
@@ -8487,7 +8443,7 @@ registry where event.type == "change" and
 ```
 
 ```python
-[{'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'hklm\\system\\xiutknicontrolsetsvilo\\control\\lsa\\authentication packages'}, 'user': {'id': 'oOH'}, '@timestamp': 0}]
+[{'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SYSTEM\\XIUtkNIControlSetSvILO\\Control\\Lsa\\Authentication Packages'}, 'user': {'id': 'oOH'}, '@timestamp': 0}]
 ```
 
 
@@ -8505,7 +8461,7 @@ process where event.code:"4688" and
 ```
 
 ```python
-[{'event': {'code': '4688', 'category': ['process']}, 'process': {'executable': 'a:\\windows\\system32\\lsass.exe', 'parent': {'executable': 'y:\\windows\\system32\\lsass.exe'}}, '@timestamp': 0}]
+[{'event': {'code': '4688', 'category': ['process']}, 'process': {'executable': 'A:\\Windows\\System32\\lsass.exe', 'parent': {'executable': 'y:\\Windows\\System32\\lsass.exe'}}, '@timestamp': 0}]
 ```
 
 
@@ -8521,7 +8477,7 @@ event.category:file and not event.type:deletion and file.name:~$*.zip
 ```
 
 ```python
-[{'event': {'category': ['file'], 'type': ['ZFy']}, 'file': {'name': '~$uyyfjsvilooohmx.zip'}, '@timestamp': 0}]
+[{'event': {'category': ['file'], 'type': ['ZFy']}, 'file': {'name': '~$UyyFjSvILOoOHmx.zip'}, '@timestamp': 0}]
 ```
 
 
@@ -8567,7 +8523,7 @@ process where event.type in ("start", "process_started", "info") and
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'winlogon.exe'}, 'args': ['C:\\Windows\\System32\\osk.exe', 'C:\\Windows\\System32\\Magnify.exe', 'C:\\Windows\\System32\\Narrator.exe', 'C:\\Windows\\System32\\Sethc.exe', 'utilman.exe', 'ATBroker.exe', 'DisplaySwitch.exe', 'sethc.exe'], 'pe': {'original_file_name': 'vCf'}}, 'user': {'name': 'SYSTEM'}, '@timestamp': 0},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'winlogon.exe'}, 'args': ['C:\\Windows\\System32\\osk.exe', 'C:\\Windows\\System32\\Magnify.exe', 'C:\\Windows\\System32\\Narrator.exe', 'C:\\Windows\\System32\\Sethc.exe', 'utilman.exe', 'ATBroker.exe', 'DisplaySwitch.exe', 'sethc.exe'], 'pe': {'original_file_name': 'yyF'}}, 'user': {'name': 'SYSTEM'}, '@timestamp': 1},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'parent': {'name': 'utilman.exe'}, 'args': ['C:\\Windows\\System32\\osk.exe', 'C:\\Windows\\System32\\Magnify.exe', 'C:\\Windows\\System32\\Narrator.exe', 'C:\\Windows\\System32\\Sethc.exe', 'utilman.exe', 'ATBroker.exe', 'DisplaySwitch.exe', 'sethc.exe'], 'pe': {'original_file_name': 'oix'}}, 'user': {'name': 'SYSTEM'}, '@timestamp': 2}]
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'parent': {'name': 'Utilman.exe'}, 'args': ['C:\\Windows\\System32\\osk.exe', 'C:\\Windows\\System32\\Magnify.exe', 'C:\\Windows\\System32\\Narrator.exe', 'C:\\Windows\\System32\\Sethc.exe', 'utilman.exe', 'ATBroker.exe', 'DisplaySwitch.exe', 'sethc.exe'], 'pe': {'original_file_name': 'oix'}}, 'user': {'name': 'SYSTEM'}, '@timestamp': 2}]
 ```
 
 
@@ -8611,9 +8567,26 @@ file where event.type == "change" and process.executable : ("/usr/sbin/sshd", "/
 ```
 
 ```python
-[{'event': {'type': ['change'], 'category': ['file']}, 'process': {'executable': '/usr/sbin/sshd'}, 'file': {'name': '~iutknioix'}, '@timestamp': 0},
+[{'event': {'type': ['change'], 'category': ['file']}, 'process': {'executable': '/usr/sbin/sshd'}, 'file': {'name': '~IUtkNIoix'}, '@timestamp': 0},
  {'event': {'type': ['change'], 'category': ['file']}, 'process': {'executable': '/usr/bin/ssh'}, 'file': {'extension': '8'}, '@timestamp': 1},
  {'event': {'type': ['change'], 'category': ['file']}, 'process': {'executable': '/usr/sbin/sshd'}, 'file': {'path': '/var/run/udevd.pid'}, '@timestamp': 2}]
+```
+
+
+
+### Potential Persistence via Atom Init Script Modification
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-418
+
+```python
+event.category:"file" and not event.type:"deletion" and
+ file.path:/Users/*/.atom/init.coffee and not process.name:(Atom or xpcproxy) and not user.name:root
+```
+
+```python
+[{'event': {'category': ['file'], 'type': ['ZFy']}, 'file': {'path': '/Users/UyyFjSvILOoOHmx/.atom/init.coffee'}, 'process': {'name': 'BnL'}, 'user': {'name': 'eOA'}, '@timestamp': 0}]
 ```
 
 
@@ -8678,7 +8651,7 @@ event.category:"file" and not event.type:"deletion" and
 ```
 
 ```python
-[{'event': {'category': ['file'], 'type': ['ZFy']}, 'file': {'path': '/private/etc/periodic/uyyfjsvilooohmx'}, '@timestamp': 0},
+[{'event': {'category': ['file'], 'type': ['ZFy']}, 'file': {'path': '/private/etc/periodic/UyyFjSvILOoOHmx'}, '@timestamp': 0},
  {'event': {'category': ['file'], 'type': ['BnL']}, 'file': {'path': '/private/etc/defaults/periodic.conf'}, '@timestamp': 1},
  {'event': {'category': ['file'], 'type': ['eOA']}, 'file': {'path': '/private/etc/periodic.conf'}, '@timestamp': 2}]
 ```
@@ -8700,7 +8673,7 @@ file where process.name : "spoolsv.exe" and
 ```
 
 ```python
-[{'process': {'name': 'spoolsv.exe'}, 'file': {'name': 'winhttp.dll', 'path': 'a:\\windows\\system32\\spool\\drivers\\x64\\3\\iutknioix'}, 'event': {'category': ['file']}, '@timestamp': 0}]
+[{'process': {'name': 'spoolsv.exe'}, 'file': {'name': 'winhttp.dll', 'path': 'A:\\Windows\\System32\\spool\\drivers\\x64\\3\\IUtkNIoix'}, 'event': {'category': ['file']}, '@timestamp': 0}]
 ```
 
 
@@ -8717,8 +8690,8 @@ process where event.type in ("start", "process_started") and process.name : "sql
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sqlitexiutkni', 'args': ['/*/Application Support/com.apple.TCC/TCC.db']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sqliteixtflezswueexp', 'args': ['/*/Application Support/com.apple.TCC/TCC.db']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sqliteXIUtkNI', 'args': ['/*/Application Support/com.apple.TCC/TCC.db']}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sqliteixTFlEzswuEEXp', 'args': ['/*/Application Support/com.apple.TCC/TCC.db']}, '@timestamp': 1}]
 ```
 
 
@@ -8764,7 +8737,7 @@ file where file.path : "/*GCONV_PATH*"
 ```
 
 ```python
-[{'file': {'path': '/xiutknigconv_pathsvilo'}, 'event': {'category': ['file']}, '@timestamp': 0}]
+[{'file': {'path': '/XIUtkNIGCONV_PATHSvILO'}, 'event': {'category': ['file']}, '@timestamp': 0}]
 ```
 
 
@@ -8798,7 +8771,7 @@ iam where event.action == "renamed-user-account" and
 ```
 
 ```python
-[{'event': {'action': 'renamed-user-account', 'category': ['iam']}, 'winlog': {'event_data': {'OldTargetUserName': 'xiutkni$', 'NewTargetUserName': 'oix'}}, '@timestamp': 0}]
+[{'event': {'action': 'renamed-user-account', 'category': ['iam']}, 'winlog': {'event_data': {'OldTargetUserName': 'XIUtkNI$', 'NewTargetUserName': 'oix'}}, '@timestamp': 0}]
 ```
 
 
@@ -8861,7 +8834,7 @@ any where
 
 ```python
 [{'event': {'category': ['registry']}, 'registry': {'path': 'HKLM\\Software\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Shadow'}, '@timestamp': 0},
- {'event': {'category': ['process']}, 'process': {'name': 'rdpsauachelper.exe', 'parent': {'name': 'svchost.exe'}}, '@timestamp': 1},
+ {'event': {'category': ['process']}, 'process': {'name': 'RdpSaUacHelper.exe', 'parent': {'name': 'svchost.exe'}}, '@timestamp': 1},
  {'process': {'pe': {'original_file_name': 'mstsc.exe'}, 'args': ['/shadow:*']}, '@timestamp': 2}]
 ```
 
@@ -8925,7 +8898,7 @@ file where event.type == "change" and file.name : "*AAA.AAA"
 ```
 
 ```python
-[{'event': {'type': ['change'], 'category': ['file']}, 'file': {'name': 'xiutkniaaa.aaa'}, '@timestamp': 0}]
+[{'event': {'type': ['change'], 'category': ['file']}, 'file': {'name': 'XIUtkNIAAA.AAA'}, '@timestamp': 0}]
 ```
 
 
@@ -8994,7 +8967,7 @@ sequence by host.id, process.entity_id with maxspan = 5s
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'wermgr.exe', 'args_count': 1, 'entity_id': 'Uyy'}, 'host': {'id': 'vCf'}, '@timestamp': 0},
- {'process': {'name': 'werfault.exe', 'entity_id': 'Uyy'}, 'network': {'protocol': 'oix', 'direction': 'egress'}, 'destination': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af'}, 'event': {'category': ['network']}, 'host': {'id': 'vCf'}, '@timestamp': 1}]
+ {'process': {'name': 'WerFault.exe', 'entity_id': 'Uyy'}, 'network': {'protocol': 'oix', 'direction': 'egress'}, 'destination': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af'}, 'event': {'category': ['network']}, 'host': {'id': 'vCf'}, '@timestamp': 1}]
 ```
 
 
@@ -9185,7 +9158,7 @@ file where event.action : "Pipe Created*" and
 ```
 
 ```python
-[{'event': {'action': 'pipe createdxiutkni', 'category': ['file']}, 'file': {'name': '\\ixtflezswueexp\\pipe\\aagaifqsyzknyyq'}, '@timestamp': 0}]
+[{'event': {'action': 'Pipe CreatedXIUtkNI', 'category': ['file']}, 'file': {'name': '\\ixTFlEzswuEEXp\\Pipe\\AagaiFqsyzKNyyQ'}, '@timestamp': 0}]
 ```
 
 
@@ -9270,9 +9243,9 @@ process.executable : ("C:\\PerfLogs\\*.exe","C:\\Users\\Public\\*.exe","C:\\User
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'c:\\windows\\tasks\\xiutkni.exe', 'name': 'oix'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'c:\\windows\\immersivecontrolpanel\\ezswu.exe', 'name': 'EEX'}, '@timestamp': 1},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'executable': 'c:\\windows\\panther\\wqnvrcymeewvp.exe', 'name': 'YMG'}, '@timestamp': 2}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'C:\\Windows\\servicing\\XIUtkNI.exe', 'name': 'oix'}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'C:\\Windows\\PrintDialog\\Ezswu.exe', 'name': 'EEX'}, '@timestamp': 1},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'executable': 'C:\\Windows\\System32\\Speech\\WqNVRcymEEwVP.exe', 'name': 'YMG'}, '@timestamp': 2}]
 ```
 
 
@@ -9362,7 +9335,7 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'c:\\xiutkniprogramsvilofilesezswu\\nleoaagaif.exe'}, '@timestamp': 0}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'C:\\XIUtkNIProgramSvILOFilesEzswu\\nLeOAagaiF.exe'}, '@timestamp': 0}]
 ```
 
 
@@ -9453,8 +9426,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'pythonxiutkni', 'args': ['-c', '*import*sys*']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'pythonixtflezswueexp', 'args': ['-c', '*import*sys*']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'pythonXIUtkNI', 'args': ['-c', '*import*sys*']}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'pythonixTFlEzswuEEXp', 'args': ['-c', '*import*sys*']}, '@timestamp': 1}]
 ```
 
 
@@ -9750,7 +9723,7 @@ registry where
 ```
 
 ```python
-[{'registry': {'path': 'hklm\\system\\xiutknicontrolsetsvilo\\control\\session manager\\appcertdlls\\ezswu'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'registry': {'path': 'HKLM\\SYSTEM\\XIUtkNIControlSetSvILO\\Control\\Session Manager\\AppCertDLLs\\Ezswu'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
 ```
 
 
@@ -9772,7 +9745,7 @@ registry where
 ```
 
 ```python
-[{'registry': {'path': 'hklm\\software\\wow6432node\\microsoft\\windows nt\\currentversion\\windows\\appinit_dlls'}, 'process': {'executable': 'vCf'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'registry': {'path': 'HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\AppInit_Dlls'}, 'process': {'executable': 'vCf'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
 ```
 
 
@@ -9981,7 +9954,7 @@ sequence by host.id, process.entity_id with maxspan = 1m
 
 ```python
 [{'process': {'name': 'svchost.exe', 'entity_id': 'vIL'}, 'network': {'direction': 'ingress'}, 'source': {'port': 62863, 'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, 'destination': {'port': 52641}, 'event': {'category': ['network']}, 'host': {'id': 'FjS'}, '@timestamp': 0},
- {'registry': {'path': 'hklm\\software\\microsoft\\windows nt\\currentversion\\schedule\\taskcache\\tasks\\ezswu\\actions'}, 'event': {'category': ['registry']}, 'host': {'id': 'FjS'}, 'process': {'entity_id': 'vIL'}, '@timestamp': 1}]
+ {'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\Ezswu\\Actions'}, 'event': {'category': ['registry']}, 'host': {'id': 'FjS'}, 'process': {'entity_id': 'vIL'}, '@timestamp': 1}]
 ```
 
 
@@ -10061,9 +10034,9 @@ process where event.type in ("start", "process_started", "info") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'autoitxiutkni.exe'}, 'name': 'oix'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'autoitezswu.exe'}, 'name': 'EEX'}, '@timestamp': 1},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'autoitwqnvrcymeewvp.exe'}, 'name': 'YMG'}, '@timestamp': 2}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'AutoItXIUtkNI.exe'}, 'name': 'oix'}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'AutoItEzswu.exe'}, 'name': 'EEX'}, '@timestamp': 1},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'AutoItWqNVRcymEEwVP.exe'}, 'name': 'YMG'}, '@timestamp': 2}]
 ```
 
 
@@ -10400,7 +10373,7 @@ sequence by host.id with maxspan = 30s
 
 ```python
 [{'dll': {'name': 'taskschd.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'TvC'}, '@timestamp': 0},
- {'registry': {'path': 'hklm\\software\\microsoft\\windows nt\\currentversion\\schedule\\taskcache\\tasks\\uyyfjsvilooohmx\\actions'}, 'event': {'category': ['registry']}, 'host': {'id': 'TvC'}, '@timestamp': 1}]
+ {'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\UyyFjSvILOoOHmx\\Actions'}, 'event': {'category': ['registry']}, 'host': {'id': 'TvC'}, '@timestamp': 1}]
 ```
 
 
@@ -10429,7 +10402,7 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'name': 'com.apple.screensaver.uyyfjsvilooohmx.plist', 'path': '/users/nleoaagaif/library/preferences/byhost/meewvp'}, 'process': {'executable': 'YMG'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'name': 'com.apple.screensaver.UyyFjSvILOoOHmx.plist', 'path': '/Users/nLeOAagaiF/Library/Preferences/ByHost/mEEwVP'}, 'process': {'executable': 'YMG'}, '@timestamp': 0}]
 ```
 
 
@@ -10814,7 +10787,7 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'user': {'domain': 'XIU'}, 'file': {'path': 'c:\\users\\knioixtf\\appdata\\roaming\\microsoft\\windows\\start menu\\programs\\startup\\oohm'}, 'process': {'name': 'rundll32.exe'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'user': {'domain': 'XIU'}, 'file': {'path': 'C:\\Users\\kNIoixTF\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\oOHm'}, 'process': {'name': 'regsvr32.exe'}, '@timestamp': 0}]
 ```
 
 
@@ -10860,10 +10833,10 @@ sequence by host.id, process.entity_id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'c:\\windows\\tasks\\yxiutknioixtfl.exe', 'entity_id': 'wuE'}, 'host': {'id': 'Ezs'}, '@timestamp': 0},
- {'event': {'type': ['EXp'], 'category': ['file']}, 'user': {'domain': 'WqN'}, 'file': {'path': 'c:\\programdata\\microsoft\\windows\\start menu\\programs\\startup\\ifqsyzknyyqdpu'}, 'host': {'id': 'Ezs'}, 'process': {'entity_id': 'wuE'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'c:\\windows\\tasks\\udqx.exe', 'entity_id': 'LWt'}, 'host': {'id': 'VTO'}, '@timestamp': 2},
- {'event': {'type': ['imr'], 'category': ['file']}, 'user': {'domain': 'FgT'}, 'file': {'path': 'c:\\programdata\\microsoft\\windows\\start menu\\programs\\startup\\s'}, 'host': {'id': 'VTO'}, 'process': {'entity_id': 'LWt'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\Windows\\Tasks\\yXIUtkNIoixTFl.exe', 'entity_id': 'wuE'}, 'host': {'id': 'Ezs'}, '@timestamp': 0},
+ {'event': {'type': ['EXp'], 'category': ['file']}, 'user': {'domain': 'WqN'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\iFqsyzKNyyQDpU'}, 'host': {'id': 'Ezs'}, 'process': {'entity_id': 'wuE'}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\Windows\\Tasks\\UDqx.exe', 'entity_id': 'LWt'}, 'host': {'id': 'VTO'}, '@timestamp': 2},
+ {'event': {'type': ['imr'], 'category': ['file']}, 'user': {'domain': 'FgT'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\s'}, 'host': {'id': 'VTO'}, 'process': {'entity_id': 'LWt'}, '@timestamp': 3}]
 ```
 
 
@@ -10909,8 +10882,8 @@ file where event.type in ("change", "creation") and file.extension : "py" and
 ```
 
 ```python
-[{'event': {'type': ['change'], 'category': ['file']}, 'file': {'extension': 'py', 'path': '/users/xiutkni/library/application support/sublime textsvilo/packages/ezswu.py'}, 'process': {'executable': 'EEX'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'py', 'path': '/users/wqnvrcymeewvp/library/application support/sublime textmgznfmlo/packages/xvtolwtimrfgt.py'}, 'process': {'executable': 'msh'}, '@timestamp': 1}]
+[{'event': {'type': ['change'], 'category': ['file']}, 'file': {'extension': 'py', 'path': '/Users/XIUtkNI/Library/Application Support/Sublime TextSvILO/Packages/Ezswu.py'}, 'process': {'executable': 'EEX'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'py', 'path': '/Users/WqNVRcymEEwVP/Library/Application Support/Sublime TextMGzNfmlO/Packages/xVTOLWtimrFgT.py'}, 'process': {'executable': 'msh'}, '@timestamp': 1}]
 ```
 
 
@@ -10926,7 +10899,7 @@ event.category:file and event.type:change and file.path:(/etc/sudoers* or /priva
 ```
 
 ```python
-[{'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/private/etc/sudoersxiutkni'}, '@timestamp': 0}]
+[{'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/private/etc/sudoersXIUtkNI'}, '@timestamp': 0}]
 ```
 
 
@@ -11004,6 +10977,33 @@ sequence by host.id with maxspan=30s
  {'process': {'name': 'com.apple.automator.runner'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'automator'}, 'host': {'id': 'XIU'}, '@timestamp': 2},
  {'process': {'name': 'com.apple.automator.runner'}, 'event': {'category': ['network']}, 'host': {'id': 'XIU'}, '@timestamp': 3}]
+```
+
+
+
+### Suspicious Calendar File Modification
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-543
+
+```python
+event.category:file and event.action:modification and
+  file.path:/Users/*/Library/Calendars/*.calendar/Events/*.ics and
+  process.executable:
+  (* and not 
+    (
+      /System/Library/* or 
+      /System/Applications/Calendar.app/Contents/MacOS/* or 
+      /usr/libexec/xpcproxy or 
+      /sbin/launchd or 
+      /Applications/*
+    )
+  )
+```
+
+```python
+[{'event': {'category': ['file'], 'action': 'modification'}, 'file': {'path': '/Users/XIUtkNI/Library/Calendars/SvILO.calendar/Events/Ezswu.ics'}, 'process': {'executable': 'EEX'}, '@timestamp': 0}]
 ```
 
 
@@ -11102,8 +11102,8 @@ not (dll.code_signature.subject_name : ("Microsoft Windows", "Microsoft Corporat
 ```
 
 ```python
-[{'dll': {'name': 'wptsextensions.dll', 'code_signature': {'subject_name': 'FyX'}}, 'event': {'category': ['library']}, '@timestamp': 0},
- {'dll': {'name': 'windowsperformancerecordercontrol.dll', 'code_signature': {'status': 'fUy'}}, 'event': {'category': ['library']}, '@timestamp': 1}]
+[{'dll': {'name': 'wow64log.dll', 'code_signature': {'subject_name': 'FyX'}}, 'event': {'category': ['library']}, '@timestamp': 0},
+ {'dll': {'name': 'wbemcomn.dll', 'code_signature': {'status': 'fUy'}}, 'event': {'category': ['library']}, '@timestamp': 1}]
 ```
 
 
@@ -11144,7 +11144,7 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'emond'}, 'name': 'touch'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'emond'}, 'name': 'python'}, '@timestamp': 1}]
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'emond'}, 'name': 'pwsh'}, '@timestamp': 1}]
 ```
 
 
@@ -11189,7 +11189,7 @@ process where event.type == "start" and process.executable : "C:\\*" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'c:\\xiutkni', 'working_directory': 'k:\\', 'parent': {'name': 'explorer.exe'}, 'name': 'rundll32.exe'}, '@timestamp': 0}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'C:\\XIUtkNI', 'working_directory': 'k:\\', 'parent': {'name': 'explorer.exe'}, 'name': 'rundll32.exe'}, '@timestamp': 0}]
 ```
 
 
@@ -11312,8 +11312,8 @@ event.category:process and event.type:(start or process_started) and
 ```
 
 ```python
-[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': '.xiutkni', 'parent': {'executable': '/sbin/launchd'}}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': '.ixtflezswueexp', 'parent': {'executable': '/sbin/launchd'}}, '@timestamp': 1}]
+[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': '.XIUtkNI', 'parent': {'executable': '/sbin/launchd'}}, '@timestamp': 0},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': '.ixTFlEzswuEEXp', 'parent': {'executable': '/sbin/launchd'}}, '@timestamp': 1}]
 ```
 
 
@@ -11332,7 +11332,7 @@ library where process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB
 ```
 
 ```python
-[{'process': {'name': 'winword.exe'}, 'event': {'action': 'load', 'category': ['library', 'library']}, 'dll': {'name': 'taskschd.dll'}, '@timestamp': 0}]
+[{'process': {'name': 'WINWORD.EXE'}, 'event': {'action': 'load', 'category': ['library', 'library']}, 'dll': {'name': 'taskschd.dll'}, '@timestamp': 0}]
 ```
 
 
@@ -11458,8 +11458,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'foxitreader.exe'}, 'name': 'nbtstat.exe'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'acrobat.exe'}, 'name': 'mshta.exe'}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'FoxitReader.exe'}, 'name': 'nbtstat.exe'}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'AcroRd32.exe'}, 'name': 'mshta.exe'}, '@timestamp': 1}]
 ```
 
 
@@ -11496,7 +11496,7 @@ file where event.type : "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['deletion'], 'category': ['file']}, 'process': {'name': 'ZFy'}, 'file': {'path': 'y:\\windows\\system32\\spool\\drivers\\x64\\3\\knioixtf.dll'}, '@timestamp': 0}]
+[{'event': {'type': ['deletion'], 'category': ['file']}, 'process': {'name': 'ZFy'}, 'file': {'path': 'y:\\Windows\\System32\\spool\\drivers\\x64\\3\\kNIoixTF.dll'}, '@timestamp': 0}]
 ```
 
 
@@ -11520,7 +11520,7 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'spl', 'path': 'y:\\windows\\system32\\spool\\printers\\knioixtf'}, 'process': {'name': 'lEz'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'spl', 'path': 'y:\\Windows\\System32\\spool\\PRINTERS\\kNIoixTF'}, 'process': {'name': 'lEz'}, '@timestamp': 0}]
 ```
 
 
@@ -11564,7 +11564,7 @@ sequence by host.id with maxspan=1m
 
 ```python
 [{'event': {'code': '1', 'category': ['process']}, 'process': {'parent': {'name': 'winword.exe', 'entity_id': 'Uyy'}, 'entity_id': 'FjS'}, 'host': {'id': 'vCf'}, '@timestamp': 0},
- {'event': {'code': '10', 'category': ['process']}, 'winlog': {'event_data': {'CallTrace': 'ilooohmxunknowneexpwqnvr', 'TargetProcessGUID': 'FjS'}}, 'host': {'id': 'vCf'}, 'process': {'entity_id': 'Uyy'}, '@timestamp': 1}]
+ {'event': {'code': '10', 'category': ['process']}, 'winlog': {'event_data': {'CallTrace': 'ILOoOHmxUNKNOWNEEXpWqNVR', 'TargetProcessGUID': 'FjS'}}, 'host': {'id': 'vCf'}, 'process': {'entity_id': 'Uyy'}, '@timestamp': 1}]
 ```
 
 
@@ -11632,7 +11632,7 @@ library where dll.name : "mstscax.dll" and
 ```
 
 ```python
-[{'dll': {'name': 'mstscax.dll'}, 'process': {'executable': 'c:\\windows\\xiutkni'}, 'event': {'category': ['library']}, '@timestamp': 0}]
+[{'dll': {'name': 'mstscax.dll'}, 'process': {'executable': '\\\\XIUtkNI'}, 'event': {'category': ['library']}, '@timestamp': 0}]
 ```
 
 
@@ -11699,8 +11699,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'solarwinds.businesslayerhostx64.exe'}, 'name': 'vCf'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'solarwinds.businesslayerhostx64.exe'}, 'name': 'yyF'}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'SolarWinds.BusinessLayerHostx64.exe'}, 'name': 'vCf'}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'SolarWinds.BusinessLayerHostx64.exe'}, 'name': 'yyF'}, '@timestamp': 1}]
 ```
 
 
@@ -11719,7 +11719,7 @@ library where process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB
 ```
 
 ```python
-[{'process': {'name': 'winword.exe'}, 'event': {'action': 'load', 'category': ['library', 'library']}, 'dll': {'name': 'wmiutils.dll'}, '@timestamp': 0}]
+[{'process': {'name': 'WINWORD.EXE'}, 'event': {'action': 'load', 'category': ['library', 'library']}, 'dll': {'name': 'wmiutils.dll'}, '@timestamp': 0}]
 ```
 
 
@@ -11819,8 +11819,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'microsoft word'}, 'name': 'sh', 'args': ['vCf']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'microsoft powerpoint'}, 'name': 'sh', 'args': ['kNI']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'Microsoft Word'}, 'name': 'sh', 'args': ['vCf']}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'Microsoft PowerPoint'}, 'name': 'sh', 'args': ['kNI']}, '@timestamp': 1}]
 ```
 
 
@@ -12061,7 +12061,7 @@ file where event.type == "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'extension': 'vib'}, 'process': {'executable': 'TvC'}, '@timestamp': 0},
+[{'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'extension': 'VIB'}, 'process': {'executable': 'TvC'}, '@timestamp': 0},
  {'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'extension': 'BKF'}, 'process': {'executable': 'fUy'}, '@timestamp': 1}]
 ```
 
@@ -12177,8 +12177,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'c:\\xiutkni\\appdata\\svilo\\temp\\idcezswu.tmp\\nleoaagaif.exe', 'parent': {'name': 'ieinstal.exe', 'args': ['-Embedding']}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'c:\\syzk\\appdata\\pymgznfmlopzr\\temp\\idcol.tmp\\wcimzofhatdgzrj.exe', 'parent': {'name': 'ieinstal.exe', 'args': ['-Embedding']}}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'C:\\XIUtkNI\\AppData\\SvILO\\Temp\\IDCEzswu.tmp\\nLeOAagaiF.exe', 'parent': {'name': 'ieinstal.exe', 'args': ['-Embedding']}}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'C:\\syzK\\AppData\\PYMGzNfmlOPZR\\Temp\\IDCOL.tmp\\WCiMZOfHaTDgzRJ.exe', 'parent': {'name': 'ieinstal.exe', 'args': ['-Embedding']}}, '@timestamp': 1}]
 ```
 
 
@@ -12198,7 +12198,7 @@ file where event.type : "change" and process.name : "dllhost.exe" and
 ```
 
 ```python
-[{'event': {'type': ['change'], 'category': ['file']}, 'process': {'name': 'dllhost.exe'}, 'file': {'name': 'osksupport.dll', 'path': 'TvC'}, '@timestamp': 0}]
+[{'event': {'type': ['change'], 'category': ['file']}, 'process': {'name': 'dllhost.exe'}, 'file': {'name': 'duser.dll', 'path': 'TvC'}, '@timestamp': 0}]
 ```
 
 
@@ -12480,7 +12480,7 @@ file where event.type == "creation" and
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['file']}, 'file': {'path': 'c:\\xiutkni:svilo', 'extension': 'exe'}, '@timestamp': 0}]
+[{'event': {'type': ['creation'], 'category': ['file']}, 'file': {'path': 'C:\\XIUtkNI:SvILO', 'extension': 'exe'}, '@timestamp': 0}]
 ```
 
 
@@ -12560,9 +12560,9 @@ sequence by process.entity_id with maxspan=5m
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'xwizard.exe', 'entity_id': 'TvC'}, '@timestamp': 0},
- {'process': {'name': 'control.exe', 'entity_id': 'TvC'}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'process': {'name': 'cdb.exe', 'entity_id': 'TvC'}, 'event': {'category': ['network']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'msdt.exe', 'entity_id': 'yyF'}, '@timestamp': 2},
- {'process': {'name': 'fsi.exe', 'entity_id': 'yyF'}, 'event': {'category': ['network']}, '@timestamp': 3}]
+ {'process': {'name': 'csi.exe', 'entity_id': 'yyF'}, 'event': {'category': ['network']}, '@timestamp': 3}]
 ```
 
 
@@ -12655,8 +12655,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'unsecapp.exe'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'slui.exe'}}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'sppsvc.exe'}}, '@timestamp': 0},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'regsvr32.exe'}}, '@timestamp': 1}]
 ```
 
 
@@ -12703,7 +12703,7 @@ process.parent.name != null and
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'ZFy'}, 'name': 'autochk.exe'}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'XIU'}, 'name': 'fontdrvhost.exe'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'yyF'}, 'name': 'consent.exe'}, '@timestamp': 2},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'yyF'}, 'name': 'RuntimeBroker.exe'}, '@timestamp': 2},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'oix'}, 'name': 'SearchIndexer.exe'}, '@timestamp': 3},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'TFl'}, 'name': 'SearchProtocolHost.exe'}, '@timestamp': 4},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'Ezs'}, 'name': 'dllhost.exe'}, '@timestamp': 5},
@@ -12727,7 +12727,7 @@ process.parent.name != null and
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'conhost.exe'}, 'name': 'nUJ'}, '@timestamp': 23},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'MVr'}, 'name': 'autochk.exe'}, '@timestamp': 24},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'Htz'}, 'name': 'dwm.exe'}, '@timestamp': 25},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'jey'}, 'name': 'tiworker.exe'}, '@timestamp': 26},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'jey'}, 'name': 'consent.exe'}, '@timestamp': 26},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'Nmo'}, 'name': 'SearchIndexer.exe'}, '@timestamp': 27},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'EFC'}, 'name': 'SearchProtocolHost.exe'}, '@timestamp': 28},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'EZp'}, 'name': 'dllhost.exe'}, '@timestamp': 29},
@@ -12735,7 +12735,7 @@ process.parent.name != null and
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'bku'}, 'name': 'csrss.exe'}, '@timestamp': 31},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'YnD'}, 'name': 'wininit.exe'}, '@timestamp': 32},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'mxX'}, 'name': 'winlogon.exe'}, '@timestamp': 33},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'cxF'}, 'name': 'lsaiso.exe'}, '@timestamp': 34},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'cxF'}, 'name': 'LsaIso.exe'}, '@timestamp': 34},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'ocs'}, 'name': 'LogonUI.exe'}, '@timestamp': 35},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'vBa'}, 'name': 'services.exe'}, '@timestamp': 36},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'yAo'}, 'name': 'svchost.exe'}, '@timestamp': 37},
@@ -12744,7 +12744,7 @@ process.parent.name != null and
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'bRz'}, 'name': 'taskhostw.exe'}, '@timestamp': 40},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'WYs'}, 'name': 'userinit.exe'}, '@timestamp': 41},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'rfy'}, 'name': 'winrshost.exe'}, '@timestamp': 42},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'searchprotocolhost.exe'}, 'name': 'OYU'}, '@timestamp': 43},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'csrss.exe'}, 'name': 'OYU'}, '@timestamp': 43},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'autochk.exe'}, 'name': 'agT'}, '@timestamp': 44},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'smss.exe'}, 'name': 'rNY'}, '@timestamp': 45},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wermgr.exe'}, 'name': 'jLw'}, '@timestamp': 46},
@@ -12824,7 +12824,7 @@ sequence by process.entity_id
 
 ```python
 [{'process': {'name': 'odbcconf.exe', 'entity_id': 'TvC'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cdb.exe', 'entity_id': 'TvC'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+ {'process': {'name': 'bginfo.exe', 'entity_id': 'TvC'}, 'event': {'category': ['network']}, '@timestamp': 1}]
 ```
 
 
@@ -12933,7 +12933,7 @@ iam where event.action == "added-member-to-group" and
 ```
 
 ```python
-[{'event': {'action': 'added-member-to-group', 'category': ['iam']}, 'group': {'name': 'schema admins'}, '@timestamp': 0}]
+[{'event': {'action': 'added-member-to-group', 'category': ['iam']}, 'group': {'name': 'Schema Admins'}, '@timestamp': 0}]
 ```
 
 
@@ -13350,7 +13350,7 @@ file where event.type == "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'path': 'c:\\inetpub\\logs\\logfiles\\yxiutknioixtfl.log'}, '@timestamp': 0}]
+[{'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'path': 'C:\\inetpub\\logs\\LogFiles\\yXIUtkNIoixTFl.log'}, '@timestamp': 0}]
 ```
 
 
@@ -13550,13 +13550,13 @@ sequence by host.id with maxspan = 5s
 
 ```python
 [{'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'vCf'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'msbuild.exe'}}, 'user': {'domain': 'Uyy'}, 'host': {'id': 'vCf'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'Microsoft.Workflow.Compiler.exe'}}, 'user': {'domain': 'Uyy'}, 'host': {'id': 'vCf'}, '@timestamp': 1},
  {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'SvI'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'c:\\users\\swueexpwqnv.exe'}, 'user': {'domain': 'LOo'}, 'host': {'id': 'SvI'}, '@timestamp': 3},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'C:\\Users\\swuEEXpWqNV.exe'}, 'user': {'domain': 'LOo'}, 'host': {'id': 'SvI'}, '@timestamp': 3},
  {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'cscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'cym'}, '@timestamp': 4},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'wscript.exe'}}, 'user': {'domain': 'EEw'}, 'host': {'id': 'cym'}, '@timestamp': 5},
  {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'MGz'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'c:\\programdata\\opzrguvwci.exe'}, 'user': {'domain': 'Nfm'}, 'host': {'id': 'MGz'}, '@timestamp': 7}]
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'C:\\ProgramData\\OPZRgUvWCi.exe'}, 'user': {'domain': 'Nfm'}, 'host': {'id': 'MGz'}, '@timestamp': 7}]
 ```
 
 
