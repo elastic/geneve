@@ -22,6 +22,9 @@ tests: tests/*.py
 online_tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_emitter_*.py
 
+unit_tests_matrix:
+	echo '{ "python-version": ["3.8", "3.9", "3.10"], "os": ["ubuntu-latest", "macos-latest"] }'
+
 up:
 	docker compose up --wait --quiet-pull
 
