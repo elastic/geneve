@@ -142,7 +142,7 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
             )
         return rules, asts
 
-    ack_no_signals = 25
+    ack_no_signals = 5
     ack_too_few_signals = 1
 
     def test_rules(self):

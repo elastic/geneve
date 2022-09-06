@@ -371,7 +371,7 @@ process where process.name : ("*.EXE", "*.DLL")
 ```
 
 ```python
-[{'process': {'name': 'xiutkni.exe'}, 'event': {'category': ['process']}, '@timestamp': 0}]
+[{'process': {'name': 'XIUtkNI.EXE'}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 

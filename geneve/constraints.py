@@ -386,7 +386,7 @@ class Constraints:
                 if type(value) == list:
                     value.extend([v] if type(v) == str else v)
                 elif type(v) == tuple:
-                    include_wildcards |= set(_v.lower() for _v in v)
+                    include_wildcards |= set(v)
                 elif value is None or value == v:
                     value = v
                 else:
@@ -394,7 +394,7 @@ class Constraints:
             elif k == "not wildcard":
                 values = [v] if type(v) == str else v
                 for v in values:
-                    exclude_wildcards.add(v.lower())
+                    exclude_wildcards.add(v)
 
         for k, v, *_ in constraints:
             if k == "min_length":
@@ -457,7 +457,7 @@ class Constraints:
         ):  # noqa: W503
             if include_wildcards:
                 wc = random.choice(include_wildcards)
-                v = expand_wildcards(wc, allowed_chars).lower()
+                v = expand_wildcards(wc, allowed_chars)
             else:
                 v = "".join(random.choices(allowed_chars, k=min_length))
             value = [v] if type(value) == list else v
