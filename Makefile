@@ -23,6 +23,8 @@ online_tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_emitter_*.py
 
 up:
+	@$(call print_server_version,ES,ELASTICSEARCH)
+	@$(call print_server_version,KB,KIBANA)
 	docker compose up --wait --quiet-pull
 
 down:
@@ -48,5 +50,37 @@ pkg_try:
 	geneve
 
 package: pkg_build pkg_install pkg_try
+
+define print_server_version
+	if [ -n "$$TEST_$(2)_IMAGE" ]; then \
+		echo "$(1): $$TEST_$(2)_IMAGE"; \
+	else \
+		echo "$(1): $$TEST_STACK_VERSION"; \
+	fi
+endef
+
+export TEST_STACK_VERSION
+
+ifeq ($(TEST_STACK_VERSION)$(TEST_ELASTICSEARCH_IMAGE),)
+override TEST_STACK_VERSION = latest
+endif
+
+ifeq ($(TEST_STACK_VERSION)$(TEST_KIBANA_IMAGE),)
+override TEST_STACK_VERSION = latest
+endif
+
+ifeq ($(TEST_STACK_VERSION),latest)
+override TEST_STACK_VERSION := $(shell \
+	curl -s -L https://artifacts-api.elastic.co/v1/versions | \
+	jq -r 'last(.versions[] | select(contains("SNAPSHOT") | not))' \
+)
+endif
+
+ifeq ($(TEST_STACK_VERSION),latest-snapshot)
+override TEST_STACK_VERSION := $(shell \
+	curl -s -L https://artifacts-api.elastic.co/v1/versions | \
+	jq -r 'last(.versions[] | select(contains("SNAPSHOT")))' \
+)
+endif
 
 .PHONY: lint tests online_tests run up down
