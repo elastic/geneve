@@ -9,4 +9,5 @@ pytest
 pytoml
 pyyaml
 requests
+semver
 virtualenv

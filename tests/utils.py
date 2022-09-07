@@ -188,7 +188,9 @@ class OnlineTestCase:
 
     @classmethod
     def get_version(cls):
-        return cls.es.info()["version"]["number"]
+        import semver
+
+        return semver.VersionInfo.parse(cls.es.info()["version"]["number"])
 
     @classmethod
     def setUpClass(cls):
@@ -410,7 +412,7 @@ class SignalsTestCase:
             signals[bucket["key"]] = (bucket["doc_count"], branch_count)
         return signals
 
-    def wait_for_signals(self, rules, timeout=15, sleep=5):
+    def wait_for_signals(self, rules, timeout=30, sleep=5):
         if verbose:
             sys.stderr.write("... ")
             sys.stderr.flush()
