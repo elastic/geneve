@@ -1,0 +1,10 @@
+stacks:
+- name: elastic-package
+  elasticsearch:
+    hosts: $ELASTIC_PACKAGE_ELASTICSEARCH_HOST
+    basic_auth:
+    - $ELASTIC_PACKAGE_ELASTICSEARCH_USERNAME
+    - $ELASTIC_PACKAGE_ELASTICSEARCH_PASSWORD
+    ca_certs: $ELASTIC_PACKAGE_CA_CERT
+  kibana:
+    url: $ELASTIC_PACKAGE_KIBANA_HOST

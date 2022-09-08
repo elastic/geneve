@@ -15,8 +15,32 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from .cli import main
-from .stack import cli
+"""Discover the stack used by geneve online tests"""
 
-if __name__ == "__main__":
-    main(prog_name="geneve")
+from ..utils.shelllib import ShellExpansionError
+from .prober_elastic import ElasticStack
+
+
+class GeneveTestEnvStack(ElasticStack):
+    def __init__(self):
+        config = {
+            "name": "geneve-test-env",
+            "elasticsearch": {
+                "hosts": "$TEST_ELASTICSEARCH_URL",
+            },
+            "kibana": {
+                "url": "$TEST_KIBANA_URL",
+            },
+        }
+        super().__init__(config)
+
+
+def probe():
+    try:
+        return [GeneveTestEnvStack()]
+    except (ShellExpansionError, ValueError):
+        return []
+
+
+def load_from_config(config):
+    pass

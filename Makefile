@@ -38,6 +38,9 @@ cli-tests:
 	$(GENEVE) --version
 	$(GENEVE) --help
 	$(GENEVE)
+	$(GENEVE) stack --help
+	$(GENEVE) stack
+	$(GENEVE) stack -d -v
 
 pkg-build:
 	$(PYTHON) -m build

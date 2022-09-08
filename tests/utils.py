@@ -196,16 +196,6 @@ class OnlineTestCase:
     index_template = "geneve-ut"
 
     @classmethod
-    def read_credentials_csv(cls):
-        filename = os.getenv("TEST_CREDENTIALS", None)
-        if filename:
-            with open(filename) as f:
-                reader = csv.reader(f)
-                next(reader)
-                http_auth = next(reader)
-            return tuple(s.strip() for s in http_auth)
-
-    @classmethod
     def get_version(cls):
         import semver
 
@@ -215,15 +205,12 @@ class OnlineTestCase:
     def setUpClass(cls):
         super(OnlineTestCase, cls).setUpClass()
 
-        from elasticsearch import Elasticsearch
+        from geneve.stack.prober_geneve_test_env import GeneveTestEnvStack
 
-        from .kibana import Kibana
-
-        http_auth = cls.read_credentials_csv()
-        es_url = os.getenv("TEST_ELASTICSEARCH_URL", "http://elastic:changeit@localhost:29650")
-        cls.es = Elasticsearch(es_url, http_auth=http_auth, http_compress=True)
-        kbn_url = os.getenv("TEST_KIBANA_URL", "http://elastic:changeit@localhost:65290")
-        cls.kbn = Kibana(kbn_url, http_auth=http_auth)
+        stack = GeneveTestEnvStack()
+        stack.connect()
+        cls.es = stack.es
+        cls.kbn = stack.kb
 
         if not cls.es.ping():
             raise unittest.SkipTest(f"Could not reach Elasticsearch: {es_url}")
@@ -236,7 +223,7 @@ class OnlineTestCase:
         try:
             cls.kbn.find_detection_engine_rules_statuses({})
             cls.check_rules = cls.check_rules_legacy
-        except Kibana.exceptions.HTTPError as e:
+        except cls.kbn.exceptions.HTTPError as e:
             if e.response.status_code != 404:
                 raise
 

@@ -18,19 +18,45 @@
 """Helper class for Kibana REST API."""
 
 import json
+import uuid
 
 import requests
 
 
 class Kibana:
+    """Minimal Kibana REST API Python client
+
+    To be replaced by the official one (https://github.com/elastic/geneve/issues/55)
+    """
+
     exceptions = requests.exceptions
 
-    def __init__(self, url, http_auth=None):
+    def __init__(self, url=None, cloud_id=None, basic_auth=None, ca_certs=None):
+        if not (url or cloud_id):
+            raise ValueError("Either `url` or `cloud_id` must be defined")
+
         self.url = url
         self.session = requests.Session()
-        self.session.headers.update({"kbn-xsrf": "true"})
-        if http_auth is not None:
-            self.session.auth = requests.auth.HTTPBasicAuth(*http_auth)
+        self.session.headers.update({"Content-Type": "application/json", "kbn-xsrf": str(uuid.uuid4())})
+
+        if basic_auth is not None:
+            self.session.auth = requests.auth.HTTPBasicAuth(*basic_auth)
+        if ca_certs is not None:
+            self.session.verify = ca_certs
+
+        if cloud_id:
+            import base64
+
+            cluster_name, cloud_info = cloud_id.split(":")
+            domain, es_uuid, kibana_uuid = base64.b64decode(cloud_info.encode("utf-8")).decode("utf-8").split("$")
+
+            if domain.endswith(":443"):
+                domain = domain[:-4]
+
+            url_from_cloud = f"https://{kibana_uuid}.{domain}:9243"
+            if self.url and self.url != url_from_cloud:
+                raise ValueError(f"url provided ({self.url}) does not match url derived from cloud_id {url_from_cloud}")
+            self.url = url_from_cloud
 
     def close(self):
         self.session.close()
@@ -47,6 +73,12 @@ class Kibana:
             return True
         except requests.exceptions.ConnectionError:
             return False
+
+    def status(self):
+        url = f"{self.url}/api/status"
+        res = self.session.get(url)
+        res.raise_for_status()
+        return res.json()
 
     def create_siem_index(self):
         url = f"{self.url}/api/detection_engine/index"
