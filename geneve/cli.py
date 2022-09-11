@@ -17,11 +17,18 @@
 
 import click
 
-from . import SourceEvents, version
+from . import version
 
 
-@click.command()
+@click.group()
 @click.version_option(version=version)
-def main():
-    se = SourceEvents()
-    print(f"Hello from Genève! {len(se)}")
+@click.option("--config", "config_file", required=False)
+def main(config_file=None):
+    from pathlib import Path
+
+    from . import config
+
+    if config_file:
+        config.set_path(Path(config_file))
+    else:
+        config.set_path(Path("~") / ".config" / "geneve" / "config.yaml")
