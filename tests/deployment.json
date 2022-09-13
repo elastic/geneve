@@ -1,0 +1,103 @@
+{
+  "name": "Geneve Cloud",
+  "resources": {
+    "apm": [
+      {
+        "elasticsearch_cluster_ref_id": "main-elasticsearch",
+        "plan": {
+          "apm": {
+            "version": "8.2.0"
+          },
+          "cluster_topology": [
+            {
+              "instance_configuration_id": "gcp.apm.n2.68x32x45",
+              "size": {
+                "resource": "memory",
+                "value": 1024
+              },
+              "zone_count": 1
+            }
+          ]
+        },
+        "ref_id": "main-apm",
+        "region": "gcp-europe-west4"
+      }
+    ],
+    "appsearch": null,
+    "elasticsearch": [
+      {
+        "plan": {
+          "autoscaling_enabled": false,
+          "cluster_topology": [
+            {
+              "autoscaling_max": {
+                "resource": "memory",
+                "value": 131072
+              },
+              "elasticsearch": {
+                "node_attributes": {
+                  "data": "hot"
+                }
+              },
+              "id": "hot_content",
+              "instance_configuration_id": "gcp.es.datahot.n2.68x10x45",
+              "node_roles": [
+                "master",
+                "ingest",
+                "transform",
+                "data_hot",
+                "remote_cluster_client",
+                "data_content"
+              ],
+              "size": {
+                "resource": "memory",
+                "value": 8192
+              },
+              "topology_element_control": {
+                "min": {
+                  "resource": "memory",
+                  "value": 1024
+                }
+              },
+              "zone_count": 2
+            }
+          ],
+          "deployment_template": {
+            "id": "gcp-storage-optimized"
+          },
+          "elasticsearch": {
+            "version": "8.2.0"
+          }
+        },
+        "ref_id": "main-elasticsearch",
+        "region": "gcp-europe-west4",
+        "settings": {
+          "dedicated_masters_threshold": 6
+        }
+      }
+    ],
+    "kibana": [
+      {
+        "elasticsearch_cluster_ref_id": "main-elasticsearch",
+        "plan": {
+          "cluster_topology": [
+            {
+              "instance_configuration_id": "gcp.kibana.n2.68x32x45",
+              "size": {
+                "resource": "memory",
+                "value": 1024
+              },
+              "zone_count": 1
+            }
+          ],
+          "kibana": {
+            "version": "8.2.0"
+          }
+        },
+        "ref_id": "main-kibana",
+        "region": "gcp-europe-west4"
+      }
+    ]
+  },
+  "settings": {}
+}
