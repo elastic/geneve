@@ -304,7 +304,7 @@ class SignalsTestCase:
         with self.nb.chapter("## Rejected documents") as cells:
             pos = 0
             while docs[pos : pos + batch_size]:
-                ret = self.es.bulk(body="\n".join(docs[pos : pos + batch_size]), request_timeout=30)
+                ret = self.es.options(request_timeout=30).bulk(body="\n".join(docs[pos : pos + batch_size]))
                 for i, item in enumerate(ret["items"]):
                     if item["create"]["status"] != 201:
                         cells.append(jupyter.Markdown(str(item["create"])))
