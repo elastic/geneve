@@ -197,7 +197,6 @@ class OnlineTestCase:
         super(OnlineTestCase, cls).setUpClass()
 
         from elasticsearch import Elasticsearch
-        from elasticsearch.client import ClusterClient, IndicesClient
 
         from .kibana import Kibana
 
@@ -212,8 +211,6 @@ class OnlineTestCase:
         if not cls.kbn.ping():
             raise unittest.SkipTest(f"Could not reach Kibana: {kbn_url}")
 
-        cls.es_cluster = ClusterClient(cls.es)
-        cls.es_indices = IndicesClient(cls.es)
         cls.kbn.create_siem_index()
         cls.siem_index_name = cls.kbn.get_siem_index()["name"]
 
@@ -241,12 +238,16 @@ class OnlineTestCase:
 
         self.kbn.delete_detection_engine_rules()
 
-        if self.es_indices.exists_index_template(name=self.index_template):
-            self.es_indices.delete_index_template(name=self.index_template)
+        if self.es.indices.exists_index_template(name=self.index_template):
+            self.es.indices.delete_index_template(name=self.index_template)
 
-        self.es_indices.delete(index=f"{self.index_template}-*")
+        self.es.indices.delete(index=f"{self.index_template}-*")
         try:
-            self.es.delete_by_query(index=self.siem_index_name, body={"query": {"match_all": {}}})
+            kwargs = {
+                "index": self.siem_index_name,
+                "query": {"match_all": {}},
+            }
+            self.es.delete_by_query(**kwargs)
         except exceptions.NotFoundError:
             pass
 
@@ -289,10 +290,11 @@ class SignalsTestCase:
     def load_rules_and_docs(self, rules, asts, batch_size=200):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
 
-        ret = self.es_cluster.health(params={"level": "cluster"})
+        ret = self.es.cluster.health(level="cluster")
         number_of_shards = ret["number_of_data_nodes"]
 
-        template = {
+        kwargs = {
+            "name": self.index_template,
             "index_patterns": [f"{self.index_template}-*"],
             "template": {
                 "settings": {
@@ -302,12 +304,15 @@ class SignalsTestCase:
                 "mappings": mappings,
             },
         }
-        self.es_indices.put_index_template(name=self.index_template, body=template)
+        self.es.indices.put_index_template(**kwargs)
 
         with self.nb.chapter("## Rejected documents") as cells:
             pos = 0
             while docs[pos : pos + batch_size]:
-                ret = self.es.bulk(body="\n".join(docs[pos : pos + batch_size]), request_timeout=30)
+                kwargs = {
+                    "operations": "\n".join(docs[pos : pos + batch_size]),
+                }
+                ret = self.es.options(request_timeout=30).bulk(**kwargs)
                 for i, item in enumerate(ret["items"]):
                     if item["create"]["status"] != 201:
                         cells.append(jupyter.Markdown(str(item["create"])))
@@ -371,14 +376,15 @@ class SignalsTestCase:
 
     def check_docs(self, rule):
         try:
-            data = {
+            kwargs = {
+                "index": ",".join(rule["index"]),
                 "query": {"match_all": {}},
                 "sort": {
                     "@timestamp": {"order": "asc"},
                 },
                 "size": rule[".test_private"]["doc_count"],
             }
-            ret = self.es.search(index=",".join(rule["index"]), body=data)
+            ret = self.es.search(**kwargs)
         except Exception as e:
             if verbose > 1:
                 sys.stderr.write(f"{str(e)}\n")
