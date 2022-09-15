@@ -156,3 +156,12 @@ class TreeTraverser:
 
     def get_stats(self):
         return {k.__name__: (v.successful, v.total) for k, v in self.traversers.items()}
+
+
+def exception_cause(exception, cause):
+    """Check if `cause` is among the `exception`'s causes (itself included) and possibly return it"""
+
+    while exception:
+        if type(exception) is cause:
+            return exception
+        exception = exception.__cause__
