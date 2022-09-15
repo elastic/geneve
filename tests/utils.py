@@ -197,7 +197,6 @@ class OnlineTestCase:
         super(OnlineTestCase, cls).setUpClass()
 
         from elasticsearch import Elasticsearch
-        from elasticsearch.client import ClusterClient, IndicesClient
 
         from .kibana import Kibana
 
@@ -212,8 +211,6 @@ class OnlineTestCase:
         if not cls.kbn.ping():
             raise unittest.SkipTest(f"Could not reach Kibana: {kbn_url}")
 
-        cls.es_cluster = ClusterClient(cls.es)
-        cls.es_indices = IndicesClient(cls.es)
         cls.kbn.create_siem_index()
         cls.siem_index_name = cls.kbn.get_siem_index()["name"]
 
@@ -241,10 +238,10 @@ class OnlineTestCase:
 
         self.kbn.delete_detection_engine_rules()
 
-        if self.es_indices.exists_index_template(name=self.index_template):
-            self.es_indices.delete_index_template(name=self.index_template)
+        if self.es.indices.exists_index_template(name=self.index_template):
+            self.es.indices.delete_index_template(name=self.index_template)
 
-        self.es_indices.delete(index=f"{self.index_template}-*")
+        self.es.indices.delete(index=f"{self.index_template}-*")
         try:
             self.es.delete_by_query(index=self.siem_index_name, body={"query": {"match_all": {}}})
         except exceptions.NotFoundError:
@@ -289,7 +286,7 @@ class SignalsTestCase:
     def load_rules_and_docs(self, rules, asts, batch_size=200):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
 
-        ret = self.es_cluster.health(params={"level": "cluster"})
+        ret = self.es.cluster.health(params={"level": "cluster"})
         number_of_shards = ret["number_of_data_nodes"]
 
         template = {
@@ -302,7 +299,7 @@ class SignalsTestCase:
                 "mappings": mappings,
             },
         }
-        self.es_indices.put_index_template(name=self.index_template, body=template)
+        self.es.indices.put_index_template(name=self.index_template, body=template)
 
         with self.nb.chapter("## Rejected documents") as cells:
             pos = 0
