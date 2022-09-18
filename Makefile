@@ -5,6 +5,7 @@ else
 endif
 
 PYTHON := $(ACTIVATE)python3
+GENEVE := $(PYTHON) -m geneve
 
 all: lint tests
 
@@ -19,7 +20,7 @@ lint:
 tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_*.py
 
-online_tests: tests/*.py
+online-tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_emitter_*.py
 
 up:
@@ -30,26 +31,24 @@ up:
 down:
 	docker compose down
 
-license_check:
+license-check:
 	bash scripts/license_check.sh
 
-run:
-	$(PYTHON) -m geneve --version
-	$(PYTHON) -m geneve --help
-	$(PYTHON) -m geneve
+cli-tests:
+	$(GENEVE) --version
+	$(GENEVE) --help
+	$(GENEVE)
 
-pkg_build:
+pkg-build:
 	$(PYTHON) -m build
 
-pkg_install:
+pkg-install:
 	$(PYTHON) -m pip install --force-reinstall dist/geneve-*.whl
 
-pkg_try:
-	geneve --version
-	geneve --help
-	geneve
+pkg-tests: GENEVE := geneve
+pkg-tests: cli-tests
 
-package: pkg_build pkg_install pkg_try
+package: pkg-build pkg-install pkg-tests
 
 define print_server_version
 	if [ -n "$$TEST_$(2)_IMAGE" ]; then \
