@@ -165,7 +165,7 @@ jobs:
         run: make prereq
 
       - name: Build package
-        run: make pkg-build
+        run: make package
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
