@@ -1,7 +1,7 @@
 ifeq ($(VENV),)
 	ACTIVATE :=
 else
-	ACTIVATE := source $(VENV)/bin/activate;
+	ACTIVATE := source $(VENV)/bin/activate; 
 endif
 
 PYTHON := $(ACTIVATE)python3
@@ -45,10 +45,16 @@ pkg-build:
 pkg-install:
 	$(PYTHON) -m pip install --force-reinstall dist/geneve-*.whl
 
-pkg-tests: GENEVE := geneve
+pkg-tests: GENEVE := $(ACTIVATE)geneve
 pkg-tests: cli-tests
 
-package: pkg-build pkg-install pkg-tests
+package: VENV := .venv-test
+package: pkg-build
+	rm -rf $(VENV)
+	$(PYTHON) -mvenv $(VENV)
+	$(MAKE) pkg-install VENV=$(VENV)
+	$(MAKE) pkg-tests VENV=$(VENV)
+	rm -rf $(VENV)
 
 define print_server_version
 	if [ -n "$$TEST_$(2)_IMAGE" ]; then \
