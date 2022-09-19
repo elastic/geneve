@@ -19,7 +19,7 @@
 
 import unittest
 
-from geneve.utils import deep_merge
+from geneve.utils import deep_merge, exception_cause
 
 
 class TestDictUtils(unittest.TestCase):
@@ -37,3 +37,27 @@ class TestDictUtils(unittest.TestCase):
             deep_merge({"a": "A"}, {"a": "B"})
         with self.assertRaises(ValueError, msg='Destination field already exists: a.b.c ("C" != "D")'):
             deep_merge({"a": {"b": {"c": "C"}}}, {"a": {"b": {"c": "D"}}})
+
+
+class TestExceptionCause(unittest.TestCase):
+    """Test exception_cause()"""
+
+    def test_exception_cause(self):
+        msg = "Some error!"
+
+        with self.assertRaises(ValueError, msg=msg) as cm:
+            try:
+                raise NotImplementedError("block not implemented")
+            except Exception as e:
+                raise ValueError(msg) from e
+
+        self.assertEqual(ValueError, type(cm.exception))
+        self.assertEqual(msg, str(cm.exception))
+
+        self.assertEqual(ValueError, type(exception_cause(cm.exception, ValueError)))
+        self.assertEqual(msg, str(exception_cause(cm.exception, ValueError)))
+
+        self.assertEqual(NotImplementedError, type(exception_cause(cm.exception, NotImplementedError)))
+        self.assertEqual("block not implemented", str(exception_cause(cm.exception, NotImplementedError)))
+
+        self.assertEqual(None, exception_cause(cm.exception, KeyError))
