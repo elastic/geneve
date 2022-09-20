@@ -28,6 +28,7 @@ import sys
 import textwrap
 import time
 import unittest
+from contextlib import contextmanager
 
 from geneve.events_emitter import SourceEvents
 from geneve.utils import load_rules, load_schema, root_dir
@@ -50,6 +51,24 @@ def get_test_verbosity():
 
 
 verbose = get_test_verbosity()
+
+
+@contextmanager
+def tempenv(env):
+    orig_env = {}
+    for name, value in env.items():
+        if name in os.environ:
+            orig_env[name] = os.environ[name]
+            if value is None:
+                del os.environ[name]
+        if value is not None:
+            os.environ[name] = value
+    try:
+        yield
+    finally:
+        os.environ.update(orig_env)
+        for name in set(env) - set(orig_env):
+            os.environ.pop(name, None)
 
 
 def get_test_schema_uri():

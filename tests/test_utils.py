@@ -17,9 +17,12 @@
 
 """Test util functions."""
 
+import os
 import unittest
 
 from geneve.utils import deep_merge
+
+from .utils import tempenv
 
 
 class TestDictUtils(unittest.TestCase):
@@ -37,3 +40,20 @@ class TestDictUtils(unittest.TestCase):
             deep_merge({"a": "A"}, {"a": "B"})
         with self.assertRaises(ValueError, msg='Destination field already exists: a.b.c ("C" != "D")'):
             deep_merge({"a": {"b": {"c": "C"}}}, {"a": {"b": {"c": "D"}}})
+
+
+class TestTempEnv(unittest.TestCase):
+    """Test tempenv() helper."""
+
+    def test_tempenv(self):
+        with tempenv({"TEST_VAR": "value1"}):
+            self.assertEqual("value1", os.environ["TEST_VAR"])
+            with tempenv({"TEST_VAR": "value2"}):
+                self.assertEqual("value2", os.environ["TEST_VAR"])
+                with tempenv({"TEST_VAR": None}):
+                    self.assertTrue("TEST_VAR" not in os.environ)
+                    with tempenv({"TEST_VAR": "value3"}):
+                        self.assertEqual("value3", os.environ["TEST_VAR"])
+                    self.assertTrue("TEST_VAR" not in os.environ)
+                self.assertEqual("value2", os.environ["TEST_VAR"])
+            self.assertEqual("value1", os.environ["TEST_VAR"])
