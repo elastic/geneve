@@ -72,7 +72,7 @@ def resource(uri, basedir=None):
 
 @functools.lru_cache
 def load_schema(uri, path, basedir=None):
-    import yaml
+    from ruamel.yaml import YAML
 
     with resource(uri, basedir=basedir) as resource_dir:
         filenames = glob(os.path.join(resource_dir, "*", path), recursive=True)
@@ -82,7 +82,8 @@ def load_schema(uri, path, basedir=None):
             raise ValueError(f"Too many files: {filenames}")
 
         with open(filenames[0]) as f:
-            return yaml.safe_load(f)
+            yaml = YAML(typ="safe")
+            return yaml.load(f)
 
 
 @functools.lru_cache

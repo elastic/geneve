@@ -15,20 +15,32 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import click
+"""Discover the stack used by geneve online tests"""
 
-from . import version
+from ..utils.shelllib import ShellExpansionError
+from .prober_elastic import ElasticStack
 
 
-@click.group()
-@click.version_option(version=version)
-@click.option("--config", "config_file", required=False)
-def main(config_file=None):
-    from pathlib import Path
+class GeneveTestEnvStack(ElasticStack):
+    def __init__(self):
+        config = {
+            "name": "geneve-test-env",
+            "elasticsearch": {
+                "hosts": "$TEST_ELASTICSEARCH_URL",
+            },
+            "kibana": {
+                "url": "$TEST_KIBANA_URL",
+            },
+        }
+        super().__init__(config)
 
-    from . import config
 
-    if config_file:
-        config.set_path(Path(config_file))
-    else:
-        config.set_path(Path("~") / ".config" / "geneve" / "config.yaml")
+def probe():
+    try:
+        return [GeneveTestEnvStack()]
+    except (ShellExpansionError, ValueError):
+        return []
+
+
+def load_from_config(config):
+    pass

@@ -17,6 +17,9 @@ lint:
 	$(PYTHON) -m black -q --check geneve tests || ($(PYTHON) -m black geneve tests; false)
 	$(PYTHON) -m isort -q --check geneve tests || ($(PYTHON) -m isort geneve tests; false)
 
+license-check:
+	bash scripts/license_check.sh
+
 tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_*.py
 
@@ -31,13 +34,13 @@ up:
 down:
 	docker compose down
 
-license-check:
-	bash scripts/license_check.sh
-
 cli-tests:
 	$(GENEVE) --version
 	$(GENEVE) --help
 	$(GENEVE)
+	$(GENEVE) stack --help
+	$(GENEVE) stack
+	$(GENEVE) stack -d -v
 
 pkg-build:
 	$(PYTHON) -m build
@@ -55,6 +58,17 @@ package: pkg-build
 	$(MAKE) pkg-install VENV=$(VENV)
 	$(MAKE) pkg-tests VENV=$(VENV)
 	rm -rf $(VENV)
+
+CREDS_FILE=credentials-cloud-stack.json
+
+cloud-stack-up:
+	touch $(CREDS_FILE)
+	chmod 600 $(CREDS_FILE)
+	ecctl deployment create --file tests/deployment.json --track | tee /dev/stderr | (jq >$(CREDS_FILE) 2>/dev/null; cat >/dev/null)
+
+cloud-stack-down: $(CREDS_FILE)
+	ecctl deployment shutdown --force $(shell jq -r .id $(CREDS_FILE))
+	rm $(CREDS_FILE)
 
 define print_server_version
 	if [ -n "$$TEST_$(2)_IMAGE" ]; then \

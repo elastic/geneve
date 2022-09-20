@@ -7,7 +7,7 @@ isort
 nbformat
 pytest
 pytoml
-pyyaml
 requests
+ruamel.yaml
 semver
 virtualenv

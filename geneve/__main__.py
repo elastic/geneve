@@ -16,6 +16,7 @@
 # under the License.
 
 from .cli import main
+from .stack import cli
 
 if __name__ == "__main__":
     main(prog_name="geneve")

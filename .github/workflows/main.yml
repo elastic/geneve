@@ -137,6 +137,8 @@ jobs:
           TEST_DETECTION_RULES_URI: ${{ matrix.detection-rules-uri }}
           TEST_SIGNALS_QUERIES: ${{ matrix.signals_queries }}
           TEST_SIGNALS_RULES: ${{ matrix.signals_rules }}
+          TEST_ELASTICSEARCH_URL: "http://elastic:changeme@localhost:29650"
+          TEST_KIBANA_URL: "http://elastic:changeme@localhost:65290"
         run: make online-tests
 
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
