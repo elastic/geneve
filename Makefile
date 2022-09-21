@@ -12,7 +12,7 @@ prereq-py:
 	$(PYTHON) -m pip install --user --upgrade pip
 	$(PYTHON) -m pip install --user -r requirements.txt
 
-prereq-go:
+prereq-go: prereq-py
 	go install golang.org/x/lint/golint@latest
 
 lint:
@@ -47,6 +47,9 @@ cli-lint:
 
 cli-test:
 	go test -race ./...
+
+cli-bench:
+	go test -bench=. ./cmd/geneve
 
 pkg-build:
 	$(PYTHON) -m build

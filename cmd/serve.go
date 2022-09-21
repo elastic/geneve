@@ -26,6 +26,7 @@ import (
 
 	"github.com/elastic/geneve/cmd/control"
 	"github.com/elastic/geneve/cmd/grasp"
+	"github.com/elastic/geneve/cmd/python"
 	"github.com/spf13/cobra"
 )
 
@@ -100,10 +101,6 @@ var serveCmd = &cobra.Command{
 		log.Printf("Local: http://%s", listen)
 		log.Printf("Control: http://localhost:%d", port)
 
-		if err := control.StartServer(port); err != nil {
-			log.Fatal(err)
-		}
-
 		reflections := make(chan *grasp.Reflection, 3)
 		wg := &WaitGroup{}
 
@@ -117,7 +114,12 @@ var serveCmd = &cobra.Command{
 		if err := startReflector(listen, remote, reflections); err != nil {
 			log.Fatal(err)
 		}
-
+		if err := python.StartMonitor(); err != nil {
+			log.Fatal(err)
+		}
+		if err := control.StartServer(port); err != nil {
+			log.Fatal(err)
+		}
 		wg.Wait()
 	},
 }

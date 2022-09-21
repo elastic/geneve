@@ -222,6 +222,9 @@ jobs:
       - name: Test
         run: make cli-test
 
+      - name: Benchmark
+        run: make cli-bench
+
   package-build:
     name: Package build (${{ matrix.os }}/py-${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
