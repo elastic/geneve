@@ -5,13 +5,15 @@ else
 endif
 
 PYTHON := $(ACTIVATE)python3
-GENEVE := $(PYTHON) -m geneve
 
 all: lint tests
 
-prereq:
+prereq-py:
 	$(PYTHON) -m pip install --user --upgrade pip
 	$(PYTHON) -m pip install --user -r requirements.txt
+
+prereq-go:
+	go install golang.org/x/lint/golint@latest
 
 lint:
 	$(PYTHON) -m black -q --check geneve tests || ($(PYTHON) -m black geneve tests; false)
@@ -34,13 +36,17 @@ up:
 down:
 	docker compose down
 
-cli-tests:
-	$(GENEVE) --version
-	$(GENEVE) --help
-	$(GENEVE)
-	$(GENEVE) stack --help
-	$(GENEVE) stack
-	$(GENEVE) stack -d -v
+gnv: main.go cmd/*.go
+	go build -o $@ .
+
+cli-build: gnv
+
+cli-lint:
+	go vet .
+	golint .
+
+cli-test:
+	go test -v ./...
 
 pkg-build:
 	$(PYTHON) -m build
@@ -49,7 +55,13 @@ pkg-install:
 	$(PYTHON) -m pip install --force-reinstall dist/geneve-*.whl
 
 pkg-tests: GENEVE := $(ACTIVATE)geneve
-pkg-tests: cli-tests
+pkg-tests:
+	$(GENEVE) --version
+	$(GENEVE) --help
+	$(GENEVE)
+	$(GENEVE) stack --help
+	$(GENEVE) stack
+	$(GENEVE) stack -d -v
 
 package: VENV := .venv-test
 package: pkg-build

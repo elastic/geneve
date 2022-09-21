@@ -21,3 +21,7 @@ tests/data/config_geneve-test-env.yaml
 # to be removed as part of https://github.com/elastic/geneve/issues/15
 geneve/kql/*
 tests/kuery/*
+
+# Go
+go.mod
+go.sum
