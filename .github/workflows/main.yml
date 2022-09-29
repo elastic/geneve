@@ -55,7 +55,9 @@ jobs:
   online-tests:
     name: Online tests (${{ matrix.stack-version }})
     runs-on: "ubuntu-latest"
-    needs: unit-tests
+    needs:
+      - unit-tests
+      - cli
 
     strategy:
       fail-fast: false
@@ -89,9 +91,18 @@ jobs:
             signals_queries: 1
             signals_rules: 1
 
+    env:
+      TEST_ELASTICSEARCH_URL: "http://elastic:changeme@localhost:29650"
+      TEST_KIBANA_URL: "http://elastic:changeme@localhost:65290"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.19"
 
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -99,7 +110,15 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: make prereq-py
+        run: |
+          make prereq-go
+          make prereq-py
+
+      - name: Build CLI
+        run: make cli-build
+
+      - name: Start reflector
+        run: ./gnv reflect -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log gnv.log &
 
       - name: Setup cache
         id: elastic-stack-cache
@@ -129,6 +148,7 @@ jobs:
       - name: Start Elastic Stack ${{ matrix.stack-version }}
         env:
           TEST_STACK_VERSION: ${{ matrix.stack-version }}
+          TEST_ELASTICSEARCH_PROXY: "http://host.docker.internal:9280"
         run: make up
 
       - name: Run online tests
@@ -137,12 +157,20 @@ jobs:
           TEST_DETECTION_RULES_URI: ${{ matrix.detection-rules-uri }}
           TEST_SIGNALS_QUERIES: ${{ matrix.signals_queries }}
           TEST_SIGNALS_RULES: ${{ matrix.signals_rules }}
-          TEST_ELASTICSEARCH_URL: "http://elastic:changeme@localhost:29650"
-          TEST_KIBANA_URL: "http://elastic:changeme@localhost:65290"
+          TEST_ELASTICSEARCH_URL: "http://localhost:9280"
         run: make online-tests
 
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
         run: make down
+
+      - name: Stop reflector
+        run: killall gnv
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: geneve-log-${{ matrix.stack-version }}
+          path: gnv.log
 
   cli:
     name: CLI (${{ matrix.os }}/go-${{ matrix.go-version }})
