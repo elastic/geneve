@@ -61,6 +61,10 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 			return
 		}
 
+		if control.MatchIgnoredPath(refl.Url.Path) {
+			return
+		}
+
 		reflections <- refl
 	})
 
