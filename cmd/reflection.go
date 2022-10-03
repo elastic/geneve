@@ -22,21 +22,31 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type reflection struct {
 	url        *url.URL
 	method     string
+	req_body   string
 	statusCode int
 	nbytes     int64
 }
 
 func (refl *reflection) reflectRequest(req *http.Request, remote *url.URL) (*http.Request, error) {
+	var req_body strings.Builder
+
+	_, err := io.Copy(&req_body, req.Body)
+	if err != nil {
+		return nil, err
+	}
+
 	refl.url = req.URL
 	refl.method = req.Method
+	refl.req_body = req_body.String()
 
 	url := fmt.Sprintf("%s%s", remote, req.URL)
-	new_req, err := http.NewRequest(req.Method, url, req.Body)
+	new_req, err := http.NewRequest(req.Method, url, strings.NewReader(refl.req_body))
 	if err != nil {
 		return nil, err
 	}

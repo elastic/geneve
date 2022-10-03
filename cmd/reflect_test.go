@@ -38,12 +38,15 @@ func init() {
 	}
 }
 
-func expectReflection(t *testing.T, refl *reflection, method string, statusCode, nbytes int) {
+func expectReflection(t *testing.T, refl *reflection, method, req_body string, statusCode, nbytes int) {
 	if refl.method != method {
 		t.Errorf("refl.method is %s (expected: %s)", refl.method, method)
 	}
 	if refl.statusCode != statusCode {
 		t.Errorf("refl.statusCode is %d (expected: %d)", refl.statusCode, statusCode)
+	}
+	if refl.req_body != req_body {
+		t.Errorf("refl.req_body is %s (expected: %s)", refl.req_body, req_body)
 	}
 	if refl.nbytes != int64(nbytes) {
 		t.Errorf("refl.nbytes is %d (expected: %d)", refl.nbytes, nbytes)
@@ -93,7 +96,7 @@ func TestReflect(t *testing.T) {
 		panic(err)
 	}
 	defer resp.Body.Close()
-	expectReflection(t, <-reflections, "GET", http.StatusNotFound, 19)
+	expectReflection(t, <-reflections, "GET", "", http.StatusNotFound, 19)
 	expectResponse(t, resp, http.StatusNotFound, "404 page not found\n")
 
 	// check GET (expect no body in the response)
@@ -102,7 +105,7 @@ func TestReflect(t *testing.T) {
 		panic(err)
 	}
 	defer resp.Body.Close()
-	expectReflection(t, <-reflections, "GET", http.StatusOK, 0)
+	expectReflection(t, <-reflections, "GET", "", http.StatusOK, 0)
 	expectResponse(t, resp, http.StatusOK, "")
 
 	// check POST (expect body in the response)
@@ -112,6 +115,6 @@ func TestReflect(t *testing.T) {
 		panic(err)
 	}
 	defer resp.Body.Close()
-	expectReflection(t, <-reflections, "POST", http.StatusOK, len(body))
+	expectReflection(t, <-reflections, "POST", body, http.StatusOK, len(body))
 	expectResponse(t, resp, http.StatusOK, body)
 }
