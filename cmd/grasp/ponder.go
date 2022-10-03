@@ -39,11 +39,11 @@ var indexStats map[string]*indexStat
 var callStats map[string]*callStat
 
 func Ponder(refl *Reflection) {
-	if control.MatchPathIgnore(refl.Url.Path) {
+	if control.MatchPathIgnore(refl.URL.Path) {
 		return
 	}
 
-	index, call, _ := splitPath(refl.Url.Path)
+	index, call, _ := splitPath(refl.URL.Path)
 
 	grasp.Lock()
 	defer grasp.Unlock()
