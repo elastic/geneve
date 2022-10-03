@@ -39,6 +39,47 @@ func getRequest(url string) *http.Response {
 	return resp
 }
 
+func bodyRequest(method, url, content_type, body string) *http.Response {
+	client := &http.Client{}
+
+	req, err := http.NewRequest(method, url, strings.NewReader(body))
+	if err != nil {
+		panic(err)
+	}
+	if content_type != "" {
+		req.Header["Content-Type"] = []string{content_type}
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+
+	return resp
+}
+
+func putRequest(url, content_type, body string) *http.Response {
+	return bodyRequest("PUT", url, content_type, body)
+}
+
+func postRequest(url, content_type, body string) *http.Response {
+	return bodyRequest("POST", url, content_type, body)
+}
+
+func deleteRequest(url string) *http.Response {
+	client := &http.Client{}
+
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		panic(err)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+
+	return resp
+}
+
 func expectResponse(t *testing.T, resp *http.Response, statusCode int, body string) {
 	if resp.StatusCode != statusCode {
 		t.Errorf("resp.StatusCode is %d (expected: %d)", resp.StatusCode, statusCode)
