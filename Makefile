@@ -36,7 +36,7 @@ up:
 down:
 	docker compose down
 
-gnv: main.go cmd/*.go
+gnv: main.go $(wildcard cmd/*)
 	go build -o $@ .
 
 cli-build: gnv
