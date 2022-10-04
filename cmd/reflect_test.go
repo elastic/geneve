@@ -26,6 +26,18 @@ import (
 	"testing"
 )
 
+var reflections = make(chan *reflection, 1)
+
+func init() {
+	log.SetOutput(ioutil.Discard)
+
+	// start the proxy but not the remote server
+	err := startReflector("localhost:2929", "http://localhost:9292", reflections)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func expectReflection(t *testing.T, refl *reflection, method string, statusCode, nbytes int) {
 	if refl.method != method {
 		t.Errorf("refl.method is %s (expected: %s)", refl.method, method)
@@ -52,14 +64,6 @@ func expectResponse(t *testing.T, resp *http.Response, statusCode int, body stri
 }
 
 func TestReflect(t *testing.T) {
-	log.SetOutput(ioutil.Discard)
-
-	// start the proxy but not the remote server
-	reflections := make(chan *reflection, 1)
-	ready := make(chan struct{})
-	go reflect("localhost:2929", "http://localhost:9292", reflections, &ready)
-	<-ready
-
 	// response to be 502 Bad Gateway
 	resp, err := http.Get("http://localhost:2929/")
 	if err != nil {
