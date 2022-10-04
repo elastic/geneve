@@ -43,6 +43,7 @@ func (refl *reflection) reflectRequest(req *http.Request, remote *url.URL) (*htt
 
 	new_req.Header = req.Header
 	new_req.Header["Host"] = []string{remote.Host}
+	new_req.Header["Accept-Encoding"] = []string{"gzip"}
 	return new_req, nil
 }
 
