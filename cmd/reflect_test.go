@@ -52,7 +52,7 @@ func expectReflection(t *testing.T, refl *reflection, method string, statusCode,
 
 func expectResponse(t *testing.T, resp *http.Response, statusCode int, body string) {
 	if resp.StatusCode != statusCode {
-		t.Errorf("refl.statusCode is %d (expected: %d)", resp.StatusCode, statusCode)
+		t.Errorf("resp.StatusCode is %d (expected: %d)", resp.StatusCode, statusCode)
 	}
 	var bb strings.Builder
 	if _, err := io.Copy(&bb, resp.Body); err != nil {

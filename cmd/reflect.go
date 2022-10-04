@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/elastic/geneve/cmd/control"
 	"github.com/spf13/cobra"
 )
 
@@ -79,6 +80,7 @@ var reflectCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		listen, _ := cmd.Flags().GetString("listen")
 		remote, _ := cmd.Flags().GetString("remote")
+		port, _ := cmd.Flags().GetInt("port")
 		filename, _ := cmd.Flags().GetString("log")
 
 		if filename != "" {
@@ -91,10 +93,14 @@ var reflectCmd = &cobra.Command{
 
 		logger.Printf("Remote: %s", remote)
 		logger.Printf("Local: http://%s", listen)
+		logger.Printf("Control: http://localhost:%d", port)
+
+		if err := control.StartServer(port); err != nil {
+			logger.Fatal(err)
+		}
 
 		reflections := make(chan *reflection, 3)
-		err := startReflector(listen, remote, reflections)
-		if err != nil {
+		if err := startReflector(listen, remote, reflections); err != nil {
 			logger.Fatal(err)
 		}
 
@@ -109,4 +115,5 @@ func init() {
 	reflectCmd.Flags().StringP("listen", "l", "localhost:9280", "Listen address and port")
 	reflectCmd.Flags().StringP("remote", "r", "http://elastic:changeme@localhost:9200", "Remote host")
 	reflectCmd.Flags().StringP("log", "", "", "Log filename")
+	reflectCmd.Flags().IntP("port", "p", 9256, "Control port")
 }
