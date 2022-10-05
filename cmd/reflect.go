@@ -18,8 +18,6 @@
 package cmd
 
 import (
-	"fmt"
-	"io"
 	"log"
 	"net"
 	"net/http"
@@ -31,49 +29,7 @@ import (
 
 var logger = log.Default()
 
-type reflection struct {
-	url        *url.URL
-	method     string
-	statusCode int
-	nbytes     int64
-}
-
-func (refl *reflection) reflectRequest(req *http.Request, remote *url.URL) (*http.Request, error) {
-	refl.url = req.URL
-	refl.method = req.Method
-
-	url := fmt.Sprintf("%s%s", remote, req.URL)
-	new_req, err := http.NewRequest(req.Method, url, req.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	new_req.Header = req.Header
-	new_req.Header["Host"] = []string{remote.Host}
-	return new_req, nil
-}
-
-func (refl *reflection) reflectResponse(resp *http.Response, w http.ResponseWriter) error {
-	for k, v := range resp.Header {
-		w.Header()[k] = v
-	}
-	w.WriteHeader(resp.StatusCode)
-
-	nbytes, err := io.Copy(w, resp.Body)
-	if err != nil {
-		return err
-	}
-
-	refl.statusCode = resp.StatusCode
-	refl.nbytes = nbytes
-	return nil
-}
-
-func (refl *reflection) String() string {
-	return fmt.Sprintf("%d %d %s %s", refl.statusCode, refl.nbytes, refl.method, refl.url)
-}
-
-func reflect(addr, remote string, reflections chan<- *reflection, ready *chan struct{}) {
+func startReflector(addr, remote string, reflections chan<- *reflection) error {
 	remote_url, _ := url.Parse(remote)
 	client := &http.Client{}
 
@@ -108,12 +64,13 @@ func reflect(addr, remote string, reflections chan<- *reflection, ready *chan st
 
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
-		logger.Fatal(err)
+		return err
 	}
-	if ready != nil {
-		close(*ready)
-	}
-	logger.Fatal(http.Serve(listener, mux))
+
+	go func() {
+		logger.Fatal(http.Serve(listener, mux))
+	}()
+	return nil
 }
 
 var reflectCmd = &cobra.Command{
@@ -136,7 +93,10 @@ var reflectCmd = &cobra.Command{
 		logger.Printf("Local: http://%s", listen)
 
 		reflections := make(chan *reflection, 3)
-		go reflect(listen, remote, reflections, nil)
+		err := startReflector(listen, remote, reflections)
+		if err != nil {
+			logger.Fatal(err)
+		}
 
 		for refl := range reflections {
 			logger.Println(refl)
