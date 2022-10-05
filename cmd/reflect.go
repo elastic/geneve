@@ -25,20 +25,21 @@ import (
 	"os"
 
 	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/grasp"
 	"github.com/spf13/cobra"
 )
 
 var logger = log.Default()
 
-func startReflector(addr, remote string, reflections chan<- *reflection) error {
+func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) error {
 	remote_url, _ := url.Parse(remote)
 	client := &http.Client{}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		refl := &reflection{}
+		refl := &grasp.Reflection{}
 
-		ref_req, err := refl.reflectRequest(req, remote_url)
+		ref_req, err := refl.ReflectRequest(req, remote_url)
 		if err != nil {
 			logger.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -53,7 +54,7 @@ func startReflector(addr, remote string, reflections chan<- *reflection) error {
 		}
 		defer resp.Body.Close()
 
-		err = refl.reflectResponse(resp, w)
+		err = refl.ReflectResponse(resp, w)
 		if err != nil {
 			logger.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -99,7 +100,7 @@ var reflectCmd = &cobra.Command{
 			logger.Fatal(err)
 		}
 
-		reflections := make(chan *reflection, 3)
+		reflections := make(chan *grasp.Reflection, 3)
 		if err := startReflector(listen, remote, reflections); err != nil {
 			logger.Fatal(err)
 		}
