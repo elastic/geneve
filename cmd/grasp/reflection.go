@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package cmd
+package grasp
 
 import (
 	"fmt"
@@ -25,15 +25,15 @@ import (
 	"strings"
 )
 
-type reflection struct {
-	url        *url.URL
-	method     string
-	req_body   string
-	statusCode int
-	nbytes     int64
+type Reflection struct {
+	Url        *url.URL
+	Method     string
+	Request    string
+	StatusCode int
+	Nbytes     int64
 }
 
-func (refl *reflection) reflectRequest(req *http.Request, remote *url.URL) (*http.Request, error) {
+func (refl *Reflection) ReflectRequest(req *http.Request, remote *url.URL) (*http.Request, error) {
 	var req_body strings.Builder
 
 	_, err := io.Copy(&req_body, req.Body)
@@ -41,12 +41,12 @@ func (refl *reflection) reflectRequest(req *http.Request, remote *url.URL) (*htt
 		return nil, err
 	}
 
-	refl.url = req.URL
-	refl.method = req.Method
-	refl.req_body = req_body.String()
+	refl.Url = req.URL
+	refl.Method = req.Method
+	refl.Request = req_body.String()
 
 	url := fmt.Sprintf("%s%s", remote, req.URL)
-	new_req, err := http.NewRequest(req.Method, url, strings.NewReader(refl.req_body))
+	new_req, err := http.NewRequest(req.Method, url, strings.NewReader(refl.Request))
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (refl *reflection) reflectRequest(req *http.Request, remote *url.URL) (*htt
 	return new_req, nil
 }
 
-func (refl *reflection) reflectResponse(resp *http.Response, w http.ResponseWriter) error {
+func (refl *Reflection) ReflectResponse(resp *http.Response, w http.ResponseWriter) error {
 	for k, v := range resp.Header {
 		w.Header()[k] = v
 	}
@@ -68,11 +68,11 @@ func (refl *reflection) reflectResponse(resp *http.Response, w http.ResponseWrit
 		return err
 	}
 
-	refl.statusCode = resp.StatusCode
-	refl.nbytes = nbytes
+	refl.StatusCode = resp.StatusCode
+	refl.Nbytes = nbytes
 	return nil
 }
 
-func (refl *reflection) String() string {
-	return fmt.Sprintf("%d %d %s %s", refl.statusCode, refl.nbytes, refl.method, refl.url)
+func (refl *Reflection) String() string {
+	return fmt.Sprintf("%d %d %s %s", refl.StatusCode, refl.Nbytes, refl.Method, refl.Url)
 }
