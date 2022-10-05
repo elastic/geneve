@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 
 	"github.com/elastic/geneve/cmd/control"
 	"github.com/elastic/geneve/cmd/grasp"
@@ -61,11 +62,12 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 			return
 		}
 
-		if control.MatchIgnoredPath(refl.Url.Path) {
-			return
+		select {
+		case reflections <- refl:
+		default:
+			logger.Println("Blocking on reflections channel...")
+			reflections <- refl
 		}
-
-		reflections <- refl
 	})
 
 	listener, err := net.Listen("tcp", addr)
@@ -77,6 +79,23 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 		logger.Fatal(http.Serve(listener, mux))
 	}()
 	return nil
+}
+
+func ponder(concurrency int, reflections <-chan *grasp.Reflection) {
+	wg := &sync.WaitGroup{}
+
+	for i := 0; i < concurrency; i++ {
+		wg.Add(1)
+		go func() {
+			for refl := range reflections {
+				logger.Println(refl)
+				grasp.Ponder(refl)
+			}
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
 }
 
 var reflectCmd = &cobra.Command{
@@ -108,10 +127,7 @@ var reflectCmd = &cobra.Command{
 		if err := startReflector(listen, remote, reflections); err != nil {
 			logger.Fatal(err)
 		}
-
-		for refl := range reflections {
-			logger.Println(refl)
-		}
+		ponder(3, reflections)
 	},
 }
 
