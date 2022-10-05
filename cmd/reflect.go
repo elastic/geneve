@@ -61,11 +61,13 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 			return
 		}
 
-		if control.MatchPathIgnore(refl.Url.Path) {
-			return
+		select {
+		case reflections <- refl:
+		default:
+			logger.Println("Blocking on reflections channel...")
+			reflections <- refl
+			logger.Println("Unblocked from reflections channel")
 		}
-
-		reflections <- refl
 	})
 
 	listener, err := net.Listen("tcp", addr)
@@ -105,13 +107,20 @@ var reflectCmd = &cobra.Command{
 		}
 
 		reflections := make(chan *grasp.Reflection, 3)
+		wg := &WaitGroup{}
+
+		wg.Go(3, func() {
+			for refl := range reflections {
+				logger.Println(refl)
+				grasp.Ponder(refl)
+			}
+		})
+
 		if err := startReflector(listen, remote, reflections); err != nil {
 			logger.Fatal(err)
 		}
 
-		for refl := range reflections {
-			logger.Println(refl)
-		}
+		wg.Wait()
 	},
 }
 
