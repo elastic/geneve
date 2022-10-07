@@ -24,9 +24,11 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/elastic/geneve/cmd/grasp"
 )
 
-var reflections = make(chan *reflection, 1)
+var reflections = make(chan *grasp.Reflection, 1)
 
 func init() {
 	log.SetOutput(ioutil.Discard)
@@ -38,21 +40,21 @@ func init() {
 	}
 }
 
-func expectReflection(t *testing.T, refl *reflection, method string, statusCode, nbytes int) {
-	if refl.method != method {
-		t.Errorf("refl.method is %s (expected: %s)", refl.method, method)
+func expectReflection(t *testing.T, refl *grasp.Reflection, method string, statusCode, nbytes int) {
+	if refl.Method != method {
+		t.Errorf("refl.Method is %s (expected: %s)", refl.Method, method)
 	}
-	if refl.statusCode != statusCode {
-		t.Errorf("refl.statusCode is %d (expected: %d)", refl.statusCode, statusCode)
+	if refl.StatusCode != statusCode {
+		t.Errorf("refl.StatusCode is %d (expected: %d)", refl.StatusCode, statusCode)
 	}
-	if refl.nbytes != int64(nbytes) {
-		t.Errorf("refl.nbytes is %d (expected: %d)", refl.nbytes, nbytes)
+	if refl.Nbytes != int64(nbytes) {
+		t.Errorf("refl.Nbytes is %d (expected: %d)", refl.Nbytes, nbytes)
 	}
 }
 
 func expectResponse(t *testing.T, resp *http.Response, statusCode int, body string) {
 	if resp.StatusCode != statusCode {
-		t.Errorf("refl.statusCode is %d (expected: %d)", resp.StatusCode, statusCode)
+		t.Errorf("resp.StatusCode is %d (expected: %d)", resp.StatusCode, statusCode)
 	}
 	var bb strings.Builder
 	if _, err := io.Copy(&bb, resp.Body); err != nil {

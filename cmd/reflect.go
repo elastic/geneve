@@ -24,20 +24,22 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/grasp"
 	"github.com/spf13/cobra"
 )
 
 var logger = log.Default()
 
-func startReflector(addr, remote string, reflections chan<- *reflection) error {
+func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) error {
 	remote_url, _ := url.Parse(remote)
 	client := &http.Client{}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		refl := &reflection{}
+		refl := &grasp.Reflection{}
 
-		ref_req, err := refl.reflectRequest(req, remote_url)
+		ref_req, err := refl.ReflectRequest(req, remote_url)
 		if err != nil {
 			logger.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -52,14 +54,20 @@ func startReflector(addr, remote string, reflections chan<- *reflection) error {
 		}
 		defer resp.Body.Close()
 
-		err = refl.reflectResponse(resp, w)
+		err = refl.ReflectResponse(resp, w)
 		if err != nil {
 			logger.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		reflections <- refl
+		select {
+		case reflections <- refl:
+		default:
+			logger.Println("Blocking on reflections channel...")
+			reflections <- refl
+			logger.Println("Unblocked from reflections channel")
+		}
 	})
 
 	listener, err := net.Listen("tcp", addr)
@@ -79,6 +87,7 @@ var reflectCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		listen, _ := cmd.Flags().GetString("listen")
 		remote, _ := cmd.Flags().GetString("remote")
+		port, _ := cmd.Flags().GetInt("port")
 		filename, _ := cmd.Flags().GetString("log")
 
 		if filename != "" {
@@ -91,16 +100,27 @@ var reflectCmd = &cobra.Command{
 
 		logger.Printf("Remote: %s", remote)
 		logger.Printf("Local: http://%s", listen)
+		logger.Printf("Control: http://localhost:%d", port)
 
-		reflections := make(chan *reflection, 3)
-		err := startReflector(listen, remote, reflections)
-		if err != nil {
+		if err := control.StartServer(port); err != nil {
 			logger.Fatal(err)
 		}
 
-		for refl := range reflections {
-			logger.Println(refl)
+		reflections := make(chan *grasp.Reflection, 3)
+		wg := &WaitGroup{}
+
+		wg.Go(3, func() {
+			for refl := range reflections {
+				logger.Println(refl)
+				grasp.Ponder(refl)
+			}
+		})
+
+		if err := startReflector(listen, remote, reflections); err != nil {
+			logger.Fatal(err)
 		}
+
+		wg.Wait()
 	},
 }
 
@@ -109,4 +129,5 @@ func init() {
 	reflectCmd.Flags().StringP("listen", "l", "localhost:9280", "Listen address and port")
 	reflectCmd.Flags().StringP("remote", "r", "http://elastic:changeme@localhost:9200", "Remote host")
 	reflectCmd.Flags().StringP("log", "", "", "Log filename")
+	reflectCmd.Flags().IntP("port", "p", 9256, "Control port")
 }

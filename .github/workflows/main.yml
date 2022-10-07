@@ -118,7 +118,17 @@ jobs:
         run: make cli-build
 
       - name: Start reflector
-        run: ./gnv reflect -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log gnv.log &
+        run: |
+          ./gnv reflect -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log gnv.log &
+          curl -s --retry 3 --retry-connrefused http://localhost:9256/api/status
+          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.kibana.*'
+          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.reporting-.*'
+          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_bulk'
+          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_monitoring'
+          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_nodes'
+          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_pit'
+          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_security'
+          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_xpack'
 
       - name: Setup cache
         id: elastic-stack-cache
