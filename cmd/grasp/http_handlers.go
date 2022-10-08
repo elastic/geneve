@@ -22,40 +22,57 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/elastic/geneve/cmd/control"
 )
 
-type tally struct {
-	label string
+type tallyKey interface {
+	string | int
+}
+
+type tally[T tallyKey] struct {
+	label T
 	value int
 }
 
-func getIndexTallies() (tallies []tally, total int) {
+func getIndexTallies() (tallies []tally[string], total int) {
 	grasp.Lock()
 	defer grasp.Unlock()
 
 	for index, stats := range indexStats {
-		tallies = append(tallies, tally{index, stats.count})
+		tallies = append(tallies, tally[string]{index, stats.count})
 		total += stats.count
 	}
 
 	return
 }
 
-func getCallTallies() (tallies []tally, total int) {
+func getCallTallies() (tallies []tally[string], total int) {
 	grasp.Lock()
 	defer grasp.Unlock()
 
 	for call, stats := range callStats {
-		tallies = append(tallies, tally{call, stats.count})
+		tallies = append(tallies, tally[string]{call, stats.count})
 		total += stats.count
 	}
 
 	return
 }
 
-func respondTallies(w http.ResponseWriter, req *http.Request, tallies []tally, total int) {
+func getSearchTallies() (tallies []tally[int], total int) {
+	grasp.Lock()
+	defer grasp.Unlock()
+
+	for search, stats := range searchStats {
+		tallies = append(tallies, tally[int]{search, stats.count})
+		total += stats.count
+	}
+
+	return
+}
+
+func respondTallies[T tallyKey](w http.ResponseWriter, req *http.Request, tallies []tally[T], total int) {
 	if err := req.ParseForm(); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -90,7 +107,7 @@ func respondTallies(w http.ResponseWriter, req *http.Request, tallies []tally, t
 
 	total = int(float64(total) * float64(percent) / 100)
 	for _, count := range tallies {
-		fmt.Fprintf(w, "%d: %s\n", count.value, count.label)
+		fmt.Fprintf(w, "%d: %v\n", count.value, count.label)
 		total -= count.value
 		if total < 0 {
 			break
@@ -105,6 +122,11 @@ func getIndices(w http.ResponseWriter, req *http.Request) {
 
 func getCalls(w http.ResponseWriter, req *http.Request) {
 	tallies, total := getCallTallies()
+	respondTallies(w, req, tallies, total)
+}
+
+func getSearches(w http.ResponseWriter, req *http.Request) {
+	tallies, total := getSearchTallies()
 	respondTallies(w, req, tallies, total)
 }
 
@@ -124,17 +146,53 @@ func deleteCalls(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, "Call stats were reset")
 }
 
+func deleteSearches(w http.ResponseWriter, req *http.Request) {
+	grasp.Lock()
+	defer grasp.Unlock()
+
+	searchStats = nil
+	fmt.Fprintln(w, "Search stats were reset")
+}
+
 func deleteGrasp(w http.ResponseWriter, req *http.Request) {
 	grasp.Lock()
 	defer grasp.Unlock()
 
 	indexStats = nil
 	callStats = nil
+	searchStats = nil
 	fmt.Fprintln(w, "Whole grasp was reset")
+}
+
+func getSearch(w http.ResponseWriter, req *http.Request) {
+	parts := strings.Split(req.URL.Path, "/")
+
+	if len(parts) < 5 || parts[4] == "" {
+		http.Error(w, "Missing search id", http.StatusBadRequest)
+		return
+	}
+
+	searchId, err := strconv.ParseInt(parts[4], 10, 0)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	search := getSearchById(searchId)
+	if search == "" {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Search id not found: %d\n", searchId)
+		return
+	}
+
+	fmt.Fprintln(w, search)
 }
 
 func init() {
 	control.Handle("/api/grasp", &control.Handler{DELETE: deleteGrasp})
 	control.Handle("/api/grasp/calls", &control.Handler{GET: getCalls, DELETE: deleteCalls})
 	control.Handle("/api/grasp/indices", &control.Handler{GET: getIndices, DELETE: deleteIndices})
+	control.Handle("/api/grasp/searches", &control.Handler{GET: getSearches, DELETE: deleteSearches})
+
+	control.Handle("/api/grasp/search/", &control.Handler{GET: getSearch})
 }
