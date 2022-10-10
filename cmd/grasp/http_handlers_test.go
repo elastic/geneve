@@ -100,6 +100,10 @@ func expectSearches(t *testing.T, searches []string) {
 	expectNoSearch(t, len(searches))
 }
 
+func expectNonEmptyIndices(t *testing.T, nonEmptyIndices int) {
+	expectGrasp(t, "", []string{fmt.Sprintf("non-empty indices: %d", nonEmptyIndices)})
+}
+
 func expectNoGrasp(t *testing.T) {
 	expectGrasp(t, "/indices?percent=100", []string{})
 	expectGrasp(t, "/calls?percent=100", []string{})
@@ -117,6 +121,7 @@ func TestGraspEndpoints(t *testing.T) {
 	// check initial grasp is empty
 	expectNoGrasp(t)
 	expectNoSearch(t, 0)
+	expectNonEmptyIndices(t, 0)
 
 	// call, no index
 	ponder("http://localhost:9256/_call", "GET", "", "")
@@ -124,6 +129,7 @@ func TestGraspEndpoints(t *testing.T) {
 	expectGrasp(t, "/calls?percent=100", []string{"1: _call"})
 	expectGrasp(t, "/searches?percent=100", []string{})
 	expectNoSearch(t, 0)
+	expectNonEmptyIndices(t, 0)
 
 	// call, with index
 	ponder("http://localhost:9256/.index/_call", "GET", "", "")
@@ -131,20 +137,55 @@ func TestGraspEndpoints(t *testing.T) {
 	expectGrasp(t, "/calls?percent=100", []string{"2: _call"})
 	expectGrasp(t, "/searches?percent=100", []string{})
 	expectNoSearch(t, 0)
+	expectNonEmptyIndices(t, 0)
 
-	// search, with index
-	ponder("http://localhost:9256/.index/_search", "POST", "search", "")
+	// search, with index and no hits
+	ponder("http://localhost:9256/.index/_search", "POST", "search", `{"hits": {"total": 0}}`)
 	expectGrasp(t, "/indices?percent=100", []string{"2: /.index", "1: "})
 	expectGrasp(t, "/calls?percent=100", []string{"2: _call", "1: _search"})
 	expectGrasp(t, "/searches?percent=100", []string{"1: 0"})
 	expectSearches(t, []string{"search"})
+	expectNonEmptyIndices(t, 0)
 
-	// another search, with another index
-	ponder("http://localhost:9256/.index2/_search", "POST", "search2", "")
-	expectGrasp(t, "/indices?percent=100", []string{"2: /.index", "1: ", "1: /.index2"})
+	// search, with index and 1 hit
+	ponder("http://localhost:9256/.index/_search", "POST", "search", `{"hits": {"total": 1}}`)
+	expectGrasp(t, "/indices?percent=100", []string{"3: /.index", "1: "})
 	expectGrasp(t, "/calls?percent=100", []string{"2: _call", "2: _search"})
-	expectGrasp(t, "/searches?percent=100", []string{"1: 0", "1: 1"})
+	expectGrasp(t, "/searches?percent=100", []string{"2: 0"})
+	expectSearches(t, []string{"search"})
+	expectNonEmptyIndices(t, 1)
+
+	// search, with second index and no hits (relation 'eq')
+	ponder("http://localhost:9256/.index2/_search", "POST", "search", `{"hits": {"total": {"relation": "eq", "value": 0}}}`)
+	expectGrasp(t, "/indices?percent=100", []string{"3: /.index", "1: ", "1: /.index2"})
+	expectGrasp(t, "/calls?percent=100", []string{"3: _search", "2: _call"})
+	expectGrasp(t, "/searches?percent=100", []string{"3: 0"})
+	expectSearches(t, []string{"search"})
+	expectNonEmptyIndices(t, 1)
+
+	// second search, with second index and 2 hits (relation 'eq')
+	ponder("http://localhost:9256/.index2/_search", "POST", "search2", `{"hits": {"total": {"relation": "eq", "value": 2}}}`)
+	expectGrasp(t, "/indices?percent=100", []string{"3: /.index", "2: /.index2", "1: "})
+	expectGrasp(t, "/calls?percent=100", []string{"4: _search", "2: _call"})
+	expectGrasp(t, "/searches?percent=100", []string{"3: 0", "1: 1"})
 	expectSearches(t, []string{"search", "search2"})
+	expectNonEmptyIndices(t, 2)
+
+	// second search, with third index and 0 hits (relation 'gte')
+	ponder("http://localhost:9256/.index3/_search", "POST", "search2", `{"hits": {"total": {"relation": "gte", "value": 0}}}`)
+	expectGrasp(t, "/indices?percent=100", []string{"3: /.index", "2: /.index2", "1: ", "1: /.index3"})
+	expectGrasp(t, "/calls?percent=100", []string{"5: _search", "2: _call"})
+	expectGrasp(t, "/searches?percent=100", []string{"3: 0", "2: 1"})
+	expectSearches(t, []string{"search", "search2"})
+	expectNonEmptyIndices(t, 2)
+
+	// first search, with third index and 1 hit (relation 'gte')
+	ponder("http://localhost:9256/.index3/_search", "POST", "search", `{"hits": {"total": {"relation": "gte", "value": 1}}}`)
+	expectGrasp(t, "/indices?percent=100", []string{"3: /.index", "2: /.index2", "2: /.index3", "1: "})
+	expectGrasp(t, "/calls?percent=100", []string{"6: _search", "2: _call"})
+	expectGrasp(t, "/searches?percent=100", []string{"4: 0", "2: 1"})
+	expectSearches(t, []string{"search", "search2"})
+	expectNonEmptyIndices(t, 3)
 }
 
 func TestGraspReset(t *testing.T) {
@@ -155,9 +196,10 @@ func TestGraspReset(t *testing.T) {
 	expectResponse(t, resp, http.StatusOK, "Whole grasp was reset\n")
 	expectNoGrasp(t)
 	expectSearches(t, []string{"search", "search2"})
+	expectNonEmptyIndices(t, 0)
 
-	// search, with index
-	ponder("http://localhost:9256/.index/_search", "POST", "search2", "")
+	// second search, with index and 3 hits
+	ponder("http://localhost:9256/.index/_search", "POST", "search2", `{"hits": {"total": 3}}`)
 
 	// check calls grasp reset
 	resp = deleteRequest("http://localhost:5692/api/grasp/calls")
@@ -166,6 +208,7 @@ func TestGraspReset(t *testing.T) {
 	expectGrasp(t, "/calls?percent=100", []string{})
 	expectGrasp(t, "/searches?percent=100", []string{"1: 1"})
 	expectSearches(t, []string{"search", "search2"})
+	expectNonEmptyIndices(t, 1)
 
 	// check indicex grasp reset
 	resp = deleteRequest("http://localhost:5692/api/grasp/indices")
@@ -174,6 +217,7 @@ func TestGraspReset(t *testing.T) {
 	expectGrasp(t, "/calls?percent=100", []string{})
 	expectGrasp(t, "/searches?percent=100", []string{"1: 1"})
 	expectSearches(t, []string{"search", "search2"})
+	expectNonEmptyIndices(t, 0)
 
 	// check searches grasp reset
 	resp = deleteRequest("http://localhost:5692/api/grasp/searches")
@@ -182,4 +226,5 @@ func TestGraspReset(t *testing.T) {
 	expectGrasp(t, "/calls?percent=100", []string{})
 	expectGrasp(t, "/searches?percent=100", []string{})
 	expectSearches(t, []string{"search", "search2"})
+	expectNonEmptyIndices(t, 0)
 }

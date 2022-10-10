@@ -18,6 +18,9 @@
 package grasp
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
 	"strings"
 	"sync"
 
@@ -28,6 +31,7 @@ type indexStat struct {
 	calls    map[string]int
 	searches map[int]int
 	count    int
+	nonEmpty bool
 }
 
 type callStat struct {
@@ -66,7 +70,7 @@ func Ponder(refl *Reflection) {
 		updateSearchStats(search, index)
 	}
 
-	updateIndexStats(index, call, search)
+	updateIndexStats(index, call, search, refl)
 	updateCallStats(call, index)
 }
 
@@ -111,7 +115,7 @@ func getSearchById(searchId int64) string {
 	return ""
 }
 
-func updateIndexStats(index, call string, search int) {
+func updateIndexStats(index, call string, search int, refl *Reflection) {
 	if indexStats == nil {
 		indexStats = make(map[string]*indexStat)
 	}
@@ -122,11 +126,24 @@ func updateIndexStats(index, call string, search int) {
 	}
 	stats.calls[call] = stats.calls[call] + 1
 	stats.count += 1
+
 	if call == "_search" {
 		if stats.searches == nil {
 			stats.searches = make(map[int]int)
 		}
 		stats.searches[search] = stats.searches[search] + 1
+		if !stats.nonEmpty {
+			// release the mutex before decoding the response, reacquire it once done
+			grasp.Unlock()
+			nonEmpty, err := isIndexNonEmpty(refl)
+			grasp.Lock()
+
+			if err != nil {
+				log.Println(err)
+			} else if nonEmpty {
+				stats.nonEmpty = nonEmpty
+			}
+		}
 	}
 }
 
@@ -154,4 +171,49 @@ func updateSearchStats(search int, index string) {
 	}
 	stats.indices[index] = stats.indices[index] + 1
 	stats.count += 1
+}
+
+func isIndexNonEmpty(refl *Reflection) (nonEmpty bool, err error) {
+	rr := refl.Response()
+	defer rr.Close()
+
+	var res any
+	err = json.NewDecoder(rr).Decode(&res)
+	if err != nil {
+		err = fmt.Errorf("Response is not a json object: %s", err.Error())
+		return
+	}
+
+	total, ok := JsonField[any](res, "hits.total")
+	if !ok {
+		err = fmt.Errorf("Missing field: hits.total")
+		return
+	}
+
+	switch total := total.(type) {
+	case float64:
+		nonEmpty = total > 0
+
+	case map[string]any:
+		relation, ok := JsonField[string](total, "relation")
+		if !ok {
+			err = fmt.Errorf("Missing field or wrong type: hits.total.relation")
+			return
+		}
+		if relation != "eq" && relation != "gte" {
+			err = fmt.Errorf("Unknown hits.total.relation value: %#v", relation)
+			return
+		}
+		value, ok := JsonField[float64](total, "value")
+		if !ok {
+			err = fmt.Errorf("Missing field or wrong type: hits.total.value")
+			return
+		}
+		nonEmpty = value > 0
+
+	default:
+		err = fmt.Errorf("hits.total is neither map nor number")
+	}
+
+	return
 }

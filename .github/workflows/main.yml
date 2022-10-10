@@ -177,6 +177,7 @@ jobs:
       - name: Stop reflector
         if: always()
         run: |
+          curl -s "http://localhost:9256/api/grasp"
           curl -s "http://localhost:9256/api/grasp/indices?percent=100"
           curl -s "http://localhost:9256/api/grasp/calls?percent=100"
           curl -s "http://localhost:9256/api/grasp/searches?percent=100"

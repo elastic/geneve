@@ -164,6 +164,20 @@ func deleteGrasp(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, "Whole grasp was reset")
 }
 
+func getGrasp(w http.ResponseWriter, req *http.Request) {
+	grasp.Lock()
+	defer grasp.Unlock()
+
+	nonEmptyIndices := 0
+	for _, stats := range indexStats {
+		if stats.nonEmpty {
+			nonEmptyIndices += 1
+		}
+	}
+
+	fmt.Fprintf(w, "non-empty indices: %d\n", nonEmptyIndices)
+}
+
 func getSearch(w http.ResponseWriter, req *http.Request) {
 	parts := strings.Split(req.URL.Path, "/")
 
@@ -189,7 +203,7 @@ func getSearch(w http.ResponseWriter, req *http.Request) {
 }
 
 func init() {
-	control.Handle("/api/grasp", &control.Handler{DELETE: deleteGrasp})
+	control.Handle("/api/grasp", &control.Handler{GET: getGrasp, DELETE: deleteGrasp})
 	control.Handle("/api/grasp/calls", &control.Handler{GET: getCalls, DELETE: deleteCalls})
 	control.Handle("/api/grasp/indices", &control.Handler{GET: getIndices, DELETE: deleteIndices})
 	control.Handle("/api/grasp/searches", &control.Handler{GET: getSearches, DELETE: deleteSearches})
