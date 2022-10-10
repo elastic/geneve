@@ -78,7 +78,7 @@ func respondTallies(w http.ResponseWriter, req *http.Request, tallies []tally, t
 
 	sort.Slice(tallies, func(i, j int) bool {
 		if tallies[i].value == tallies[j].value {
-			return tallies[i].label > tallies[j].label
+			return tallies[i].label < tallies[j].label
 		} else {
 			return tallies[i].value > tallies[j].value
 		}
