@@ -120,7 +120,7 @@ jobs:
 
       - name: Start reflector
         run: |
-          ./gnv reflect -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG &
+          ./gnv reflect -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG 2>>gnv.log &
           curl -s --retry 3 --retry-connrefused http://localhost:9256/api/status
           curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.kibana.*'
           curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.reporting-.*'
@@ -175,11 +175,13 @@ jobs:
         run: make down
 
       - name: Stop reflector
+        if: always()
         run: |
           killall gnv
           if grep "WARNING: DATA RACE" $TEST_GENEVE_LOG; then awk '/WARNING: DATA RACE/{found=1} found' $TEST_GENEVE_LOG; false; fi
 
       - name: Upload artifacts
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: geneve-log-${{ matrix.stack-version }}
