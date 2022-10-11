@@ -62,9 +62,11 @@ func respondTallies(w http.ResponseWriter, req *http.Request, tallies []tally, t
 	}
 
 	var percent int64 = 80
+	var err error
+
 	val := req.Form.Get("percent")
 	if val != "" {
-		percent, err := strconv.ParseInt(val, 10, 0)
+		percent, err = strconv.ParseInt(val, 10, 0)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
