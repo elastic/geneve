@@ -37,7 +37,7 @@ down:
 	docker compose down
 
 gnv: main.go $(wildcard cmd/*)
-	go build -o $@ .
+	go build -race -o $@ .
 
 cli-build: gnv
 
@@ -46,7 +46,7 @@ cli-lint:
 	golint .
 
 cli-test:
-	go test -v ./...
+	go test -race ./...
 
 pkg-build:
 	$(PYTHON) -m build

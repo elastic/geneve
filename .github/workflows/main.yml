@@ -94,6 +94,7 @@ jobs:
     env:
       TEST_ELASTICSEARCH_URL: "http://elastic:changeme@localhost:29650"
       TEST_KIBANA_URL: "http://elastic:changeme@localhost:65290"
+      TEST_GENEVE_LOG: "gnv.log"
 
     steps:
       - name: Checkout code
@@ -119,7 +120,7 @@ jobs:
 
       - name: Start reflector
         run: |
-          ./gnv reflect -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log gnv.log &
+          ./gnv reflect -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG &
           curl -s --retry 3 --retry-connrefused http://localhost:9256/api/status
           curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.kibana.*'
           curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.reporting-.*'
@@ -174,7 +175,9 @@ jobs:
         run: make down
 
       - name: Stop reflector
-        run: killall gnv
+        run: |
+          killall gnv
+          if grep "WARNING: DATA RACE" $TEST_GENEVE_LOG; then awk '/WARNING: DATA RACE/{found=1} found' $TEST_GENEVE_LOG; false; fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
