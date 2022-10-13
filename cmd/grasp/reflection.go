@@ -18,6 +18,8 @@
 package grasp
 
 import (
+	"bytes"
+	"compress/gzip"
 	"fmt"
 	"io"
 	"net/http"
@@ -25,18 +27,26 @@ import (
 )
 
 type Reflection struct {
-	Url        *url.URL
+	URL        *url.URL
 	Method     string
+	Request    string
+	response   []byte
 	StatusCode int
 	Nbytes     int64
 }
 
 func (refl *Reflection) ReflectRequest(req *http.Request, remote *url.URL) (*http.Request, error) {
-	refl.Url = req.URL
+	req_body, err := io.ReadAll(req.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	refl.URL = req.URL
 	refl.Method = req.Method
+	refl.Request = string(req_body)
 
 	url := fmt.Sprintf("%s%s", remote, req.URL)
-	new_req, err := http.NewRequest(req.Method, url, req.Body)
+	new_req, err := http.NewRequest(req.Method, url, bytes.NewReader(req_body))
 	if err != nil {
 		return nil, err
 	}
@@ -53,16 +63,26 @@ func (refl *Reflection) ReflectResponse(resp *http.Response, w http.ResponseWrit
 	}
 	w.WriteHeader(resp.StatusCode)
 
-	nbytes, err := io.Copy(w, resp.Body)
+	resp_body := bytes.Buffer{}
+	nbytes, err := io.Copy(io.MultiWriter(w, &resp_body), resp.Body)
 	if err != nil {
 		return err
 	}
 
+	refl.response = resp_body.Bytes()
 	refl.StatusCode = resp.StatusCode
 	refl.Nbytes = nbytes
 	return nil
 }
 
+func (refl *Reflection) Response() io.ReadCloser {
+	if gz, err := gzip.NewReader(bytes.NewReader(refl.response)); err == nil {
+		return gz
+	} else {
+		return io.NopCloser(bytes.NewReader(refl.response))
+	}
+}
+
 func (refl *Reflection) String() string {
-	return fmt.Sprintf("%d %d %s %s", refl.StatusCode, refl.Nbytes, refl.Method, refl.Url)
+	return fmt.Sprintf("%d %d %s %s", refl.StatusCode, refl.Nbytes, refl.Method, refl.URL)
 }

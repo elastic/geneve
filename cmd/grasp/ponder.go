@@ -18,6 +18,9 @@
 package grasp
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
 	"strings"
 	"sync"
 
@@ -25,11 +28,18 @@ import (
 )
 
 type indexStat struct {
-	calls map[string]int
-	count int
+	calls    map[string]int
+	searches map[int]int
+	count    int
+	nonEmpty bool
 }
 
 type callStat struct {
+	indices map[string]int
+	count   int
+}
+
+type searchStat struct {
 	indices map[string]int
 	count   int
 }
@@ -38,18 +48,42 @@ var grasp sync.Mutex
 var indexStats map[string]*indexStat
 var callStats map[string]*callStat
 
+// give each search an id
+var searchStore map[string]int
+
+// keep some stats for each search
+var searchStats map[int]*searchStat
+
 func Ponder(refl *Reflection) {
-	if control.MatchPathIgnore(refl.Url.Path) {
+	if control.MatchPathIgnore(refl.URL.Path) {
 		return
 	}
 
-	index, call, _ := splitPath(refl.Url.Path)
+	index, call, _ := splitPath(refl.URL.Path)
+	search := -1
 
 	grasp.Lock()
 	defer grasp.Unlock()
 
-	updateIndexStats(index, call)
-	updateCallStats(index, call)
+	if call == "_search" {
+		search = getSearchId(refl.Request)
+		updateSearchStats(search, index)
+	}
+
+	updateIndexStats(index, call, search, refl)
+	updateCallStats(call, index)
+}
+
+func getSearchId(search string) int {
+	if searchStore == nil {
+		searchStore = make(map[string]int)
+	}
+	id, ok := searchStore[search]
+	if !ok {
+		id = len(searchStore)
+		searchStore[search] = id
+	}
+	return id
 }
 
 func splitPath(path string) (index, call, sub_call string) {
@@ -68,7 +102,20 @@ func splitPath(path string) (index, call, sub_call string) {
 	return
 }
 
-func updateIndexStats(index, call string) {
+func getSearchById(searchId int64) string {
+	grasp.Lock()
+	defer grasp.Unlock()
+
+	for search, id := range searchStore {
+		if int64(id) == searchId {
+			return search
+		}
+	}
+
+	return ""
+}
+
+func updateIndexStats(index, call string, search int, refl *Reflection) {
 	if indexStats == nil {
 		indexStats = make(map[string]*indexStat)
 	}
@@ -79,9 +126,28 @@ func updateIndexStats(index, call string) {
 	}
 	stats.calls[call] = stats.calls[call] + 1
 	stats.count += 1
+
+	if call == "_search" {
+		if stats.searches == nil {
+			stats.searches = make(map[int]int)
+		}
+		stats.searches[search] = stats.searches[search] + 1
+		if !stats.nonEmpty {
+			// release the mutex before decoding the response, reacquire it once done
+			grasp.Unlock()
+			nonEmpty, err := isIndexNonEmpty(refl)
+			grasp.Lock()
+
+			if err != nil {
+				log.Println(err)
+			} else if nonEmpty {
+				stats.nonEmpty = nonEmpty
+			}
+		}
+	}
 }
 
-func updateCallStats(index, call string) {
+func updateCallStats(call, index string) {
 	if callStats == nil {
 		callStats = make(map[string]*callStat)
 	}
@@ -92,4 +158,62 @@ func updateCallStats(index, call string) {
 	}
 	stats.indices[index] = stats.indices[index] + 1
 	stats.count += 1
+}
+
+func updateSearchStats(search int, index string) {
+	if searchStats == nil {
+		searchStats = make(map[int]*searchStat)
+	}
+	stats, ok := searchStats[search]
+	if !ok {
+		stats = &searchStat{indices: make(map[string]int)}
+		searchStats[search] = stats
+	}
+	stats.indices[index] = stats.indices[index] + 1
+	stats.count += 1
+}
+
+func isIndexNonEmpty(refl *Reflection) (nonEmpty bool, err error) {
+	rr := refl.Response()
+	defer rr.Close()
+
+	var res any
+	err = json.NewDecoder(rr).Decode(&res)
+	if err != nil {
+		err = fmt.Errorf("Response is not a json object: %s", err.Error())
+		return
+	}
+
+	total, ok := JsonField[any](res, "hits.total")
+	if !ok {
+		err = fmt.Errorf("Missing field: hits.total")
+		return
+	}
+
+	switch total := total.(type) {
+	case float64:
+		nonEmpty = total > 0
+
+	case map[string]any:
+		relation, ok := JsonField[string](total, "relation")
+		if !ok {
+			err = fmt.Errorf("Missing field or wrong type: hits.total.relation")
+			return
+		}
+		if relation != "eq" && relation != "gte" {
+			err = fmt.Errorf("Unknown hits.total.relation value: %#v", relation)
+			return
+		}
+		value, ok := JsonField[float64](total, "value")
+		if !ok {
+			err = fmt.Errorf("Missing field or wrong type: hits.total.value")
+			return
+		}
+		nonEmpty = value > 0
+
+	default:
+		err = fmt.Errorf("hits.total is neither map nor number")
+	}
+
+	return
 }

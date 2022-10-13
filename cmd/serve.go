@@ -29,8 +29,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var logger = log.Default()
-
 func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) error {
 	remote_url, _ := url.Parse(remote)
 	client := &http.Client{}
@@ -41,14 +39,14 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 
 		ref_req, err := refl.ReflectRequest(req, remote_url)
 		if err != nil {
-			logger.Println(err)
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		resp, err := client.Do(ref_req)
 		if err != nil {
-			logger.Println(err)
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
@@ -56,7 +54,7 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 
 		err = refl.ReflectResponse(resp, w)
 		if err != nil {
-			logger.Println(err)
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -64,9 +62,9 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 		select {
 		case reflections <- refl:
 		default:
-			logger.Println("Blocking on reflections channel...")
+			log.Println("Blocking on reflections channel...")
 			reflections <- refl
-			logger.Println("Unblocked from reflections channel")
+			log.Println("Unblocked from reflections channel")
 		}
 	})
 
@@ -76,14 +74,14 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 	}
 
 	go func() {
-		logger.Fatal(http.Serve(listener, mux))
+		log.Fatal(http.Serve(listener, mux))
 	}()
 	return nil
 }
 
-var reflectCmd = &cobra.Command{
-	Use:   "reflect",
-	Short: "Run a REST API proxy",
+var serveCmd = &cobra.Command{
+	Use:   "serve",
+	Short: "Run a data generation server and REST API proxy",
 	Run: func(cmd *cobra.Command, args []string) {
 		listen, _ := cmd.Flags().GetString("listen")
 		remote, _ := cmd.Flags().GetString("remote")
@@ -91,19 +89,19 @@ var reflectCmd = &cobra.Command{
 		filename, _ := cmd.Flags().GetString("log")
 
 		if filename != "" {
-			file, err := os.OpenFile(filename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+			file, err := os.OpenFile(filename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0600)
 			if err != nil {
-				logger.Fatal(err)
+				log.Fatal(err)
 			}
-			logger = log.New(file, "", log.LstdFlags)
+			log.SetOutput(file)
 		}
 
-		logger.Printf("Remote: %s", remote)
-		logger.Printf("Local: http://%s", listen)
-		logger.Printf("Control: http://localhost:%d", port)
+		log.Printf("Remote: %s", remote)
+		log.Printf("Local: http://%s", listen)
+		log.Printf("Control: http://localhost:%d", port)
 
 		if err := control.StartServer(port); err != nil {
-			logger.Fatal(err)
+			log.Fatal(err)
 		}
 
 		reflections := make(chan *grasp.Reflection, 3)
@@ -111,13 +109,13 @@ var reflectCmd = &cobra.Command{
 
 		wg.Go(3, func() {
 			for refl := range reflections {
-				logger.Println(refl)
+				log.Println(refl)
 				grasp.Ponder(refl)
 			}
 		})
 
 		if err := startReflector(listen, remote, reflections); err != nil {
-			logger.Fatal(err)
+			log.Fatal(err)
 		}
 
 		wg.Wait()
@@ -125,9 +123,9 @@ var reflectCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(reflectCmd)
-	reflectCmd.Flags().StringP("listen", "l", "localhost:9280", "Listen address and port")
-	reflectCmd.Flags().StringP("remote", "r", "http://elastic:changeme@localhost:9200", "Remote host")
-	reflectCmd.Flags().StringP("log", "", "", "Log filename")
-	reflectCmd.Flags().IntP("port", "p", 9256, "Control port")
+	rootCmd.AddCommand(serveCmd)
+	serveCmd.Flags().StringP("listen", "l", "localhost:9280", "Listen address and port")
+	serveCmd.Flags().StringP("remote", "r", "http://elastic:changeme@localhost:9200", "Remote host")
+	serveCmd.Flags().StringP("log", "", "", "Log filename")
+	serveCmd.Flags().IntP("port", "p", 9256, "Control port")
 }

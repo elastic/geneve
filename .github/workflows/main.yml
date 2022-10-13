@@ -118,9 +118,9 @@ jobs:
       - name: Build CLI
         run: make cli-build
 
-      - name: Start reflector
+      - name: Start Geneve server
         run: |
-          ./gnv reflect -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG &
+          ./gnv serve -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG 2>>gnv.log &
           curl -s --retry 3 --retry-connrefused http://localhost:9256/api/status
           curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.kibana.*'
           curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.reporting-.*'
@@ -174,12 +174,18 @@ jobs:
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
         run: make down
 
-      - name: Stop reflector
+      - name: Stop Geneve server
+        if: always()
         run: |
+          curl -s "http://localhost:9256/api/grasp"
+          curl -s "http://localhost:9256/api/grasp/indices?percent=100"
+          curl -s "http://localhost:9256/api/grasp/calls?percent=100"
+          curl -s "http://localhost:9256/api/grasp/searches?percent=100"
           killall gnv
           if grep "WARNING: DATA RACE" $TEST_GENEVE_LOG; then awk '/WARNING: DATA RACE/{found=1} found' $TEST_GENEVE_LOG; false; fi
 
       - name: Upload artifacts
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: geneve-log-${{ matrix.stack-version }}
