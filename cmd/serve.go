@@ -79,9 +79,9 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 	return nil
 }
 
-var reflectCmd = &cobra.Command{
-	Use:   "reflect",
-	Short: "Run a REST API proxy",
+var serveCmd = &cobra.Command{
+	Use:   "serve",
+	Short: "Run a data generation server and REST API proxy",
 	Run: func(cmd *cobra.Command, args []string) {
 		listen, _ := cmd.Flags().GetString("listen")
 		remote, _ := cmd.Flags().GetString("remote")
@@ -123,9 +123,9 @@ var reflectCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(reflectCmd)
-	reflectCmd.Flags().StringP("listen", "l", "localhost:9280", "Listen address and port")
-	reflectCmd.Flags().StringP("remote", "r", "http://elastic:changeme@localhost:9200", "Remote host")
-	reflectCmd.Flags().StringP("log", "", "", "Log filename")
-	reflectCmd.Flags().IntP("port", "p", 9256, "Control port")
+	rootCmd.AddCommand(serveCmd)
+	serveCmd.Flags().StringP("listen", "l", "localhost:9280", "Listen address and port")
+	serveCmd.Flags().StringP("remote", "r", "http://elastic:changeme@localhost:9200", "Remote host")
+	serveCmd.Flags().StringP("log", "", "", "Log filename")
+	serveCmd.Flags().IntP("port", "p", 9256, "Control port")
 }

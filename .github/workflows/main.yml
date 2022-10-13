@@ -118,9 +118,9 @@ jobs:
       - name: Build CLI
         run: make cli-build
 
-      - name: Start reflector
+      - name: Start Geneve server
         run: |
-          ./gnv reflect -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG 2>>gnv.log &
+          ./gnv serve -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG 2>>gnv.log &
           curl -s --retry 3 --retry-connrefused http://localhost:9256/api/status
           curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.kibana.*'
           curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.reporting-.*'
@@ -174,7 +174,7 @@ jobs:
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
         run: make down
 
-      - name: Stop reflector
+      - name: Stop Geneve server
         if: always()
         run: |
           curl -s "http://localhost:9256/api/grasp"
