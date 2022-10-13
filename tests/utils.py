@@ -282,6 +282,7 @@ class SignalsTestCase:
 
                 doc_count = 0
                 for event in itertools.chain(*events):
+                    event.doc.pop("_meta", None)
                     bulk.append(json.dumps({"create": {"_index": event.meta["index"]}}))
                     bulk.append(json.dumps(event.doc))
                     if verbose > 2:

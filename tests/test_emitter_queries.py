@@ -175,6 +175,10 @@ mono_branch_mono_doc = {
     """: [
         [{"event": {"category": ["network"]}, "destination": {"ip": "822e:f477:4aa3:d9c5:7494:c408:2f13:daeb"}}],
     ],
+    """network where destination.ip == "127.0.0.1" and _meta.index == "test"
+    """: [
+        [{"_meta": {"index": "test"}, "event": {"category": ["network"]}, "destination": {"ip": "127.0.0.1"}}],
+    ],
 }
 
 multi_branch_mono_doc = {
@@ -276,6 +280,15 @@ mono_branch_multi_doc = {
         [
             {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "fmC"}},
             {"event": {"category": ["process"]}, "process": {"parent": {"name": "cmd.exe"}}, "user": {"name": "fmC"}},
+        ]
+    ],
+    """sequence
+        [network where _meta.index == "index1" and source.ip != null] by source.ip
+        [network where _meta.index == "index2" and destination.ip != null ] by destination.ip
+    """: [
+        [
+            {"_meta": {"index": "index1"}, "event": {"category": ["network"]}, "source": {"ip": "167.158.207.19"}},
+            {"_meta": {"index": "index2"}, "event": {"category": ["network"]}, "destination": {"ip": "167.158.207.19"}},
         ]
     ],
 }
