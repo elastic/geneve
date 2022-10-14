@@ -78,9 +78,17 @@ def ast_from_rule(rule):
     if rule.type not in ("query", "eql"):
         raise NotImplementedError(f"Unsupported rule type: {rule.type}")
     elif rule.language == "eql":
-        return ast_from_eql_query(rule.query)
+        if "index" in rule[".test_private"]:
+            rule_query = f'_meta.index == "{rule[".test_private"]["index"]}" and '
+        else:
+            rule_query = rule.query
+        return ast_from_eql_query(rule_query)
     elif rule.language == "kuery":
-        return ast_from_kql_query(rule.query)
+        if "index" in rule[".test_private"]:
+            rule_query = f'_meta.index : "{rule[".test_private"]["index"]}" and '
+        else:
+            rule_query = rule.query
+        return ast_from_kql_query(rule_query)
     else:
         raise NotImplementedError(f"Unsupported query language: {rule.language}")
 
