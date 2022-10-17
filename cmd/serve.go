@@ -25,6 +25,7 @@ import (
 	"os"
 
 	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/geneve"
 	"github.com/elastic/geneve/cmd/grasp"
 	"github.com/elastic/geneve/cmd/python"
 	"github.com/spf13/cobra"
@@ -100,6 +101,8 @@ var serveCmd = &cobra.Command{
 		log.Printf("Remote: %s", remote)
 		log.Printf("Local: http://%s", listen)
 		log.Printf("Control: http://localhost:%d", port)
+
+		geneve.Use()
 
 		reflections := make(chan *grasp.Reflection, 3)
 		wg := &WaitGroup{}
