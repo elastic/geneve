@@ -55,9 +55,7 @@ func (se *sourceEvents) DecRef() {
 }
 
 func (se *sourceEvents) AddQuery(query string) (*python.PyObject, error) {
-	o_query := python.PyUnicode_FromString(query)
-	defer o_query.DecRef()
-	return se.o.CallMethod("add_query", o_query)
+	return se.o.CallMethod("add_query", query)
 }
 
 func (se *sourceEvents) Emit() (*python.PyObject, error) {

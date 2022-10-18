@@ -32,6 +32,8 @@ import (
 	"unsafe"
 )
 
+var Py_None = &PyObject{C.Py_None}
+
 func Py_IsInitialized() bool {
 	return C.Py_IsInitialized() != 0
 }
@@ -58,6 +60,11 @@ func (o *PyObject) DecRef() {
 
 func (o *PyObject) RefCnt() int {
 	return int(C.Py_RefCnt(o.p_o))
+}
+
+func (o *PyObject) ToPython() (*PyObject, error) {
+	o.IncRef()
+	return o, nil
 }
 
 func pythonError() error {
@@ -113,21 +120,93 @@ func PyUnicode_FromString(arg string) *PyObject {
 	return &PyObject{o_unicode}
 }
 
-func PyTuple_Pack(args []*PyObject) (*PyObject, error) {
+func PyLong_FromLong(arg int32) *PyObject {
+	return &PyObject{C.PyLong_FromLong(C.long(arg))}
+}
+
+func PyLong_FromUnsignedLong(arg uint32) *PyObject {
+	return &PyObject{C.PyLong_FromUnsignedLong(C.ulong(arg))}
+}
+
+func PyLong_FromLongLong(arg int64) *PyObject {
+	return &PyObject{C.PyLong_FromLongLong(C.longlong(arg))}
+}
+
+func PyLong_FromUnsignedLongLong(arg uint64) *PyObject {
+	return &PyObject{C.PyLong_FromUnsignedLongLong(C.ulonglong(arg))}
+}
+
+func PyFloat_FromDouble(arg float64) *PyObject {
+	return &PyObject{C.PyFloat_FromDouble(C.double(arg))}
+}
+
+func PyLong_AsLong(o *PyObject) (int32, error) {
+	ret := C.PyLong_AsLong(o.p_o)
+	if C.PyErr_Occurred() != nil {
+		return 0, pythonError()
+	}
+	return int32(ret), nil
+}
+
+func PyLong_AsUnsignedLong(o *PyObject) (uint32, error) {
+	ret := C.PyLong_AsUnsignedLong(o.p_o)
+	if C.PyErr_Occurred() != nil {
+		return 0, pythonError()
+	}
+	return uint32(ret), nil
+}
+
+func PyLong_AsLongLong(o *PyObject) (int64, error) {
+	ret := C.PyLong_AsLongLong(o.p_o)
+	if C.PyErr_Occurred() != nil {
+		return 0, pythonError()
+	}
+	return int64(ret), nil
+}
+
+func PyLong_AsUnsignedLongLong(o *PyObject) (uint64, error) {
+	ret := C.PyLong_AsUnsignedLongLong(o.p_o)
+	if C.PyErr_Occurred() != nil {
+		return 0, pythonError()
+	}
+	return uint64(ret), nil
+}
+
+func PyFloat_AsDouble(o *PyObject) (float64, error) {
+	ret := C.PyFloat_AsDouble(o.p_o)
+	if C.PyErr_Occurred() != nil {
+		return 0, pythonError()
+	}
+	return float64(ret), nil
+}
+
+func PyTuple_Pack(args []any) (*PyObject, error) {
 	o_tuple := C.PyTuple_New(C.Py_ssize_t(len(args)))
 	if o_tuple == nil {
 		return nil, pythonError()
 	}
 	for pos, arg := range args {
-		arg.IncRef()
-		C.PyTuple_SetItem(o_tuple, C.Py_ssize_t(pos), arg.p_o)
+		o_arg, err := AnyToPython(arg)
+		if err != nil {
+			C.Py_DecRef(o_tuple)
+			return nil, err
+		}
+		C.PyTuple_SetItem(o_tuple, C.Py_ssize_t(pos), o_arg.p_o)
 	}
 	return &PyObject{o_tuple}, nil
+}
+
+func PySequence_Size(o_seq *PyObject) int {
+	return int(C.PySequence_Size(o_seq.p_o))
 }
 
 func PySequence_GetItem(o_seq *PyObject, index int) (*PyObject, error) {
 	o_item := C.PySequence_GetItem(o_seq.p_o, C.Py_ssize_t(index))
 	return pyObjectOrError(o_item)
+}
+
+func PyList_New(length int) *PyObject {
+	return &PyObject{C.PyList_New(C.Py_ssize_t(length))}
 }
 
 func PyList_Insert(o_list *PyObject, index C.Py_ssize_t, o_item *PyObject) error {
@@ -141,6 +220,38 @@ func PyList_Size(o_list *PyObject) int {
 func PyList_GetItem(o_list *PyObject, index int) (*PyObject, error) {
 	o_item := C.PyList_GetItem(o_list.p_o, C.Py_ssize_t(index))
 	return pyObjectOrError(o_item)
+}
+
+func PyList_SetItem(o_list *PyObject, index int, o_item *PyObject) error {
+	return orError(C.PyList_SetItem(o_list.p_o, C.Py_ssize_t(index), o_item.p_o))
+}
+
+func PyMapping_Size(o *PyObject) int {
+	return int(C.PyMapping_Size(o.p_o))
+}
+
+func PyMapping_Items(o *PyObject) (*PyObject, error) {
+	return pyObjectOrError(C.PyMapping_Items(o.p_o))
+}
+
+func PyMapping_GetItemString(o *PyObject, key string) (*PyObject, error) {
+	c_key := C.CString(key)
+	defer C.free(unsafe.Pointer(c_key))
+	return pyObjectOrError(C.PyMapping_GetItemString(o.p_o, c_key))
+}
+
+func PyDict_New() *PyObject {
+	return &PyObject{C.PyDict_New()}
+}
+
+func PyDict_SetItemString(o_dict *PyObject, key string, o_item *PyObject) error {
+	c_key := C.CString(key)
+	defer C.free(unsafe.Pointer(c_key))
+	return orError(C.PyDict_SetItemString(o_dict.p_o, c_key, o_item.p_o))
+}
+
+func PyDict_SetItem(o_dict, o_key, o_item *PyObject) error {
+	return orError(C.PyDict_SetItem(o_dict.p_o, o_key.p_o, o_item.p_o))
 }
 
 func (o *PyObject) Str() (string, error) {
@@ -163,7 +274,7 @@ func (o *PyObject) GetAttrString(attr_name string) (*PyObject, error) {
 	return pyObjectOrError(C.PyObject_GetAttrString(o.p_o, c_attr_name))
 }
 
-func (o *PyObject) CallFunction(args ...*PyObject) (*PyObject, error) {
+func (o *PyObject) CallFunction(args ...any) (*PyObject, error) {
 	if len(args) == 0 {
 		return pyObjectOrError(C.PyObject_CallObject(o.p_o, nil))
 	}
@@ -175,7 +286,7 @@ func (o *PyObject) CallFunction(args ...*PyObject) (*PyObject, error) {
 	return pyObjectOrError(C.PyObject_CallObject(o.p_o, o_args.p_o))
 }
 
-func (o *PyObject) CallMethod(name string, args ...*PyObject) (*PyObject, error) {
+func (o *PyObject) CallMethod(name string, args ...any) (*PyObject, error) {
 	o_method, err := o.GetAttrString(name)
 	if err != nil {
 		return nil, err
