@@ -76,24 +76,6 @@ func fromSlice[T any](s []T) (*PyObject, error) {
 	return o_list, nil
 }
 
-func fromStringMap(m map[string]any) (*PyObject, error) {
-	o_dict := PyDict_New()
-	for key, item := range m {
-		o_item, err := AnyToPython(item)
-		if err != nil {
-			o_dict.DecRef()
-			return nil, err
-		}
-		err = PyDict_SetItemString(o_dict, key, o_item)
-		o_item.DecRef()
-		if err != nil {
-			o_dict.DecRef()
-			return nil, err
-		}
-	}
-	return o_dict, nil
-}
-
 func fromMap(m map[any]any) (*PyObject, error) {
 	o_dict := PyDict_New()
 	for key, item := range m {
@@ -147,10 +129,10 @@ func AnyToPython(arg any) (*PyObject, error) {
 		return PyFloat_FromDouble(float64(arg)), nil
 	case float64:
 		return PyFloat_FromDouble(arg), nil
+	case []string:
+		return fromSlice(arg)
 	case []any:
 		return fromSlice(arg)
-	case map[string]any:
-		return fromStringMap(arg)
 	case map[any]any:
 		return fromMap(arg)
 	case PythonConvertible:

@@ -17,14 +17,17 @@
 
 package geneve
 
-import "github.com/elastic/geneve/cmd/python"
+import (
+	"github.com/elastic/geneve/cmd/geneve/schema"
+	"github.com/elastic/geneve/cmd/python"
+)
 
 type sourceEvents struct {
 	o            *python.PyObject
 	o_json_dumps *python.PyObject
 }
 
-func newSourceEvents() (*sourceEvents, error) {
+func newSourceEvents(schema schema.Schema) (*sourceEvents, error) {
 	o_json, err := python.PyImport_Import("json")
 	if err != nil {
 		return nil, err
@@ -42,7 +45,7 @@ func newSourceEvents() (*sourceEvents, error) {
 	}
 	defer o_geneve.DecRef()
 
-	o, err := o_geneve.CallMethod("SourceEvents")
+	o, err := o_geneve.CallMethod("SourceEvents", schema)
 	if err != nil {
 		return nil, err
 	}

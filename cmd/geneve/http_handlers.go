@@ -26,6 +26,8 @@ import (
 	"sync"
 
 	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/geneve/schema"
+	"gopkg.in/yaml.v3"
 )
 
 var logger = log.New(log.Writer(), "datagen ", log.LstdFlags|log.Lmsgprefix)
@@ -148,7 +150,7 @@ func putSource(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	ds, err := NewDocsSource(queries)
+	ds, err := NewDocsSource(nil, queries)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -172,10 +174,98 @@ func deleteSource(w http.ResponseWriter, req *http.Request) {
 	logger.Printf("%s %s", req.Method, req.URL)
 }
 
+func getSchema(w http.ResponseWriter, req *http.Request) {
+	parts := strings.Split(req.URL.Path, "/")
+	if len(parts) < 4 || parts[3] == "" {
+		http.Error(w, "Missing schema name", http.StatusNotFound)
+		return
+	}
+
+	name := parts[3]
+	schema, ok := schema.Get(name)
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Schema not found: %s\n", name)
+		return
+	}
+
+	if len(parts) > 4 {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Unknown endpoint: %s\n", parts[4])
+		return
+	}
+
+	enc := yaml.NewEncoder(w)
+	if err := enc.Encode(schema); err != nil {
+		http.Error(w, "Schema encoding error", http.StatusInternalServerError)
+		return
+	}
+	enc.Close()
+}
+
+func getSchemaFromRequest(w http.ResponseWriter, req *http.Request) (schema schema.Schema, err error) {
+	content_type, ok := req.Header["Content-Type"]
+	if !ok {
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		err = fmt.Errorf("Missing Content-Type header")
+		return
+	}
+
+	switch content_type[0] {
+	case "application/yaml":
+		err = yaml.NewDecoder(req.Body).Decode(&schema)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			if err.Error() == "EOF" {
+				err = fmt.Errorf("No schema was provided")
+			}
+		}
+
+	default:
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		err = fmt.Errorf("Unsupported Content-Type: %s", content_type[0])
+	}
+
+	return
+}
+
+func putSchema(w http.ResponseWriter, req *http.Request) {
+	parts := strings.Split(req.URL.Path, "/")
+	if len(parts) < 4 || parts[3] == "" {
+		http.Error(w, "Missing schema name", http.StatusNotFound)
+		return
+	}
+	name := parts[3]
+
+	s, err := getSchemaFromRequest(w, req)
+	if err != nil {
+		fmt.Fprintln(w, err.Error())
+		return
+	}
+
+	schema.Put(name, s)
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprintln(w, "Created successfully")
+	logger.Printf("%s %s", req.Method, req.URL)
+}
+
+func deleteSchema(w http.ResponseWriter, req *http.Request) {
+	parts := strings.Split(req.URL.Path, "/")
+	if len(parts) < 4 || parts[3] == "" {
+		http.Error(w, "Missing schema name", http.StatusNotFound)
+		return
+	}
+
+	schema.Del(parts[3])
+	fmt.Fprintln(w, "Deleted successfully")
+	logger.Printf("%s %s", req.Method, req.URL)
+}
+
 func Use() {
 	// this is just to bring this file in the compilation, the rest is done by init()
 }
 
 func init() {
 	control.Handle("/api/docs_source/", &control.Handler{GET: getSource, PUT: putSource, DELETE: deleteSource})
+	control.Handle("/api/schema/", &control.Handler{GET: getSchema, PUT: putSchema, DELETE: deleteSchema})
 }

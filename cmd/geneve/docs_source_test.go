@@ -22,6 +22,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/elastic/geneve/cmd/geneve/schema"
 	"github.com/elastic/geneve/cmd/python"
 )
 
@@ -30,17 +31,31 @@ func init() {
 	python.StartMonitor()
 }
 
+var testSchema = schema.Schema{
+	"process.args": {
+		Normalize: []string{
+			"array",
+		},
+	},
+	"source.ip": {
+		Type: "ip",
+	},
+	"destination.ip": {
+		Type: "ip",
+	},
+}
+
 func TestDocsSource(t *testing.T) {
 	tests := []string{
 		`process where process.name == "*.exe"`,
-		`process where process.cmd.name == "*.com"`,
-		`network where source.ip != null`,
-		`network where destination.ip != null`,
+		`process where process.name == "rm" and process.args in ("-r", "-f")`,
+		`network where source.ip == "10.0.0.0/8"`,
+		`network where destination.ip == "192.168.0.0/24"`,
 	}
 
 	wg := sync.WaitGroup{}
 	for _, test := range tests {
-		docs, err := NewDocsSource([]string{test})
+		docs, err := NewDocsSource(testSchema, []string{test})
 		if err != nil {
 			panic(err)
 		}
@@ -65,7 +80,7 @@ func TestDocsSource(t *testing.T) {
 }
 
 func BenchmarkDocsSource(b *testing.B) {
-	docs, err := NewDocsSource([]string{`process where process.name == "*.exe"`})
+	docs, err := NewDocsSource(testSchema, []string{`process where process.name == "*.exe"`})
 	if err != nil {
 		panic(err)
 	}

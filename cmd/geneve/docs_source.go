@@ -18,6 +18,7 @@
 package geneve
 
 import (
+	"github.com/elastic/geneve/cmd/geneve/schema"
 	"github.com/elastic/geneve/cmd/python"
 )
 
@@ -25,12 +26,12 @@ type DocsSource struct {
 	se *sourceEvents
 }
 
-func NewDocsSource(queries []string) (ds DocsSource, e error) {
+func NewDocsSource(schema schema.Schema, queries []string) (ds DocsSource, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
 
-		se, err := newSourceEvents()
+		se, err := newSourceEvents(schema)
 		if err != nil {
 			e = err
 			return
