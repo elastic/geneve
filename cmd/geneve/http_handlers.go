@@ -19,7 +19,6 @@ package geneve
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -32,9 +31,14 @@ import (
 
 var logger = log.New(log.Writer(), "datagen ", log.LstdFlags|log.Lmsgprefix)
 
+type DocsSourceParams struct {
+	Schema  string   `yaml:",omitempty"`
+	Queries []string `yaml:",omitempty"`
+}
+
 type DocsSourceEntry struct {
-	queries []string
-	source  DocsSource
+	source DocsSource
+	params DocsSourceParams
 }
 
 var dsEntriesMu = sync.Mutex{}
@@ -75,7 +79,12 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if len(parts) == 4 {
-		fmt.Fprintf(w, strings.Join(ds.queries, "\n")+"\n")
+		enc := yaml.NewEncoder(w)
+		if err := enc.Encode(ds.params); err != nil {
+			http.Error(w, "Params encoding error", http.StatusInternalServerError)
+			return
+		}
+		enc.Close()
 		return
 	}
 
@@ -104,7 +113,7 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "Unknown endpoint: %s\n", endpoint)
 }
 
-func getQueriesFromRequest(w http.ResponseWriter, req *http.Request) (queries []string, err error) {
+func getParamsFromRequest(w http.ResponseWriter, req *http.Request) (params DocsSourceParams, err error) {
 	content_type, ok := req.Header["Content-Type"]
 	if !ok {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -113,20 +122,14 @@ func getQueriesFromRequest(w http.ResponseWriter, req *http.Request) (queries []
 	}
 
 	switch content_type[0] {
-	case "text/plain":
-		var bb strings.Builder
-		var nbytes int64
-		nbytes, err = io.Copy(&bb, req.Body)
+	case "application/yaml":
+		err = yaml.NewDecoder(req.Body).Decode(&params)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			break
-		}
-		if nbytes == 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			err = fmt.Errorf("No queries were provided")
-			break
+			if err.Error() == "EOF" {
+				err = fmt.Errorf("No params were provided")
+			}
 		}
-		queries = strings.Split(bb.String(), "\n")
 
 	default:
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -144,21 +147,32 @@ func putSource(w http.ResponseWriter, req *http.Request) {
 	}
 	name := parts[3]
 
-	queries, err := getQueriesFromRequest(w, req)
+	params, err := getParamsFromRequest(w, req)
 	if err != nil {
 		fmt.Fprintln(w, err.Error())
 		return
 	}
 
-	ds, err := NewDocsSource(nil, queries)
+	var s schema.Schema
+	if params.Schema != "" {
+		var ok bool
+		s, ok = schema.Get(params.Schema)
+		if !ok {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Schema not found: %s\n", params.Schema)
+			return
+		}
+	}
+
+	ds, err := NewDocsSource(s, params.Queries)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	putEntry(name, DocsSourceEntry{source: ds, queries: queries})
+	putEntry(name, DocsSourceEntry{source: ds, params: params})
 	w.WriteHeader(http.StatusCreated)
-	fmt.Fprintf(w, strings.Join(queries, "\n")+"\n")
+	fmt.Fprintln(w, "Created successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
 }
 

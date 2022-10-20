@@ -184,9 +184,9 @@ func TestSource(t *testing.T) {
 	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Unsupported Content-Type: image/png\n")
 
 	// empty body
-	resp = putRequest("http://localhost:5693/api/docs_source/test", "text/plain", "")
+	resp = putRequest("http://localhost:5693/api/docs_source/test", "application/yaml", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "No queries were provided\n")
+	expectResponse(t, resp, http.StatusBadRequest, "No params were provided\n")
 
 	// check non-existent docs source
 	resp = getRequest("http://localhost:5693/api/docs_source/test")
@@ -194,19 +194,19 @@ func TestSource(t *testing.T) {
 	expectResponse(t, resp, http.StatusNotFound, "Documents source not found: test\n")
 
 	// one docs source
-	resp = putRequest("http://localhost:5693/api/docs_source/test", "text/plain", `process where process.name == "*.exe"`)
+	resp = putRequest("http://localhost:5693/api/docs_source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "process where process.name == \"*.exe\"\n")
+	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// rewrite docs source
-	resp = putRequest("http://localhost:5693/api/docs_source/test", "text/plain", `process where process.name == "*.com"`)
+	resp = putRequest("http://localhost:5693/api/docs_source/test", "application/yaml", "queries:\n  - process where process.name == \"*.com\"")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "process where process.name == \"*.com\"\n")
+	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// another docs source
-	resp = putRequest("http://localhost:5693/api/docs_source/test2", "text/plain", `process where process.name == "*.exe"`)
+	resp = putRequest("http://localhost:5693/api/docs_source/test2", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "process where process.name == \"*.exe\"\n")
+	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// delete the second docs source
 	resp = deleteRequest("http://localhost:5693/api/docs_source/test2")
@@ -221,7 +221,17 @@ func TestSource(t *testing.T) {
 	// get docs source
 	resp = getRequest("http://localhost:5693/api/docs_source/test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "process where process.name == \"*.com\"\n")
+	expectResponse(t, resp, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
+
+	// docs source with non-existent schema
+	resp = putRequest("http://localhost:5693/api/docs_source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.name == \"*.exe\"")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusBadRequest, "Schema not found: test\n")
+
+	// check unaltered docs source
+	resp = getRequest("http://localhost:5693/api/docs_source/test")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
 
 	// generate some document
 	resp = getRequest("http://localhost:5693/api/docs_source/test/_generate")
@@ -238,4 +248,18 @@ func TestSource(t *testing.T) {
 	resp = getRequest("http://localhost:5693/api/docs_source/test/_unknown")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Unknown endpoint: _unknown\n")
+}
+
+func TestSourceWithSchema(t *testing.T) {
+	var resp *http.Response
+
+	// create one schema
+	resp = putRequest("http://localhost:5693/api/schema/test", "application/yaml", "process.pid:\n  type: long")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+
+	// create docs source with schema
+	resp = putRequest("http://localhost:5693/api/docs_source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.pid > 0")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 }
