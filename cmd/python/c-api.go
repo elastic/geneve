@@ -29,6 +29,7 @@ package python
 import "C"
 import (
 	"fmt"
+	"strings"
 	"unsafe"
 )
 
@@ -68,23 +69,53 @@ func (o *PyObject) ToPython() (*PyObject, error) {
 }
 
 func pythonError() error {
-	var p_type, p_value, p_traceback *C.PyObject
-	C.PyErr_Fetch(&p_type, &p_value, &p_traceback)
-	if p_type == nil && p_value == nil && p_traceback == nil {
+	var p_type, p_value, p_tb *C.PyObject
+
+	C.PyErr_Fetch(&p_type, &p_value, &p_tb)
+	if p_type == nil && p_value == nil && p_tb == nil {
 		return nil
 	}
+
+	C.PyErr_NormalizeException(&p_type, &p_value, &p_tb)
+
 	o_type := PyObject{p_type}
 	defer o_type.DecRef()
-	o_value := PyObject{p_value}
-	defer o_value.DecRef()
-	o_traceback := PyObject{p_traceback}
+
+	o_value := PyObject{C.Py_None}
+	if p_value != nil {
+		o_value = PyObject{p_value}
+		defer o_value.DecRef()
+	}
+
+	o_tb := PyObject{C.Py_None}
+	if p_tb != nil {
+		o_tb = PyObject{p_tb}
+		defer o_tb.DecRef()
+	}
+
+	o_traceback, err := PyImport_Import("traceback")
+	if err != nil {
+		panic(err)
+	}
 	defer o_traceback.DecRef()
-	o_type_name, _ := o_type.GetAttrString("__name__")
-	defer o_type_name.DecRef()
-	s_type_name, _ := o_type_name.Str()
-	s_value, _ := o_value.Str()
-	s_traceback, _ := o_traceback.Str()
-	return fmt.Errorf("%s: %s%s", s_type_name, s_value, s_traceback)
+
+	o_lines, err := o_traceback.CallMethod("format_exception", &o_type, &o_value, &o_tb)
+	if err != nil {
+		panic(err)
+	}
+	defer o_lines.DecRef()
+
+	a_lines, err := PythonToAny(o_lines)
+	if err != nil {
+		panic(err)
+	}
+
+	msg := &strings.Builder{}
+	fmt.Fprintln(msg, "Python exception:")
+	for _, a_line := range a_lines.([]any) {
+		fmt.Fprintf(msg, a_line.(string))
+	}
+	return fmt.Errorf(msg.String())
 }
 
 func pyObjectOrError(o *C.PyObject) (*PyObject, error) {
