@@ -25,9 +25,13 @@ import (
 	"os"
 
 	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/geneve"
 	"github.com/elastic/geneve/cmd/grasp"
+	"github.com/elastic/geneve/cmd/python"
 	"github.com/spf13/cobra"
 )
+
+var logger = log.New(log.Writer(), "reflect ", log.LstdFlags|log.Lmsgprefix)
 
 func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) error {
 	remote_url, _ := url.Parse(remote)
@@ -62,9 +66,9 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 		select {
 		case reflections <- refl:
 		default:
-			log.Println("Blocking on reflections channel...")
+			logger.Println("Blocking on reflections channel...")
 			reflections <- refl
-			log.Println("Unblocked from reflections channel")
+			logger.Println("Unblocked from reflections channel")
 		}
 	})
 
@@ -100,16 +104,14 @@ var serveCmd = &cobra.Command{
 		log.Printf("Local: http://%s", listen)
 		log.Printf("Control: http://localhost:%d", port)
 
-		if err := control.StartServer(port); err != nil {
-			log.Fatal(err)
-		}
+		geneve.Use()
 
 		reflections := make(chan *grasp.Reflection, 3)
 		wg := &WaitGroup{}
 
 		wg.Go(3, func() {
 			for refl := range reflections {
-				log.Println(refl)
+				logger.Println(refl)
 				grasp.Ponder(refl)
 			}
 		})
@@ -117,7 +119,12 @@ var serveCmd = &cobra.Command{
 		if err := startReflector(listen, remote, reflections); err != nil {
 			log.Fatal(err)
 		}
-
+		if err := python.StartMonitor(); err != nil {
+			log.Fatal(err)
+		}
+		if err := control.StartServer(port); err != nil {
+			log.Fatal(err)
+		}
 		wg.Wait()
 	},
 }
