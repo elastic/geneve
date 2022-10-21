@@ -31,6 +31,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var logger = log.New(log.Writer(), "reflect ", log.LstdFlags|log.Lmsgprefix)
+
 func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) error {
 	remote_url, _ := url.Parse(remote)
 	client := &http.Client{}
@@ -64,9 +66,9 @@ func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) e
 		select {
 		case reflections <- refl:
 		default:
-			log.Println("Blocking on reflections channel...")
+			logger.Println("Blocking on reflections channel...")
 			reflections <- refl
-			log.Println("Unblocked from reflections channel")
+			logger.Println("Unblocked from reflections channel")
 		}
 	})
 
@@ -109,7 +111,7 @@ var serveCmd = &cobra.Command{
 
 		wg.Go(3, func() {
 			for refl := range reflections {
-				log.Println(refl)
+				logger.Println(refl)
 				grasp.Ponder(refl)
 			}
 		})
