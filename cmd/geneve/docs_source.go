@@ -51,12 +51,12 @@ func NewDocsSource(schema schema.Schema, queries []string) (ds DocsSource, e err
 	return
 }
 
-func (ds DocsSource) Emit() (docs []string, e error) {
+func (ds DocsSource) Emit(count int) (docs []string, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
 
-		o_docs, err := ds.se.Emit()
+		o_docs, err := ds.se.Emit(count)
 		if err != nil {
 			e = err
 			return

@@ -64,7 +64,7 @@ func TestDocsSource(t *testing.T) {
 			defer wg.Done()
 			defer docs.Close()
 			for i := 0; i < 500; i++ {
-				docs, err := docs.Emit()
+				docs, err := docs.Emit(1)
 				if err != nil {
 					panic(err)
 				}
@@ -79,7 +79,8 @@ func TestDocsSource(t *testing.T) {
 	wg.Wait()
 }
 
-func BenchmarkDocsSource(b *testing.B) {
+// benchmark invoking Emit N times for one document
+func BenchmarkNEmit(b *testing.B) {
 	docs, err := NewDocsSource(testSchema, []string{`process where process.name == "*.exe"`})
 	if err != nil {
 		panic(err)
@@ -87,9 +88,23 @@ func BenchmarkDocsSource(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, err := docs.Emit()
+		_, err := docs.Emit(1)
 		if err != nil {
 			panic(err)
 		}
+	}
+}
+
+// benchmark invoking Emit once for N documents
+func BenchmarkEmitN(b *testing.B) {
+	docs, err := NewDocsSource(testSchema, []string{`process where process.name == "*.exe"`})
+	if err != nil {
+		panic(err)
+	}
+
+	b.ResetTimer()
+	_, err = docs.Emit(b.N)
+	if err != nil {
+		panic(err)
 	}
 }

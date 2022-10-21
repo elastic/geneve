@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -64,6 +65,28 @@ func delEntry(name string) {
 }
 
 func getSource(w http.ResponseWriter, req *http.Request) {
+	if err := req.ParseForm(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var count int64 = 1
+	var err error
+
+	val := req.Form.Get("count")
+	if val != "" {
+		count, err = strconv.ParseInt(val, 10, 0)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if count <= 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Count value must be greater than 0: %d\n", count)
+			return
+		}
+	}
+
 	parts := strings.Split(req.URL.Path, "/")
 	if len(parts) < 4 || parts[3] == "" {
 		http.Error(w, "Missing source name", http.StatusNotFound)
@@ -92,7 +115,7 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 
 	switch endpoint {
 	case "_generate":
-		docs, err := ds.source.Emit()
+		docs, err := ds.source.Emit(int(count))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

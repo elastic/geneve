@@ -305,6 +305,20 @@ func (o *PyObject) GetAttrString(attr_name string) (*PyObject, error) {
 	return pyObjectOrError(C.PyObject_GetAttrString(o.p_o, c_attr_name))
 }
 
+func (o *PyObject) Call(args []any, kwargs map[any]any) (*PyObject, error) {
+	o_args, err := PyTuple_Pack(args)
+	if err != nil {
+		return nil, err
+	}
+	defer o_args.DecRef()
+	o_kwargs, err := AnyToPython(kwargs)
+	if err != nil {
+		return nil, err
+	}
+	defer o_kwargs.DecRef()
+	return pyObjectOrError(C.PyObject_Call(o.p_o, o_args.p_o, o_kwargs.p_o))
+}
+
 func (o *PyObject) CallFunction(args ...any) (*PyObject, error) {
 	if len(args) == 0 {
 		return pyObjectOrError(C.PyObject_CallObject(o.p_o, nil))

@@ -61,8 +61,13 @@ func (se *sourceEvents) AddQuery(query string) (*python.PyObject, error) {
 	return se.o.CallMethod("add_query", query)
 }
 
-func (se *sourceEvents) Emit() (*python.PyObject, error) {
-	return se.o.CallMethod("emit")
+func (se *sourceEvents) Emit(count int) (*python.PyObject, error) {
+	o_emit, err := se.o.GetAttrString("emit")
+	if err != nil {
+		return nil, err
+	}
+	defer o_emit.DecRef()
+	return o_emit.Call([]any{}, map[any]any{"count": count})
 }
 
 func import_geneve() (*python.PyObject, error) {
