@@ -304,6 +304,6 @@ func Use() {
 }
 
 func init() {
-	control.Handle("/api/docs_source/", &control.Handler{GET: getSource, PUT: putSource, DELETE: deleteSource})
 	control.Handle("/api/schema/", &control.Handler{GET: getSchema, PUT: putSchema, DELETE: deleteSchema})
+	control.Handle("/api/source/", &control.Handler{GET: getSource, PUT: putSource, DELETE: deleteSource})
 }
