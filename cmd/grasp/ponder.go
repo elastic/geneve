@@ -24,8 +24,6 @@ import (
 	"log"
 	"strings"
 	"sync"
-
-	"github.com/elastic/geneve/cmd/control"
 )
 
 type indexStat struct {
@@ -56,7 +54,7 @@ var searchStore map[string]int
 var searchStats map[int]*searchStat
 
 func Ponder(refl *Reflection) {
-	if control.MatchPathIgnore(refl.URL.Path) {
+	if MatchIgnore(refl) {
 		return
 	}
 

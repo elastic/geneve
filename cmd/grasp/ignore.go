@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package control
+package grasp
 
 import (
 	"container/list"
@@ -25,18 +25,21 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+
+	"github.com/elastic/geneve/cmd/control"
+	"gopkg.in/yaml.v3"
 )
 
 var pathIgnoreListMu sync.Mutex
 var pathIgnoreList = list.New()
 
-func MatchPathIgnore(path string) bool {
+func MatchIgnore(refl *Reflection) bool {
 	pathIgnoreListMu.Lock()
 	defer pathIgnoreListMu.Unlock()
 
 	for e := pathIgnoreList.Front(); e != nil; e = e.Next() {
 		re := e.Value.(*regexp.Regexp)
-		if re.MatchString(path) {
+		if re.MatchString(refl.URL.Path) {
 			return true
 		}
 	}
@@ -64,7 +67,7 @@ func AppendPathIgnore(path string) error {
 	return nil
 }
 
-func getPathIgnore(w http.ResponseWriter, req *http.Request) {
+func getIgnore(w http.ResponseWriter, req *http.Request) {
 	pathIgnoreListMu.Lock()
 	defer pathIgnoreListMu.Unlock()
 
@@ -82,7 +85,11 @@ func getPathIgnore(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, strings.Join(paths, "\n"))
 }
 
-func getPathsFromRequest(w http.ResponseWriter, req *http.Request) (paths []string, err error) {
+type postIgnoreParams struct {
+	Paths []string `yaml:"paths"`
+}
+
+func getPostIgnoreParams(w http.ResponseWriter, req *http.Request) (params postIgnoreParams, err error) {
 	content_type, ok := req.Header["Content-Type"]
 	if !ok {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -91,20 +98,14 @@ func getPathsFromRequest(w http.ResponseWriter, req *http.Request) (paths []stri
 	}
 
 	switch content_type[0] {
-	case "text/plain":
-		var bb strings.Builder
-		var nbytes int64
-		nbytes, err = io.Copy(&bb, req.Body)
+	case "application/yaml":
+		err = yaml.NewDecoder(req.Body).Decode(&params)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			break
-		}
-		if nbytes == 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			err = fmt.Errorf("No paths to ignore were provided")
-			break
+			if err == io.EOF {
+				err = fmt.Errorf("No params were provided")
+			}
 		}
-		paths = strings.Split(bb.String(), "\n")
 
 	default:
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -114,8 +115,8 @@ func getPathsFromRequest(w http.ResponseWriter, req *http.Request) (paths []stri
 	return
 }
 
-func postPathIgnore(w http.ResponseWriter, req *http.Request) {
-	paths, err := getPathsFromRequest(w, req)
+func postIgnore(w http.ResponseWriter, req *http.Request) {
+	params, err := getPostIgnoreParams(w, req)
 	if err != nil {
 		fmt.Fprintln(w, err.Error())
 		return
@@ -123,7 +124,7 @@ func postPathIgnore(w http.ResponseWriter, req *http.Request) {
 
 	errors := 0
 	statuses := []string{}
-	for _, path := range paths {
+	for _, path := range params.Paths {
 		if path == "" {
 			continue
 		}
@@ -140,7 +141,7 @@ func postPathIgnore(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, strings.Join(statuses, "\n"))
 }
 
-func deletePathIgnore(w http.ResponseWriter, req *http.Request) {
+func deleteIgnore(w http.ResponseWriter, req *http.Request) {
 	pathIgnoreListMu.Lock()
 	defer pathIgnoreListMu.Unlock()
 
@@ -149,5 +150,5 @@ func deletePathIgnore(w http.ResponseWriter, req *http.Request) {
 }
 
 func init() {
-	Handle("/api/path_ignore", &Handler{GET: getPathIgnore, POST: postPathIgnore, DELETE: deletePathIgnore})
+	control.Handle("/api/grasp/ignore", &control.Handler{GET: getIgnore, POST: postIgnore, DELETE: deleteIgnore})
 }
