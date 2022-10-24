@@ -159,82 +159,82 @@ func TestSource(t *testing.T) {
 	var resp *http.Response
 
 	// missing docs source name
-	resp = getRequest("http://localhost:5693/api/docs_source/")
+	resp = getRequest("http://localhost:5693/api/source/")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Missing source name\n")
 
 	// missing docs source name
-	resp = putRequest("http://localhost:5693/api/docs_source/", "", "")
+	resp = putRequest("http://localhost:5693/api/source/", "", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Missing source name\n")
 
 	// missing docs source name
-	resp = deleteRequest("http://localhost:5693/api/docs_source/")
+	resp = deleteRequest("http://localhost:5693/api/source/")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Missing source name\n")
 
 	// missing content type
-	resp = putRequest("http://localhost:5693/api/docs_source/test", "", "")
+	resp = putRequest("http://localhost:5693/api/source/test", "", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
 
 	// unsupported content type
-	resp = putRequest("http://localhost:5693/api/docs_source/test", "image/png", "")
+	resp = putRequest("http://localhost:5693/api/source/test", "image/png", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Unsupported Content-Type: image/png\n")
 
 	// empty body
-	resp = putRequest("http://localhost:5693/api/docs_source/test", "application/yaml", "")
+	resp = putRequest("http://localhost:5693/api/source/test", "application/yaml", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusBadRequest, "No params were provided\n")
 
 	// check non-existent docs source
-	resp = getRequest("http://localhost:5693/api/docs_source/test")
+	resp = getRequest("http://localhost:5693/api/source/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Documents source not found: test\n")
 
 	// one docs source
-	resp = putRequest("http://localhost:5693/api/docs_source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = putRequest("http://localhost:5693/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// rewrite docs source
-	resp = putRequest("http://localhost:5693/api/docs_source/test", "application/yaml", "queries:\n  - process where process.name == \"*.com\"")
+	resp = putRequest("http://localhost:5693/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.com\"")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// another docs source
-	resp = putRequest("http://localhost:5693/api/docs_source/test2", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = putRequest("http://localhost:5693/api/source/test2", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// delete the second docs source
-	resp = deleteRequest("http://localhost:5693/api/docs_source/test2")
+	resp = deleteRequest("http://localhost:5693/api/source/test2")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "Deleted successfully\n")
 
 	// check removed docs source
-	resp = getRequest("http://localhost:5693/api/docs_source/test2")
+	resp = getRequest("http://localhost:5693/api/source/test2")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Documents source not found: test2\n")
 
 	// get docs source
-	resp = getRequest("http://localhost:5693/api/docs_source/test")
+	resp = getRequest("http://localhost:5693/api/source/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
 
 	// docs source with non-existent schema
-	resp = putRequest("http://localhost:5693/api/docs_source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.name == \"*.exe\"")
+	resp = putRequest("http://localhost:5693/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusBadRequest, "Schema not found: test\n")
 
 	// check unaltered docs source
-	resp = getRequest("http://localhost:5693/api/docs_source/test")
+	resp = getRequest("http://localhost:5693/api/source/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
 
 	// generate some document
-	resp = getRequest("http://localhost:5693/api/docs_source/test/_generate")
+	resp = getRequest("http://localhost:5693/api/source/test/_generate")
 	defer resp.Body.Close()
 	resp_body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -245,7 +245,7 @@ func TestSource(t *testing.T) {
 	}
 
 	// unknown endpoint
-	resp = getRequest("http://localhost:5693/api/docs_source/test/_unknown")
+	resp = getRequest("http://localhost:5693/api/source/test/_unknown")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Unknown endpoint: _unknown\n")
 }
@@ -259,7 +259,7 @@ func TestSourceWithSchema(t *testing.T) {
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// create docs source with schema
-	resp = putRequest("http://localhost:5693/api/docs_source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.pid > 0")
+	resp = putRequest("http://localhost:5693/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.pid > 0")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 }

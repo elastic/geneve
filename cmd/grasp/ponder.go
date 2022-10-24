@@ -20,11 +20,10 @@ package grasp
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"strings"
 	"sync"
-
-	"github.com/elastic/geneve/cmd/control"
 )
 
 type indexStat struct {
@@ -55,7 +54,7 @@ var searchStore map[string]int
 var searchStats map[int]*searchStat
 
 func Ponder(refl *Reflection) {
-	if control.MatchPathIgnore(refl.URL.Path) {
+	if MatchIgnore(refl) {
 		return
 	}
 
@@ -173,47 +172,57 @@ func updateSearchStats(search int, index string) {
 	stats.count += 1
 }
 
-func isIndexNonEmpty(refl *Reflection) (nonEmpty bool, err error) {
+func isIndexNonEmpty(refl *Reflection) (bool, error) {
 	rr := refl.Response()
 	defer rr.Close()
 
-	var res any
-	err = json.NewDecoder(rr).Decode(&res)
+	resp, err := io.ReadAll(rr)
 	if err != nil {
-		err = fmt.Errorf("Response is not a json object: %s", err.Error())
-		return
+		return false, err
 	}
 
-	total, ok := JsonField[any](res, "hits.total")
-	if !ok {
-		err = fmt.Errorf("Missing field: hits.total")
-		return
+	htr := struct {
+		Hits struct {
+			Total json.RawMessage `json:"total"`
+		} `json:"hits"`
+	}{}
+	err = json.Unmarshal(resp, &htr)
+	if err, ok := err.(*json.UnmarshalTypeError); ok {
+		return false, fmt.Errorf("Wrong type for %s: %v", err.Field, err.Value)
+	}
+	if err != nil {
+		return false, err
 	}
 
-	switch total := total.(type) {
-	case float64:
-		nonEmpty = total > 0
-
-	case map[string]any:
-		relation, ok := JsonField[string](total, "relation")
-		if !ok {
-			err = fmt.Errorf("Missing field or wrong type: hits.total.relation")
-			return
-		}
-		if relation != "eq" && relation != "gte" {
-			err = fmt.Errorf("Unknown hits.total.relation value: %#v", relation)
-			return
-		}
-		value, ok := JsonField[float64](total, "value")
-		if !ok {
-			err = fmt.Errorf("Missing field or wrong type: hits.total.value")
-			return
-		}
-		nonEmpty = value > 0
-
-	default:
-		err = fmt.Errorf("hits.total is neither map nor number")
+	var total uint64
+	if err = json.Unmarshal(htr.Hits.Total, &total); err == nil {
+		return total > 0, nil
 	}
 
-	return
+	var totalRelation struct {
+		Relation *string `json:"relation"`
+		Value    *int64  `json:"value"`
+	}
+	err = json.Unmarshal(htr.Hits.Total, &totalRelation)
+	if err, ok := err.(*json.UnmarshalTypeError); ok {
+		if err.Field == "" {
+			return false, fmt.Errorf("Wrong type for hits.total: %v", err.Value)
+		} else {
+			return false, fmt.Errorf("Wrong type for hits.total.%s: %v", err.Field, err.Value)
+		}
+	}
+	if err != nil {
+		return false, err
+	}
+
+	if totalRelation.Value == nil {
+		return false, fmt.Errorf("Missing field: hits.total.value")
+	}
+	if totalRelation.Relation == nil {
+		return false, fmt.Errorf("Missing field: hits.total.relation")
+	}
+	if *totalRelation.Relation != "eq" && *totalRelation.Relation != "gte" {
+		return false, fmt.Errorf("Wrong value for hits.total.relation: %#v", *totalRelation.Relation)
+	}
+	return *totalRelation.Value > 0, nil
 }

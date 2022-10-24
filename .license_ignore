@@ -17,6 +17,7 @@ setup.cfg
 tests/deployment.json
 tests/data/config_elastic-package.yaml
 tests/data/config_geneve-test-env.yaml
+tests/grasp-ignore.yaml
 
 # to be removed as part of https://github.com/elastic/geneve/issues/15
 geneve/kql/*

@@ -19,6 +19,7 @@ package geneve
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -149,7 +150,7 @@ func getParamsFromRequest(w http.ResponseWriter, req *http.Request) (params Docs
 		err = yaml.NewDecoder(req.Body).Decode(&params)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			if err.Error() == "EOF" {
+			if err == io.EOF {
 				err = fmt.Errorf("No params were provided")
 			}
 		}
@@ -253,7 +254,7 @@ func getSchemaFromRequest(w http.ResponseWriter, req *http.Request) (schema sche
 		err = yaml.NewDecoder(req.Body).Decode(&schema)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			if err.Error() == "EOF" {
+			if err == io.EOF {
 				err = fmt.Errorf("No schema was provided")
 			}
 		}
@@ -303,6 +304,6 @@ func Use() {
 }
 
 func init() {
-	control.Handle("/api/docs_source/", &control.Handler{GET: getSource, PUT: putSource, DELETE: deleteSource})
 	control.Handle("/api/schema/", &control.Handler{GET: getSchema, PUT: putSchema, DELETE: deleteSchema})
+	control.Handle("/api/source/", &control.Handler{GET: getSource, PUT: putSource, DELETE: deleteSource})
 }

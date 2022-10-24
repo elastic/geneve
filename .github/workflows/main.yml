@@ -122,14 +122,7 @@ jobs:
         run: |
           ./gnv serve -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG 2>>gnv.log &
           curl -s --retry 3 --retry-connrefused http://localhost:9256/api/status
-          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.kibana.*'
-          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/.reporting-.*'
-          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_bulk'
-          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_monitoring'
-          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_nodes'
-          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_pit'
-          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_security'
-          curl -s -XPOST -H "Content-Type: text/plain" http://localhost:9256/api/path_ignore -d '^/_xpack'
+          curl -s -XPOST -H "Content-Type: application/yaml" http://localhost:9256/api/grasp/ignore --data-binary '@tests/grasp-ignore.yaml'
 
       - name: Setup cache
         id: elastic-stack-cache
