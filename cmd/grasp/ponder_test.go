@@ -25,23 +25,22 @@ func TestNonEmptyIndex(t *testing.T) {
 		nonEmpty bool
 		error    string
 	}{
-		{``, false, `Response is not a json object: EOF`},
-		{`{}`, false, `Missing field: hits.total`},
-		{`{"hits": 0}`, false, `Missing field: hits.total`},
-		{`{"hits": {}}`, false, `Missing field: hits.total`},
-		{`{"hits": {"total": ""}}`, false, `hits.total is neither map nor number`},
+		{``, false, `unexpected end of JSON input`},
+		{`{}`, false, `unexpected end of JSON input`},
+		{`{"hits": 0}`, false, `Wrong type for hits: number`},
+		{`{"hits": {}}`, false, `unexpected end of JSON input`},
+		{`{"hits": {"total": ""}}`, false, `Wrong type for hits.total: string`},
 		{`{"hits": {"total": 0}}`, false, ``},
 		{`{"hits": {"total": 1}}`, true, ``},
-		{`{"hits": {"total": "0"}}`, false, `hits.total is neither map nor number`},
-		{`{"hits": {"total": {}}}`, false, `Missing field or wrong type: hits.total.relation`},
-		{`{"hits": {"total": {"relation": "ne"}}}`, false, `Unknown hits.total.relation value: "ne"`},
-		{`{"hits": {"total": {"relation": "eq"}}}`, false, `Missing field or wrong type: hits.total.value`},
-		{`{"hits": {"total": {"relation": "gte"}}}`, false, `Missing field or wrong type: hits.total.value`},
-		{`{"hits": {"total": {"relation": "gte", "value": ""}}}`, false, `Missing field or wrong type: hits.total.value`},
-		{`{"hits": {"total": {"relation": "eq", "value": 0}}}`, false, ``},
-		{`{"hits": {"total": {"relation": "eq", "value": 1}}}`, true, ``},
-		{`{"hits": {"total": {"relation": "gte", "value": 0}}}`, false, ``},
-		{`{"hits": {"total": {"relation": "gte", "value": 1}}}`, true, ``},
+		{`{"hits": {"total": {}}}`, false, `Missing field: hits.total.value`},
+		{`{"hits": {"total": {"value": ""}}}`, false, `Wrong type for hits.total.value: string`},
+		{`{"hits": {"total": {"value": 0}}}`, false, `Missing field: hits.total.relation`},
+		{`{"hits": {"total": {"value": 0, "relation": 0}}}`, false, `Wrong type for hits.total.relation: number`},
+		{`{"hits": {"total": {"value": 0, "relation": "ne"}}}`, false, `Wrong value for hits.total.relation: "ne"`},
+		{`{"hits": {"total": {"value": 0, "relation": "eq"}}}`, false, ``},
+		{`{"hits": {"total": {"value": 1, "relation": "eq"}}}`, true, ``},
+		{`{"hits": {"total": {"value": 0, "relation": "gte"}}}`, false, ``},
+		{`{"hits": {"total": {"value": 1, "relation": "gte"}}}`, true, ``},
 	}
 
 	for _, test := range tests {
