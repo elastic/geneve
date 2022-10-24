@@ -22,6 +22,8 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+
+	"github.com/elastic/geneve/cmd/geneve/sink"
 )
 
 var logger = log.New(log.Writer(), "reflect ", log.LstdFlags|log.Lmsgprefix)
@@ -74,6 +76,8 @@ func StartReflector(addr, remote string, reflections chan<- *Reflection) error {
 	if err != nil {
 		return err
 	}
+
+	sink.Put("reflector", &sink.Sink{Params: sink.Params{URL: remote}})
 
 	go func() {
 		log.Fatal(http.Serve(listener, mux))

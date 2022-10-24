@@ -23,6 +23,7 @@ import (
 
 	"github.com/elastic/geneve/cmd/control"
 	_ "github.com/elastic/geneve/cmd/geneve/schema"
+	_ "github.com/elastic/geneve/cmd/geneve/sink"
 	_ "github.com/elastic/geneve/cmd/geneve/source"
 	"github.com/elastic/geneve/cmd/grasp"
 	"github.com/elastic/geneve/cmd/python"
