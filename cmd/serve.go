@@ -19,9 +19,6 @@ package cmd
 
 import (
 	"log"
-	"net"
-	"net/http"
-	"net/url"
 	"os"
 
 	"github.com/elastic/geneve/cmd/control"
@@ -32,58 +29,6 @@ import (
 	"github.com/elastic/geneve/cmd/utils"
 	"github.com/spf13/cobra"
 )
-
-var logger = log.New(log.Writer(), "reflect ", log.LstdFlags|log.Lmsgprefix)
-
-func startReflector(addr, remote string, reflections chan<- *grasp.Reflection) error {
-	remote_url, _ := url.Parse(remote)
-	client := &http.Client{}
-
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		refl := &grasp.Reflection{}
-
-		ref_req, err := refl.ReflectRequest(req, remote_url)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		resp, err := client.Do(ref_req)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusBadGateway)
-			return
-		}
-		defer resp.Body.Close()
-
-		err = refl.ReflectResponse(resp, w)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		select {
-		case reflections <- refl:
-		default:
-			logger.Println("Blocking on reflections channel...")
-			reflections <- refl
-			logger.Println("Unblocked from reflections channel")
-		}
-	})
-
-	listener, err := net.Listen("tcp", addr)
-	if err != nil {
-		return err
-	}
-
-	go func() {
-		log.Fatal(http.Serve(listener, mux))
-	}()
-	return nil
-}
 
 var serveCmd = &cobra.Command{
 	Use:   "serve",
@@ -102,28 +47,25 @@ var serveCmd = &cobra.Command{
 			log.SetOutput(file)
 		}
 
-		log.Printf("Remote: %s", remote)
-		log.Printf("Local: http://%s", listen)
-		log.Printf("Control: http://localhost:%d", port)
-
 		reflections := make(chan *grasp.Reflection, 3)
 		wg := &utils.WaitGroup{}
 
 		wg.Go(3, func() {
 			for refl := range reflections {
-				logger.Println(refl)
 				grasp.Ponder(refl)
 			}
 		})
 
-		if err := startReflector(listen, remote, reflections); err != nil {
-			log.Fatal(err)
-		}
 		if err := python.StartMonitor(); err != nil {
 			log.Fatal(err)
 		}
 		if err := control.StartServer(port); err != nil {
 			log.Fatal(err)
+		}
+		if remote != "" {
+			if err := grasp.StartReflector(listen, remote, reflections); err != nil {
+				log.Fatal(err)
+			}
 		}
 		wg.Wait()
 	},
@@ -132,7 +74,7 @@ var serveCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(serveCmd)
 	serveCmd.Flags().StringP("listen", "l", "localhost:9280", "Listen address and port")
-	serveCmd.Flags().StringP("remote", "r", "http://elastic:changeme@localhost:9200", "Remote host")
+	serveCmd.Flags().StringP("remote", "r", "", "Remote host")
 	serveCmd.Flags().StringP("log", "", "", "Log filename")
 	serveCmd.Flags().IntP("port", "p", 9256, "Control port")
 }

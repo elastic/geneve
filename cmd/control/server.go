@@ -31,6 +31,8 @@ func Handle(pattern string, handler http.Handler) {
 }
 
 func StartServer(port int) error {
+	log.Printf("Control: http://localhost:%d", port)
+
 	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
 		return err
