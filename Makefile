@@ -36,7 +36,7 @@ up:
 down:
 	docker compose down
 
-gnv: main.go $(wildcard cmd/*)
+gnv: main.go $(shell find cmd -name \*.go)
 	go build -race -o $@ .
 
 cli-build: gnv
