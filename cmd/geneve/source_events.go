@@ -22,12 +22,12 @@ import (
 	"github.com/elastic/geneve/cmd/python"
 )
 
-type sourceEvents struct {
+type SourceEvents struct {
 	o            *python.PyObject
 	o_json_dumps *python.PyObject
 }
 
-func newSourceEvents(schema schema.Schema) (*sourceEvents, error) {
+func NewSourceEvents(schema schema.Schema) (*SourceEvents, error) {
 	o_json, err := python.PyImport_Import("json")
 	if err != nil {
 		return nil, err
@@ -49,25 +49,29 @@ func newSourceEvents(schema schema.Schema) (*sourceEvents, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &sourceEvents{o, o_json_dumps}, nil
+	return &SourceEvents{o, o_json_dumps}, nil
 }
 
-func (se *sourceEvents) DecRef() {
+func (se *SourceEvents) DecRef() {
 	se.o.DecRef()
 	se.o_json_dumps.DecRef()
 }
 
-func (se *sourceEvents) AddQuery(query string) (*python.PyObject, error) {
+func (se *SourceEvents) AddQuery(query string) (*python.PyObject, error) {
 	return se.o.CallMethod("add_query", query)
 }
 
-func (se *sourceEvents) Emit(count int) (*python.PyObject, error) {
+func (se *SourceEvents) Emit(count int) (*python.PyObject, error) {
 	o_emit, err := se.o.GetAttrString("emit")
 	if err != nil {
 		return nil, err
 	}
 	defer o_emit.DecRef()
 	return o_emit.Call([]any{}, map[any]any{"count": count})
+}
+
+func (se *SourceEvents) JsonDumps(o_doc *python.PyObject) (*python.PyObject, error) {
+	return se.o_json_dumps.CallFunction(o_doc)
 }
 
 func import_geneve() (*python.PyObject, error) {

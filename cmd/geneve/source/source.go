@@ -15,23 +15,24 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package geneve
+package source
 
 import (
+	"github.com/elastic/geneve/cmd/geneve"
 	"github.com/elastic/geneve/cmd/geneve/schema"
 	"github.com/elastic/geneve/cmd/python"
 )
 
-type DocsSource struct {
-	se *sourceEvents
+type Source struct {
+	se *geneve.SourceEvents
 }
 
-func NewDocsSource(schema schema.Schema, queries []string) (ds DocsSource, e error) {
+func NewSource(schema schema.Schema, queries []string) (source Source, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
 
-		se, err := newSourceEvents(schema)
+		se, err := geneve.NewSourceEvents(schema)
 		if err != nil {
 			e = err
 			return
@@ -45,18 +46,18 @@ func NewDocsSource(schema schema.Schema, queries []string) (ds DocsSource, e err
 			}
 			o_root.DecRef()
 		}
-		ds.se = se
+		source.se = se
 	}
 	<-done
 	return
 }
 
-func (ds DocsSource) Emit(count int) (docs []string, e error) {
+func (source Source) Emit(count int) (docs []string, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
 
-		o_docs, err := ds.se.Emit(count)
+		o_docs, err := source.se.Emit(count)
 		if err != nil {
 			e = err
 			return
@@ -76,7 +77,7 @@ func (ds DocsSource) Emit(count int) (docs []string, e error) {
 				e = err
 				return
 			}
-			o_doc_json, err := ds.se.o_json_dumps.CallFunction(o_doc)
+			o_doc_json, err := source.se.JsonDumps(o_doc)
 			o_doc.DecRef()
 			if err != nil {
 				e = err
@@ -95,11 +96,11 @@ func (ds DocsSource) Emit(count int) (docs []string, e error) {
 	return
 }
 
-func (ds DocsSource) Close() {
+func (source Source) Close() {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
-		ds.se.DecRef()
+		source.se.DecRef()
 	}
 	<-done
 }

@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package geneve
+package source
 
 import (
 	"os"
@@ -27,7 +27,7 @@ import (
 )
 
 func init() {
-	os.Chdir("../..") // otherwise python won't find its geneve module
+	os.Chdir("../../..") // otherwise python won't find its geneve module
 	python.StartMonitor()
 }
 
@@ -45,7 +45,7 @@ var testSchema = schema.Schema{
 	},
 }
 
-func TestDocsSource(t *testing.T) {
+func TestSource(t *testing.T) {
 	tests := []string{
 		`process where process.name == "*.exe"`,
 		`process where process.name == "rm" and process.args in ("-r", "-f")`,
@@ -55,7 +55,7 @@ func TestDocsSource(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	for _, test := range tests {
-		docs, err := NewDocsSource(testSchema, []string{test})
+		docs, err := NewSource(testSchema, []string{test})
 		if err != nil {
 			panic(err)
 		}
@@ -81,7 +81,7 @@ func TestDocsSource(t *testing.T) {
 
 // benchmark invoking Emit N times for one document
 func BenchmarkNEmit(b *testing.B) {
-	docs, err := NewDocsSource(testSchema, []string{`process where process.name == "*.exe"`})
+	docs, err := NewSource(testSchema, []string{`process where process.name == "*.exe"`})
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +97,7 @@ func BenchmarkNEmit(b *testing.B) {
 
 // benchmark invoking Emit once for N documents
 func BenchmarkEmitN(b *testing.B) {
-	docs, err := NewDocsSource(testSchema, []string{`process where process.name == "*.exe"`})
+	docs, err := NewSource(testSchema, []string{`process where process.name == "*.exe"`})
 	if err != nil {
 		panic(err)
 	}

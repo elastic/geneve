@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package geneve
+package source
 
 import (
 	"fmt"
@@ -33,36 +33,36 @@ import (
 
 var logger = log.New(log.Writer(), "datagen ", log.LstdFlags|log.Lmsgprefix)
 
-type DocsSourceParams struct {
+type SourceParams struct {
 	Schema  string   `yaml:",omitempty"`
 	Queries []string `yaml:",omitempty"`
 }
 
-type DocsSourceEntry struct {
-	source DocsSource
-	params DocsSourceParams
+type entry struct {
+	source Source
+	params SourceParams
 }
 
-var dsEntriesMu = sync.Mutex{}
-var dsEntries = make(map[string]DocsSourceEntry)
+var sourcesMu = sync.Mutex{}
+var sources = make(map[string]entry)
 
-func getEntry(name string) (dse DocsSourceEntry, ok bool) {
-	dsEntriesMu.Lock()
-	defer dsEntriesMu.Unlock()
-	dse, ok = dsEntries[name]
+func get(name string) (e entry, ok bool) {
+	sourcesMu.Lock()
+	defer sourcesMu.Unlock()
+	e, ok = sources[name]
 	return
 }
 
-func putEntry(name string, dse DocsSourceEntry) {
-	dsEntriesMu.Lock()
-	defer dsEntriesMu.Unlock()
-	dsEntries[name] = dse
+func put(name string, e entry) {
+	sourcesMu.Lock()
+	defer sourcesMu.Unlock()
+	sources[name] = e
 }
 
-func delEntry(name string) {
-	dsEntriesMu.Lock()
-	defer dsEntriesMu.Unlock()
-	delete(dsEntries, name)
+func del(name string) {
+	sourcesMu.Lock()
+	defer sourcesMu.Unlock()
+	delete(sources, name)
 }
 
 func getSource(w http.ResponseWriter, req *http.Request) {
@@ -95,16 +95,16 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 	}
 
 	name := parts[3]
-	ds, ok := getEntry(name)
+	e, ok := get(name)
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "Documents source not found: %s\n", name)
+		fmt.Fprintf(w, "Source not found: %s\n", name)
 		return
 	}
 
 	if len(parts) == 4 {
 		enc := yaml.NewEncoder(w)
-		if err := enc.Encode(ds.params); err != nil {
+		if err := enc.Encode(e.params); err != nil {
 			http.Error(w, "Params encoding error", http.StatusInternalServerError)
 			return
 		}
@@ -116,7 +116,7 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 
 	switch endpoint {
 	case "_generate":
-		docs, err := ds.source.Emit(int(count))
+		docs, err := e.source.Emit(int(count))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -137,7 +137,7 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "Unknown endpoint: %s\n", endpoint)
 }
 
-func getParamsFromRequest(w http.ResponseWriter, req *http.Request) (params DocsSourceParams, err error) {
+func getParamsFromRequest(w http.ResponseWriter, req *http.Request) (params SourceParams, err error) {
 	content_type, ok := req.Header["Content-Type"]
 	if !ok {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -188,13 +188,13 @@ func putSource(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	ds, err := NewDocsSource(s, params.Queries)
+	source, err := NewSource(s, params.Queries)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	putEntry(name, DocsSourceEntry{source: ds, params: params})
+	put(name, entry{source: source, params: params})
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintln(w, "Created successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
@@ -207,103 +207,11 @@ func deleteSource(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	delEntry(parts[3])
+	del(parts[3])
 	fmt.Fprintln(w, "Deleted successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
-}
-
-func getSchema(w http.ResponseWriter, req *http.Request) {
-	parts := strings.Split(req.URL.Path, "/")
-	if len(parts) < 4 || parts[3] == "" {
-		http.Error(w, "Missing schema name", http.StatusNotFound)
-		return
-	}
-
-	name := parts[3]
-	schema, ok := schema.Get(name)
-	if !ok {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "Schema not found: %s\n", name)
-		return
-	}
-
-	if len(parts) > 4 {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "Unknown endpoint: %s\n", parts[4])
-		return
-	}
-
-	enc := yaml.NewEncoder(w)
-	if err := enc.Encode(schema); err != nil {
-		http.Error(w, "Schema encoding error", http.StatusInternalServerError)
-		return
-	}
-	enc.Close()
-}
-
-func getSchemaFromRequest(w http.ResponseWriter, req *http.Request) (schema schema.Schema, err error) {
-	content_type, ok := req.Header["Content-Type"]
-	if !ok {
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		err = fmt.Errorf("Missing Content-Type header")
-		return
-	}
-
-	switch content_type[0] {
-	case "application/yaml":
-		err = yaml.NewDecoder(req.Body).Decode(&schema)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			if err == io.EOF {
-				err = fmt.Errorf("No schema was provided")
-			}
-		}
-
-	default:
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		err = fmt.Errorf("Unsupported Content-Type: %s", content_type[0])
-	}
-
-	return
-}
-
-func putSchema(w http.ResponseWriter, req *http.Request) {
-	parts := strings.Split(req.URL.Path, "/")
-	if len(parts) < 4 || parts[3] == "" {
-		http.Error(w, "Missing schema name", http.StatusNotFound)
-		return
-	}
-	name := parts[3]
-
-	s, err := getSchemaFromRequest(w, req)
-	if err != nil {
-		fmt.Fprintln(w, err.Error())
-		return
-	}
-
-	schema.Put(name, s)
-	w.WriteHeader(http.StatusCreated)
-	fmt.Fprintln(w, "Created successfully")
-	logger.Printf("%s %s", req.Method, req.URL)
-}
-
-func deleteSchema(w http.ResponseWriter, req *http.Request) {
-	parts := strings.Split(req.URL.Path, "/")
-	if len(parts) < 4 || parts[3] == "" {
-		http.Error(w, "Missing schema name", http.StatusNotFound)
-		return
-	}
-
-	schema.Del(parts[3])
-	fmt.Fprintln(w, "Deleted successfully")
-	logger.Printf("%s %s", req.Method, req.URL)
-}
-
-func Use() {
-	// this is just to bring this file in the compilation, the rest is done by init()
 }
 
 func init() {
-	control.Handle("/api/schema/", &control.Handler{GET: getSchema, PUT: putSchema, DELETE: deleteSchema})
 	control.Handle("/api/source/", &control.Handler{GET: getSource, PUT: putSource, DELETE: deleteSource})
 }
