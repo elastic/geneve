@@ -21,6 +21,9 @@ import "sync"
 
 type WaitGroup struct {
 	sync.WaitGroup
+
+	sync.Mutex
+	count int
 }
 
 func (wg *WaitGroup) Go(concurrency int, f func()) {
@@ -31,4 +34,29 @@ func (wg *WaitGroup) Go(concurrency int, f func()) {
 			f()
 		}()
 	}
+}
+
+func (wg *WaitGroup) Add(delta int) {
+	wg.WaitGroup.Add(delta)
+
+	wg.Lock()
+	defer wg.Unlock()
+
+	wg.count += delta
+}
+
+func (wg *WaitGroup) Done() {
+	wg.WaitGroup.Done()
+
+	wg.Lock()
+	defer wg.Unlock()
+
+	wg.count -= 1
+}
+
+func (wg *WaitGroup) Alive() bool {
+	wg.Lock()
+	defer wg.Unlock()
+
+	return wg.count > 0
 }

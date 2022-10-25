@@ -22,6 +22,7 @@ import (
 	"os"
 
 	"github.com/elastic/geneve/cmd/control"
+	_ "github.com/elastic/geneve/cmd/geneve/flow"
 	_ "github.com/elastic/geneve/cmd/geneve/schema"
 	_ "github.com/elastic/geneve/cmd/geneve/sink"
 	_ "github.com/elastic/geneve/cmd/geneve/source"

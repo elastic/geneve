@@ -39,7 +39,7 @@ type SourceParams struct {
 }
 
 type entry struct {
-	source Source
+	Source Source
 	params SourceParams
 }
 
@@ -50,7 +50,7 @@ var sources = struct {
 	mapping: make(map[string]entry),
 }
 
-func get(name string) (e entry, ok bool) {
+func Get(name string) (e entry, ok bool) {
 	sources.Lock()
 	defer sources.Unlock()
 	e, ok = sources.mapping[name]
@@ -105,7 +105,7 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 	}
 
 	name := parts[3]
-	e, ok := get(name)
+	e, ok := Get(name)
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "Source not found: %s\n", name)
@@ -128,7 +128,7 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 
 	switch endpoint {
 	case "_generate":
-		docs, err := e.source.Emit(int(count))
+		docs, err := e.Source.Emit(int(count))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -210,7 +210,7 @@ func putSource(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	put(name, entry{source: source, params: params})
+	put(name, entry{Source: source, params: params})
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintln(w, "Created successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
