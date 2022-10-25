@@ -28,23 +28,23 @@ import (
 
 func init() {
 	// start the control server
-	if err := control.StartServer(5693); err != nil {
+	if err := control.StartServer(5694); err != nil {
 		panic(err)
 	}
 }
 
-func getRequest(url string) *http.Response {
-	resp, err := http.Get(url)
+func getRequest(endpoint string) *http.Response {
+	resp, err := http.Get("http://localhost:5694" + endpoint)
 	if err != nil {
 		panic(err)
 	}
 	return resp
 }
 
-func bodyRequest(method, url, content_type, body string) *http.Response {
+func bodyRequest(method, endpoint, content_type, body string) *http.Response {
 	client := &http.Client{}
 
-	req, err := http.NewRequest(method, url, strings.NewReader(body))
+	req, err := http.NewRequest(method, "http://localhost:5694"+endpoint, strings.NewReader(body))
 	if err != nil {
 		panic(err)
 	}
@@ -59,14 +59,14 @@ func bodyRequest(method, url, content_type, body string) *http.Response {
 	return resp
 }
 
-func putRequest(url, content_type, body string) *http.Response {
-	return bodyRequest("PUT", url, content_type, body)
+func putRequest(endpoint, content_type, body string) *http.Response {
+	return bodyRequest("PUT", endpoint, content_type, body)
 }
 
-func deleteRequest(url string) *http.Response {
+func deleteRequest(endpoint string) *http.Response {
 	client := &http.Client{}
 
-	req, err := http.NewRequest("DELETE", url, nil)
+	req, err := http.NewRequest("DELETE", "http://localhost:5694"+endpoint, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -95,82 +95,82 @@ func TestSourceEndpoint(t *testing.T) {
 	var resp *http.Response
 
 	// missing docs source name
-	resp = getRequest("http://localhost:5693/api/source/")
+	resp = getRequest("/api/source/")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Missing source name\n")
 
 	// missing docs source name
-	resp = putRequest("http://localhost:5693/api/source/", "", "")
+	resp = putRequest("/api/source/", "", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Missing source name\n")
 
 	// missing docs source name
-	resp = deleteRequest("http://localhost:5693/api/source/")
+	resp = deleteRequest("/api/source/")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Missing source name\n")
 
 	// missing content type
-	resp = putRequest("http://localhost:5693/api/source/test", "", "")
+	resp = putRequest("/api/source/test", "", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
 
 	// unsupported content type
-	resp = putRequest("http://localhost:5693/api/source/test", "image/png", "")
+	resp = putRequest("/api/source/test", "image/png", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Unsupported Content-Type: image/png\n")
 
 	// empty body
-	resp = putRequest("http://localhost:5693/api/source/test", "application/yaml", "")
+	resp = putRequest("/api/source/test", "application/yaml", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusBadRequest, "No params were provided\n")
 
 	// check non-existent docs source
-	resp = getRequest("http://localhost:5693/api/source/test")
+	resp = getRequest("/api/source/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Source not found: test\n")
 
 	// one docs source
-	resp = putRequest("http://localhost:5693/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = putRequest("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// rewrite docs source
-	resp = putRequest("http://localhost:5693/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.com\"")
+	resp = putRequest("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.com\"")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// another docs source
-	resp = putRequest("http://localhost:5693/api/source/test2", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = putRequest("/api/source/test2", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// delete the second docs source
-	resp = deleteRequest("http://localhost:5693/api/source/test2")
+	resp = deleteRequest("/api/source/test2")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "Deleted successfully\n")
 
 	// check removed docs source
-	resp = getRequest("http://localhost:5693/api/source/test2")
+	resp = getRequest("/api/source/test2")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Source not found: test2\n")
 
 	// get docs source
-	resp = getRequest("http://localhost:5693/api/source/test")
+	resp = getRequest("/api/source/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
 
 	// docs source with non-existent schema
-	resp = putRequest("http://localhost:5693/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.name == \"*.exe\"")
+	resp = putRequest("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusBadRequest, "Schema not found: test\n")
 
 	// check unaltered docs source
-	resp = getRequest("http://localhost:5693/api/source/test")
+	resp = getRequest("/api/source/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
 
 	// generate some document
-	resp = getRequest("http://localhost:5693/api/source/test/_generate")
+	resp = getRequest("/api/source/test/_generate")
 	defer resp.Body.Close()
 	resp_body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -181,7 +181,7 @@ func TestSourceEndpoint(t *testing.T) {
 	}
 
 	// unknown endpoint
-	resp = getRequest("http://localhost:5693/api/source/test/_unknown")
+	resp = getRequest("/api/source/test/_unknown")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Unknown endpoint: _unknown\n")
 }
@@ -190,12 +190,12 @@ func TestSourceEndpointWithSchema(t *testing.T) {
 	var resp *http.Response
 
 	// create one schema
-	resp = putRequest("http://localhost:5693/api/schema/test", "application/yaml", "process.pid:\n  type: long")
+	resp = putRequest("/api/schema/test", "application/yaml", "process.pid:\n  type: long")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// create docs source with schema
-	resp = putRequest("http://localhost:5693/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.pid > 0")
+	resp = putRequest("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.pid > 0")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 }

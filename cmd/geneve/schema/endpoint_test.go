@@ -33,18 +33,18 @@ func init() {
 	}
 }
 
-func getRequest(url string) *http.Response {
-	resp, err := http.Get(url)
+func getRequest(endpoint string) *http.Response {
+	resp, err := http.Get("http://localhost:5693" + endpoint)
 	if err != nil {
 		panic(err)
 	}
 	return resp
 }
 
-func bodyRequest(method, url, content_type, body string) *http.Response {
+func bodyRequest(method, endpoint, content_type, body string) *http.Response {
 	client := &http.Client{}
 
-	req, err := http.NewRequest(method, url, strings.NewReader(body))
+	req, err := http.NewRequest(method, "http://localhost:5693"+endpoint, strings.NewReader(body))
 	if err != nil {
 		panic(err)
 	}
@@ -59,14 +59,14 @@ func bodyRequest(method, url, content_type, body string) *http.Response {
 	return resp
 }
 
-func putRequest(url, content_type, body string) *http.Response {
-	return bodyRequest("PUT", url, content_type, body)
+func putRequest(endpoint, content_type, body string) *http.Response {
+	return bodyRequest("PUT", endpoint, content_type, body)
 }
 
-func deleteRequest(url string) *http.Response {
+func deleteRequest(endpoint string) *http.Response {
 	client := &http.Client{}
 
-	req, err := http.NewRequest("DELETE", url, nil)
+	req, err := http.NewRequest("DELETE", "http://localhost:5693"+endpoint, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -95,62 +95,62 @@ func TestSchemaEndpoint(t *testing.T) {
 	var resp *http.Response
 
 	// missing schema name
-	resp = getRequest("http://localhost:5693/api/schema/")
+	resp = getRequest("/api/schema/")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Missing schema name\n")
 
 	// missing schema name
-	resp = putRequest("http://localhost:5693/api/schema/", "", "")
+	resp = putRequest("/api/schema/", "", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Missing schema name\n")
 
 	// missing schema name
-	resp = deleteRequest("http://localhost:5693/api/schema/")
+	resp = deleteRequest("/api/schema/")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Missing schema name\n")
 
 	// missing content type
-	resp = putRequest("http://localhost:5693/api/schema/test", "", "")
+	resp = putRequest("/api/schema/test", "", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
 
 	// unsupported content type
-	resp = putRequest("http://localhost:5693/api/schema/test", "text/plain", "")
+	resp = putRequest("/api/schema/test", "text/plain", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Unsupported Content-Type: text/plain\n")
 
 	// empty body
-	resp = putRequest("http://localhost:5693/api/schema/test", "application/yaml", "")
+	resp = putRequest("/api/schema/test", "application/yaml", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusBadRequest, "No schema was provided\n")
 
 	// check non-existent schema
-	resp = getRequest("http://localhost:5693/api/schema/test")
+	resp = getRequest("/api/schema/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Schema not found: test\n")
 
 	// create one schema
-	resp = putRequest("http://localhost:5693/api/schema/test", "application/yaml", "source.ip:\n  type: ip")
+	resp = putRequest("/api/schema/test", "application/yaml", "source.ip:\n  type: ip")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
 	// get one schema
-	resp = getRequest("http://localhost:5693/api/schema/test")
+	resp = getRequest("/api/schema/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "source.ip:\n    type: ip\n")
 
 	// unknown endpoint
-	resp = getRequest("http://localhost:5693/api/schema/test/_unknown")
+	resp = getRequest("/api/schema/test/_unknown")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Unknown endpoint: _unknown\n")
 
 	// delete one schema
-	resp = deleteRequest("http://localhost:5693/api/schema/test")
+	resp = deleteRequest("/api/schema/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "Deleted successfully\n")
 
 	// invalid schema
-	resp = putRequest("http://localhost:5693/api/schema/test", "application/yaml", "\t")
+	resp = putRequest("/api/schema/test", "application/yaml", "\t")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusBadRequest, "yaml: found character that cannot start any token\n")
 }
