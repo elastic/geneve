@@ -26,6 +26,7 @@ import (
 
 	"github.com/elastic/geneve/cmd/control"
 	"github.com/elastic/geneve/cmd/geneve"
+	_ "github.com/elastic/geneve/cmd/geneve/source"
 	"github.com/elastic/geneve/cmd/grasp"
 	"github.com/elastic/geneve/cmd/python"
 	"github.com/spf13/cobra"
