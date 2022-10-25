@@ -40,13 +40,13 @@ func Get(name string) (schema Schema, ok bool) {
 	return
 }
 
-func Put(name string, schema Schema) {
+func put(name string, schema Schema) {
 	schemasMu.Lock()
 	defer schemasMu.Unlock()
 	schemas[name] = schema
 }
 
-func Del(name string) {
+func del(name string) {
 	schemasMu.Lock()
 	defer schemasMu.Unlock()
 	delete(schemas, name)

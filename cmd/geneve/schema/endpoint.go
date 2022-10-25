@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package geneve
+package schema
 
 import (
 	"fmt"
@@ -25,7 +25,6 @@ import (
 	"strings"
 
 	"github.com/elastic/geneve/cmd/control"
-	"github.com/elastic/geneve/cmd/geneve/schema"
 	"gopkg.in/yaml.v3"
 )
 
@@ -39,7 +38,7 @@ func getSchema(w http.ResponseWriter, req *http.Request) {
 	}
 
 	name := parts[3]
-	schema, ok := schema.Get(name)
+	schema, ok := Get(name)
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "Schema not found: %s\n", name)
@@ -60,7 +59,7 @@ func getSchema(w http.ResponseWriter, req *http.Request) {
 	enc.Close()
 }
 
-func getSchemaFromRequest(w http.ResponseWriter, req *http.Request) (schema schema.Schema, err error) {
+func getSchemaFromRequest(w http.ResponseWriter, req *http.Request) (schema Schema, err error) {
 	content_type, ok := req.Header["Content-Type"]
 	if !ok {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -100,7 +99,7 @@ func putSchema(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	schema.Put(name, s)
+	put(name, s)
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintln(w, "Created successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
@@ -113,13 +112,9 @@ func deleteSchema(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	schema.Del(parts[3])
+	del(parts[3])
 	fmt.Fprintln(w, "Deleted successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
-}
-
-func Use() {
-	// this is just to bring this file in the compilation, the rest is done by init()
 }
 
 func init() {

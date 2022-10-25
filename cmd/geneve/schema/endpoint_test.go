@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package geneve
+package schema
 
 import (
 	"io"
@@ -91,7 +91,7 @@ func expectResponse(t *testing.T, resp *http.Response, statusCode int, body stri
 	}
 }
 
-func TestSchema(t *testing.T) {
+func TestSchemaEndpoint(t *testing.T) {
 	var resp *http.Response
 
 	// missing schema name
