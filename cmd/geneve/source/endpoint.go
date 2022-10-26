@@ -43,31 +43,35 @@ type entry struct {
 	params SourceParams
 }
 
-var sourcesMu = sync.Mutex{}
-var sources = make(map[string]entry)
+var sources = struct {
+	sync.Mutex
+	mapping map[string]entry
+}{
+	mapping: make(map[string]entry),
+}
 
 func get(name string) (e entry, ok bool) {
-	sourcesMu.Lock()
-	defer sourcesMu.Unlock()
-	e, ok = sources[name]
+	sources.Lock()
+	defer sources.Unlock()
+	e, ok = sources.mapping[name]
 	return
 }
 
 func put(name string, e entry) {
-	sourcesMu.Lock()
-	defer sourcesMu.Unlock()
-	sources[name] = e
+	sources.Lock()
+	defer sources.Unlock()
+	sources.mapping[name] = e
 }
 
 func del(name string) bool {
-	sourcesMu.Lock()
-	defer sourcesMu.Unlock()
+	sources.Lock()
+	defer sources.Unlock()
 
-	if _, ok := sources[name]; !ok {
+	if _, ok := sources.mapping[name]; !ok {
 		return false
 	}
 
-	delete(sources, name)
+	delete(sources.mapping, name)
 	return true
 }
 
