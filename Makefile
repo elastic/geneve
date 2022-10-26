@@ -49,7 +49,7 @@ cli-test:
 	go test -race ./...
 
 cli-bench:
-	go test -bench=. ./cmd/geneve
+	go test -bench=. ./cmd/geneve/source
 
 pkg-build:
 	$(PYTHON) -m build
