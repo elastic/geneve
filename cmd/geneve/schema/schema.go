@@ -46,10 +46,16 @@ func put(name string, schema Schema) {
 	schemas[name] = schema
 }
 
-func del(name string) {
+func del(name string) bool {
 	schemasMu.Lock()
 	defer schemasMu.Unlock()
+
+	if _, ok := schemas[name]; !ok {
+		return false
+	}
+
 	delete(schemas, name)
+	return true
 }
 
 func (f *FieldSchema) ToPython() (*python.PyObject, error) {

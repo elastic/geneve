@@ -115,8 +115,14 @@ func deleteSchema(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Missing schema name", http.StatusNotFound)
 		return
 	}
+	name := parts[3]
 
-	del(parts[3])
+	if !del(name) {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Schema not found: %s\n", name)
+		return
+	}
+
 	fmt.Fprintln(w, "Deleted successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
 }

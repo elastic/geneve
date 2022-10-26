@@ -185,6 +185,11 @@ func TestSourceEndpoint(t *testing.T) {
 		t.Errorf("resp.Body length is 0")
 	}
 
+	// delete non-existent source
+	resp = deleteRequest("/api/source/non-existent")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusNotFound, "Source not found: non-existent\n")
+
 	// unknown endpoint
 	resp = getRequest("/api/source/test/_unknown")
 	defer resp.Body.Close()

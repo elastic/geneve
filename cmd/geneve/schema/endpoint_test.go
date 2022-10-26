@@ -149,6 +149,11 @@ func TestSchemaEndpoint(t *testing.T) {
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "Deleted successfully\n")
 
+	// delete non-existent schema
+	resp = deleteRequest("/api/schema/non-existent")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusNotFound, "Schema not found: non-existent\n")
+
 	// invalid schema
 	resp = putRequest("/api/schema/test", "application/yaml", "\t")
 	defer resp.Body.Close()

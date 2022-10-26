@@ -59,10 +59,16 @@ func put(name string, e entry) {
 	sources[name] = e
 }
 
-func del(name string) {
+func del(name string) bool {
 	sourcesMu.Lock()
 	defer sourcesMu.Unlock()
+
+	if _, ok := sources[name]; !ok {
+		return false
+	}
+
 	delete(sources, name)
+	return true
 }
 
 func getSource(w http.ResponseWriter, req *http.Request) {
@@ -212,8 +218,14 @@ func deleteSource(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Missing source name", http.StatusNotFound)
 		return
 	}
+	name := parts[3]
 
-	del(parts[3])
+	if !del(name) {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Source not found: %s\n", name)
+		return
+	}
+
 	fmt.Fprintln(w, "Deleted successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
 }
