@@ -99,11 +99,15 @@ func getPostIgnoreParams(w http.ResponseWriter, req *http.Request) (params postI
 
 	switch content_type[0] {
 	case "application/yaml":
-		err = yaml.NewDecoder(req.Body).Decode(&params)
+		dec := yaml.NewDecoder(req.Body)
+		dec.KnownFields(true)
+		err = dec.Decode(&params)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			if err == io.EOF {
 				err = fmt.Errorf("No params were provided")
+			} else if e, ok := err.(*yaml.TypeError); ok {
+				err = fmt.Errorf(e.Errors[0])
 			}
 		}
 

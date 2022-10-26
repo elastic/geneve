@@ -35,6 +35,11 @@ func TestIgnorePath(t *testing.T) {
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Unsupported Content-Type: image/png\n")
 
+	// unknown parameter
+	resp = postRequest("http://localhost:5692/api/grasp/ignore", "application/yaml", "unknown: 0")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusBadRequest, "line 1: field unknown not found in type grasp.postIgnoreParams\n")
+
 	// some strings
 	resp = postRequest("http://localhost:5692/api/grasp/ignore", "application/yaml", "paths:\n  - /path1\n  - /path2\n")
 	defer resp.Body.Close()

@@ -51,6 +51,8 @@ func getSchema(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/yaml")
+
 	enc := yaml.NewEncoder(w)
 	if err := enc.Encode(schema); err != nil {
 		http.Error(w, "Schema encoding error", http.StatusInternalServerError)
@@ -69,7 +71,9 @@ func getSchemaFromRequest(w http.ResponseWriter, req *http.Request) (schema Sche
 
 	switch content_type[0] {
 	case "application/yaml":
-		err = yaml.NewDecoder(req.Body).Decode(&schema)
+		dec := yaml.NewDecoder(req.Body)
+		dec.KnownFields(false)
+		err = dec.Decode(&schema)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			if err == io.EOF {

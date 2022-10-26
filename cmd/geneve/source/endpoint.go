@@ -102,6 +102,8 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/yaml")
+
 	if len(parts) == 4 {
 		enc := yaml.NewEncoder(w)
 		if err := enc.Encode(e.params); err != nil {
@@ -147,11 +149,15 @@ func getParamsFromRequest(w http.ResponseWriter, req *http.Request) (params Sour
 
 	switch content_type[0] {
 	case "application/yaml":
-		err = yaml.NewDecoder(req.Body).Decode(&params)
+		dec := yaml.NewDecoder(req.Body)
+		dec.KnownFields(true)
+		err = dec.Decode(&params)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			if err == io.EOF {
-				err = fmt.Errorf("No params were provided")
+				err = fmt.Errorf("No parameters were provided")
+			} else if e, ok := err.(*yaml.TypeError); ok {
+				err = fmt.Errorf(e.Errors[0])
 			}
 		}
 

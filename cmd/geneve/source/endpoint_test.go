@@ -122,12 +122,17 @@ func TestSourceEndpoint(t *testing.T) {
 	// empty body
 	resp = putRequest("/api/source/test", "application/yaml", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "No params were provided\n")
+	expectResponse(t, resp, http.StatusBadRequest, "No parameters were provided\n")
 
 	// check non-existent docs source
 	resp = getRequest("/api/source/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Source not found: test\n")
+
+	// unknown parameter
+	resp = putRequest("/api/source/test", "application/yaml", "unknown: 0")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusBadRequest, "line 1: field unknown not found in type source.SourceParams\n")
 
 	// one docs source
 	resp = putRequest("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
