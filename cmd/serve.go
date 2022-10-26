@@ -29,6 +29,7 @@ import (
 	_ "github.com/elastic/geneve/cmd/geneve/source"
 	"github.com/elastic/geneve/cmd/grasp"
 	"github.com/elastic/geneve/cmd/python"
+	"github.com/elastic/geneve/cmd/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -106,7 +107,7 @@ var serveCmd = &cobra.Command{
 		log.Printf("Control: http://localhost:%d", port)
 
 		reflections := make(chan *grasp.Reflection, 3)
-		wg := &WaitGroup{}
+		wg := &utils.WaitGroup{}
 
 		wg.Go(3, func() {
 			for refl := range reflections {
