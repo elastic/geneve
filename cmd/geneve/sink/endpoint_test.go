@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package schema
+package sink
 
 import (
 	"io"
@@ -28,13 +28,13 @@ import (
 
 func init() {
 	// start the control server
-	if err := control.StartServer(5693); err != nil {
+	if err := control.StartServer(5695); err != nil {
 		panic(err)
 	}
 }
 
 func getRequest(endpoint string) *http.Response {
-	resp, err := http.Get("http://localhost:5693" + endpoint)
+	resp, err := http.Get("http://localhost:5695" + endpoint)
 	if err != nil {
 		panic(err)
 	}
@@ -44,12 +44,12 @@ func getRequest(endpoint string) *http.Response {
 func bodyRequest(method, endpoint, content_type, body string) *http.Response {
 	client := &http.Client{}
 
-	req, err := http.NewRequest(method, "http://localhost:5693"+endpoint, strings.NewReader(body))
+	req, err := http.NewRequest(method, "http://localhost:5695"+endpoint, strings.NewReader(body))
 	if err != nil {
 		panic(err)
 	}
 	if content_type != "" {
-		req.Header["Content-Type"] = []string{content_type}
+		req.Header.Set("Content-Type", content_type)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -66,7 +66,7 @@ func putRequest(endpoint, content_type, body string) *http.Response {
 func deleteRequest(endpoint string) *http.Response {
 	client := &http.Client{}
 
-	req, err := http.NewRequest("DELETE", "http://localhost:5693"+endpoint, nil)
+	req, err := http.NewRequest("DELETE", "http://localhost:5695"+endpoint, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -91,71 +91,76 @@ func expectResponse(t *testing.T, resp *http.Response, statusCode int, body stri
 	}
 }
 
-func TestSchemaEndpoint(t *testing.T) {
+func TestSink(t *testing.T) {
 	var resp *http.Response
 
-	// missing schema name
-	resp = getRequest("/api/schema/")
+	// missing sink name
+	resp = getRequest("/api/sink/")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing schema name\n")
+	expectResponse(t, resp, http.StatusNotFound, "Missing sink name\n")
 
-	// missing schema name
-	resp = putRequest("/api/schema/", "", "")
+	// missing sink name
+	resp = putRequest("/api/sink/", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing schema name\n")
+	expectResponse(t, resp, http.StatusNotFound, "Missing sink name\n")
 
-	// missing schema name
-	resp = deleteRequest("/api/schema/")
+	// missing sink name
+	resp = deleteRequest("/api/sink/")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing schema name\n")
+	expectResponse(t, resp, http.StatusNotFound, "Missing sink name\n")
 
 	// missing content type
-	resp = putRequest("/api/schema/test", "", "")
+	resp = putRequest("/api/sink/test", "", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
 
 	// unsupported content type
-	resp = putRequest("/api/schema/test", "text/plain", "")
+	resp = putRequest("/api/sink/test", "text/plain", "")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Unsupported Content-Type: text/plain\n")
 
 	// empty body
-	resp = putRequest("/api/schema/test", "application/yaml", "")
+	resp = putRequest("/api/sink/test", "application/yaml", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "No schema was provided\n")
+	expectResponse(t, resp, http.StatusBadRequest, "No parameters were provided\n")
 
-	// check non-existent schema
-	resp = getRequest("/api/schema/test")
+	// unknown parameter
+	resp = putRequest("/api/sink/ignore", "application/yaml", "unknown: 0")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Schema not found: test\n")
+	expectResponse(t, resp, http.StatusBadRequest, "line 1: field unknown not found in type sink.Params\n")
 
-	// create one schema
-	resp = putRequest("/api/schema/test", "application/yaml", "source.ip:\n  type: ip")
+	// check non-existent sink
+	resp = getRequest("/api/sink/test")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusNotFound, "Sink not found: test\n")
+
+	// create one sink
+	resp = putRequest("/api/sink/test", "application/yaml", "url: http://localhost:1234")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
 
-	// get one schema
-	resp = getRequest("/api/schema/test")
+	// get one sink
+	resp = getRequest("/api/sink/test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "source.ip:\n    type: ip\n")
+	expectResponse(t, resp, http.StatusOK, "url: http://localhost:1234\n")
 
 	// unknown endpoint
-	resp = getRequest("/api/schema/test/_unknown")
+	resp = getRequest("/api/sink/test/_unknown")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusNotFound, "Unknown endpoint: _unknown\n")
 
-	// delete one schema
-	resp = deleteRequest("/api/schema/test")
+	// delete one sink
+	resp = deleteRequest("/api/sink/test")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "Deleted successfully\n")
 
-	// delete non-existent schema
-	resp = deleteRequest("/api/schema/non-existent")
+	// delete non-existent sink
+	resp = deleteRequest("/api/sink/non-existent")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Schema not found: non-existent\n")
+	expectResponse(t, resp, http.StatusNotFound, "Sink not found: non-existent\n")
 
-	// invalid schema
-	resp = putRequest("/api/schema/test", "application/yaml", "\t")
+	// invalid sink
+	resp = putRequest("/api/sink/test", "application/yaml", "\t")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusBadRequest, "yaml: found character that cannot start any token\n")
 }

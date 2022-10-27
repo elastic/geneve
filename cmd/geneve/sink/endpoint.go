@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package schema
+package sink
 
 import (
 	"fmt"
@@ -30,18 +30,18 @@ import (
 
 var logger = log.New(log.Writer(), "datagen ", log.LstdFlags|log.Lmsgprefix)
 
-func getSchema(w http.ResponseWriter, req *http.Request) {
+func getSink(w http.ResponseWriter, req *http.Request) {
 	parts := strings.Split(req.URL.Path, "/")
 	if len(parts) < 4 || parts[3] == "" {
-		http.Error(w, "Missing schema name", http.StatusNotFound)
+		http.Error(w, "Missing sink name", http.StatusNotFound)
 		return
 	}
-
 	name := parts[3]
-	schema, ok := Get(name)
+
+	sink, ok := Get(name)
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "Schema not found: %s\n", name)
+		fmt.Fprintf(w, "Sink not found: %s\n", name)
 		return
 	}
 
@@ -54,14 +54,14 @@ func getSchema(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/yaml")
 
 	enc := yaml.NewEncoder(w)
-	if err := enc.Encode(schema); err != nil {
-		http.Error(w, "Schema encoding error", http.StatusInternalServerError)
+	if err := enc.Encode(sink.Params); err != nil {
+		http.Error(w, "Sink encoding error", http.StatusInternalServerError)
 		return
 	}
 	enc.Close()
 }
 
-func getSchemaFromRequest(w http.ResponseWriter, req *http.Request) (schema Schema, err error) {
+func getParamsFromRequest(w http.ResponseWriter, req *http.Request) (params Params, err error) {
 	content_type, ok := req.Header["Content-Type"]
 	if !ok {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -72,12 +72,14 @@ func getSchemaFromRequest(w http.ResponseWriter, req *http.Request) (schema Sche
 	switch content_type[0] {
 	case "application/yaml":
 		dec := yaml.NewDecoder(req.Body)
-		dec.KnownFields(false)
-		err = dec.Decode(&schema)
+		dec.KnownFields(true)
+		err = dec.Decode(&params)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			if err == io.EOF {
-				err = fmt.Errorf("No schema was provided")
+				err = fmt.Errorf("No parameters were provided")
+			} else if e, ok := err.(*yaml.TypeError); ok {
+				err = fmt.Errorf(e.Errors[0])
 			}
 		}
 
@@ -89,37 +91,38 @@ func getSchemaFromRequest(w http.ResponseWriter, req *http.Request) (schema Sche
 	return
 }
 
-func putSchema(w http.ResponseWriter, req *http.Request) {
+func putSink(w http.ResponseWriter, req *http.Request) {
 	parts := strings.Split(req.URL.Path, "/")
 	if len(parts) < 4 || parts[3] == "" {
-		http.Error(w, "Missing schema name", http.StatusNotFound)
+		http.Error(w, "Missing sink name", http.StatusNotFound)
 		return
 	}
 	name := parts[3]
 
-	s, err := getSchemaFromRequest(w, req)
+	params, err := getParamsFromRequest(w, req)
 	if err != nil {
 		fmt.Fprintln(w, err.Error())
 		return
 	}
 
-	put(name, s)
+	Put(name, &Sink{client: &http.Client{}, Params: params})
+
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintln(w, "Created successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
 }
 
-func deleteSchema(w http.ResponseWriter, req *http.Request) {
+func deleteSink(w http.ResponseWriter, req *http.Request) {
 	parts := strings.Split(req.URL.Path, "/")
 	if len(parts) < 4 || parts[3] == "" {
-		http.Error(w, "Missing schema name", http.StatusNotFound)
+		http.Error(w, "Missing sink name", http.StatusNotFound)
 		return
 	}
 	name := parts[3]
 
-	if !del(name) {
+	if !Del(name) {
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "Schema not found: %s\n", name)
+		fmt.Fprintf(w, "Sink not found: %s\n", name)
 		return
 	}
 
@@ -128,5 +131,5 @@ func deleteSchema(w http.ResponseWriter, req *http.Request) {
 }
 
 func init() {
-	control.Handle("/api/schema/", &control.Handler{GET: getSchema, PUT: putSchema, DELETE: deleteSchema})
+	control.Handle("/api/sink/", &control.Handler{GET: getSink, PUT: putSink, DELETE: deleteSink})
 }

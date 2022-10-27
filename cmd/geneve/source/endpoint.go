@@ -39,30 +39,40 @@ type SourceParams struct {
 }
 
 type entry struct {
-	source Source
+	Source Source
 	params SourceParams
 }
 
-var sourcesMu = sync.Mutex{}
-var sources = make(map[string]entry)
+var sources = struct {
+	sync.Mutex
+	mapping map[string]entry
+}{
+	mapping: make(map[string]entry),
+}
 
-func get(name string) (e entry, ok bool) {
-	sourcesMu.Lock()
-	defer sourcesMu.Unlock()
-	e, ok = sources[name]
+func Get(name string) (e entry, ok bool) {
+	sources.Lock()
+	defer sources.Unlock()
+	e, ok = sources.mapping[name]
 	return
 }
 
 func put(name string, e entry) {
-	sourcesMu.Lock()
-	defer sourcesMu.Unlock()
-	sources[name] = e
+	sources.Lock()
+	defer sources.Unlock()
+	sources.mapping[name] = e
 }
 
-func del(name string) {
-	sourcesMu.Lock()
-	defer sourcesMu.Unlock()
-	delete(sources, name)
+func del(name string) bool {
+	sources.Lock()
+	defer sources.Unlock()
+
+	if _, ok := sources.mapping[name]; !ok {
+		return false
+	}
+
+	delete(sources.mapping, name)
+	return true
 }
 
 func getSource(w http.ResponseWriter, req *http.Request) {
@@ -95,12 +105,14 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 	}
 
 	name := parts[3]
-	e, ok := get(name)
+	e, ok := Get(name)
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "Source not found: %s\n", name)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/yaml")
 
 	if len(parts) == 4 {
 		enc := yaml.NewEncoder(w)
@@ -116,7 +128,7 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 
 	switch endpoint {
 	case "_generate":
-		docs, err := e.source.Emit(int(count))
+		docs, err := e.Source.Emit(int(count))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -147,11 +159,15 @@ func getParamsFromRequest(w http.ResponseWriter, req *http.Request) (params Sour
 
 	switch content_type[0] {
 	case "application/yaml":
-		err = yaml.NewDecoder(req.Body).Decode(&params)
+		dec := yaml.NewDecoder(req.Body)
+		dec.KnownFields(true)
+		err = dec.Decode(&params)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			if err == io.EOF {
-				err = fmt.Errorf("No params were provided")
+				err = fmt.Errorf("No parameters were provided")
+			} else if e, ok := err.(*yaml.TypeError); ok {
+				err = fmt.Errorf(e.Errors[0])
 			}
 		}
 
@@ -194,7 +210,7 @@ func putSource(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	put(name, entry{source: source, params: params})
+	put(name, entry{Source: source, params: params})
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintln(w, "Created successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
@@ -206,8 +222,14 @@ func deleteSource(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Missing source name", http.StatusNotFound)
 		return
 	}
+	name := parts[3]
 
-	del(parts[3])
+	if !del(name) {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Source not found: %s\n", name)
+		return
+	}
+
 	fmt.Fprintln(w, "Deleted successfully")
 	logger.Printf("%s %s", req.Method, req.URL)
 }

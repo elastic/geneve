@@ -30,26 +30,36 @@ type FieldSchema struct {
 
 type Schema map[string]FieldSchema
 
-var schemasMu = sync.Mutex{}
-var schemas = make(map[string]Schema)
+var schemas = struct {
+	sync.Mutex
+	mapping map[string]Schema
+}{
+	mapping: make(map[string]Schema),
+}
 
 func Get(name string) (schema Schema, ok bool) {
-	schemasMu.Lock()
-	defer schemasMu.Unlock()
-	schema, ok = schemas[name]
+	schemas.Lock()
+	defer schemas.Unlock()
+	schema, ok = schemas.mapping[name]
 	return
 }
 
 func put(name string, schema Schema) {
-	schemasMu.Lock()
-	defer schemasMu.Unlock()
-	schemas[name] = schema
+	schemas.Lock()
+	defer schemas.Unlock()
+	schemas.mapping[name] = schema
 }
 
-func del(name string) {
-	schemasMu.Lock()
-	defer schemasMu.Unlock()
-	delete(schemas, name)
+func del(name string) bool {
+	schemas.Lock()
+	defer schemas.Unlock()
+
+	if _, ok := schemas.mapping[name]; !ok {
+		return false
+	}
+
+	delete(schemas.mapping, name)
+	return true
 }
 
 func (f *FieldSchema) ToPython() (*python.PyObject, error) {

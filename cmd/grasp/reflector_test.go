@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package cmd
+package grasp
 
 import (
 	"io"
@@ -24,23 +24,21 @@ import (
 	"net/http"
 	"strings"
 	"testing"
-
-	"github.com/elastic/geneve/cmd/grasp"
 )
 
-var reflections = make(chan *grasp.Reflection, 1)
+var reflections = make(chan *Reflection, 1)
 
 func init() {
 	log.SetOutput(ioutil.Discard)
 
 	// start the proxy but not the remote server
-	err := startReflector("localhost:2929", "http://localhost:9292", reflections)
+	err := StartReflector("localhost:2929", "http://localhost:9292", reflections)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func expectReflection(t *testing.T, refl *grasp.Reflection, method, req_body, resp_body string, statusCode, nbytes int) {
+func expectReflection(t *testing.T, refl *Reflection, method, req_body, resp_body string, statusCode, nbytes int) {
 	if refl.Method != method {
 		t.Errorf("refl.Method is %s (expected: %s)", refl.Method, method)
 	}
@@ -64,19 +62,6 @@ func expectReflection(t *testing.T, refl *grasp.Reflection, method, req_body, re
 	}
 }
 
-func expectResponse(t *testing.T, resp *http.Response, statusCode int, body string) {
-	if resp.StatusCode != statusCode {
-		t.Errorf("resp.StatusCode is %d (expected: %d)", resp.StatusCode, statusCode)
-	}
-	var bb strings.Builder
-	if _, err := io.Copy(&bb, resp.Body); err != nil {
-		panic(err)
-	}
-	if body != "" && bb.String() != body {
-		t.Errorf("resp.Body is \"%s\" (expected: \"%s\")", bb.String(), body)
-	}
-}
-
 func TestReflect(t *testing.T) {
 	// response to be 502 Bad Gateway
 	resp, err := http.Get("http://localhost:2929/")
@@ -84,7 +69,9 @@ func TestReflect(t *testing.T) {
 		panic(err)
 	}
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadGateway, "")
+	if resp.StatusCode != http.StatusBadGateway {
+		t.Errorf("resp.StatusCode is %d (expected: %d)", resp.StatusCode, http.StatusBadGateway)
+	}
 
 	// no reflections are expected if the remote is not serving
 	if len(reflections) != 0 {

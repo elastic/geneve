@@ -30,14 +30,18 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var pathIgnoreListMu sync.Mutex
-var pathIgnoreList = list.New()
+var pathIgnore = struct {
+	sync.Mutex
+	list *list.List
+}{
+	list: list.New(),
+}
 
 func MatchIgnore(refl *Reflection) bool {
-	pathIgnoreListMu.Lock()
-	defer pathIgnoreListMu.Unlock()
+	pathIgnore.Lock()
+	defer pathIgnore.Unlock()
 
-	for e := pathIgnoreList.Front(); e != nil; e = e.Next() {
+	for e := pathIgnore.list.Front(); e != nil; e = e.Next() {
 		re := e.Value.(*regexp.Regexp)
 		if re.MatchString(refl.URL.Path) {
 			return true
@@ -48,10 +52,10 @@ func MatchIgnore(refl *Reflection) bool {
 }
 
 func AppendPathIgnore(path string) error {
-	pathIgnoreListMu.Lock()
-	defer pathIgnoreListMu.Unlock()
+	pathIgnore.Lock()
+	defer pathIgnore.Unlock()
 
-	for e := pathIgnoreList.Front(); e != nil; e = e.Next() {
+	for e := pathIgnore.list.Front(); e != nil; e = e.Next() {
 		re := e.Value.(*regexp.Regexp)
 		if re.String() == path {
 			return fmt.Errorf("Path is already ignored: %s", path)
@@ -63,20 +67,20 @@ func AppendPathIgnore(path string) error {
 		return err
 	}
 
-	pathIgnoreList.PushBack(re)
+	pathIgnore.list.PushBack(re)
 	return nil
 }
 
 func getIgnore(w http.ResponseWriter, req *http.Request) {
-	pathIgnoreListMu.Lock()
-	defer pathIgnoreListMu.Unlock()
+	pathIgnore.Lock()
+	defer pathIgnore.Unlock()
 
-	if pathIgnoreList.Len() == 0 {
+	if pathIgnore.list.Len() == 0 {
 		return
 	}
 
-	paths := make([]string, 0, pathIgnoreList.Len())
-	for e := pathIgnoreList.Front(); e != nil; e = e.Next() {
+	paths := make([]string, 0, pathIgnore.list.Len())
+	for e := pathIgnore.list.Front(); e != nil; e = e.Next() {
 		re := e.Value.(*regexp.Regexp)
 		paths = append(paths, re.String())
 	}
@@ -99,11 +103,15 @@ func getPostIgnoreParams(w http.ResponseWriter, req *http.Request) (params postI
 
 	switch content_type[0] {
 	case "application/yaml":
-		err = yaml.NewDecoder(req.Body).Decode(&params)
+		dec := yaml.NewDecoder(req.Body)
+		dec.KnownFields(true)
+		err = dec.Decode(&params)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			if err == io.EOF {
 				err = fmt.Errorf("No params were provided")
+			} else if e, ok := err.(*yaml.TypeError); ok {
+				err = fmt.Errorf(e.Errors[0])
 			}
 		}
 
@@ -142,10 +150,10 @@ func postIgnore(w http.ResponseWriter, req *http.Request) {
 }
 
 func deleteIgnore(w http.ResponseWriter, req *http.Request) {
-	pathIgnoreListMu.Lock()
-	defer pathIgnoreListMu.Unlock()
+	pathIgnore.Lock()
+	defer pathIgnore.Unlock()
 
-	pathIgnoreList = list.New()
+	pathIgnore.list = list.New()
 	fmt.Fprintln(w, "Path ignore list was reset")
 }
 
