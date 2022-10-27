@@ -61,6 +61,10 @@ func (se *SourceEvents) AddQuery(query string) (*python.PyObject, error) {
 	return se.o.CallMethod("add_query", query)
 }
 
+func (se *SourceEvents) Mappings() (*python.PyObject, error) {
+	return se.o.CallMethod("mappings")
+}
+
 func (se *SourceEvents) Emit(count int) (*python.PyObject, error) {
 	o_emit, err := se.o.GetAttrString("emit")
 	if err != nil {
@@ -70,8 +74,8 @@ func (se *SourceEvents) Emit(count int) (*python.PyObject, error) {
 	return o_emit.Call([]any{}, map[any]any{"count": count})
 }
 
-func (se *SourceEvents) JsonDumps(o_doc *python.PyObject) (*python.PyObject, error) {
-	return se.o_json_dumps.CallFunction(o_doc)
+func (se *SourceEvents) JsonDumps(o_doc *python.PyObject, sortKeys bool) (*python.PyObject, error) {
+	return se.o_json_dumps.Call([]any{o_doc}, map[any]any{"sort_keys": true})
 }
 
 func ImportModule() (*python.PyObject, error) {

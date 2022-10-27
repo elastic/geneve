@@ -164,6 +164,11 @@ func TestSourceEndpoint(t *testing.T) {
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
 
+	// get docs mappings
+	resp = getRequest("/api/source/test/_mappings")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusOK, "{\"properties\": {\"@timestamp\": {\"type\": \"keyword\"}, \"event\": {\"properties\": {\"category\": {\"type\": \"keyword\"}}}, \"process\": {\"properties\": {\"name\": {\"type\": \"keyword\"}}}}}\n")
+
 	// docs source with non-existent schema
 	resp = putRequest("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
@@ -208,4 +213,9 @@ func TestSourceEndpointWithSchema(t *testing.T) {
 	resp = putRequest("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.pid > 0")
 	defer resp.Body.Close()
 	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+
+	// get docs mappings
+	resp = getRequest("/api/source/test/_mappings")
+	defer resp.Body.Close()
+	expectResponse(t, resp, http.StatusOK, "{\"properties\": {\"@timestamp\": {\"type\": \"keyword\"}, \"event\": {\"properties\": {\"category\": {\"type\": \"keyword\"}}}, \"process\": {\"properties\": {\"pid\": {\"type\": \"long\"}}}}}\n")
 }
