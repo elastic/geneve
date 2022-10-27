@@ -84,6 +84,23 @@ func TestString(t *testing.T) {
 	}
 }
 
+func TestBool(t *testing.T) {
+	for _, boolean := range []bool{true, false} {
+		o_boolean, err := AnyToPython(boolean)
+		if err != nil {
+			panic(err)
+		}
+		a_boolean, err := PythonToAny(o_boolean)
+		o_boolean.DecRef()
+		if err != nil {
+			panic(err)
+		}
+		if !reflect.DeepEqual(a_boolean, boolean) {
+			t.Errorf("a_boolean is %#v (expected: %#v)", a_boolean, boolean)
+		}
+	}
+}
+
 func TestInteger(t *testing.T) {
 	num := int64(-123)
 	o_num, err := AnyToPython(num)

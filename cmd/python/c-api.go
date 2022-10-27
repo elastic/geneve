@@ -33,6 +33,8 @@ import (
 )
 
 var Py_None = &PyObject{C.Py_None}
+var Py_True = &PyObject{C.Py_True}
+var Py_False = &PyObject{C.Py_False}
 
 func Py_IsInitialized() bool {
 	return C.Py_IsInitialized() != 0

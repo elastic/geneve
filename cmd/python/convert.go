@@ -31,6 +31,11 @@ package python
 //   return PyUnicode_Check(o);
 // }
 //
+// int pyBool_Check(PyObject *o)
+// {
+//   return PyBool_Check(o);
+// }
+//
 // int pyLong_Check(PyObject *o)
 // {
 //   return PyLong_Check(o);
@@ -105,6 +110,14 @@ func AnyToPython(arg any) (*PyObject, error) {
 	switch arg := arg.(type) {
 	case string:
 		return PyUnicode_FromString(arg), nil
+	case bool:
+		if arg {
+			Py_True.IncRef()
+			return Py_True, nil
+		} else {
+			Py_False.IncRef()
+			return Py_False, nil
+		}
 	case int:
 		return PyLong_FromLongLong(int64(arg)), nil
 	case int8:
@@ -185,6 +198,8 @@ func toMap(o *PyObject) (map[any]any, error) {
 func PythonToAny(o *PyObject) (any, error) {
 	if C.pyUnicode_Check(o.p_o) != 0 {
 		return o.Str()
+	} else if C.pyBool_Check(o.p_o) != 0 {
+		return o.p_o == C.Py_True, nil
 	} else if C.pyLong_Check(o.p_o) != 0 {
 		return PyLong_AsLongLong(o)
 	} else if C.pyFloat_Check(o.p_o) != 0 {
