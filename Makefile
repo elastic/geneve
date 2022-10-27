@@ -28,6 +28,9 @@ tests: tests/*.py
 online-tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_emitter_*.py
 
+unit_tests_matrix:
+	echo '{ "python-version": ["3.8", "3.9", "3.10"], "os": ["ubuntu-latest", "macos-latest"] }'
+
 up:
 	@$(call print_server_version,ES,ELASTICSEARCH)
 	@$(call print_server_version,KB,KIBANA)

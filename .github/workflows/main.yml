@@ -21,15 +21,28 @@ jobs:
       - name: License check
         run: make license-check
 
+  unit-tests-matrix:
+    name: Unit tests matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build-matrix.outputs.matrix }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build matrix
+        id: build-matrix
+        run: echo "::set-output name=matrix::$(make -s unit_tests_matrix)"
+
   unit-tests:
     name: Unit tests (${{ matrix.os }}/py-${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
+    needs: unit-tests-matrix
 
     strategy:
       fail-fast: false
-      matrix:
-        python-version: ["3.8", "3.9", "3.10"]
-        os: ["ubuntu-latest", "macos-latest"]
+      matrix: ${{ fromJson(needs.unit-tests-matrix.outputs.matrix) }}
 
     steps:
       - name: Checkout code
