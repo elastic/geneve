@@ -50,6 +50,7 @@ gnv: main.go $(shell find cmd -name \*.go)
 	go build -race -o $@ .
 
 cli-build: gnv
+	./gnv version
 
 cli-lint:
 	go vet .

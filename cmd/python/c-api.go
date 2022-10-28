@@ -150,6 +150,10 @@ func PyUnicode_FromString(arg string) *PyObject {
 	return &PyObject{o_unicode}
 }
 
+func PyUnicode_Compare(left, right *PyObject) int {
+	return int(C.PyUnicode_Compare(left.p_o, right.p_o))
+}
+
 func PyLong_FromLong(arg int32) *PyObject {
 	return &PyObject{C.PyLong_FromLong(C.long(arg))}
 }
