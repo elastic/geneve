@@ -39,7 +39,7 @@ func NewSourceEvents(schema schema.Schema) (*SourceEvents, error) {
 		return nil, err
 	}
 
-	o_geneve, err := import_geneve()
+	o_geneve, err := ImportModule()
 	if err != nil {
 		return nil, err
 	}
@@ -74,30 +74,33 @@ func (se *SourceEvents) JsonDumps(o_doc *python.PyObject) (*python.PyObject, err
 	return se.o_json_dumps.CallFunction(o_doc)
 }
 
-func import_geneve() (*python.PyObject, error) {
-	o_geneve, err := python.PyImport_Import("geneve")
-	if err == nil {
-		return o_geneve, nil
-	}
-
+func ImportModule() (*python.PyObject, error) {
 	o_sys, err := python.PyImport_Import("sys")
 	if err != nil {
 		return nil, err
 	}
 	defer o_sys.DecRef()
 
-	o_path, err := o_sys.GetAttrString("path")
+	o_sys_path, err := o_sys.GetAttrString("path")
 	if err != nil {
 		return nil, err
 	}
-	defer o_path.DecRef()
+	defer o_sys_path.DecRef()
 
 	o_dot := python.PyUnicode_FromString(".")
 	defer o_dot.DecRef()
 
-	err = python.PyList_Insert(o_path, 0, o_dot)
+	o_first, err := python.PyList_GetItem(o_sys_path, 0)
 	if err != nil {
 		return nil, err
 	}
+
+	if python.PyUnicode_Compare(o_first, o_dot) != 0 {
+		err = python.PyList_Insert(o_sys_path, 0, o_dot)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return python.PyImport_Import("geneve")
 }

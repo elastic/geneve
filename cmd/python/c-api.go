@@ -17,7 +17,6 @@
 
 package python
 
-// #cgo pkg-config: python3-embed
 // #define PY_SSIZE_T_CLEAN
 // #include <Python.h>
 //
@@ -149,6 +148,10 @@ func PyUnicode_FromString(arg string) *PyObject {
 	defer C.free(unsafe.Pointer(c_arg))
 	o_unicode := C.PyUnicode_FromStringAndSize(c_arg, C.Py_ssize_t(len(arg)))
 	return &PyObject{o_unicode}
+}
+
+func PyUnicode_Compare(left, right *PyObject) int {
+	return int(C.PyUnicode_Compare(left.p_o, right.p_o))
 }
 
 func PyLong_FromLong(arg int32) *PyObject {
