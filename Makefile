@@ -4,7 +4,17 @@ else
 	ACTIVATE := source $(VENV)/bin/activate; 
 endif
 
-PYTHON := $(ACTIVATE)python3
+ifeq ($(PYTHON),)
+	PYTHON := $(ACTIVATE)python3
+endif
+
+PYTHON_LIBPC := $(shell $(PYTHON) -c 'import sysconfig; print(sysconfig.get_config_var("LIBPC"))')
+PYTHON_VERSION_SHORT := $(shell $(PYTHON) -c 'import sysconfig; print(sysconfig.get_config_var("py_version_short"))')
+PYTHON_PKG_CONFIG := pkg-config $(PYTHON_LIBPC)/python-$(PYTHON_VERSION_SHORT)-embed.pc
+
+export CGO_CFLAGS CGO_LDFLAGS
+CGO_CFLAGS := $(shell $(PYTHON_PKG_CONFIG) --cflags)
+CGO_LDFLAGS := $(shell $(PYTHON_PKG_CONFIG) --libs)
 
 all: lint tests
 
