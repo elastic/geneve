@@ -16,6 +16,8 @@ export CGO_CFLAGS CGO_LDFLAGS
 CGO_CFLAGS := $(shell $(PYTHON_PKG_CONFIG) --cflags)
 CGO_LDFLAGS := $(shell $(PYTHON_PKG_CONFIG) --libs)
 
+rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
 all: lint tests
 
 prereq-py:
@@ -46,7 +48,7 @@ up:
 down:
 	docker compose down
 
-gnv: main.go $(shell find cmd -name \*.go)
+gnv: main.go $(call rwildcard,cmd,*.go)
 	go build -race -o $@ .
 
 cli-build: gnv
