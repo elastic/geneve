@@ -8,13 +8,20 @@ ifeq ($(PYTHON),)
 	PYTHON := $(ACTIVATE)python3
 endif
 
-PYTHON_LIBPC := $(shell $(PYTHON) -c 'import sysconfig; print(sysconfig.get_config_var("LIBPC"))')
-PYTHON_VERSION_SHORT := $(shell $(PYTHON) -c 'import sysconfig; print(sysconfig.get_config_var("py_version_short"))')
-PYTHON_PKG_CONFIG := pkg-config $(PYTHON_LIBPC)/python-$(PYTHON_VERSION_SHORT)-embed.pc
+PYTHON_LIBPC := $(shell $(PYTHON) -c 'import sysconfig; print(sysconfig.get_config_var("LIBPC") or "")')
 
-export CGO_CFLAGS CGO_LDFLAGS
-CGO_CFLAGS := $(shell $(PYTHON_PKG_CONFIG) --cflags)
-CGO_LDFLAGS := $(shell $(PYTHON_PKG_CONFIG) --libs)
+ifneq ($(PYTHON_LIBPC),)
+	PYTHON_VERSION_SHORT := $(shell $(PYTHON) -c 'import sysconfig; print(sysconfig.get_config_var("py_version_short"))')
+	PYTHON_PKG_CONFIG := pkg-config $(PYTHON_LIBPC)/python-$(PYTHON_VERSION_SHORT)-embed.pc
+
+	export CGO_CFLAGS CGO_LDFLAGS
+	CGO_CFLAGS := $(shell $(PYTHON_PKG_CONFIG) --cflags)
+	CGO_LDFLAGS := $(shell $(PYTHON_PKG_CONFIG) --libs)
+else
+	embed-python := $(error Embedding Python is not supported on this system)
+endif
+
+rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
 all: lint tests
 
@@ -46,7 +53,8 @@ up:
 down:
 	docker compose down
 
-gnv: main.go $(shell find cmd -name \*.go)
+gnv: main.go $(call rwildcard,cmd,*.go)
+	$(embed_python)
 	go build -race -o $@ .
 
 cli-build: gnv
@@ -57,9 +65,11 @@ cli-lint:
 	golint .
 
 cli-test:
+	$(embed_python)
 	go test -race ./...
 
 cli-bench:
+	$(embed_python)
 	go test -bench=. ./cmd/geneve/source
 
 pkg-build:
