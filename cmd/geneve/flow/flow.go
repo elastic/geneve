@@ -115,6 +115,7 @@ func (f *Flow) Start() error {
 		for {
 			select {
 			case <-stop:
+				f.state.DocumentsPerSecond = 0
 				return
 			case <-ticker.C:
 				f.stateMu.Lock()

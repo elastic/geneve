@@ -52,6 +52,31 @@ func NewSource(schema schema.Schema, queries []string) (source Source, e error) 
 	return
 }
 
+func (source Source) Mappings() (mappings string, e error) {
+	done := make(chan any)
+	python.Monitor <- func() {
+		defer close(done)
+
+		o_mappings, err := source.se.Mappings()
+		if err != nil {
+			e = err
+			return
+		}
+		defer o_mappings.DecRef()
+
+		o_mappings_json, err := source.se.JsonDumps(o_mappings, true)
+		if err != nil {
+			e = err
+			return
+		}
+		defer o_mappings_json.DecRef()
+
+		mappings, e = o_mappings_json.Str()
+	}
+	<-done
+	return
+}
+
 func (source Source) Emit(count int) (docs []string, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
@@ -77,7 +102,7 @@ func (source Source) Emit(count int) (docs []string, e error) {
 				e = err
 				return
 			}
-			o_doc_json, err := source.se.JsonDumps(o_doc)
+			o_doc_json, err := source.se.JsonDumps(o_doc, false)
 			o_doc.DecRef()
 			if err != nil {
 				e = err

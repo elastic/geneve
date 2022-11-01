@@ -143,6 +143,15 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 		}
 		fmt.Fprintf(w, "]")
 		return
+	case "_mappings":
+		mappings, err := e.Source.Mappings()
+		if err != nil {
+			http.Error(w, "Mappings encoding error", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintln(w, mappings)
+		return
 	}
 
 	w.WriteHeader(http.StatusNotFound)
