@@ -29,6 +29,7 @@ import textwrap
 import time
 import unittest
 from contextlib import contextmanager
+from datetime import datetime, timedelta
 
 from geneve.events_emitter import SourceEvents
 from geneve.utils import load_rules, load_schema, root_dir
@@ -463,8 +464,9 @@ class SignalsTestCase:
                     docs = self.check_docs(rule)
                     t0 = None
                     for doc in docs:
-                        t0 = t0 or docs[0]["@timestamp"]
-                        doc["@timestamp"] -= t0
+                        t0 = t0 or datetime.fromisoformat(docs[0]["@timestamp"])
+                        t = datetime.fromisoformat(doc["@timestamp"])
+                        doc["@timestamp"] = int((t - t0) / timedelta(milliseconds=1))
                     cells.append(
                         jupyter.Markdown(
                             f"""

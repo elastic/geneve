@@ -18,8 +18,8 @@
 """Functions for generating event documents that would trigger a given rule."""
 
 import random
-import time
 from collections import namedtuple
+from datetime import datetime, timedelta, timezone
 from itertools import chain
 
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
@@ -113,8 +113,8 @@ def events_from_branch(branch, schema, timestamp, meta):
             if value is not None:
                 deep_merge(doc, emit_field(field, value))
         if timestamp:
-            deep_merge(doc, emit_field("@timestamp", timestamp[0]))
-            timestamp[0] += 1
+            deep_merge(doc, emit_field("@timestamp", timestamp[0].isoformat(timespec="milliseconds")))
+            timestamp[0] += timedelta(milliseconds=1)
         events.append(Event(meta, doc))
     return events
 
@@ -177,7 +177,7 @@ class SourceEvents:
 
     def emit(self, root=None, *, timestamp=True, complete=False, count=1):
         if timestamp:
-            timestamp = [int(time.time() * 1000)]
+            timestamp = [datetime.now(timezone.utc).astimezone()]
         if complete:
             if root:
                 events = (events_from_root(root, self.schema, timestamp) for _ in range(count))
