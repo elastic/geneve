@@ -23,7 +23,7 @@ import (
 	"testing"
 
 	"github.com/elastic/geneve/cmd/geneve/schema"
-	"github.com/elastic/geneve/cmd/python"
+	"github.com/elastic/geneve/cmd/internal/python"
 )
 
 func init() {

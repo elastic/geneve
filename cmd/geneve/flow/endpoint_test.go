@@ -22,9 +22,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/internal/control"
+	"github.com/elastic/geneve/cmd/internal/python"
 	"github.com/elastic/geneve/cmd/internal/testing"
-	"github.com/elastic/geneve/cmd/python"
 )
 
 var r = testing.Request{"http://localhost:5696"}

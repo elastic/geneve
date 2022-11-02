@@ -26,7 +26,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/internal/control"
 	"gopkg.in/yaml.v3"
 )
 

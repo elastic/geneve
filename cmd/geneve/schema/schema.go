@@ -20,7 +20,7 @@ package schema
 import (
 	"sync"
 
-	"github.com/elastic/geneve/cmd/python"
+	"github.com/elastic/geneve/cmd/internal/python"
 )
 
 type FieldSchema struct {

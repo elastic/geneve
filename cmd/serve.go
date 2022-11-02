@@ -21,14 +21,14 @@ import (
 	"log"
 	"os"
 
-	"github.com/elastic/geneve/cmd/control"
 	_ "github.com/elastic/geneve/cmd/geneve/flow"
 	_ "github.com/elastic/geneve/cmd/geneve/schema"
 	_ "github.com/elastic/geneve/cmd/geneve/sink"
 	_ "github.com/elastic/geneve/cmd/geneve/source"
 	"github.com/elastic/geneve/cmd/grasp"
-	"github.com/elastic/geneve/cmd/python"
-	"github.com/elastic/geneve/cmd/utils"
+	"github.com/elastic/geneve/cmd/internal/control"
+	"github.com/elastic/geneve/cmd/internal/python"
+	"github.com/elastic/geneve/cmd/internal/utils"
 	"github.com/spf13/cobra"
 )
 
