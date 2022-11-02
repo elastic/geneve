@@ -18,13 +18,13 @@
 package schema
 
 import (
-	"io"
 	"net/http"
-	"strings"
-	"testing"
 
 	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/internal/testing"
 )
+
+var r = testing.Request{"http://localhost:5693"}
 
 func init() {
 	// start the control server
@@ -33,129 +33,71 @@ func init() {
 	}
 }
 
-func getRequest(endpoint string) *http.Response {
-	resp, err := http.Get("http://localhost:5693" + endpoint)
-	if err != nil {
-		panic(err)
-	}
-	return resp
-}
-
-func bodyRequest(method, endpoint, content_type, body string) *http.Response {
-	client := &http.Client{}
-
-	req, err := http.NewRequest(method, "http://localhost:5693"+endpoint, strings.NewReader(body))
-	if err != nil {
-		panic(err)
-	}
-	if content_type != "" {
-		req.Header["Content-Type"] = []string{content_type}
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	return resp
-}
-
-func putRequest(endpoint, content_type, body string) *http.Response {
-	return bodyRequest("PUT", endpoint, content_type, body)
-}
-
-func deleteRequest(endpoint string) *http.Response {
-	client := &http.Client{}
-
-	req, err := http.NewRequest("DELETE", "http://localhost:5693"+endpoint, nil)
-	if err != nil {
-		panic(err)
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	return resp
-}
-
-func expectResponse(t *testing.T, resp *http.Response, statusCode int, body string) {
-	if resp.StatusCode != statusCode {
-		t.Errorf("resp.StatusCode is %d (expected: %d)", resp.StatusCode, statusCode)
-	}
-	resp_body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-	if string(resp_body) != body {
-		t.Errorf("resp.Body is %#v (expected: %#v)", string(resp_body), body)
-	}
-}
-
 func TestSchemaEndpoint(t *testing.T) {
-	var resp *http.Response
+	var resp testing.Response
 
 	// missing schema name
-	resp = getRequest("/api/schema/")
+	resp = r.Get("/api/schema/")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing schema name\n")
+	resp.Expect(t, http.StatusNotFound, "Missing schema name\n")
 
 	// missing schema name
-	resp = putRequest("/api/schema/", "", "")
+	resp = r.Put("/api/schema/", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing schema name\n")
+	resp.Expect(t, http.StatusNotFound, "Missing schema name\n")
 
 	// missing schema name
-	resp = deleteRequest("/api/schema/")
+	resp = r.Delete("/api/schema/")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing schema name\n")
+	resp.Expect(t, http.StatusNotFound, "Missing schema name\n")
 
 	// missing content type
-	resp = putRequest("/api/schema/test", "", "")
+	resp = r.Put("/api/schema/test", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
+	resp.Expect(t, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
 
 	// unsupported content type
-	resp = putRequest("/api/schema/test", "text/plain", "")
+	resp = r.Put("/api/schema/test", "text/plain", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Unsupported Content-Type: text/plain\n")
+	resp.Expect(t, http.StatusUnsupportedMediaType, "Unsupported Content-Type: text/plain\n")
 
 	// empty body
-	resp = putRequest("/api/schema/test", "application/yaml", "")
+	resp = r.Put("/api/schema/test", "application/yaml", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "No schema was provided\n")
+	resp.Expect(t, http.StatusBadRequest, "No schema was provided\n")
 
 	// check non-existent schema
-	resp = getRequest("/api/schema/test")
+	resp = r.Get("/api/schema/test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Schema not found: test\n")
+	resp.Expect(t, http.StatusNotFound, "Schema not found: test\n")
 
 	// create one schema
-	resp = putRequest("/api/schema/test", "application/yaml", "source.ip:\n  type: ip")
+	resp = r.Put("/api/schema/test", "application/yaml", "source.ip:\n  type: ip")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// get one schema
-	resp = getRequest("/api/schema/test")
+	resp = r.Get("/api/schema/test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "source.ip:\n    type: ip\n")
+	resp.Expect(t, http.StatusOK, "source.ip:\n    type: ip\n")
 
 	// unknown endpoint
-	resp = getRequest("/api/schema/test/_unknown")
+	resp = r.Get("/api/schema/test/_unknown")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Unknown endpoint: _unknown\n")
+	resp.Expect(t, http.StatusNotFound, "Unknown endpoint: _unknown\n")
 
 	// delete one schema
-	resp = deleteRequest("/api/schema/test")
+	resp = r.Delete("/api/schema/test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "Deleted successfully\n")
+	resp.Expect(t, http.StatusOK, "Deleted successfully\n")
 
 	// delete non-existent schema
-	resp = deleteRequest("/api/schema/non-existent")
+	resp = r.Delete("/api/schema/non-existent")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Schema not found: non-existent\n")
+	resp.Expect(t, http.StatusNotFound, "Schema not found: non-existent\n")
 
 	// invalid schema
-	resp = putRequest("/api/schema/test", "application/yaml", "\t")
+	resp = r.Put("/api/schema/test", "application/yaml", "\t")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "yaml: found character that cannot start any token\n")
+	resp.Expect(t, http.StatusBadRequest, "yaml: found character that cannot start any token\n")
 }

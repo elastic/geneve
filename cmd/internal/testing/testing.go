@@ -15,33 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package control
+package testing
 
-import (
-	"net/http"
+import "testing"
 
-	"github.com/elastic/geneve/cmd/internal/testing"
-)
-
-var control = testing.Request{"http://localhost:5690"}
-
-func init() {
-	err := StartServer(5690)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func TestServeControl(t *testing.T) {
-	var resp testing.Response
-
-	// check status
-	resp = control.Get("/api/status")
-	defer resp.Body.Close()
-	resp.Expect(t, http.StatusOK, "Ready\n")
-
-	// check with nonexistent endpoint
-	resp = control.Get("/api/nonexistent")
-	defer resp.Body.Close()
-	resp.Expect(t, http.StatusNotFound, "404 page not found\n")
-}
+type T = testing.T

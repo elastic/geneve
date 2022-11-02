@@ -43,7 +43,7 @@ type searchStat struct {
 	count   int
 }
 
-var grasp sync.Mutex
+var graspMu sync.Mutex
 var indexStats map[string]*indexStat
 var callStats map[string]*callStat
 
@@ -61,8 +61,8 @@ func Ponder(refl *Reflection) {
 	index, call, _ := splitPath(refl.URL.Path)
 	search := -1
 
-	grasp.Lock()
-	defer grasp.Unlock()
+	graspMu.Lock()
+	defer graspMu.Unlock()
 
 	if call == "_search" {
 		search = getSearchId(refl.Request)
@@ -102,8 +102,8 @@ func splitPath(path string) (index, call, sub_call string) {
 }
 
 func getSearchById(searchId int64) string {
-	grasp.Lock()
-	defer grasp.Unlock()
+	graspMu.Lock()
+	defer graspMu.Unlock()
 
 	for search, id := range searchStore {
 		if int64(id) == searchId {
@@ -133,9 +133,9 @@ func updateIndexStats(index, call string, search int, refl *Reflection) {
 		stats.searches[search] = stats.searches[search] + 1
 		if !stats.nonEmpty {
 			// release the mutex before decoding the response, reacquire it once done
-			grasp.Unlock()
+			graspMu.Unlock()
 			nonEmpty, err := isIndexNonEmpty(refl)
-			grasp.Lock()
+			graspMu.Lock()
 
 			if err != nil {
 				log.Println(err)

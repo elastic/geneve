@@ -37,8 +37,8 @@ type tally[T tallyKey] struct {
 }
 
 func getIndexTallies() (tallies []tally[string], total int) {
-	grasp.Lock()
-	defer grasp.Unlock()
+	graspMu.Lock()
+	defer graspMu.Unlock()
 
 	for index, stats := range indexStats {
 		tallies = append(tallies, tally[string]{index, stats.count})
@@ -49,8 +49,8 @@ func getIndexTallies() (tallies []tally[string], total int) {
 }
 
 func getCallTallies() (tallies []tally[string], total int) {
-	grasp.Lock()
-	defer grasp.Unlock()
+	graspMu.Lock()
+	defer graspMu.Unlock()
 
 	for call, stats := range callStats {
 		tallies = append(tallies, tally[string]{call, stats.count})
@@ -61,8 +61,8 @@ func getCallTallies() (tallies []tally[string], total int) {
 }
 
 func getSearchTallies() (tallies []tally[int], total int) {
-	grasp.Lock()
-	defer grasp.Unlock()
+	graspMu.Lock()
+	defer graspMu.Unlock()
 
 	for search, stats := range searchStats {
 		tallies = append(tallies, tally[int]{search, stats.count})
@@ -131,32 +131,32 @@ func getSearches(w http.ResponseWriter, req *http.Request) {
 }
 
 func deleteIndices(w http.ResponseWriter, req *http.Request) {
-	grasp.Lock()
-	defer grasp.Unlock()
+	graspMu.Lock()
+	defer graspMu.Unlock()
 
 	indexStats = nil
 	fmt.Fprintln(w, "Index stats were reset")
 }
 
 func deleteCalls(w http.ResponseWriter, req *http.Request) {
-	grasp.Lock()
-	defer grasp.Unlock()
+	graspMu.Lock()
+	defer graspMu.Unlock()
 
 	callStats = nil
 	fmt.Fprintln(w, "Call stats were reset")
 }
 
 func deleteSearches(w http.ResponseWriter, req *http.Request) {
-	grasp.Lock()
-	defer grasp.Unlock()
+	graspMu.Lock()
+	defer graspMu.Unlock()
 
 	searchStats = nil
 	fmt.Fprintln(w, "Search stats were reset")
 }
 
 func deleteGrasp(w http.ResponseWriter, req *http.Request) {
-	grasp.Lock()
-	defer grasp.Unlock()
+	graspMu.Lock()
+	defer graspMu.Unlock()
 
 	indexStats = nil
 	callStats = nil
@@ -165,8 +165,8 @@ func deleteGrasp(w http.ResponseWriter, req *http.Request) {
 }
 
 func getGrasp(w http.ResponseWriter, req *http.Request) {
-	grasp.Lock()
-	defer grasp.Unlock()
+	graspMu.Lock()
+	defer graspMu.Unlock()
 
 	nonEmptyIndices := 0
 	for _, stats := range indexStats {
