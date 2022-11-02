@@ -21,12 +21,13 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strings"
-	"testing"
 
 	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/internal/testing"
 	"github.com/elastic/geneve/cmd/python"
 )
+
+var r = testing.Request{"http://localhost:5696"}
 
 func init() {
 	os.Chdir("../../..") // otherwise python won't find its geneve module
@@ -49,148 +50,78 @@ func init() {
 	go http.ListenAndServe("localhost:9296", mux)
 }
 
-func getRequest(endpoint string) *http.Response {
-	resp, err := http.Get("http://localhost:5696" + endpoint)
-	if err != nil {
-		panic(err)
-	}
-	return resp
-}
-
-func bodyRequest(method, endpoint, content_type, body string) *http.Response {
-	client := &http.Client{}
-
-	req, err := http.NewRequest(method, "http://localhost:5696"+endpoint, strings.NewReader(body))
-	if err != nil {
-		panic(err)
-	}
-	if content_type != "" {
-		req.Header.Set("Content-Type", content_type)
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	return resp
-}
-
-func putRequest(endpoint, content_type, body string) *http.Response {
-	return bodyRequest("PUT", endpoint, content_type, body)
-}
-
-func postRequest(url, content_type, body string) *http.Response {
-	return bodyRequest("POST", url, content_type, body)
-}
-
-func deleteRequest(endpoint string) *http.Response {
-	client := &http.Client{}
-
-	req, err := http.NewRequest("DELETE", "http://localhost:5696"+endpoint, nil)
-	if err != nil {
-		panic(err)
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	return resp
-}
-
-func expectResponse(t *testing.T, resp *http.Response, statusCode int, body string) {
-	if resp.StatusCode != statusCode {
-		t.Errorf("resp.StatusCode is %d (expected: %d)", resp.StatusCode, statusCode)
-	}
-	resp_body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-	if string(resp_body) != body {
-		t.Errorf("resp.Body is %#v (expected: %#v)", string(resp_body), body)
-	}
-}
-
-func expectResponseLines(t *testing.T, resp *http.Response, statusCode int, lines []string) {
-	if len(lines) == 0 {
-		expectResponse(t, resp, statusCode, "")
-	} else {
-		expectResponse(t, resp, statusCode, strings.Join(lines, "\n")+"\n")
-	}
-}
-
 func TestFlow(t *testing.T) {
-	var resp *http.Response
+	var resp testing.Response
 
 	// missing flow name
-	resp = getRequest("/api/flow/")
+	resp = r.Get("/api/flow/")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing flow name\n")
+	resp.Expect(t, http.StatusNotFound, "Missing flow name\n")
 
 	// missing flow name
-	resp = putRequest("/api/flow/", "", "")
+	resp = r.Put("/api/flow/", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing flow name\n")
+	resp.Expect(t, http.StatusNotFound, "Missing flow name\n")
 
 	// missing flow name
-	resp = deleteRequest("/api/flow/")
+	resp = r.Delete("/api/flow/")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing flow name\n")
+	resp.Expect(t, http.StatusNotFound, "Missing flow name\n")
 
 	// missing content type
-	resp = putRequest("/api/flow/test", "", "")
+	resp = r.Put("/api/flow/test", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
+	resp.Expect(t, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
 
 	// unsupported content type
-	resp = putRequest("/api/flow/test", "text/plain", "")
+	resp = r.Put("/api/flow/test", "text/plain", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Unsupported Content-Type: text/plain\n")
+	resp.Expect(t, http.StatusUnsupportedMediaType, "Unsupported Content-Type: text/plain\n")
 
 	// empty body
-	resp = putRequest("/api/flow/test", "application/yaml", "")
+	resp = r.Put("/api/flow/test", "application/yaml", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "No parameters were provided\n")
+	resp.Expect(t, http.StatusBadRequest, "No parameters were provided\n")
 
 	// unknown parameter
-	resp = putRequest("/api/flow/test", "application/yaml", "unknown: 0")
+	resp = r.Put("/api/flow/test", "application/yaml", "unknown: 0")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "line 1: field unknown not found in type flow.Params\n")
+	resp.Expect(t, http.StatusBadRequest, "line 1: field unknown not found in type flow.Params\n")
 
 	// check non-existent flow
-	resp = getRequest("/api/flow/test")
+	resp = r.Get("/api/flow/test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Flow not found: test\n")
+	resp.Expect(t, http.StatusNotFound, "Flow not found: test\n")
 
 	// create one flow
-	resp = putRequest("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
+	resp = r.Put("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "Source not found: test\n")
+	resp.Expect(t, http.StatusBadRequest, "Source not found: test\n")
 
 	// create a source
-	resp = putRequest("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// create one flow
-	resp = putRequest("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
+	resp = r.Put("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "Sink not found: test\n")
+	resp.Expect(t, http.StatusBadRequest, "Sink not found: test\n")
 
 	// create a sink
-	resp = putRequest("/api/sink/test", "application/yaml", "url: http://localhost:9296/echo")
+	resp = r.Put("/api/sink/test", "application/yaml", "url: http://localhost:9296/echo")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// create one flow
-	resp = putRequest("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
+	resp = r.Put("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// get one flow
-	resp = getRequest("/api/flow/test")
+	resp = r.Get("/api/flow/test")
 	defer resp.Body.Close()
-	expectResponseLines(t, resp, http.StatusOK, []string{
+	resp.ExpectLines(t, http.StatusOK, []string{
 		"params:",
 		"    source:",
 		"        name: test",
@@ -203,52 +134,52 @@ func TestFlow(t *testing.T) {
 	})
 
 	// unknown endpoint
-	resp = getRequest("/api/flow/test/_unknown")
+	resp = r.Get("/api/flow/test/_unknown")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Unknown endpoint: _unknown\n")
+	resp.Expect(t, http.StatusNotFound, "Unknown endpoint: _unknown\n")
 
 	// stop without start
-	resp = postRequest("/api/flow/test/_stop", "", "")
+	resp = r.Post("/api/flow/test/_stop", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "Not running, first start\n")
+	resp.Expect(t, http.StatusBadRequest, "Not running, first start\n")
 
 	// start flow
-	resp = postRequest("/api/flow/test/_start", "", "")
+	resp = r.Post("/api/flow/test/_start", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "Started successfully\n")
+	resp.Expect(t, http.StatusOK, "Started successfully\n")
 
 	// start flow again
-	resp = postRequest("/api/flow/test/_start", "", "")
+	resp = r.Post("/api/flow/test/_start", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "Already started, first stop\n")
+	resp.Expect(t, http.StatusBadRequest, "Already started, first stop\n")
 
 	// stop flow
-	resp = postRequest("/api/flow/test/_stop", "", "")
+	resp = r.Post("/api/flow/test/_stop", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "Stopped successfully\n")
+	resp.Expect(t, http.StatusOK, "Stopped successfully\n")
 
 	// stop flow again
-	resp = postRequest("/api/flow/test/_stop", "", "")
+	resp = r.Post("/api/flow/test/_stop", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "Not running, first start\n")
+	resp.Expect(t, http.StatusBadRequest, "Not running, first start\n")
 
 	// start flow
-	resp = postRequest("/api/flow/test/_start", "", "")
+	resp = r.Post("/api/flow/test/_start", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "Started successfully\n")
+	resp.Expect(t, http.StatusOK, "Started successfully\n")
 
 	// delete flow
-	resp = deleteRequest("/api/flow/test")
+	resp = r.Delete("/api/flow/test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "Deleted successfully\n")
+	resp.Expect(t, http.StatusOK, "Deleted successfully\n")
 
 	// delete non-existent flow
-	resp = deleteRequest("/api/flow/non-existent")
+	resp = r.Delete("/api/flow/non-existent")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Flow not found: non-existent\n")
+	resp.Expect(t, http.StatusNotFound, "Flow not found: non-existent\n")
 
 	// invalid flow
-	resp = putRequest("/api/flow/test", "application/yaml", "\t")
+	resp = r.Put("/api/flow/test", "application/yaml", "\t")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "yaml: found character that cannot start any token\n")
+	resp.Expect(t, http.StatusBadRequest, "yaml: found character that cannot start any token\n")
 }

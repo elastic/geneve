@@ -19,74 +19,85 @@ package grasp
 
 import (
 	"net/http"
-	"testing"
+
+	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/internal/testing"
 )
 
+var r = testing.Request{"http://localhost:5691"}
+
+func init() {
+	// start the control server
+	if err := control.StartServer(5691); err != nil {
+		panic(err)
+	}
+}
+
 func TestIgnorePath(t *testing.T) {
-	var resp *http.Response
+	var resp testing.Response
 
 	// missing content type
-	resp = postRequest("http://localhost:5692/api/grasp/ignore", "", "/")
+	resp = r.Post("/api/grasp/ignore", "", "/")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
+	resp.Expect(t, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
 
 	// unsupported content type
-	resp = postRequest("http://localhost:5692/api/grasp/ignore", "image/png", "/")
+	resp = r.Post("/api/grasp/ignore", "image/png", "/")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Unsupported Content-Type: image/png\n")
+	resp.Expect(t, http.StatusUnsupportedMediaType, "Unsupported Content-Type: image/png\n")
 
 	// unknown parameter
-	resp = postRequest("http://localhost:5692/api/grasp/ignore", "application/yaml", "unknown: 0")
+	resp = r.Post("/api/grasp/ignore", "application/yaml", "unknown: 0")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "line 1: field unknown not found in type grasp.postIgnoreParams\n")
+	resp.Expect(t, http.StatusBadRequest, "line 1: field unknown not found in type grasp.postIgnoreParams\n")
 
 	// some strings
-	resp = postRequest("http://localhost:5692/api/grasp/ignore", "application/yaml", "paths:\n  - /path1\n  - /path2\n")
+	resp = r.Post("/api/grasp/ignore", "application/yaml", "paths:\n  - /path1\n  - /path2\n")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "`/path1` was added\n`/path2` was added\n")
+	resp.Expect(t, http.StatusOK, "`/path1` was added\n`/path2` was added\n")
 
 	// duplicate strings
-	resp = postRequest("http://localhost:5692/api/grasp/ignore", "application/yaml", "paths:\n  - /path3\n  - /path3\n")
+	resp = r.Post("/api/grasp/ignore", "application/yaml", "paths:\n  - /path3\n  - /path3\n")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "`/path3` was added\nPath is already ignored: /path3\n")
+	resp.Expect(t, http.StatusBadRequest, "`/path3` was added\nPath is already ignored: /path3\n")
 
 	// no params provided
-	resp = postRequest("http://localhost:5692/api/grasp/ignore", "application/yaml", "")
+	resp = r.Post("/api/grasp/ignore", "application/yaml", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "No params were provided\n")
+	resp.Expect(t, http.StatusBadRequest, "No params were provided\n")
 
 	// some regexp
-	resp = postRequest("http://localhost:5692/api/grasp/ignore", "application/yaml", "paths:\n  - .*")
+	resp = r.Post("/api/grasp/ignore", "application/yaml", "paths:\n  - .*")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "`.*` was added\n")
+	resp.Expect(t, http.StatusOK, "`.*` was added\n")
 
 	// invalid regexp
-	resp = postRequest("http://localhost:5692/api/grasp/ignore", "application/yaml", "paths:\n  - (")
+	resp = r.Post("/api/grasp/ignore", "application/yaml", "paths:\n  - (")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "error parsing regexp: missing closing ): `(`\n")
+	resp.Expect(t, http.StatusBadRequest, "error parsing regexp: missing closing ): `(`\n")
 
 	// some valid and invalid regexp
-	resp = postRequest("http://localhost:5692/api/grasp/ignore", "application/yaml", "paths:\n  - (\n  - (.*)\n")
+	resp = r.Post("/api/grasp/ignore", "application/yaml", "paths:\n  - (\n  - (.*)\n")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "error parsing regexp: missing closing ): `(`\n`(.*)` was added\n")
+	resp.Expect(t, http.StatusBadRequest, "error parsing regexp: missing closing ): `(`\n`(.*)` was added\n")
 
 	// get ignored paths
-	resp = getRequest("http://localhost:5692/api/grasp/ignore")
+	resp = r.Get("/api/grasp/ignore")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "/path1\n/path2\n/path3\n.*\n(.*)\n")
+	resp.Expect(t, http.StatusOK, "/path1\n/path2\n/path3\n.*\n(.*)\n")
 
 	// delete ignored paths
-	resp = deleteRequest("http://localhost:5692/api/grasp/ignore")
+	resp = r.Delete("/api/grasp/ignore")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "Path ignore list was reset\n")
+	resp.Expect(t, http.StatusOK, "Path ignore list was reset\n")
 
 	// get ignored paths
-	resp = getRequest("http://localhost:5692/api/grasp/ignore")
+	resp = r.Get("/api/grasp/ignore")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "")
+	resp.Expect(t, http.StatusOK, "")
 
 	// use an unsupported method
-	resp = putRequest("http://localhost:5692/api/grasp/ignore", "", "")
+	resp = r.Put("/api/grasp/ignore", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusMethodNotAllowed, "Incorrect HTTP method: PUT\n")
+	resp.Expect(t, http.StatusMethodNotAllowed, "Incorrect HTTP method: PUT\n")
 }

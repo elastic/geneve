@@ -22,10 +22,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
-	"testing"
+
+	"github.com/elastic/geneve/cmd/internal/testing"
 )
 
+var reflector = testing.Request{"http://localhost:2929"}
 var reflections = make(chan *Reflection, 1)
 
 func init() {
@@ -63,15 +64,12 @@ func expectReflection(t *testing.T, refl *Reflection, method, req_body, resp_bod
 }
 
 func TestReflect(t *testing.T) {
+	var resp testing.Response
+
 	// response to be 502 Bad Gateway
-	resp, err := http.Get("http://localhost:2929/")
-	if err != nil {
-		panic(err)
-	}
+	resp = reflector.Get("/")
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusBadGateway {
-		t.Errorf("resp.StatusCode is %d (expected: %d)", resp.StatusCode, http.StatusBadGateway)
-	}
+	resp.ExpectStatusCode(t, http.StatusBadGateway)
 
 	// no reflections are expected if the remote is not serving
 	if len(reflections) != 0 {
@@ -89,30 +87,21 @@ func TestReflect(t *testing.T) {
 	go http.ListenAndServe("localhost:9292", mux)
 
 	// check with a non existing page
-	resp, err = http.Get("http://localhost:2929/")
-	if err != nil {
-		panic(err)
-	}
+	resp = reflector.Get("/")
 	defer resp.Body.Close()
 	expectReflection(t, <-reflections, "GET", "", "404 page not found\n", http.StatusNotFound, 19)
-	expectResponse(t, resp, http.StatusNotFound, "404 page not found\n")
+	resp.Expect(t, http.StatusNotFound, "404 page not found\n")
 
 	// check GET (expect no body in the response)
-	resp, err = http.Get("http://localhost:2929/echo")
-	if err != nil {
-		panic(err)
-	}
+	resp = reflector.Get("/echo")
 	defer resp.Body.Close()
 	expectReflection(t, <-reflections, "GET", "", "", http.StatusOK, 0)
-	expectResponse(t, resp, http.StatusOK, "")
+	resp.Expect(t, http.StatusOK, "")
 
 	// check POST (expect body in the response)
 	body := "Lorem ipsum dolor sit amet"
-	resp, err = http.Post("http://localhost:2929/echo", "text/plain", strings.NewReader(body))
-	if err != nil {
-		panic(err)
-	}
+	resp = reflector.Post("/echo", "text/plain", body)
 	defer resp.Body.Close()
 	expectReflection(t, <-reflections, "POST", body, body, http.StatusOK, len(body))
-	expectResponse(t, resp, http.StatusOK, body)
+	resp.Expect(t, http.StatusOK, body)
 }

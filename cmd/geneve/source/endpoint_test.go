@@ -20,11 +20,12 @@ package source
 import (
 	"io"
 	"net/http"
-	"strings"
-	"testing"
 
 	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/internal/testing"
 )
+
+var r = testing.Request{"http://localhost:5694"}
 
 func init() {
 	// start the control server
@@ -33,154 +34,96 @@ func init() {
 	}
 }
 
-func getRequest(endpoint string) *http.Response {
-	resp, err := http.Get("http://localhost:5694" + endpoint)
-	if err != nil {
-		panic(err)
-	}
-	return resp
-}
-
-func bodyRequest(method, endpoint, content_type, body string) *http.Response {
-	client := &http.Client{}
-
-	req, err := http.NewRequest(method, "http://localhost:5694"+endpoint, strings.NewReader(body))
-	if err != nil {
-		panic(err)
-	}
-	if content_type != "" {
-		req.Header["Content-Type"] = []string{content_type}
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	return resp
-}
-
-func putRequest(endpoint, content_type, body string) *http.Response {
-	return bodyRequest("PUT", endpoint, content_type, body)
-}
-
-func deleteRequest(endpoint string) *http.Response {
-	client := &http.Client{}
-
-	req, err := http.NewRequest("DELETE", "http://localhost:5694"+endpoint, nil)
-	if err != nil {
-		panic(err)
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	return resp
-}
-
-func expectResponse(t *testing.T, resp *http.Response, statusCode int, body string) {
-	if resp.StatusCode != statusCode {
-		t.Errorf("resp.StatusCode is %d (expected: %d)", resp.StatusCode, statusCode)
-	}
-	resp_body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-	if string(resp_body) != body {
-		t.Errorf("resp.Body is %#v (expected: %#v)", string(resp_body), body)
-	}
-}
-
 func TestSourceEndpoint(t *testing.T) {
-	var resp *http.Response
+	var resp testing.Response
 
 	// missing docs source name
-	resp = getRequest("/api/source/")
+	resp = r.Get("/api/source/")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing source name\n")
+	resp.Expect(t, http.StatusNotFound, "Missing source name\n")
 
 	// missing docs source name
-	resp = putRequest("/api/source/", "", "")
+	resp = r.Put("/api/source/", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing source name\n")
+	resp.Expect(t, http.StatusNotFound, "Missing source name\n")
 
 	// missing docs source name
-	resp = deleteRequest("/api/source/")
+	resp = r.Delete("/api/source/")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Missing source name\n")
+	resp.Expect(t, http.StatusNotFound, "Missing source name\n")
 
 	// missing content type
-	resp = putRequest("/api/source/test", "", "")
+	resp = r.Put("/api/source/test", "", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
+	resp.Expect(t, http.StatusUnsupportedMediaType, "Missing Content-Type header\n")
 
 	// unsupported content type
-	resp = putRequest("/api/source/test", "image/png", "")
+	resp = r.Put("/api/source/test", "image/png", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusUnsupportedMediaType, "Unsupported Content-Type: image/png\n")
+	resp.Expect(t, http.StatusUnsupportedMediaType, "Unsupported Content-Type: image/png\n")
 
 	// empty body
-	resp = putRequest("/api/source/test", "application/yaml", "")
+	resp = r.Put("/api/source/test", "application/yaml", "")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "No parameters were provided\n")
+	resp.Expect(t, http.StatusBadRequest, "No parameters were provided\n")
 
 	// check non-existent docs source
-	resp = getRequest("/api/source/test")
+	resp = r.Get("/api/source/test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Source not found: test\n")
+	resp.Expect(t, http.StatusNotFound, "Source not found: test\n")
 
 	// unknown parameter
-	resp = putRequest("/api/source/test", "application/yaml", "unknown: 0")
+	resp = r.Put("/api/source/test", "application/yaml", "unknown: 0")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "line 1: field unknown not found in type source.SourceParams\n")
+	resp.Expect(t, http.StatusBadRequest, "line 1: field unknown not found in type source.SourceParams\n")
 
 	// one docs source
-	resp = putRequest("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// rewrite docs source
-	resp = putRequest("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.com\"")
+	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.com\"")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// another docs source
-	resp = putRequest("/api/source/test2", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = r.Put("/api/source/test2", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// delete the second docs source
-	resp = deleteRequest("/api/source/test2")
+	resp = r.Delete("/api/source/test2")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "Deleted successfully\n")
+	resp.Expect(t, http.StatusOK, "Deleted successfully\n")
 
 	// check removed docs source
-	resp = getRequest("/api/source/test2")
+	resp = r.Get("/api/source/test2")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Source not found: test2\n")
+	resp.Expect(t, http.StatusNotFound, "Source not found: test2\n")
 
 	// get docs source
-	resp = getRequest("/api/source/test")
+	resp = r.Get("/api/source/test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
+	resp.Expect(t, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
 
 	// get docs mappings
-	resp = getRequest("/api/source/test/_mappings")
+	resp = r.Get("/api/source/test/_mappings")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "{\"properties\": {\"@timestamp\": {\"type\": \"keyword\"}, \"event\": {\"properties\": {\"category\": {\"type\": \"keyword\"}}}, \"process\": {\"properties\": {\"name\": {\"type\": \"keyword\"}}}}}\n")
+	resp.Expect(t, http.StatusOK, "{\"properties\": {\"@timestamp\": {\"type\": \"keyword\"}, \"event\": {\"properties\": {\"category\": {\"type\": \"keyword\"}}}, \"process\": {\"properties\": {\"name\": {\"type\": \"keyword\"}}}}}\n")
 
 	// docs source with non-existent schema
-	resp = putRequest("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.name == \"*.exe\"")
+	resp = r.Put("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusBadRequest, "Schema not found: test\n")
+	resp.Expect(t, http.StatusBadRequest, "Schema not found: test\n")
 
 	// check unaltered docs source
-	resp = getRequest("/api/source/test")
+	resp = r.Get("/api/source/test")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
+	resp.Expect(t, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
 
 	// generate some document
-	resp = getRequest("/api/source/test/_generate")
+	resp = r.Get("/api/source/test/_generate")
 	defer resp.Body.Close()
 	resp_body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -191,31 +134,31 @@ func TestSourceEndpoint(t *testing.T) {
 	}
 
 	// delete non-existent source
-	resp = deleteRequest("/api/source/non-existent")
+	resp = r.Delete("/api/source/non-existent")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Source not found: non-existent\n")
+	resp.Expect(t, http.StatusNotFound, "Source not found: non-existent\n")
 
 	// unknown endpoint
-	resp = getRequest("/api/source/test/_unknown")
+	resp = r.Get("/api/source/test/_unknown")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusNotFound, "Unknown endpoint: _unknown\n")
+	resp.Expect(t, http.StatusNotFound, "Unknown endpoint: _unknown\n")
 }
 
 func TestSourceEndpointWithSchema(t *testing.T) {
-	var resp *http.Response
+	var resp testing.Response
 
 	// create one schema
-	resp = putRequest("/api/schema/test", "application/yaml", "process.pid:\n  type: long")
+	resp = r.Put("/api/schema/test", "application/yaml", "process.pid:\n  type: long")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// create docs source with schema
-	resp = putRequest("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.pid > 0")
+	resp = r.Put("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.pid > 0")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusCreated, "Created successfully\n")
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// get docs mappings
-	resp = getRequest("/api/source/test/_mappings")
+	resp = r.Get("/api/source/test/_mappings")
 	defer resp.Body.Close()
-	expectResponse(t, resp, http.StatusOK, "{\"properties\": {\"@timestamp\": {\"type\": \"keyword\"}, \"event\": {\"properties\": {\"category\": {\"type\": \"keyword\"}}}, \"process\": {\"properties\": {\"pid\": {\"type\": \"long\"}}}}}\n")
+	resp.Expect(t, http.StatusOK, "{\"properties\": {\"@timestamp\": {\"type\": \"keyword\"}, \"event\": {\"properties\": {\"category\": {\"type\": \"keyword\"}}}, \"process\": {\"properties\": {\"pid\": {\"type\": \"long\"}}}}}\n")
 }
