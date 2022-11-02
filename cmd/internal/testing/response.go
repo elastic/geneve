@@ -29,12 +29,16 @@ type Response struct {
 }
 
 func (r Response) ExpectStatusCode(t *testing.T, statusCode int) {
+	t.Helper()
+
 	if r.StatusCode != statusCode {
 		t.Errorf("resp.StatusCode is %d (expected: %d)", r.StatusCode, statusCode)
 	}
 }
 
 func (r Response) ExpectBody(t *testing.T, body string) {
+	t.Helper()
+
 	resp_body, err := io.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
@@ -45,6 +49,8 @@ func (r Response) ExpectBody(t *testing.T, body string) {
 }
 
 func (r Response) ExpectBodyLines(t *testing.T, lines []string) {
+	t.Helper()
+
 	if len(lines) == 0 {
 		r.ExpectBody(t, "")
 	} else {
@@ -53,11 +59,15 @@ func (r Response) ExpectBodyLines(t *testing.T, lines []string) {
 }
 
 func (r Response) Expect(t *testing.T, statusCode int, body string) {
+	t.Helper()
+
 	r.ExpectStatusCode(t, statusCode)
 	r.ExpectBody(t, body)
 }
 
 func (r Response) ExpectLines(t *testing.T, statusCode int, lines []string) {
+	t.Helper()
+
 	r.ExpectStatusCode(t, statusCode)
 	r.ExpectBodyLines(t, lines)
 }

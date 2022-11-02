@@ -40,6 +40,8 @@ func init() {
 }
 
 func expectReflection(t *testing.T, refl *Reflection, method, req_body, resp_body string, statusCode, nbytes int) {
+	t.Helper()
+
 	if refl.Method != method {
 		t.Errorf("refl.Method is %s (expected: %s)", refl.Method, method)
 	}
