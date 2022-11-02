@@ -24,7 +24,7 @@ import (
 	"sort"
 
 	"github.com/elastic/geneve/cmd/geneve"
-	"github.com/elastic/geneve/cmd/python"
+	"github.com/elastic/geneve/cmd/internal/python"
 	"github.com/spf13/cobra"
 )
 

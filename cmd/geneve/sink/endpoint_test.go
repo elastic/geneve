@@ -20,7 +20,7 @@ package sink
 import (
 	"net/http"
 
-	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/internal/control"
 	"github.com/elastic/geneve/cmd/internal/testing"
 )
 

@@ -24,7 +24,7 @@ import (
 
 	"github.com/elastic/geneve/cmd/geneve/sink"
 	"github.com/elastic/geneve/cmd/geneve/source"
-	"github.com/elastic/geneve/cmd/utils"
+	"github.com/elastic/geneve/cmd/internal/utils"
 )
 
 type Params struct {

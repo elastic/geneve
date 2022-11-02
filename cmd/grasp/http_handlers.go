@@ -24,7 +24,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/elastic/geneve/cmd/control"
+	"github.com/elastic/geneve/cmd/internal/control"
 )
 
 type tallyKey interface {
