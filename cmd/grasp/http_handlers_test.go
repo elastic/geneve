@@ -159,6 +159,7 @@ func TestGraspReset(t *testing.T) {
 
 	// check grasp reset
 	resp = g.Delete("/api/grasp")
+	defer resp.Body.Close()
 	resp.Expect(t, http.StatusOK, "Whole grasp was reset\n")
 	expectNoGrasp(t)
 	expectSearches(t, []string{"search", "search2"})
@@ -169,6 +170,7 @@ func TestGraspReset(t *testing.T) {
 
 	// check calls grasp reset
 	resp = g.Delete("/api/grasp/calls")
+	defer resp.Body.Close()
 	resp.Expect(t, http.StatusOK, "Call stats were reset\n")
 	expectGrasp(t, "/indices?percent=100", []string{"1: /.index"})
 	expectGrasp(t, "/calls?percent=100", []string{})
@@ -178,6 +180,7 @@ func TestGraspReset(t *testing.T) {
 
 	// check indicex grasp reset
 	resp = g.Delete("/api/grasp/indices")
+	defer resp.Body.Close()
 	resp.Expect(t, http.StatusOK, "Index stats were reset\n")
 	expectGrasp(t, "/indices?percent=100", []string{})
 	expectGrasp(t, "/calls?percent=100", []string{})
@@ -187,6 +190,7 @@ func TestGraspReset(t *testing.T) {
 
 	// check searches grasp reset
 	resp = g.Delete("/api/grasp/searches")
+	defer resp.Body.Close()
 	resp.Expect(t, http.StatusOK, "Search stats were reset\n")
 	expectGrasp(t, "/indices?percent=100", []string{})
 	expectGrasp(t, "/calls?percent=100", []string{})
