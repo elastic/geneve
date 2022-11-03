@@ -35,6 +35,7 @@ type Params struct {
 		Name string `yaml:"name"`
 	} `yaml:"sink"`
 	Concurrency int `yaml:"concurrency,omitempty"`
+	Count       int `yaml:"count,omitempty"`
 }
 
 type State struct {
@@ -76,11 +77,16 @@ func (f *Flow) MarshalYAML() (any, error) {
 	return out, nil
 }
 
-func (f *Flow) rateDocument() {
+func (f *Flow) rateDocument() bool {
 	f.stateMu.Lock()
 	defer f.stateMu.Unlock()
 
+	if f.params.Count != 0 && f.state.Documents >= f.params.Count {
+		return true
+	}
+
 	f.state.Documents++
+	return false
 }
 
 func (f *Flow) rateError(err error) bool {
@@ -106,7 +112,7 @@ func (f *Flow) Start() error {
 		concurrency = 2 //runtime.NumCPU()
 	}
 
-	f.wg.Go(1, func() {
+	go func() {
 		ticker := time.NewTicker(1 * time.Second)
 		defer ticker.Stop()
 
@@ -126,7 +132,7 @@ func (f *Flow) Start() error {
 				f.stateMu.Unlock()
 			}
 		}
-	})
+	}()
 
 	f.wg.Go(concurrency, func() {
 		for {
@@ -142,7 +148,9 @@ func (f *Flow) Start() error {
 			}
 
 			for _, doc := range docs {
-				f.rateDocument()
+				if f.rateDocument() {
+					return
+				}
 				err := f.sink.Receive(doc)
 				if err != nil && f.rateError(err) {
 					return
