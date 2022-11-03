@@ -28,7 +28,7 @@ type Response struct {
 	*http.Response
 }
 
-func (r Response) ExpectStatusCode(t *testing.T, statusCode int) {
+func (r Response) ExpectStatusCode(t testing.TB, statusCode int) {
 	t.Helper()
 
 	if r.StatusCode != statusCode {
@@ -36,7 +36,7 @@ func (r Response) ExpectStatusCode(t *testing.T, statusCode int) {
 	}
 }
 
-func (r Response) ExpectBody(t *testing.T, body string) {
+func (r Response) ExpectBody(t testing.TB, body string) {
 	t.Helper()
 
 	resp_body, err := io.ReadAll(r.Body)
@@ -48,7 +48,7 @@ func (r Response) ExpectBody(t *testing.T, body string) {
 	}
 }
 
-func (r Response) ExpectBodyLines(t *testing.T, lines []string) {
+func (r Response) ExpectBodyLines(t testing.TB, lines []string) {
 	t.Helper()
 
 	if len(lines) == 0 {
@@ -58,14 +58,14 @@ func (r Response) ExpectBodyLines(t *testing.T, lines []string) {
 	}
 }
 
-func (r Response) Expect(t *testing.T, statusCode int, body string) {
+func (r Response) Expect(t testing.TB, statusCode int, body string) {
 	t.Helper()
 
 	r.ExpectStatusCode(t, statusCode)
 	r.ExpectBody(t, body)
 }
 
-func (r Response) ExpectLines(t *testing.T, statusCode int, lines []string) {
+func (r Response) ExpectLines(t testing.TB, statusCode int, lines []string) {
 	t.Helper()
 
 	r.ExpectStatusCode(t, statusCode)
