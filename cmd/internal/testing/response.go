@@ -20,8 +20,11 @@ package testing
 import (
 	"io"
 	"net/http"
+	"reflect"
 	"strings"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Response struct {
@@ -32,7 +35,15 @@ func (r Response) ExpectStatusCode(t testing.TB, statusCode int) {
 	t.Helper()
 
 	if r.StatusCode != statusCode {
-		t.Errorf("resp.StatusCode is %d (expected: %d)", r.StatusCode, statusCode)
+		t.Errorf("StatusCode is %d (expected: %d)", r.StatusCode, statusCode)
+	}
+}
+
+func (r Response) ExpectContentType(t testing.TB, contentType string) {
+	t.Helper()
+
+	if r.Header.Get("Content-Type") != contentType {
+		t.Errorf("Content-Type is %#v (expected: %#v)", r.Header.Get("Content-Type"), contentType)
 	}
 }
 
@@ -44,7 +55,7 @@ func (r Response) ExpectBody(t testing.TB, body string) {
 		panic(err)
 	}
 	if string(resp_body) != body {
-		t.Errorf("resp.Body is %#v (expected: %#v)", string(resp_body), body)
+		t.Errorf("Body is %#v (expected: %#v)", string(resp_body), body)
 	}
 }
 
@@ -70,4 +81,23 @@ func (r Response) ExpectLines(t testing.TB, statusCode int, lines []string) {
 
 	r.ExpectStatusCode(t, statusCode)
 	r.ExpectBodyLines(t, lines)
+}
+
+func (r Response) ExpectYaml(t testing.TB, statusCode int, expected any, knownFields bool) {
+	t.Helper()
+
+	r.ExpectStatusCode(t, statusCode)
+	r.ExpectContentType(t, "application/yaml")
+
+	data := reflect.New(reflect.ValueOf(expected).Elem().Type()).Interface()
+	dec := yaml.NewDecoder(r.Body)
+	dec.KnownFields(knownFields)
+	err := dec.Decode(data)
+	if err != nil {
+		panic(err)
+	}
+
+	if !reflect.DeepEqual(data, expected) {
+		t.Errorf("Data is %#v (expected: %#v)", data, expected)
+	}
 }

@@ -135,17 +135,13 @@ func TestFlow(t *testing.T) {
 	// get one flow
 	resp = r.Get("/api/flow/test")
 	defer resp.Body.Close()
-	resp.ExpectLines(t, http.StatusOK, []string{
-		"params:",
-		"    source:",
-		"        name: test",
-		"    sink:",
-		"        name: test",
-		"state:",
-		"    alive: false",
-		"    documents: 0",
-		"    documents_per_second: 0",
-	})
+	data := struct {
+		Params Params
+		State  State
+	}{}
+	data.Params.Source.Name = "test"
+	data.Params.Sink.Name = "test"
+	resp.ExpectYaml(t, http.StatusOK, &data, true)
 
 	// unknown endpoint
 	resp = r.Get("/api/flow/test/_unknown")

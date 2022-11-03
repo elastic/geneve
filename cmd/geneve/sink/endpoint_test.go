@@ -84,7 +84,7 @@ func TestSink(t *testing.T) {
 	// get one sink
 	resp = r.Get("/api/sink/test")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusOK, "url: http://localhost:1234\n")
+	resp.ExpectYaml(t, http.StatusOK, &Params{URL: "http://localhost:1234"}, true)
 
 	// unknown endpoint
 	resp = r.Get("/api/sink/test/_unknown")

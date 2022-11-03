@@ -79,7 +79,7 @@ func TestSchemaEndpoint(t *testing.T) {
 	// get one schema
 	resp = r.Get("/api/schema/test")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusOK, "source.ip:\n    type: ip\n")
+	resp.ExpectYaml(t, http.StatusOK, &map[string]map[string]string{"source.ip": {"type": "ip"}}, false)
 
 	// unknown endpoint
 	resp = r.Get("/api/schema/test/_unknown")
