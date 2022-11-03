@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/elastic/geneve/cmd/internal/control"
 	"github.com/elastic/geneve/cmd/internal/python"
@@ -50,7 +51,7 @@ func init() {
 	go http.ListenAndServe("localhost:9296", mux)
 }
 
-func TestFlow(t *testing.T) {
+func TestInvalidFlow(t *testing.T) {
 	var resp testing.Response
 
 	// missing flow name
@@ -89,9 +90,23 @@ func TestFlow(t *testing.T) {
 	resp.Expect(t, http.StatusBadRequest, "line 1: field unknown not found in type flow.Params\n")
 
 	// check non-existent flow
-	resp = r.Get("/api/flow/test")
+	resp = r.Get("/api/flow/non-existent")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusNotFound, "Flow not found: test\n")
+	resp.Expect(t, http.StatusNotFound, "Flow not found: non-existent\n")
+
+	// delete non-existent flow
+	resp = r.Delete("/api/flow/non-existent")
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusNotFound, "Flow not found: non-existent\n")
+
+	// invalid flow
+	resp = r.Put("/api/flow/test", "application/yaml", "\t")
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusBadRequest, "yaml: found character that cannot start any token\n")
+}
+
+func TestFlow(t *testing.T) {
+	var resp testing.Response
 
 	// create one flow
 	resp = r.Put("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
@@ -121,17 +136,13 @@ func TestFlow(t *testing.T) {
 	// get one flow
 	resp = r.Get("/api/flow/test")
 	defer resp.Body.Close()
-	resp.ExpectLines(t, http.StatusOK, []string{
-		"params:",
-		"    source:",
-		"        name: test",
-		"    sink:",
-		"        name: test",
-		"state:",
-		"    alive: false",
-		"    documents: 0",
-		"    documents_per_second: 0",
-	})
+	data := struct {
+		Params Params
+		State  State
+	}{}
+	data.Params.Source.Name = "test"
+	data.Params.Sink.Name = "test"
+	resp.ExpectYaml(t, http.StatusOK, &data, true)
 
 	// unknown endpoint
 	resp = r.Get("/api/flow/test/_unknown")
@@ -172,14 +183,69 @@ func TestFlow(t *testing.T) {
 	resp = r.Delete("/api/flow/test")
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusOK, "Deleted successfully\n")
+}
 
-	// delete non-existent flow
-	resp = r.Delete("/api/flow/non-existent")
-	defer resp.Body.Close()
-	resp.Expect(t, http.StatusNotFound, "Flow not found: non-existent\n")
+func TestCountedFlow(t *testing.T) {
+	var resp testing.Response
 
-	// invalid flow
-	resp = r.Put("/api/flow/test", "application/yaml", "\t")
+	// create a source
+	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusBadRequest, "yaml: found character that cannot start any token\n")
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
+
+	// create a sink
+	resp = r.Put("/api/sink/test", "application/yaml", "url: http://localhost:9296/echo")
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
+
+	// create one flow
+	resp = r.Put("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test\ncount: 10")
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
+
+	// get one flow
+	resp = r.Get("/api/flow/test")
+	defer resp.Body.Close()
+	data := struct {
+		Params Params
+		State  State
+	}{}
+	data.Params.Source.Name = "test"
+	data.Params.Sink.Name = "test"
+	data.Params.Count = 10
+	resp.ExpectYaml(t, http.StatusOK, &data, true)
+
+	// start flow
+	resp = r.Post("/api/flow/test/_start", "", "")
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusOK, "Started successfully\n")
+
+	state := struct {
+		State struct {
+			Alive     bool
+			Documents int
+		}
+	}{}
+	state.State.Alive = false
+	state.State.Documents = 10
+
+	// check generated document once generation is completed
+	for tries := 3; tries > 0; tries-- {
+		resp = r.Get("/api/flow/test")
+		defer resp.Body.Close()
+
+		try := &testing.Try{T: t, CanFail: tries > 1}
+		resp.ExpectYaml(try, http.StatusOK, &state, false)
+		if try.Failed() {
+			time.Sleep(250 * time.Millisecond)
+			continue
+		}
+
+		break
+	}
+
+	// stop flow
+	resp = r.Post("/api/flow/test/_stop", "", "")
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusOK, "Stopped successfully\n")
 }

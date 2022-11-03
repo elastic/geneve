@@ -33,14 +33,14 @@ import (
 
 var logger = log.New(log.Writer(), "datagen ", log.LstdFlags|log.Lmsgprefix)
 
-type SourceParams struct {
+type Params struct {
 	Schema  string   `yaml:",omitempty"`
 	Queries []string `yaml:",omitempty"`
 }
 
 type entry struct {
 	Source Source
-	params SourceParams
+	params Params
 }
 
 var sources = struct {
@@ -158,7 +158,7 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "Unknown endpoint: %s\n", endpoint)
 }
 
-func getParamsFromRequest(w http.ResponseWriter, req *http.Request) (params SourceParams, err error) {
+func getParamsFromRequest(w http.ResponseWriter, req *http.Request) (params Params, err error) {
 	content_type, ok := req.Header["Content-Type"]
 	if !ok {
 		w.WriteHeader(http.StatusUnsupportedMediaType)

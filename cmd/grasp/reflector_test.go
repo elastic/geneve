@@ -39,7 +39,7 @@ func init() {
 	}
 }
 
-func expectReflection(t *testing.T, refl *Reflection, method, req_body, resp_body string, statusCode, nbytes int) {
+func expectReflection(t testing.TB, refl *Reflection, method, req_body, resp_body string, statusCode, nbytes int) {
 	t.Helper()
 
 	if refl.Method != method {

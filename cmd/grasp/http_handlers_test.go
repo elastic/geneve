@@ -43,7 +43,7 @@ func ponder(uri, method, request, response string) {
 	Ponder(&Reflection{URL, method, request, []byte(response), http.StatusOK, 0})
 }
 
-func expectGrasp(t *testing.T, endpoint string, lines []string) {
+func expectGrasp(t testing.TB, endpoint string, lines []string) {
 	t.Helper()
 
 	resp := g.Get("/api/grasp" + endpoint)
@@ -51,7 +51,7 @@ func expectGrasp(t *testing.T, endpoint string, lines []string) {
 	resp.ExpectLines(t, http.StatusOK, lines)
 }
 
-func expectSearches(t *testing.T, searches []string) {
+func expectSearches(t testing.TB, searches []string) {
 	t.Helper()
 
 	for id, search := range searches {
@@ -60,13 +60,13 @@ func expectSearches(t *testing.T, searches []string) {
 	expectNoSearch(t, len(searches))
 }
 
-func expectNonEmptyIndices(t *testing.T, nonEmptyIndices int) {
+func expectNonEmptyIndices(t testing.TB, nonEmptyIndices int) {
 	t.Helper()
 
 	expectGrasp(t, "", []string{fmt.Sprintf("non-empty indices: %d", nonEmptyIndices)})
 }
 
-func expectNoGrasp(t *testing.T) {
+func expectNoGrasp(t testing.TB) {
 	t.Helper()
 
 	expectGrasp(t, "/indices?percent=100", []string{})
@@ -74,7 +74,7 @@ func expectNoGrasp(t *testing.T) {
 	expectGrasp(t, "/searches?percent=100", []string{})
 }
 
-func expectNoSearch(t *testing.T, searchId int) {
+func expectNoSearch(t testing.TB, searchId int) {
 	t.Helper()
 
 	search := fmt.Sprintf("%d", searchId)

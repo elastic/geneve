@@ -19,42 +19,50 @@ package testing
 
 import "testing"
 
-type T = testing.T
-type TB = testing.TB
+func TestTrySuccess(t *testing.T) {
+	try := &Try{T: t, CanFail: true}
 
-type Try struct {
-	*testing.T
-	CanFail bool
-	failed  bool
+	func(t testing.TB) {
+		// don't fail!
+	}(try)
+
+	if try.Failed() {
+		t.Errorf("Try captured a failure that was not flagged")
+	}
 }
 
-func (t *Try) Fail() {
-	if !t.CanFail {
-		t.Helper()
-		t.T.Fail()
+func TestTryFail(t *testing.T) {
+	try := &Try{T: t, CanFail: true}
+
+	func(t testing.TB) {
+		t.Fail()
+	}(try)
+
+	if !try.Failed() {
+		t.Errorf("Try did not capture the failure flagged by t.Fail()")
 	}
-	t.failed = true
 }
 
-func (t *Try) Error(args ...any) {
-	if !t.CanFail {
-		t.Helper()
-		t.T.Error(args...)
+func TestTryError(t *testing.T) {
+	try := &Try{T: t, CanFail: true}
+
+	func(t testing.TB) {
+		t.Error("Failed!")
+	}(try)
+
+	if !try.Failed() {
+		t.Errorf("Try did not capture the failure flagged by t.Error()")
 	}
-	t.failed = true
 }
 
-func (t *Try) Errorf(format string, args ...any) {
-	if !t.CanFail {
-		t.Helper()
-		t.T.Errorf(format, args...)
-	}
-	t.failed = true
-}
+func TestTryErrorf(t *testing.T) {
+	try := &Try{T: t, CanFail: true}
 
-func (t *Try) Failed() bool {
-	if !t.CanFail {
-		return t.T.Failed()
+	func(t testing.TB) {
+		t.Errorf("Failed!")
+	}(try)
+
+	if !try.Failed() {
+		t.Errorf("Try did not capture the failure flagged by t.Errorf()")
 	}
-	return t.failed
 }

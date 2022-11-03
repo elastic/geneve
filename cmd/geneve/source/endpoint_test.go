@@ -75,7 +75,7 @@ func TestSourceEndpoint(t *testing.T) {
 	// unknown parameter
 	resp = r.Put("/api/source/test", "application/yaml", "unknown: 0")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusBadRequest, "line 1: field unknown not found in type source.SourceParams\n")
+	resp.Expect(t, http.StatusBadRequest, "line 1: field unknown not found in type source.Params\n")
 
 	// one docs source
 	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
@@ -120,7 +120,7 @@ func TestSourceEndpoint(t *testing.T) {
 	// check unaltered docs source
 	resp = r.Get("/api/source/test")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
+	resp.ExpectYaml(t, http.StatusOK, &Params{Queries: []string{`process where process.name == "*.com"`}}, true)
 
 	// generate some document
 	resp = r.Get("/api/source/test/_generate")
