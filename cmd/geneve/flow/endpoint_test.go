@@ -50,7 +50,7 @@ func init() {
 	go http.ListenAndServe("localhost:9296", mux)
 }
 
-func TestFlow(t *testing.T) {
+func TestInvalidFlow(t *testing.T) {
 	var resp testing.Response
 
 	// missing flow name
@@ -89,9 +89,23 @@ func TestFlow(t *testing.T) {
 	resp.Expect(t, http.StatusBadRequest, "line 1: field unknown not found in type flow.Params\n")
 
 	// check non-existent flow
-	resp = r.Get("/api/flow/test")
+	resp = r.Get("/api/flow/non-existent")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusNotFound, "Flow not found: test\n")
+	resp.Expect(t, http.StatusNotFound, "Flow not found: non-existent\n")
+
+	// delete non-existent flow
+	resp = r.Delete("/api/flow/non-existent")
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusNotFound, "Flow not found: non-existent\n")
+
+	// invalid flow
+	resp = r.Put("/api/flow/test", "application/yaml", "\t")
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusBadRequest, "yaml: found character that cannot start any token\n")
+}
+
+func TestFlow(t *testing.T) {
+	var resp testing.Response
 
 	// create one flow
 	resp = r.Put("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
@@ -172,14 +186,4 @@ func TestFlow(t *testing.T) {
 	resp = r.Delete("/api/flow/test")
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusOK, "Deleted successfully\n")
-
-	// delete non-existent flow
-	resp = r.Delete("/api/flow/non-existent")
-	defer resp.Body.Close()
-	resp.Expect(t, http.StatusNotFound, "Flow not found: non-existent\n")
-
-	// invalid flow
-	resp = r.Put("/api/flow/test", "application/yaml", "\t")
-	defer resp.Body.Close()
-	resp.Expect(t, http.StatusBadRequest, "yaml: found character that cannot start any token\n")
 }
