@@ -538,7 +538,7 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 from geneve.utils import load_schema
 
                 # load the ECS schema
-                SourceEvents.schema = load_schema('./etc/ecs-8.1.0.tar.gz', 'generated/ecs/ecs_flat.yml')
+                SourceEvents.schema = load_schema('./etc/ecs-8.2.0.tar.gz', 'generated/ecs/ecs_flat.yml')
 
                 def emit(query, timestamp=False, complete=True, count=1):
                     try:
