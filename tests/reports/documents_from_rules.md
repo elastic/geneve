@@ -12,13 +12,14 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsupported query language: lucene (6)](#unsupported-query-language-lucene-6)
       1. [Unsupported rule type: threat_match (3)](#unsupported-rule-type-threat_match-3)
    1. [Generation errors](#generation-errors)
-      1. [Constraints solver not implemented: wildcard (43)](#constraints-solver-not-implemented-wildcard-43)
-      1. [Root without branches (7)](#root-without-branches-7)
+      1. [Constraints solver not implemented: wildcard (44)](#constraints-solver-not-implemented-wildcard-44)
+      1. [Root without branches (15)](#root-without-branches-15)
       1. [Unsupported function: match (5)](#unsupported-function-match-5)
-      1. [Constraints solver not implemented: match_only_text (3)](#constraints-solver-not-implemented-match_only_text-3)
-      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-lhs-type-class-eqlastfunctioncall-3)
+      1. [Constraints solver not implemented: match_only_text (4)](#constraints-solver-not-implemented-match_only_text-4)
+      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (4)](#unsupported-lhs-type-class-eqlastfunctioncall-4)
       1. [Unsupported keyword constraint: > (3)](#unsupported-keyword-constraint--3)
       1. [Unsolvable constraints ==: powershell.file.script_block_text (is already 'waveInGetNumDevs', cannot set to 'mciSendStringA') (1)](#unsolvable-constraints--powershellfilescript_block_text-is-already-waveingetnumdevs-cannot-set-to-mcisendstringa-1)
+      1. [Unsolvable constraints ==: user.id (is already 'S-1-5-21-*', cannot set to 'xho') (1)](#unsolvable-constraints--userid-is-already-s-1-5-21--cannot-set-to-xho-1)
       1. [Unsolvable constraints wildcard: winlog.event_data.AttributeValue (is already '*827D319E-6EAC-11D2-A4EA-00C04F79F83A*', cannot set to '*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*') (1)](#unsolvable-constraints-wildcard-winlogevent_dataattributevalue-is-already-827d319e-6eac-11d2-a4ea-00c04f79f83a-cannot-set-to-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsolvable constraints wildcard: winlog.event_data.AttributeValue (is already '*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*', cannot set to '*AADCED64-746C-4633-A97C-D61349046527*') (1)](#unsolvable-constraints-wildcard-winlogevent_dataattributevalue-is-already-cab54552-deea-4691-817e-ed4a4d1afc72-cannot-set-to-aadced64-746c-4633-a97c-d61349046527-1)
       1. [Unsolvable constraints: process.name (wildcard(s) both included and excluded: 'rundll32.exe') (1)](#unsolvable-constraints-processname-wildcards-both-included-and-excluded-rundll32exe-1)
@@ -120,9 +121,9 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 ## Generation errors
 
-### Constraints solver not implemented: wildcard (43)
+### Constraints solver not implemented: wildcard (44)
 
-43 rules:
+44 rules:
 * Apple Scripting Execution with Administrator Privileges (rules/macos/privilege_escalation_applescript_with_admin_privs.toml)
 * Attempt to Mount SMB Share via Command Line (rules/macos/lateral_movement_mounting_smb_share.toml)
 * Attempt to Remove File Quarantine Attribute (rules/macos/defense_evasion_attempt_del_quarantine_attrib.toml)
@@ -142,7 +143,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Persistence via WMI Standard Registry Provider (rules/windows/persistence_via_wmi_stdregprov_run_services.toml)
 * Potential Persistence via Time Provider Modification (rules/windows/persistence_time_provider_mod.toml)
 * Potential Port Monitor or Print Processor Registration Abuse (rules/windows/privilege_escalation_port_monitor_print_pocessor_abuse.toml)
-* Potential PrintNightmare Exploit Registry Modification (rules/windows/privilege_escalation_printspooler_malicious_registry_modification.toml)
+* Potential PrintNightmare Exploit Registry Modification (rules/_deprecated/privilege_escalation_printspooler_malicious_registry_modification.toml)
 * Potential Privacy Control Bypass via Localhost Secure Copy (rules/macos/defense_evasion_privilege_escalation_privacy_pref_sshd_fulldiskaccess.toml)
 * Potential SharpRDP Behavior (rules/windows/lateral_movement_rdp_sharprdp_target.toml)
 * PowerShell Script Block Logging Disabled (rules/windows/defense_evasion_disable_posh_scriptblocklogging.toml)
@@ -160,6 +161,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Suspicious Print Spooler Point and Print DLL (rules/windows/privilege_escalation_printspooler_registry_copyfiles.toml)
 * Suspicious Startup Shell Folder Modification (rules/windows/persistence_evasion_registry_startup_shell_folder_modified.toml)
 * Suspicious WMIC XSL Script Execution (rules/windows/defense_evasion_suspicious_wmi_script.toml)
+* Symbolic Link to Shadow Copy Created (rules/windows/credential_access_symbolic_link_to_shadow_copy_created.toml)
 * Uncommon Registry Persistence Change (rules/windows/persistence_registry_uncommon.toml)
 * Unusual Persistence via Services Registry (rules/windows/persistence_services_registry.toml)
 * Unusual Print Spooler Child Process (rules/windows/privilege_escalation_unusual_printspooler_childprocess.toml)
@@ -167,9 +169,17 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Web Application Suspicious Activity: No User Agent (rules/apm/apm_null_user_agent.toml)
 * Windows Defender Disabled via Registry Modification (rules/windows/defense_evasion_defender_disabled_via_registry.toml)
 
-### Root without branches (7)
+### Root without branches (15)
 
-7 rules:
+15 rules:
+* Linux Restricted Shell Breakout via c89/c99 Shell evasion (rules/linux/execution_c89_c99_binary.toml)
+* Linux Restricted Shell Breakout via cpulimit Shell Evasion (rules/linux/execution_cpulimit_binary.toml)
+* Linux Restricted Shell Breakout via flock Shell evasion (rules/linux/execution_flock_binary.toml)
+* Linux Restricted Shell Breakout via the expect command (rules/linux/execution_expect_binary.toml)
+* Linux Restricted Shell Breakout via the find command (rules/linux/execution_find_binary.toml)
+* Linux Restricted Shell Breakout via the gcc command (rules/linux/execution_gcc_binary.toml)
+* Linux Restricted Shell Breakout via the ssh command (rules/linux/execution_ssh_binary.toml)
+* Linux Restricted Shell Breakout via the vi command (rules/linux/execution_vi_binary.toml)
 * Persistence via Login or Logout Hook (rules/macos/persistence_login_logout_hooks_defaults.toml)
 * Potential Admin Group Account Addition (rules/macos/privilege_escalation_local_user_added_to_admin.toml)
 * Potential Hidden Local User Account Creation (rules/macos/persistence_account_creation_hide_at_logon.toml)
@@ -187,16 +197,18 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Suspicious PowerShell Engine ImageLoad (rules/windows/execution_suspicious_powershell_imgload.toml)
 * Whitespace Padding in Process Command Line (rules/windows/defense_evasion_whitespace_padding_in_command_line.toml)
 
-### Constraints solver not implemented: match_only_text (3)
+### Constraints solver not implemented: match_only_text (4)
 
-3 rules:
-* Kerberos Preauthentication Disabled for User (rules/windows/credential_access_disable_kerberos_preauth.toml)
+4 rules:
+* Account configured with never Expiring Password (rules/windows/persistence_dontexpirepasswd_account.toml)
+* Kerberos Pre-authentication Disabled for User (rules/windows/credential_access_disable_kerberos_preauth.toml)
 * Startup/Logon Script added to Group Policy Object (rules/windows/privilege_escalation_group_policy_iniscript.toml)
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall) (rules/windows/defense_evasion_cve_2020_0601.toml)
 
-### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (3)
+### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (4)
 
-3 rules:
+4 rules:
+* AdminSDHolder SDProp Exclusion Added (rules/windows/persistence_sdprop_exclusion_dsheuristics.toml)
 * Image File Execution Options Injection (rules/windows/persistence_evasion_registry_ifeo_injection.toml)
 * Suspicious Execution - Short Program Name (rules/windows/execution_suspicious_short_program_name.toml)
 * Suspicious Process Access via Direct System Call (rules/windows/defense_evasion_suspicious_process_access_direct_syscall.toml)
@@ -212,6 +224,11 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 1 rules:
 * PowerShell Suspicious Script with Audio Capture Capabilities (rules/windows/collection_posh_audio_capture.toml)
+
+### Unsolvable constraints ==: user.id (is already 'S-1-5-21-*', cannot set to 'xho') (1)
+
+1 rules:
+* Potential Remote Credential Access via Registry (rules/windows/credential_access_remote_sam_secretsdump.toml)
 
 ### Unsolvable constraints wildcard: winlog.event_data.AttributeValue (is already '*827D319E-6EAC-11D2-A4EA-00C04F79F83A*', cannot set to '*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*') (1)
 
