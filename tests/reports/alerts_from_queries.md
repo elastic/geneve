@@ -4,7 +4,45 @@ This report captures the unit test queries signals generation coverage.
 Here you can learn what queries are supported.
 
 ## Table of contents
+   1. [Rules with no signals (2)](#rules-with-no-signals-2)
    1. [Rules with the correct signals (48)](#rules-with-the-correct-signals-48)
+
+## Rules with no signals (2)
+
+### Rule 029
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-029
+
+```python
+network where destination.ip == "127.0.0.1" and _meta.index == "test"
+```
+
+```python
+[{'destination': {'ip': '127.0.0.1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+```
+
+
+
+### Rule 045
+
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-045
+
+```python
+sequence
+        [network where _meta.index == "index1" and source.ip != null] by source.ip
+        [network where _meta.index == "index2" and destination.ip != null ] by destination.ip
+```
+
+```python
+[{"_meta": {"index": "index1"}, "event": {"category": ["network"]}, "source": {"ip": "167.158.207.19"}},
+ {"_meta": {"index": "index2"}, "event": {"category": ["network"]}, "destination": {"ip": "167.158.207.19"}}]
+```
+
+
 
 ## Rules with the correct signals (48)
 
@@ -472,11 +510,11 @@ event.category:network and destination.ip:"822e::/16"
 
 
 
-### Rule 029
+### Rule 030
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-029
+Index: geneve-ut-030
 
 ```python
 network where not (source.port > 512 and source.port < 1024)
@@ -489,11 +527,11 @@ network where not (source.port > 512 and source.port < 1024)
 
 
 
-### Rule 030
+### Rule 031
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-030
+Index: geneve-ut-031
 
 ```python
 network where source.port > 512 or source.port < 1024
@@ -506,11 +544,11 @@ network where source.port > 512 or source.port < 1024
 
 
 
-### Rule 031
+### Rule 032
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-031
+Index: geneve-ut-032
 
 ```python
 network where source.port < 2000 and (source.port > 512 or source.port > 1024)
@@ -523,11 +561,11 @@ network where source.port < 2000 and (source.port > 512 or source.port > 1024)
 
 
 
-### Rule 032
+### Rule 033
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-032
+Index: geneve-ut-033
 
 ```python
 network where (source.port > 512 or source.port > 1024) and source.port < 2000
@@ -540,11 +578,11 @@ network where (source.port > 512 or source.port > 1024) and source.port < 2000
 
 
 
-### Rule 033
+### Rule 034
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-033
+Index: geneve-ut-034
 
 ```python
 network where (source.port > 1024 or source.port < 2000) and (source.port < 4000 or source.port > 512)
@@ -559,11 +597,11 @@ network where (source.port > 1024 or source.port < 2000) and (source.port < 4000
 
 
 
-### Rule 034
+### Rule 035
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-034
+Index: geneve-ut-035
 
 ```python
 network where destination.port in (80, 443)
@@ -576,11 +614,11 @@ network where destination.port in (80, 443)
 
 
 
-### Rule 035
+### Rule 036
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-035
+Index: geneve-ut-036
 
 ```python
 process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
@@ -593,24 +631,6 @@ process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
 
 
 
-### Rule 036
-
-Branch count: 3  
-Document count: 3  
-Index: geneve-ut-036
-
-```python
-process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or process.name == "powershell.exe"
-```
-
-```python
-[{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 2}]
-```
-
-
-
 ### Rule 037
 
 Branch count: 3  
@@ -618,7 +638,7 @@ Document count: 3
 Index: geneve-ut-037
 
 ```python
-process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
+process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or process.name == "powershell.exe"
 ```
 
 ```python
@@ -636,7 +656,7 @@ Document count: 3
 Index: geneve-ut-038
 
 ```python
-process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "powershell.exe"
+process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
 ```
 
 ```python
@@ -649,9 +669,27 @@ process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "po
 
 ### Rule 039
 
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-039
+
+```python
+process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "powershell.exe"
+```
+
+```python
+[{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 2}]
+```
+
+
+
+### Rule 040
+
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-039
+Index: geneve-ut-040
 
 ```python
 process where event.type in ("start", "process_started") and process.args : "dump-keychain" and process.args : "-d"
@@ -664,11 +702,11 @@ process where event.type in ("start", "process_started") and process.args : "dum
 
 
 
-### Rule 040
+### Rule 041
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-040
+Index: geneve-ut-041
 
 ```python
 event.type:(start or process_started) and (process.args:"dump-keychain" and process.args:"-d")
@@ -681,11 +719,11 @@ event.type:(start or process_started) and (process.args:"dump-keychain" and proc
 
 
 
-### Rule 041
+### Rule 042
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-041
+Index: geneve-ut-042
 
 ```python
 sequence
@@ -700,11 +738,11 @@ sequence
 
 
 
-### Rule 042
+### Rule 043
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-042
+Index: geneve-ut-043
 
 ```python
 sequence by user.id
@@ -719,11 +757,11 @@ sequence by user.id
 
 
 
-### Rule 043
+### Rule 044
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-043
+Index: geneve-ut-044
 
 ```python
 sequence
@@ -738,11 +776,11 @@ sequence
 
 
 
-### Rule 044
+### Rule 046
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-044
+Index: geneve-ut-046
 
 ```python
 sequence
@@ -759,11 +797,11 @@ sequence
 
 
 
-### Rule 045
+### Rule 047
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-045
+Index: geneve-ut-047
 
 ```python
 sequence by user.id
@@ -780,11 +818,11 @@ sequence by user.id
 
 
 
-### Rule 046
+### Rule 048
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-046
+Index: geneve-ut-048
 
 ```python
 sequence
@@ -805,11 +843,11 @@ sequence
 
 
 
-### Rule 047
+### Rule 049
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-047
+Index: geneve-ut-049
 
 ```python
 sequence by user.id

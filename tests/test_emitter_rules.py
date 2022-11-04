@@ -117,29 +117,30 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         rules = []
         asts = []
         for i, rule in enumerate(collection):
+            index_name = "{:s}-{:03d}".format(self.index_template, i)
+            test_rule = {
+                "rule_id": rule.rule_id,
+                "risk_score": rule.risk_score,
+                "description": rule.description,
+                "name": rule.name,
+                "index": [index_name],
+                "interval": "3s",
+                "from": "now-2h",
+                "severity": rule.severity,
+                "type": rule.type,
+                "query": rule.query,
+                "language": rule.language,
+                "max_signals": 200,
+                "enabled": True,
+                ".test_private": {
+                    "index": index_name,
+                },  # private test data, not sent to Kibana
+            }
             try:
-                asts.append(ast_from_rule(rule))
+                asts.append(ast_from_rule(test_rule))
             except Exception:
                 continue
-            index_name = "{:s}-{:03d}".format(self.index_template, i)
-            rules.append(
-                {
-                    "rule_id": rule.rule_id,
-                    "risk_score": rule.risk_score,
-                    "description": rule.description,
-                    "name": rule.name,
-                    "index": [index_name],
-                    "interval": "3s",
-                    "from": "now-2h",
-                    "severity": rule.severity,
-                    "type": rule.type,
-                    "query": rule.query,
-                    "language": rule.language,
-                    "max_signals": 200,
-                    "enabled": True,
-                    ".test_private": {},  # private test data, not sent to Kibana
-                }
-            )
+            rules.append(test_rule)
         return rules, asts
 
     ack_no_signals = 5
