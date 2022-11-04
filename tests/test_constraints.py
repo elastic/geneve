@@ -348,6 +348,12 @@ constraints_long_exceptions = [
     ),
 ]
 
+constraints_geo_point = []
+
+constraints_geo_point_cardinality = []
+
+constraints_geo_point_exceptions = []
+
 constraints_ip = [
     ([], {"value": "107.31.65.130"}),
     (
@@ -970,6 +976,26 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_long_cardinality):
+            with self.subTest(constraints, i=i):
+                c = Constraints()
+                self.assertEqual(test_values, [solver(c, "test_var", None, constraints) for _ in test_values])
+
+    def test_geo_point(self):
+        solver = Constraints.solve_geo_point_constraints
+
+        for i, (constraints, test_value) in enumerate(constraints_geo_point):
+            with self.subTest(constraints, i=i):
+                c = Constraints()
+                self.assertEqual(test_value, solver(c, "test_var", None, constraints))
+
+        for i, (constraints, msg) in enumerate(constraints_geo_point_exceptions + constraints_exceptions):
+            with self.subTest(constraints, i=i):
+                with self.assertRaises(ValueError, msg=msg) as cm:
+                    c = Constraints()
+                    self.assertEqual(None, solver(c, "test_var", None, constraints))
+                self.assertEqual(msg, str(cm.exception))
+
+        for i, (constraints, test_values) in enumerate(constraints_geo_point_cardinality):
             with self.subTest(constraints, i=i):
                 c = Constraints()
                 self.assertEqual(test_values, [solver(c, "test_var", None, constraints) for _ in test_values])
