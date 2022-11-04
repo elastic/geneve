@@ -66,30 +66,8 @@ jobs:
           - 8.4.0
           - 8.3.0
           - 8.2.0
-          - 8.1.0
         schema-uri: ["./etc/ecs-8.1.0.tar.gz"]
         detection-rules-uri: ["./etc/detection-rules-8.1.0.tar.gz"]
-        signals_queries: [1]
-        signals_rules: [1]
-
-        include:
-          - stack-version: "7.17.0"
-            schema-uri: "./etc/ecs-8.1.0.tar.gz"
-            detection-rules-uri: "./etc/detection-rules-8.1.0.tar.gz"
-            signals_queries: 1
-            signals_rules: 0  # https://github.com/elastic/geneve/issues/28
-
-          - stack-version: "7.16.0"
-            schema-uri: "./etc/ecs-8.1.0.tar.gz"
-            detection-rules-uri: "./etc/detection-rules-8.1.0.tar.gz"
-            signals_queries: 1
-            signals_rules: 0  # https://github.com/elastic/geneve/issues/28
-
-          - stack-version: "7.15.0"
-            schema-uri: "./etc/ecs-8.1.0.tar.gz"
-            detection-rules-uri: "./etc/detection-rules-8.1.0.tar.gz"
-            signals_queries: 1
-            signals_rules: 1
 
     env:
       TEST_ELASTICSEARCH_URL: "http://elastic:changeme@localhost:29650"
@@ -159,8 +137,8 @@ jobs:
         env:
           TEST_SCHEMA_URI: ${{ matrix.schema-uri }}
           TEST_DETECTION_RULES_URI: ${{ matrix.detection-rules-uri }}
-          TEST_SIGNALS_QUERIES: ${{ matrix.signals_queries }}
-          TEST_SIGNALS_RULES: ${{ matrix.signals_rules }}
+          TEST_SIGNALS_QUERIES: 1
+          TEST_SIGNALS_RULES: 1
           TEST_ELASTICSEARCH_URL: "http://localhost:9280"
         run: make online-tests
 
