@@ -58,6 +58,8 @@ func Ponder(refl *Reflection) {
 		return
 	}
 
+	logger.Println(refl)
+
 	index, call, _ := splitPath(refl.URL.Path)
 	search := -1
 
