@@ -63,6 +63,12 @@ def match_wildcards(values, wildcards):
     return any(fnmatch(v, wc) for v in values for wc in wildcards)
 
 
+def match_nets(values, nets):
+    if type(values) != list:
+        values = [values]
+    return any(v in net for v in values for net in nets)
+
+
 def expand_wildcards(value, allowed_chars):
     chars = []
     for c in list(value):
@@ -310,9 +316,12 @@ class Constraints:
                 except ValueError:
                     pass
                 else:
-                    if value is not None and value != v:
+                    if type(value) == list:
+                        value.extend(v if type(v) == list else [v])
+                    elif value is None or value == v:
+                        value = v
+                    else:
                         raise ConflictError(f"is already {value}, cannot set to {v}", field, k)
-                    value = v
                     continue
                 try:
                     include_nets.add(ipaddress.ip_network(v))
@@ -347,13 +356,13 @@ class Constraints:
         if include_nets & exclude_nets:
             intersecting_nets = ", ".join(str(net) for net in sorted(include_nets & exclude_nets))
             raise ConflictError(f"net(s) both included and excluded: {intersecting_nets}", field)
-        if value is not None and value in exclude_addrs:
+        if value is not None and exclude_addrs and set(value if type(value) == list else [value]) & exclude_addrs:
             if len(exclude_addrs) == 1:
                 raise ConflictError(f"cannot be {exclude_addrs.pop()}", field)
             else:
                 exclude_addrs = ", ".join(str(v) for v in sorted(exclude_addrs))
                 raise ConflictError(f"cannot be any of ({exclude_addrs})", field)
-        if value is not None and any(value in net for net in exclude_nets):
+        if value is not None and exclude_nets and match_nets(value, exclude_nets):
             if len(exclude_nets) == 1:
                 raise ConflictError(f"cannot be in net {exclude_nets.pop()}", field)
             else:
@@ -361,15 +370,21 @@ class Constraints:
                 raise ConflictError(f"cannot be in any of nets ({exclude_nets})", field)
         ip_versions = sorted(ip.version for ip in include_nets | exclude_nets | exclude_addrs) or [4]
         include_nets = sorted(include_nets, key=lambda x: (x.version, x))
-        while left_attempts and (value is None or value in exclude_addrs or any(value in net for net in exclude_nets)):
+        while left_attempts and (
+            value in (None, [])
+            or set(value if type(value) == list else [value]) & exclude_addrs  # noqa: W503
+            or match_nets(value, exclude_nets)
+        ):  # noqa: W503
             if include_nets:
                 net = random.choice(include_nets)
-                value = net[random.randrange(net.num_addresses)]
+                v = net[random.randrange(net.num_addresses)]
             else:
                 bits = 128 if random.choice(ip_versions) == 6 else 32
-                value = ipaddress.ip_address(random.randrange(1, 2**bits))
+                v = ipaddress.ip_address(random.randrange(1, 2**bits))
+            value = [v] if type(value) == list else v
             left_attempts -= 1
-        return {"value": value.compressed, "left_attempts": left_attempts}
+        value = [v.compressed for v in value] if type(value) == list else v.compressed
+        return {"value": value, "left_attempts": left_attempts}
 
     @solver("keyword", "==", "!=", "wildcard", "not wildcard", "min_length", "allowed_chars")
     def solve_keyword_constraints(self, field, value, constraints, left_attempts):

@@ -4,9 +4,9 @@ This report captures the unit test queries signals generation coverage.
 Here you can learn what queries are supported.
 
 ## Table of contents
-   1. [Rules with the correct signals (48)](#rules-with-the-correct-signals-48)
+   1. [Rules with the correct signals (53)](#rules-with-the-correct-signals-53)
 
-## Rules with the correct signals (48)
+## Rules with the correct signals (53)
 
 ### Rule 000
 
@@ -383,11 +383,11 @@ Document count: 1
 Index: geneve-ut-023
 
 ```python
-network where destination.ip == "127.0.0.1"
+process where process.args != null
 ```
 
 ```python
-[{'destination': {'ip': '127.0.0.1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'process': {'args': ['ZFy']}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -399,11 +399,11 @@ Document count: 1
 Index: geneve-ut-024
 
 ```python
-network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
+process where process.args : "-f" and process.args == "-r"
 ```
 
 ```python
-[{'destination': {'ip': '192.168.214.62'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'process': {'args': ['-f', '-r']}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -415,11 +415,11 @@ Document count: 1
 Index: geneve-ut-025
 
 ```python
-network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
+network where destination.ip == "127.0.0.1"
 ```
 
 ```python
-[{'destination': {'ip': '107.31.65.130'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'destination': {'ip': '127.0.0.1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -431,11 +431,11 @@ Document count: 1
 Index: geneve-ut-026
 
 ```python
-network where destination.ip == "::1"
+network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 ```
 
 ```python
-[{'destination': {'ip': '::1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'destination': {'ip': '192.168.214.62'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -447,11 +447,11 @@ Document count: 1
 Index: geneve-ut-027
 
 ```python
-network where destination.ip == "822e::/16"
+network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 ```
 
 ```python
-[{'destination': {'ip': '822e:c14a:e6ea:94e4:e5ac:b58c:1b43:3a53'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'destination': {'ip': '107.31.65.130'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -463,6 +463,54 @@ Document count: 1
 Index: geneve-ut-028
 
 ```python
+network where destination.ip != null
+```
+
+```python
+[{'destination': {'ip': '107.31.65.130'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+```
+
+
+
+### Rule 029
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-029
+
+```python
+network where destination.ip == "::1"
+```
+
+```python
+[{'destination': {'ip': '::1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+```
+
+
+
+### Rule 030
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-030
+
+```python
+network where destination.ip == "822e::/16"
+```
+
+```python
+[{'destination': {'ip': '822e:c14a:e6ea:94e4:e5ac:b58c:1b43:3a53'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+```
+
+
+
+### Rule 031
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-031
+
+```python
 event.category:network and destination.ip:"822e::/16"
 ```
 
@@ -472,11 +520,43 @@ event.category:network and destination.ip:"822e::/16"
 
 
 
-### Rule 029
+### Rule 032
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-032
+
+```python
+network where host.ip != null
+```
+
+```python
+[{'host': {'ip': ['107.31.65.130']}, 'event': {'category': ['network']}, '@timestamp': 0}]
+```
+
+
+
+### Rule 033
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-033
+
+```python
+event.category:network and host.ip:"822e::/96"
+```
+
+```python
+[{'event': {'category': ['network']}, 'host': {'ip': ['822e::e6ea:94e4']}, '@timestamp': 0}]
+```
+
+
+
+### Rule 034
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-029
+Index: geneve-ut-034
 
 ```python
 network where not (source.port > 512 and source.port < 1024)
@@ -489,11 +569,11 @@ network where not (source.port > 512 and source.port < 1024)
 
 
 
-### Rule 030
+### Rule 035
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-030
+Index: geneve-ut-035
 
 ```python
 network where source.port > 512 or source.port < 1024
@@ -506,11 +586,11 @@ network where source.port > 512 or source.port < 1024
 
 
 
-### Rule 031
+### Rule 036
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-031
+Index: geneve-ut-036
 
 ```python
 network where source.port < 2000 and (source.port > 512 or source.port > 1024)
@@ -523,11 +603,11 @@ network where source.port < 2000 and (source.port > 512 or source.port > 1024)
 
 
 
-### Rule 032
+### Rule 037
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-032
+Index: geneve-ut-037
 
 ```python
 network where (source.port > 512 or source.port > 1024) and source.port < 2000
@@ -540,11 +620,11 @@ network where (source.port > 512 or source.port > 1024) and source.port < 2000
 
 
 
-### Rule 033
+### Rule 038
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-033
+Index: geneve-ut-038
 
 ```python
 network where (source.port > 1024 or source.port < 2000) and (source.port < 4000 or source.port > 512)
@@ -559,11 +639,11 @@ network where (source.port > 1024 or source.port < 2000) and (source.port < 4000
 
 
 
-### Rule 034
+### Rule 039
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-034
+Index: geneve-ut-039
 
 ```python
 network where destination.port in (80, 443)
@@ -576,11 +656,11 @@ network where destination.port in (80, 443)
 
 
 
-### Rule 035
+### Rule 040
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-035
+Index: geneve-ut-040
 
 ```python
 process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
@@ -593,11 +673,11 @@ process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
 
 
 
-### Rule 036
+### Rule 041
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-036
+Index: geneve-ut-041
 
 ```python
 process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or process.name == "powershell.exe"
@@ -611,11 +691,11 @@ process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or pro
 
 
 
-### Rule 037
+### Rule 042
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-037
+Index: geneve-ut-042
 
 ```python
 process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
@@ -629,11 +709,11 @@ process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
 
 
 
-### Rule 038
+### Rule 043
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-038
+Index: geneve-ut-043
 
 ```python
 process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "powershell.exe"
@@ -647,11 +727,11 @@ process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "po
 
 
 
-### Rule 039
+### Rule 044
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-039
+Index: geneve-ut-044
 
 ```python
 process where event.type in ("start", "process_started") and process.args : "dump-keychain" and process.args : "-d"
@@ -664,11 +744,11 @@ process where event.type in ("start", "process_started") and process.args : "dum
 
 
 
-### Rule 040
+### Rule 045
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-040
+Index: geneve-ut-045
 
 ```python
 event.type:(start or process_started) and (process.args:"dump-keychain" and process.args:"-d")
@@ -681,11 +761,11 @@ event.type:(start or process_started) and (process.args:"dump-keychain" and proc
 
 
 
-### Rule 041
+### Rule 046
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-041
+Index: geneve-ut-046
 
 ```python
 sequence
@@ -700,11 +780,11 @@ sequence
 
 
 
-### Rule 042
+### Rule 047
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-042
+Index: geneve-ut-047
 
 ```python
 sequence by user.id
@@ -719,11 +799,11 @@ sequence by user.id
 
 
 
-### Rule 043
+### Rule 048
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-043
+Index: geneve-ut-048
 
 ```python
 sequence
@@ -738,11 +818,11 @@ sequence
 
 
 
-### Rule 044
+### Rule 049
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-044
+Index: geneve-ut-049
 
 ```python
 sequence
@@ -759,11 +839,11 @@ sequence
 
 
 
-### Rule 045
+### Rule 050
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-045
+Index: geneve-ut-050
 
 ```python
 sequence by user.id
@@ -780,11 +860,11 @@ sequence by user.id
 
 
 
-### Rule 046
+### Rule 051
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-046
+Index: geneve-ut-051
 
 ```python
 sequence
@@ -805,11 +885,11 @@ sequence
 
 
 
-### Rule 047
+### Rule 052
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-047
+Index: geneve-ut-052
 
 ```python
 sequence by user.id

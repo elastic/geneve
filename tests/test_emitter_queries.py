@@ -151,6 +151,14 @@ mono_branch_mono_doc = {
     """: [
         [{"event": {"category": ["process"]}, "process": {"name": "LeneQZk.EXE"}}],
     ],
+    """process where process.args != null
+    """: [
+        [{"event": {"category": ["process"]}, "process": {"args": ["CJI"]}}],
+    ],
+    """process where process.args : "-f" and process.args == "-r"
+    """: [
+        [{"event": {"category": ["process"]}, "process": {"args": ["-f", "-r"]}}],
+    ],
     """network where destination.ip == "127.0.0.1"
     """: [
         [{"event": {"category": ["network"]}, "destination": {"ip": "127.0.0.1"}}],
@@ -163,6 +171,10 @@ mono_branch_mono_doc = {
     """: [
         [{"event": {"category": ["network"]}, "destination": {"ip": "0.225.250.37"}}],
     ],
+    """network where destination.ip != null
+    """: [
+        [{"event": {"category": ["network"]}, "destination": {"ip": "143.174.17.137"}}],
+    ],
     """network where destination.ip == "::1"
     """: [
         [{"event": {"category": ["network"]}, "destination": {"ip": "::1"}}],
@@ -174,6 +186,14 @@ mono_branch_mono_doc = {
     """event.category:network and destination.ip:"822e::/16"
     """: [
         [{"event": {"category": ["network"]}, "destination": {"ip": "822e:f477:4aa3:d9c5:7494:c408:2f13:daeb"}}],
+    ],
+    """network where host.ip != null
+    """: [
+        [{"event": {"category": ["network"]}, "host": {"ip": ["238.136.72.63"]}}],
+    ],
+    """event.category:network and host.ip:"822e::/96"
+    """: [
+        [{"event": {"category": ["network"]}, "host": {"ip": ["822e::c0f6:4909"]}}],
     ],
 }
 
