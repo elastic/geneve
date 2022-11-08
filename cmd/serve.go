@@ -20,6 +20,7 @@ package cmd
 import (
 	"log"
 	"os"
+	"runtime"
 
 	_ "github.com/elastic/geneve/cmd/geneve/flow"
 	_ "github.com/elastic/geneve/cmd/geneve/schema"
@@ -52,7 +53,7 @@ var serveCmd = &cobra.Command{
 		reflections := make(chan *grasp.Reflection, 3)
 		wg := &utils.WaitGroup{}
 
-		wg.Go(3, func() {
+		wg.Go(runtime.NumCPU(), func() {
 			for refl := range reflections {
 				grasp.Ponder(refl)
 			}
