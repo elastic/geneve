@@ -41,10 +41,10 @@ type Params struct {
 type State struct {
 	stop chan<- any
 
-	Alive              bool    `yaml:"alive"`
-	Documents          int     `yaml:"documents"`
-	DocumentsPerSecond int     `yaml:"documents_per_second"`
-	Errors             []error `yaml:"errors,omitempty"`
+	Alive              bool     `yaml:"alive"`
+	Documents          int      `yaml:"documents"`
+	DocumentsPerSecond int      `yaml:"documents_per_second"`
+	Errors             []string `yaml:"errors,omitempty"`
 }
 
 type Flow struct {
@@ -69,7 +69,7 @@ func (f *Flow) MarshalYAML() (any, error) {
 	}
 
 	if len(f.state.Errors) > 0 {
-		out.State.Errors = make([]error, len(f.state.Errors))
+		out.State.Errors = make([]string, len(f.state.Errors))
 		copy(out.State.Errors, f.state.Errors)
 	}
 
@@ -93,7 +93,7 @@ func (f *Flow) rateError(err error) bool {
 	f.stateMu.Lock()
 	defer f.stateMu.Unlock()
 
-	f.state.Errors = append(f.state.Errors, err)
+	f.state.Errors = append(f.state.Errors, err.Error())
 	return true
 }
 

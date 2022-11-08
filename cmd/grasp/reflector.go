@@ -61,8 +61,6 @@ func StartReflector(addr, remote string, reflections chan<- *Reflection) error {
 			return
 		}
 
-		logger.Println(refl)
-
 		select {
 		case reflections <- refl:
 		default:
