@@ -81,21 +81,22 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	var count int64 = 1
-	var err error
+	count := 1
+	batch := 10
 
 	val := req.Form.Get("count")
 	if val != "" {
-		count, err = strconv.ParseInt(val, 10, 0)
+		c, err := strconv.ParseInt(val, 10, 0)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		if count <= 0 {
+		if c <= 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "Count value must be greater than 0: %d\n", count)
 			return
 		}
+		count = int(c)
 	}
 
 	parts := strings.Split(req.URL.Path, "/")
@@ -128,21 +129,27 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 
 	switch endpoint {
 	case "_generate":
-		docs, err := e.Source.Emit(int(count))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 		w.Header()["Content-Type"] = []string{"application/json"}
 		fmt.Fprintf(w, "[")
-		for i, doc := range docs {
-			if i > 0 {
-				fmt.Fprintf(w, ",")
+		for i := 0; i < count; i += batch {
+			if batch > count-i {
+				batch = count - i
 			}
-			fmt.Fprintf(w, doc)
+			docs, err := e.Source.Emit(batch)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			for j, doc := range docs {
+				if i+j > 0 {
+					fmt.Fprintf(w, ",")
+				}
+				fmt.Fprintf(w, doc)
+			}
 		}
 		fmt.Fprintf(w, "]")
 		return
+
 	case "_mappings":
 		mappings, err := e.Source.Mappings()
 		if err != nil {
