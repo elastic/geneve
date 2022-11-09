@@ -436,6 +436,7 @@ exceptions = {
 cardinality = [
     (
         """process where process.pid > 0 and process.pid < 100 and _cardinality(process.pid, 0)""",
+        1,
         [
             [{"event": {"category": ["process"]}, "process": {"pid": 35}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 64}}],
@@ -448,6 +449,7 @@ cardinality = [
     ),
     (
         """process where process.pid > 0 and process.pid < 100 and _cardinality(process.pid, 1)""",
+        1,
         [
             [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
@@ -460,18 +462,21 @@ cardinality = [
     ),
     (
         """process where process.pid > 0 and process.pid < 100 and _cardinality(process.pid, 2)""",
+        1,
         [
-            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
         ],
     ),
     (
         """network where source.ip == "10.0.0.0/24" and _cardinality(source.ip, 2)""",
+        1,
         [
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
@@ -484,6 +489,7 @@ cardinality = [
     ),
     (
         """network where destination.ip == "1::/112" and _cardinality(destination.ip, 3)""",
+        1,
         [
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14"}}],
@@ -496,6 +502,7 @@ cardinality = [
     ),
     (
         """process where _cardinality(process.name, 3)""",
+        1,
         [
             [{"event": {"category": ["process"]}, "process": {"name": "tQY"}}],
             [{"event": {"category": ["process"]}, "process": {"name": "FmB"}}],
@@ -507,15 +514,47 @@ cardinality = [
         ],
     ),
     (
-        """network where _cardinality(source.ip, 2) and _cardinality(destination.ip, 3)""",
+        """network where destination.port in (22, 443) and _cardinality(destination.ip, 1)""",
+        2,
         [
-            [{"event": {"category": ["network"]}, "source": {"ip": "226.91.52.159"}, "destination": {"ip": "187.226.126.29"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "226.91.52.159"}, "destination": {"ip": "163.166.219.79"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "87.136.142.84"}, "destination": {"ip": "187.226.126.29"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "87.136.142.84"}, "destination": {"ip": "187.226.126.29"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "226.91.52.159"}, "destination": {"ip": "226.91.52.159"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "87.136.142.84"}, "destination": {"ip": "163.166.219.79"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "87.136.142.84"}, "destination": {"ip": "163.166.219.79"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 443}}],
+        ],
+    ),
+    (
+        """network where destination.port in (22, 443) and _cardinality(destination.ip, 2)""",
+        2,
+        [
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 443}}],
+        ],
+    ),
+    (
+        """network where destination.port in (22, 443) and _cardinality(destination.ip, 3)""",
+        2,
+        [
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 443}}],
         ],
     ),
 ]
@@ -710,9 +749,9 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         """
             )
         )
-        for i, (query, docs) in enumerate(cardinality):
+        for i, (query, branches, docs) in enumerate(cardinality):
             with self.subTest(query, i=i):
-                self.assertQuery(query, docs, len(docs))
+                self.assertQuery(query, docs, int(len(docs) / branches))
                 cells.append(self.query_cell(query, docs, len(docs)))
 
     @nb.chapter("## Any oddities?")
