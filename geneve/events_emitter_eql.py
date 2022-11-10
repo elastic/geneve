@@ -171,8 +171,10 @@ def cc_join_branch(seq: List[Tuple[Constraints, List[str]]]) -> Branch:
     for join_col in zip(*join_rows):
         field0 = None
         for field, c in join_col:
-            field0 = field0 or field
-            constraints[0].append_constraint(field0, "join_value", (field, c))
+            if field0 is None:
+                field0 = field
+            else:
+                constraints[0].append_constraint(field0, "join_value", (field, c))
     return Branch(constraints)
 
 

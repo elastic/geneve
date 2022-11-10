@@ -950,6 +950,13 @@ constraints_exceptions = [
         ],
         """Too many arguments for cardinality of 'test_var': (0, 1)""",
     ),
+    (
+        [
+            ("cardinality", 1),
+            ("cardinality", 0),
+        ],
+        "Unsolvable constraints cardinality: test_var (is already 1, cannot set to 0)",
+    ),
 ]
 
 

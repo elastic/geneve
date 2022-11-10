@@ -557,6 +557,55 @@ cardinality = [
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 443}}],
         ],
     ),
+    (
+        """sequence
+            [network where _cardinality(destination.ip, 1) and destination.port < 1024] by destination.ip, destination.port
+            [network where _cardinality(destination.ip, 2) and destination.port > 1024] by source.ip, source.port
+        """,
+        1,
+        [
+            [
+                {"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 265}},
+                {
+                    "event": {"category": ["network"]},
+                    "source": {"ip": "1::f09b", "port": 265},
+                    "destination": {"ip": "1::1cf0", "port": 22623},
+                },
+            ],
+            [
+                {"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 691}},
+                {
+                    "event": {"category": ["network"]},
+                    "source": {"ip": "1::f09b", "port": 691},
+                    "destination": {"ip": "1::1cf0", "port": 57576},
+                },
+            ],
+            [
+                {"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 173}},
+                {
+                    "event": {"category": ["network"]},
+                    "source": {"ip": "1::f09b", "port": 173},
+                    "destination": {"ip": "1::1cf0", "port": 3897},
+                },
+            ],
+            [
+                {"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 685}},
+                {
+                    "event": {"category": ["network"]},
+                    "source": {"ip": "1::f09b", "port": 685},
+                    "destination": {"ip": "1::f09b", "port": 58442},
+                },
+            ],
+            [
+                {"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 929}},
+                {
+                    "event": {"category": ["network"]},
+                    "source": {"ip": "1::f09b", "port": 929},
+                    "destination": {"ip": "1::1cf0", "port": 54423},
+                },
+            ],
+        ],
+    ),
 ]
 
 

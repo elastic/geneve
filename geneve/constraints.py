@@ -128,7 +128,11 @@ class solver:  # noqa: N801
                         if len(v) > 1:
                             raise ValueError(f"Too many arguments for cardinality of '{field}': {v}")
                         v = v[0]
-                    cardinality = int(v)
+                    v = int(v)
+                    if not cardinality or cardinality == v:
+                        cardinality = v
+                    else:
+                        raise ConflictError(f"is already {cardinality}, cannot set to {v}", field, k)
                     history = cls.fields_history.setdefault(field, [])
             if max_attempts is None:
                 max_attempts = _max_attempts
