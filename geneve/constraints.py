@@ -303,11 +303,12 @@ class Constraints:
             left_attempts -= 1
         return {"value": value, "left_attempts": left_attempts}
 
-    @solver("ip", "==", "!=", "in", "not in")
+    @solver("ip", "==", "!=", "in", "not in", "version")
     def solve_ip_constraints(self, field, value, constraints, left_attempts):
         include_nets = set()
         exclude_nets = set()
         exclude_addrs = set()
+        ip_versions = []
 
         for k, v, *_ in constraints:
             if k == "==":
@@ -353,6 +354,16 @@ class Constraints:
                         exclude_nets.add(ipaddress.ip_network(str(v)))
                     except ValueError:
                         raise ValueError(f"Not an IP network: {str(v)}")
+            elif k == "version":
+                if type(v) is tuple:
+                    if len(v) > 1:
+                        raise ValueError(f"Too many arguments for version of '{field}': {v}")
+                    v = v[0]
+                v = int(v)
+                if v not in (4, 6):
+                    raise ValueError(f"Not an valid IP version: {v}")
+                if v not in ip_versions:
+                    ip_versions = sorted(ip_versions + [v])
 
         if include_nets & exclude_nets:
             intersecting_nets = ", ".join(str(net) for net in sorted(include_nets & exclude_nets))
@@ -369,7 +380,8 @@ class Constraints:
             else:
                 exclude_nets = ", ".join(str(v) for v in sorted(exclude_nets))
                 raise ConflictError(f"cannot be in any of nets ({exclude_nets})", field)
-        ip_versions = sorted(ip.version for ip in include_nets | exclude_nets | exclude_addrs) or [4]
+        if not ip_versions:
+            ip_versions = sorted(ip.version for ip in include_nets | exclude_nets | exclude_addrs) or [4]
         include_nets = sorted(include_nets, key=lambda x: (x.version, x))
         while left_attempts and (
             value in (None, [])

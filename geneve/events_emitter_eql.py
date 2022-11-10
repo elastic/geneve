@@ -201,6 +201,8 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool) -> Root:
         return cc_function(node, negate, "in")
     elif fn_name == "_cardinality":
         return cc_function(node, negate, "cardinality")
+    elif fn_name == "_version":
+        return cc_function(node, negate, "version")
     else:
         raise NotImplementedError(f"Unsupported function: {node.name}")
 
