@@ -161,6 +161,7 @@ class Constraints:
     def clone(self):
         c = Constraints()
         c.__constraints = copy.deepcopy(self.__constraints)
+        c.fields_history = self.fields_history
         return c
 
     def append_constraint(self, field, name=None, value=None, flags=None):
