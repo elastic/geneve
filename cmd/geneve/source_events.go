@@ -18,9 +18,14 @@
 package geneve
 
 import (
+	"fmt"
+
 	"github.com/elastic/geneve/cmd/geneve/schema"
 	"github.com/elastic/geneve/cmd/internal/python"
+	"golang.org/x/mod/semver"
 )
+
+var Version = "0.0.3"
 
 type SourceEvents struct {
 	o            *python.PyObject
@@ -106,5 +111,48 @@ func ImportModule() (*python.PyObject, error) {
 		}
 	}
 
-	return python.PyImport_Import("geneve")
+	o_geneve, err := python.PyImport_Import("geneve")
+	if err != nil {
+		return nil, err
+	}
+	defer o_geneve.DecRef()
+
+	o_geneve_version, err := o_geneve.GetAttrString("version")
+	if err != nil {
+		return nil, err
+	}
+	defer o_geneve_version.DecRef()
+
+	module_version, err := o_geneve_version.Str()
+	if err != nil {
+		return nil, err
+	}
+
+	module_version = "v" + module_version
+	if !semver.IsValid(module_version) {
+		return nil, fmt.Errorf("Module version is not valid: %s", module_version)
+	}
+	module_mm := semver.MajorMinor(module_version)
+
+	app_version := "v" + Version
+	if !semver.IsValid(app_version) {
+		return nil, fmt.Errorf("Application version is not valid: %s", app_version)
+	}
+	app_mm := semver.MajorMinor(app_version)
+
+	if module_mm != app_mm {
+		return nil, fmt.Errorf("version mismatch: %s is not a %s.x", module_version, app_mm)
+	}
+
+	o_geneve.IncRef()
+	return o_geneve, nil
+}
+
+func ModuleCheck() error {
+	o_geneve, err := ImportModule()
+	if err != nil {
+		return err
+	}
+	o_geneve.DecRef()
+	return nil
 }

@@ -22,6 +22,7 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/elastic/geneve/cmd/geneve"
 	_ "github.com/elastic/geneve/cmd/geneve/flow"
 	_ "github.com/elastic/geneve/cmd/geneve/schema"
 	_ "github.com/elastic/geneve/cmd/geneve/sink"
@@ -61,6 +62,9 @@ var serveCmd = &cobra.Command{
 
 		if err := python.StartMonitor(); err != nil {
 			log.Fatal(err)
+		}
+		if err := geneve.ModuleCheck(); err != nil {
+			log.Fatalf("Could not load Python module: %s", err.Error())
 		}
 		if err := control.StartServer(port); err != nil {
 			log.Fatal(err)
