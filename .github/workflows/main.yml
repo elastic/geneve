@@ -265,9 +265,6 @@ jobs:
       - name: Install package
         run: make -f code/Makefile pkg-install
 
-      - name: Test package
-        run: make -f code/Makefile pkg-tests
-
   publish:
     name: Publish
     runs-on: ubuntu-latest

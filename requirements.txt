@@ -1,6 +1,5 @@
 black
 build
-click
 elasticsearch>=8.2.0
 eql>=0.9.12
 isort

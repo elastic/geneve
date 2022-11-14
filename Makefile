@@ -78,21 +78,11 @@ pkg-build:
 pkg-install:
 	$(PYTHON) -m pip install --force-reinstall dist/geneve-*.whl
 
-pkg-tests: GENEVE := $(ACTIVATE)geneve
-pkg-tests:
-	$(GENEVE) --version
-	$(GENEVE) --help
-	$(GENEVE)
-	$(GENEVE) stack --help
-	$(GENEVE) stack
-	$(GENEVE) stack -d -v
-
 package: VENV := .venv-test
 package: pkg-build
 	rm -rf $(VENV)
 	$(PYTHON) -mvenv $(VENV)
 	$(MAKE) pkg-install VENV=$(VENV)
-	$(MAKE) pkg-tests VENV=$(VENV)
 	rm -rf $(VENV)
 
 CREDS_FILE=credentials-cloud-stack.json
