@@ -25,7 +25,7 @@ import (
 	"golang.org/x/mod/semver"
 )
 
-var Version = "0.0.3"
+var Version = "0.1.0"
 
 type SourceEvents struct {
 	o            *python.PyObject
