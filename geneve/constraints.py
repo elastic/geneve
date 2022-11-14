@@ -303,6 +303,13 @@ class Constraints:
             left_attempts -= 1
         return {"value": value, "left_attempts": left_attempts}
 
+    @solver("geo_point")
+    def solve_geo_point_constraints(self, field, value, constraints, left_attempts):
+        if left_attempts and value is None:
+            value = [0, 0]
+            left_attempts -= 1
+        return {"value": value, "left_attempts": left_attempts}
+
     @solver("ip", "==", "!=", "in", "not in")
     def solve_ip_constraints(self, field, value, constraints, left_attempts):
         include_nets = set()
