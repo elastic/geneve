@@ -41,11 +41,14 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		python.Py_Initialize()
 
+		fmt.Printf("Geneve:\n  version: %s\n\n", geneve.Version)
 		fmt.Println("Geneve Python module:")
+
+		compatible := false
 
 		o_geneve, err := geneve.ImportModule()
 		if err != nil {
-			fmt.Println("  Could not load")
+			fmt.Printf("  %s\n", err.Error())
 		} else {
 			defer o_geneve.DecRef()
 
@@ -60,6 +63,8 @@ var versionCmd = &cobra.Command{
 			s_geneve_path, err := o_geneve_path.Str()
 			exitIfError(err)
 			fmt.Printf("  path: %s\n", filepath.Dir(s_geneve_path))
+
+			compatible = true
 		}
 
 		fmt.Println("\nEmbedded Python interpreter:")
@@ -80,6 +85,10 @@ var versionCmd = &cobra.Command{
 		fmt.Printf("  paths:\n")
 		for _, name := range path_names {
 			fmt.Printf("    %s: %s\n", name, paths[name])
+		}
+
+		if !compatible {
+			os.Exit(1)
 		}
 	},
 }

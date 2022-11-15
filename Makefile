@@ -59,6 +59,10 @@ gnv: main.go $(call rwildcard,cmd,*.go)
 
 cli-build: gnv
 	./gnv version
+	@if [ $$(./gnv version | grep "version:" | head -2 | sort | uniq | wc -l) -ne 1 ]; then \
+		echo "\nApplication and module versions do not match"; \
+		false; \
+	fi
 
 cli-lint:
 	go vet .
