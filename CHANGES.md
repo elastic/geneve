@@ -1,3 +1,9 @@
+## v0.1.1 - Nov 16, 2022
+
+Service release to improve the CI/CD pipeline.
+
+* Upload the Python source distribution (sdist) to PyPI, needed by the Homebrew formula.
+
 ## v0.1.0 - Nov 15, 2022
 
 First documented release. What you can do with it:
