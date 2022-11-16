@@ -232,7 +232,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: python-package-${{ matrix.python-version }}-${{ matrix.os }}
-          path: dist/geneve-*.whl
+          path: dist/*
 
   package-tests:
     name: Package tests (${{ matrix.os }}/py-${{ matrix.python-version }})
