@@ -41,7 +41,7 @@ def resource(uri, basedir=None, cachedir=None):
     import requests
 
     with tempdir() as tmpdir:
-        uri_parts = urlparse(uri)
+        uri_parts = urlparse(str(uri))
         if uri_parts.scheme.startswith("http"):
             uri_file = uri_parts.path.split("/")[-1]
             uri_dir = Path(cachedir or tmpdir)
