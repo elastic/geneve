@@ -24,7 +24,7 @@ from itertools import chain
 
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
 from .events_emitter_eql import get_ast_stats  # noqa: F401
-from .utils import deep_merge
+from .utils import deep_merge, es
 
 __all__ = ("SourceEvents",)
 
@@ -83,20 +83,6 @@ def ast_from_rule(rule):
         return ast_from_kql_query(rule.query)
     else:
         raise NotImplementedError(f"Unsupported query language: {rule.language}")
-
-
-def emit_mappings(fields, schema):
-    mappings = {}
-    for field in fields:
-        try:
-            field_type = schema[field]["type"]
-        except KeyError:
-            field_type = "keyword"
-        value = {"type": field_type}
-        for part in reversed(field.split(".")):
-            value = {"properties": {part: value}}
-        deep_merge(mappings, value)
-    return mappings
 
 
 def emit_field(field, value):
@@ -170,7 +156,7 @@ class SourceEvents:
 
     def mappings(self, root=None):
         fields = self.fields() if root is None else root.fields()
-        return emit_mappings(fields, self.schema)
+        return es.mappings(fields, self.schema)
 
     def roots(self):
         return iter(self.__roots)
