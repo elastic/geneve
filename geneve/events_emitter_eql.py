@@ -188,12 +188,6 @@ def cc_sequence(node: eql.ast.Sequence, negate: bool) -> Root:
 
 @traverser(eql.ast.FunctionCall)
 def cc_function_call(node: eql.ast.FunctionCall, negate: bool) -> Root:
-    if type(node.arguments[0]) is not eql.ast.Field:
-        raise NotImplementedError(f"Unsupported argument type: {type(node.arguments[0])}")
-    args_types = (eql.ast.String, eql.ast.Number)
-    if any(type(arg) not in args_types for arg in node.arguments[1:]):
-        wrong_types = sorted({str(type(arg)) for arg in node.arguments[1:] if type(arg) not in args_types})
-        raise NotImplementedError(f"Unsupported argument type(s): {', '.join(wrong_types)}")
     fn_name = node.name.lower()
     if fn_name == "wildcard":
         return cc_function(node, negate, "wildcard")
@@ -206,6 +200,12 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool) -> Root:
 
 
 def cc_function(node: eql.ast.FunctionCall, negate: bool, constraint_name: str) -> Root:
+    if type(node.arguments[0]) is not eql.ast.Field:
+        raise NotImplementedError(f"Unsupported argument type: {type(node.arguments[0])}")
+    args_types = (eql.ast.String, eql.ast.Number)
+    if any(type(arg) not in args_types for arg in node.arguments[1:]):
+        wrong_types = sorted({str(type(arg)) for arg in node.arguments[1:] if type(arg) not in args_types})
+        raise NotImplementedError(f"Unsupported argument type(s): {', '.join(wrong_types)}")
     field = node.arguments[0].render()
     constraint_name = constraint_name if not negate else f"not {constraint_name}"
     c = Constraints(field, constraint_name, tuple(arg.value for arg in node.arguments[1:]))
