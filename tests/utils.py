@@ -30,9 +30,10 @@ import time
 import unittest
 from contextlib import contextmanager
 from datetime import datetime, timedelta
+from pathlib import Path
 
 from geneve.events_emitter import SourceEvents
-from geneve.utils import load_rules, load_schema, root_dir
+from geneve.utils import load_rules, load_schema
 
 from . import jupyter
 
@@ -43,6 +44,8 @@ __all__ = (
     "SignalsTestCase",
     "assertReportUnchanged",
 )
+
+root_dir = Path(__file__).parent.parent
 
 
 def get_test_verbosity():
