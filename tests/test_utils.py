@@ -19,10 +19,11 @@
 
 import os
 import unittest
+from shutil import make_archive
 
-from geneve.utils import deep_merge
+from geneve.utils import deep_merge, resource, tempdir
 
-from .utils import tempenv
+from .utils import data_dir, http_server, tempenv
 
 
 class TestDictUtils(unittest.TestCase):
@@ -57,3 +58,65 @@ class TestTempEnv(unittest.TestCase):
                     self.assertTrue("TEST_VAR" not in os.environ)
                 self.assertEqual("value2", os.environ["TEST_VAR"])
             self.assertEqual("value1", os.environ["TEST_VAR"])
+
+
+class TestResource(unittest.TestCase):
+    """Test resource() helper."""
+
+    resource = data_dir / "test-package-1.2.3"
+    resource_zip = data_dir / (resource.name + ".zip")
+    resource_gztar = data_dir / (resource.name + ".tar.gz")
+
+    @classmethod
+    def setUpClass(cls):
+        make_archive(cls.resource, "gztar", root_dir=data_dir, base_dir=cls.resource.name)
+        make_archive(cls.resource, "zip", root_dir=data_dir, base_dir=cls.resource.name)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.resource_gztar.unlink()
+        cls.resource_zip.unlink()
+
+    def test_dir(self):
+        uri = str(self.resource)
+
+        with resource(uri) as resource_dir:
+            self.assertEqual(self.resource, resource_dir)
+            manifest = resource_dir / "manifest.yml"
+            self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
+
+    def test_local(self):
+        for ext in ["tar.gz", "zip"]:
+            tests = [
+                (f"file://./tests/data/{self.resource.name}.{ext}", None),
+                (f"file://./{self.resource.name}.{ext}", data_dir),
+                (f"tests/data/{self.resource.name}.{ext}", None),
+                (f"{self.resource.name}.{ext}", data_dir),
+            ]
+
+            for uri, basedir in tests:
+                with self.subTest(uri=uri, basedir=basedir):
+                    with resource(uri, basedir=basedir) as resource_dir:
+                        manifest = next(resource_dir.glob("*")) / "manifest.yml"
+                        self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
+
+    def test_remote(self):
+        with http_server(data_dir) as server:
+            uri = "http://%s:%s/%s.zip" % (*server.server_address, self.resource.name)
+
+            with resource(uri) as resource_dir:
+                manifest = next(resource_dir.glob("*")) / "manifest.yml"
+                self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
+
+    def test_cached(self):
+        with http_server(data_dir) as server:
+            uri = "http://%s:%s/%s.zip" % (*server.server_address, self.resource.name)
+
+            with tempdir() as cachedir:
+                cached_resource = cachedir / self.resource_zip.name
+
+                self.assertFalse(cached_resource.exists(), msg=f"{cached_resource} does exist")
+                with resource(uri, cachedir=cachedir) as resource_dir:
+                    manifest = next(resource_dir.glob("*")) / "manifest.yml"
+                    self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
+                self.assertTrue(cached_resource.exists(), msg=f"{cached_resource} does not exist")
