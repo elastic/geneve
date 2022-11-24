@@ -18,7 +18,6 @@
 """Util functions."""
 
 import functools
-import os
 import shutil
 from contextlib import contextmanager
 from glob import glob
@@ -27,45 +26,42 @@ from tempfile import mkdtemp
 from types import SimpleNamespace
 from urllib.parse import urlparse
 
-root_dir = os.path.abspath(os.path.join(os.path.split(__file__)[0], "..", ".."))
-
 
 @contextmanager
 def tempdir():
     tmpdir = mkdtemp()
     try:
-        yield tmpdir
+        yield Path(tmpdir)
     finally:
         shutil.rmtree(tmpdir)
 
 
 @contextmanager
-def resource(uri, basedir=None):
+def resource(uri, basedir=None, cachedir=None):
     import requests
 
     with tempdir() as tmpdir:
         uri_parts = urlparse(uri)
         if uri_parts.scheme.startswith("http"):
             uri_file = uri_parts.path.split("/")[-1]
-            local_file = os.path.join(tmpdir, uri_file)
+            uri_dir = Path(cachedir or tmpdir)
+            uri_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+            local_file = uri_dir / uri_file
             with open(local_file, "wb") as f:
                 f.write(requests.get(uri).content)
         elif uri_parts.scheme == "file":
-            if uri_parts.netloc:
-                local_file = os.path.join(basedir or os.getcwd(), uri_parts.netloc + uri_parts.path)
-            else:
-                local_file = uri_parts.path
+            local_file = Path(basedir or Path.cwd()) / (uri_parts.netloc + uri_parts.path)
         elif uri_parts.scheme == "":
-            local_file = uri_parts.path
+            local_file = Path(basedir or Path.cwd()) / uri_parts.path
         else:
             raise ValueError(f"uri scheme not supported: {uri_parts.scheme}")
 
-        if os.path.isdir(local_file):
+        if local_file.is_dir():
             tmpdir = local_file
         else:
             shutil.unpack_archive(local_file, tmpdir)
-            if uri_parts.scheme.startswith("http"):
-                os.unlink(local_file)
+            if local_file.parent == tmpdir:
+                local_file.unlink()
 
         yield tmpdir
 
@@ -75,7 +71,7 @@ def load_schema(uri, path, basedir=None):
     from ruamel.yaml import YAML
 
     with resource(uri, basedir=basedir) as resource_dir:
-        filenames = glob(os.path.join(resource_dir, "*", path), recursive=True)
+        filenames = list(resource_dir.glob(f"*/{path}"))
         if len(filenames) < 1:
             raise ValueError(f"File not found in '{resource_dir}': '{path}'")
         if len(filenames) > 1:
@@ -96,7 +92,7 @@ def load_rules(uri, paths, basedir=None):
     rules = []
     with resource(uri, basedir=basedir) as resource_dir:
         for path in paths:
-            for filename in glob(os.path.join(resource_dir, "*", path), recursive=True):
+            for filename in resource_dir.glob(f"*/{path}"):
                 with open(filename) as f:
                     rule = pytoml.load(f)["rule"]
                 rule["path"] = Path(".").joinpath(*Path(filename).relative_to(resource_dir).parts[1:])

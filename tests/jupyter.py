@@ -27,8 +27,6 @@ from pathlib import Path
 
 import nbformat as nbf
 
-from geneve import utils
-
 __all__ = (
     "Code",
     "Markdown",
@@ -62,11 +60,13 @@ def to_markdown(cells):
 
 
 def _get_nb_badges(filename):
+    from .utils import root_dir
+
     _nbviewer_badge_url = "https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg"
     _nbviewer_base_url = "https://nbviewer.jupyter.org/github"
     _binder_badge_url = "https://mybinder.org/badge_logo.svg"
     _binder_base_url = "https://mybinder.org/v2/gh"
-    path = Path(filename).relative_to(utils.root_dir)
+    path = Path(filename).relative_to(root_dir)
 
     if not github_user or not github_repo or not github_branch:
         return []

@@ -30,9 +30,11 @@ import time
 import unittest
 from contextlib import contextmanager
 from datetime import datetime, timedelta
+from functools import partial
+from pathlib import Path
 
 from geneve.events_emitter import SourceEvents
-from geneve.utils import load_rules, load_schema, root_dir
+from geneve.utils import load_rules, load_schema
 
 from . import jupyter
 
@@ -43,6 +45,9 @@ __all__ = (
     "SignalsTestCase",
     "assertReportUnchanged",
 )
+
+root_dir = Path(__file__).parent.parent
+data_dir = root_dir / "tests" / "data"
 
 
 def get_test_verbosity():
@@ -70,6 +75,25 @@ def tempenv(env):
         os.environ.update(orig_env)
         for name in set(env) - set(orig_env):
             os.environ.pop(name, None)
+
+
+@contextmanager
+def http_server(directory, timeout=10):
+    from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+    from threading import Thread
+
+    port = random.randint(1024, 65535)
+    handler = partial(SimpleHTTPRequestHandler, directory=directory)
+    server = ThreadingHTTPServer(("127.0.0.1", port), handler)
+    thread = Thread(target=server.serve_forever)
+    thread.start()
+
+    try:
+        yield server
+    finally:
+        server.server_close()
+        server.shutdown()
+        thread.join(timeout=timeout)
 
 
 def get_test_schema_uri():
