@@ -19,11 +19,16 @@
 
 import os
 import unittest
+from shutil import make_archive
 
 import tests.utils as tu
 from geneve.events_emitter import SourceEvents, guess_from_query
+from geneve.utils.integration import Integration
 
 from . import jupyter
+from .utils import data_dir
+
+Integration.cachedir = data_dir
 
 event_docs_mappings = {
     """process where process.name == "regsvr32.exe"
@@ -54,6 +59,50 @@ event_docs_mappings = {
                     "pid": {"type": "long"},
                 }
             },  # noqa: E501
+        },
+    },
+    """any where _integration("test-integration/4.5.6")
+    """: {
+        "properties": {
+            "@timestamp": {"type": "date"},
+            "source": {
+                "properties": {
+                    "bytes": {"type": "long"},
+                    "ip": {"type": "ip"},
+                    "port": {"type": "long"},
+                },
+            },
+        },
+    },
+    """any where _integration("test-integration/4.5.6") and source.port > 0
+    """: {
+        "properties": {
+            "@timestamp": {"type": "date"},
+            "source": {
+                "properties": {
+                    "bytes": {"type": "long"},
+                    "ip": {"type": "ip"},
+                    "port": {"type": "long"},
+                },
+            },
+        },
+    },
+    """any where _integration("test-integration/4.5.6") and destination.port > 0
+    """: {
+        "properties": {
+            "@timestamp": {"type": "date"},
+            "destination": {
+                "properties": {
+                    "port": {"type": "long"},
+                },
+            },
+            "source": {
+                "properties": {
+                    "bytes": {"type": "long"},
+                    "ip": {"type": "ip"},
+                    "port": {"type": "long"},
+                },
+            },
         },
     },
 }
@@ -431,6 +480,8 @@ exceptions = {
         [process where process.name == null]
         [process where process.name : "powershell.exe"]
     """: "Unsolvable constraints: process.name (cannot be non-null)",
+    """any where _integration("test-package/1.2.3")
+    """: "Not an integration: test-package (type=package)",
 }
 
 cardinality = [
@@ -559,6 +610,13 @@ cardinality = [
     ),
 ]
 
+integrations = {
+    """any where _integration("test-integration/4.5.6")
+    """: [
+        [{}],
+    ],
+}
+
 
 class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
@@ -579,6 +637,10 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     """
         )
     )
+    packages = [
+        data_dir / "test-integration-4.5.6.zip",
+        data_dir / "test-package-1.2.3.zip",
+    ]
 
     @classmethod
     @nb.chapter("## Preliminaries")
@@ -625,6 +687,15 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             """
             ),
         ]
+
+        for package in cls.packages:
+            make_archive(package.parent / package.stem, "zip", root_dir=data_dir, base_dir=package.stem)
+
+    @classmethod
+    def tearDownClass(cls):
+        super(TestQueries, cls).tearDownClass()
+        for package in cls.packages:
+            package.unlink()
 
     def test_len(self):
         se = SourceEvents(self.schema)
@@ -753,6 +824,20 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             with self.subTest(query, i=i):
                 self.assertQuery(query, docs, int(len(docs) / branches))
                 cells.append(self.query_cell(query, docs, len(docs)))
+
+    @nb.chapter("## Integrations")
+    def test_integrations(self, cells):
+        cells.append(
+            jupyter.Markdown(
+                """
+            Enrich the data model by importing integrations from the EPR.
+        """
+            )
+        )
+        for i, (query, docs) in enumerate(integrations.items()):
+            with self.subTest(query, i=i):
+                self.assertQuery(query, docs)
+            cells.append(self.query_cell(query, docs))
 
     @nb.chapter("## Any oddities?")
     def test_unchanged(self, cells):

@@ -29,6 +29,9 @@ from functools import reduce, wraps
 from itertools import chain, product
 from typing import List
 
+from .utils import deep_merge, es
+from .utils.integration import get_integration_package
+
 NumberLimits = namedtuple("NumberLimits", ["MIN", "MAX"])
 
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/number.html
@@ -529,21 +532,43 @@ Branch.Identity = Branch([Constraints()])
 class Root(List[Branch]):
     meta = None
 
+    def __init__(self, branches: List[Branch]):
+        super(Root, self).__init__(branches)
+        self.__integrations = {}
+
     def __iter__(self):
         if not self:
             raise ValueError("Root without branches")
         return super(Root, self).__iter__()
 
+    def add_integration(self, name):
+        if name not in self.__integrations:
+            self.__integrations[name] = get_integration_package(name)
+
     def fields(self):
         return set(["@timestamp"]) | set(chain(*(branch.fields() for branch in self)))
+
+    def mappings(self, schema):
+        mappings = es.mappings(self.fields(), schema)
+        for integration in self.__integrations.values():
+            deep_merge(mappings, integration.mappings())
+        return mappings
 
     def constraints(self):
         return chain(*self)
 
     @classmethod
     def chain(cls, roots):
-        return Root(chain(*roots))
+        roots = list(roots)
+        root = Root(chain(*roots))
+        for r in roots:
+            root.__integrations.update(r.__integrations)
+        return root
 
     @classmethod
     def product(cls, roots):
-        return Root(reduce(operator.mul, branches, Branch.Identity) for branches in product(*roots))
+        roots = list(roots)
+        root = Root(reduce(operator.mul, branches, Branch.Identity) for branches in product(*roots))
+        for r in roots:
+            root.__integrations.update(r.__integrations)
+        return root

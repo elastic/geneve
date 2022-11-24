@@ -195,6 +195,8 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool) -> Root:
         return cc_function(node, negate, "in")
     elif fn_name == "_cardinality":
         return cc_function(node, negate, "cardinality")
+    elif fn_name == "_integration":
+        return cc_integration(node)
     else:
         raise NotImplementedError(f"Unsupported function: {node.name}")
 
@@ -210,6 +212,15 @@ def cc_function(node: eql.ast.FunctionCall, negate: bool, constraint_name: str) 
     constraint_name = constraint_name if not negate else f"not {constraint_name}"
     c = Constraints(field, constraint_name, tuple(arg.value for arg in node.arguments[1:]))
     return Root([Branch([c])])
+
+
+def cc_integration(node: eql.ast.FunctionCall) -> Root:
+    if any(type(arg) is not eql.ast.String for arg in node.arguments):
+        wrong_types = sorted({str(type(arg)) for arg in node.arguments if type(arg) is not eql.ast.String})
+        raise NotImplementedError(f"Unsupported argument type(s): {', '.join(wrong_types)}")
+    root = Root([Branch([Constraints()])])
+    root.add_integration(node.arguments[0].value)
+    return root
 
 
 @traverser(eql.ast.BaseNode)

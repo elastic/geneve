@@ -1,0 +1,12 @@
+- name: '@timestamp'
+  required: true
+  type: date
+- name: source
+  type: group
+  fields:
+    - name: bytes
+      type: long
+    - name: ip
+      type: ip
+    - name: port
+      type: long

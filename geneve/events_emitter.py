@@ -24,7 +24,7 @@ from itertools import chain
 
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
 from .events_emitter_eql import get_ast_stats  # noqa: F401
-from .utils import deep_merge, es
+from .utils import deep_merge
 
 __all__ = ("SourceEvents",)
 
@@ -151,12 +151,13 @@ class SourceEvents:
         ast = ast_from_rule(rule)
         return self.add_ast(ast, meta=meta)
 
-    def fields(self):
-        return set(chain(*(root.fields() for root in self.__roots)))
-
     def mappings(self, root=None):
-        fields = self.fields() if root is None else root.fields()
-        return es.mappings(fields, self.schema)
+        if root:
+            return root.mappings(self.schema)
+        mappings = {}
+        for root in self.__roots:
+            deep_merge(mappings, root.mappings(self.schema))
+        return mappings
 
     def roots(self):
         return iter(self.__roots)

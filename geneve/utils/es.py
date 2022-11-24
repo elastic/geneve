@@ -26,6 +26,8 @@ def mappings(fields, schema):
         field_schema = schema.get(field, {})
         field_type = field_schema.get("type", "keyword")
         value = {"type": field_type}
+        if "path" in field_schema:
+            value["path"] = field_schema["path"]
         for part in reversed(field.split(".")):
             value = {"properties": {part: value}}
         deep_merge(mappings, value)
