@@ -37,6 +37,7 @@ LongLimits = NumberLimits(-(2**63), 2**63 - 1)
 _max_attempts = 100000
 
 ecs_constraints = {
+    "bytes": [(">=", 0), ("<", 2**32)],
     "pid": [(">", 0), ("<", 2**32)],
     "port": [(">", 0), ("<", 2**16)],
 }
