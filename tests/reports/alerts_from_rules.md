@@ -1035,12 +1035,12 @@ event.category:(network or network_traffic) and destination.port:53 and
 ```
 
 ```python
-[{'event': {'category': ['network'], 'dataset': 'zeek.dns'}, 'destination': {'port': 53}, 'network': {'bytes': 8255703960756273826}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'destination': {'port': 53}, 'type': 'dns', 'network': {'bytes': 8019682166017191568}, '@timestamp': 1},
- {'event': {'category': ['network'], 'type': ['connection']}, 'destination': {'port': 53}, 'network': {'bytes': 3859480154217252433}, '@timestamp': 2},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dns'}, 'destination': {'port': 53}, 'network': {'bytes': 5082897948359974151}, '@timestamp': 3},
- {'event': {'category': ['network_traffic']}, 'destination': {'port': 53}, 'type': 'dns', 'network': {'bytes': 982238996022875833}, '@timestamp': 4},
- {'event': {'category': ['network_traffic'], 'type': ['connection']}, 'destination': {'port': 53}, 'network': {'bytes': 8319637743976947693}, '@timestamp': 5}]
+[{'event': {'category': ['network'], 'dataset': 'zeek.dns'}, 'destination': {'port': 53}, 'network': {'bytes': 4289315490}, '@timestamp': 0},
+ {'event': {'category': ['network']}, 'destination': {'port': 53}, 'type': 'dns', 'network': {'bytes': 3844421733}, '@timestamp': 1},
+ {'event': {'category': ['network'], 'type': ['connection']}, 'destination': {'port': 53}, 'network': {'bytes': 2633854608}, '@timestamp': 2},
+ {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dns'}, 'destination': {'port': 53}, 'network': {'bytes': 3734515522}, '@timestamp': 3},
+ {'event': {'category': ['network_traffic']}, 'destination': {'port': 53}, 'type': 'dns', 'network': {'bytes': 2043283025}, '@timestamp': 4},
+ {'event': {'category': ['network_traffic'], 'type': ['connection']}, 'destination': {'port': 53}, 'network': {'bytes': 1797270498}, '@timestamp': 5}]
 ```
 
 
