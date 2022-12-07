@@ -29,6 +29,8 @@ from functools import reduce, wraps
 from itertools import chain, product
 from typing import List
 
+from .utils.hdict import hdict
+
 NumberLimits = namedtuple("NumberLimits", ["MIN", "MAX"])
 
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/number.html
@@ -155,7 +157,7 @@ class solver:  # noqa: N801
 class Constraints:
     def __init__(self, field=None, name=None, value=None):
         self.fields_history = {}
-        self.__constraints = {}
+        self.__constraints = hdict()
         if field is not None:
             self.append_constraint(field, name, value)
 
@@ -499,13 +501,18 @@ class Constraints:
             value = None
         return solver(field, value, constraints)["value"]
 
-    def solve(self, schema):
-        for field, constraints in self.__constraints.items():
+    def solve_group(self, group, fields, schema):
+        for field, constraints in fields.items():
             value = None
             if constraints is not None:
                 field_schema = schema.get(field, {})
                 value = self.solve_constraints(field, constraints, field_schema)
             yield field, value
+
+    def solve(self, schema):
+        for group, fields in self.__constraints.groups():
+            for field, value in self.solve_group(group, fields, schema):
+                yield field, value
 
 
 class Branch(List[Constraints]):

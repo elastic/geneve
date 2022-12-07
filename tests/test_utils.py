@@ -22,6 +22,7 @@ import unittest
 from shutil import make_archive
 
 from geneve.utils import deep_merge, resource, tempdir
+from geneve.utils.hdict import hdict
 
 from .utils import data_dir, http_server, tempenv
 
@@ -120,3 +121,133 @@ class TestResource(unittest.TestCase):
                     manifest = next(resource_dir.glob("*")) / "manifest.yml"
                     self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
                 self.assertTrue(cached_resource.exists(), msg=f"{cached_resource} does not exist")
+
+
+class TestHierarchicalDict(unittest.TestCase):
+    def test_key_value(self):
+        d = hdict()
+        d["one.two"] = 0
+        d["one.three.four"] = 1
+        d["one.three.five"] = 2
+        self.assertEqual(0, d["one.two"])
+        self.assertEqual(1, d["one.three.four"])
+        self.assertEqual(2, d["one.three.five"])
+
+    def test_groups(self):
+        d = hdict()
+        self.assertEqual([], list(d.groups()))
+
+        for field in [
+            "@timestamp",
+            "ecs.version",
+            "process.name",
+            "process.thread.id",
+            "process.thread.name",
+            "process.tty.char_device.major",
+            "process.tty.char_device.minor",
+            "source.geo.",
+        ]:
+            d[field] = None
+
+        self.assertEqual(
+            [
+                ("process.tty.char_device", {"process.tty.char_device.major": None, "process.tty.char_device.minor": None}),
+                ("process.thread", {"process.thread.id": None, "process.thread.name": None}),
+                ("process.tty", {}),
+                ("source.geo", {}),
+                ("ecs", {"ecs.version": None}),
+                ("process", {"process.name": None}),
+                ("source", {}),
+                ("", {"@timestamp": None}),
+            ],
+            list(d.groups()),
+        )
+
+        del d["source.geo."]
+        self.assertEqual(
+            [
+                ("process.tty.char_device", {"process.tty.char_device.major": None, "process.tty.char_device.minor": None}),
+                ("process.thread", {"process.thread.id": None, "process.thread.name": None}),
+                ("process.tty", {}),
+                ("ecs", {"ecs.version": None}),
+                ("process", {"process.name": None}),
+                ("", {"@timestamp": None}),
+            ],
+            list(d.groups()),
+        )
+
+        del d["process.tty.char_device.major"]
+        self.assertEqual(
+            [
+                ("process.tty.char_device", {"process.tty.char_device.minor": None}),
+                ("process.thread", {"process.thread.id": None, "process.thread.name": None}),
+                ("process.tty", {}),
+                ("ecs", {"ecs.version": None}),
+                ("process", {"process.name": None}),
+                ("", {"@timestamp": None}),
+            ],
+            list(d.groups()),
+        )
+
+        del d["process.thread"]
+        self.assertEqual(
+            [
+                ("process.tty.char_device", {"process.tty.char_device.minor": None}),
+                ("process.tty", {}),
+                ("ecs", {"ecs.version": None}),
+                ("process", {"process.name": None}),
+                ("", {"@timestamp": None}),
+            ],
+            list(d.groups()),
+        )
+
+        del d["@timestamp"]
+        self.assertEqual(
+            list(d.groups()),
+            [
+                ("process.tty.char_device", {"process.tty.char_device.minor": None}),
+                ("process.tty", {}),
+                ("ecs", {"ecs.version": None}),
+                ("process", {"process.name": None}),
+                ("", {}),
+            ],
+        )
+
+        del d["process.tty.char_device.minor"]
+        self.assertEqual(
+            [
+                ("ecs", {"ecs.version": None}),
+                ("process", {"process.name": None}),
+                ("", {}),
+            ],
+            list(d.groups()),
+        )
+
+        d["ecs"] = None
+        self.assertEqual(
+            [
+                ("process", {"process.name": None}),
+                ("", {"ecs": None}),
+            ],
+            list(d.groups()),
+        )
+
+        del d["process.name"]
+        self.assertEqual(
+            [
+                ("", {"ecs": None}),
+            ],
+            list(d.groups()),
+        )
+
+        d["ecs"] = {"version": None}
+        self.assertEqual(
+            [
+                ("ecs", {"ecs.version": None}),
+                ("", {}),
+            ],
+            list(d.groups()),
+        )
+
+        del d["ecs.version"]
+        self.assertEqual([], list(d.groups()))

@@ -24,7 +24,7 @@ azure.auditlogs.properties.target_resources.0.modified_properties.1.new_value:"\
 ```
 
 ```python
-[{'event': {'dataset': 'azure.auditlogs'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'`0`': {'modified_properties': {'`1`': {'new_value': '"Global Administrator"'}}}}}, 'operation_name': 'Add member to role'}}, '@timestamp': 0}]
+[{'azure': {'auditlogs': {'properties': {'target_resources': {'`0`': {'modified_properties': {'`1`': {'new_value': '"Global Administrator"'}}}}, 'category': 'RoleManagement'}, 'operation_name': 'Add member to role'}}, 'event': {'dataset': 'azure.auditlogs'}, '@timestamp': 0}]
 ```
 
 
@@ -40,8 +40,8 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Invite externa
 ```
 
 ```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Invite external user', 'properties': {'target_resources': {'`*`': {'display_name': 'guest'}}}}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Invite external user', 'properties': {'target_resources': {'`*`': {'display_name': 'guest'}}}}}, '@timestamp': 1}]
+[{'azure': {'auditlogs': {'properties': {'target_resources': {'`*`': {'display_name': 'guest'}}}, 'operation_name': 'Invite external user'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'auditlogs': {'properties': {'target_resources': {'`*`': {'display_name': 'guest'}}}, 'operation_name': 'Invite external user'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -63,8 +63,8 @@ event.outcome:(Success or success)
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/yXIUtkNIoixTFl/VPNCONNECTIONS/STARTPACKETCAPTURE/ACTION'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/zswuEEXpWqNVR/VPNCONNECTIONS/STARTPACKETCAPTURE/ACTION'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/yXIUtkNIoixTFl/VPNCONNECTIONS/STARTPACKETCAPTURE/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/zswuEEXpWqNVR/VPNCONNECTIONS/STARTPACKETCAPTURE/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -84,10 +84,10 @@ event.dataset:azure.auditlogs and azure.auditlogs.properties.category:RoleManage
 ```
 
 ```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'`*`': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add eligible member to role in PIM completed (permanent)'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'`*`': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add eligible member to role in PIM completed (permanent)'}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'`*`': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add member to role in PIM completed (timebound)'}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'`*`': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add member to role in PIM completed (timebound)'}}, '@timestamp': 3}]
+[{'azure': {'auditlogs': {'properties': {'target_resources': {'`*`': {'display_name': 'Global Administrator'}}, 'category': 'RoleManagement'}, 'operation_name': 'Add eligible member to role in PIM completed (permanent)'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'auditlogs': {'properties': {'target_resources': {'`*`': {'display_name': 'Global Administrator'}}, 'category': 'RoleManagement'}, 'operation_name': 'Add eligible member to role in PIM completed (permanent)'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 1},
+ {'azure': {'auditlogs': {'properties': {'target_resources': {'`*`': {'display_name': 'Global Administrator'}}, 'category': 'RoleManagement'}, 'operation_name': 'Add member to role in PIM completed (timebound)'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 2},
+ {'azure': {'auditlogs': {'properties': {'target_resources': {'`*`': {'display_name': 'Global Administrator'}}, 'category': 'RoleManagement'}, 'operation_name': 'Add member to role in PIM completed (timebound)'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 3}]
 ```
 
 
@@ -106,13 +106,13 @@ sequence by host.id with maxspan=1m
 
 ```python
 [{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/System/Library/LaunchDaemons/UyyFjSvILOoOHmx'}, 'host': {'id': 'BnL'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'BnL'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'BnL'}, 'process': {'name': 'launchctl', 'args': ['load']}, '@timestamp': 1},
  {'event': {'type': ['eOA'], 'category': ['file']}, 'file': {'path': '/System/Library/LaunchDaemons/gaiFqsyzKNyyQ'}, 'host': {'id': 'DpU'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'DpU'}, '@timestamp': 3},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'DpU'}, 'process': {'name': 'launchctl', 'args': ['load']}, '@timestamp': 3},
  {'event': {'type': ['EUD'], 'category': ['file']}, 'file': {'path': '/Library/LaunchDaemons/xVTOLWtimrFgT'}, 'host': {'id': 'msh'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'msh'}, '@timestamp': 5},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'msh'}, 'process': {'name': 'launchctl', 'args': ['load']}, '@timestamp': 5},
  {'event': {'type': ['CeL'], 'category': ['file']}, 'file': {'path': '/Library/LaunchDaemons/L'}, 'host': {'id': 'Sjo'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'Sjo'}, '@timestamp': 7}]
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Sjo'}, 'process': {'name': 'launchctl', 'args': ['load']}, '@timestamp': 7}]
 ```
 
 
@@ -643,7 +643,7 @@ event.dataset:aws.cloudtrail and event.provider:signin.amazonaws.com and event.a
 ```
 
 ```python
-[{'event': {'dataset': 'aws.cloudtrail', 'provider': 'signin.amazonaws.com', 'action': 'ConsoleLogin', 'outcome': 'success'}, 'aws': {'cloudtrail': {'user_identity': {'type': 'Root'}}}, '@timestamp': 0}]
+[{'aws': {'cloudtrail': {'user_identity': {'type': 'Root'}}}, 'event': {'dataset': 'aws.cloudtrail', 'provider': 'signin.amazonaws.com', 'action': 'ConsoleLogin', 'outcome': 'success'}, '@timestamp': 0}]
 ```
 
 
@@ -793,7 +793,7 @@ event.dataset:aws.cloudtrail and event.provider:signin.amazonaws.com and event.a
 ```
 
 ```python
-[{'event': {'dataset': 'aws.cloudtrail', 'provider': 'signin.amazonaws.com', 'action': 'ConsoleLogin', 'outcome': 'success'}, 'aws': {'cloudtrail': {'user_identity': {'type': 'Root'}, 'console_login': {'additional_eventdata': {'mfa_used': False}}}}, '@timestamp': 0}]
+[{'aws': {'cloudtrail': {'console_login': {'additional_eventdata': {'mfa_used': False}}, 'user_identity': {'type': 'Root'}}}, 'event': {'dataset': 'aws.cloudtrail', 'provider': 'signin.amazonaws.com', 'action': 'ConsoleLogin', 'outcome': 'success'}, '@timestamp': 0}]
 ```
 
 
@@ -941,7 +941,7 @@ aws.cloudtrail.user_identity.type:IAMUser and event.outcome:success
 ```
 
 ```python
-[{'event': {'dataset': 'aws.cloudtrail', 'provider': 'sts.amazonaws.com', 'action': 'GetSessionToken', 'outcome': 'success'}, 'aws': {'cloudtrail': {'user_identity': {'type': 'IAMUser'}}}, '@timestamp': 0}]
+[{'aws': {'cloudtrail': {'user_identity': {'type': 'IAMUser'}}}, 'event': {'dataset': 'aws.cloudtrail', 'provider': 'sts.amazonaws.com', 'action': 'GetSessionToken', 'outcome': 'success'}, '@timestamp': 0}]
 ```
 
 
@@ -981,7 +981,7 @@ aws.cloudtrail.user_identity.session_context.session_issuer.type:Role and event.
 ```
 
 ```python
-[{'event': {'dataset': 'aws.cloudtrail', 'provider': 'sts.amazonaws.com', 'action': 'AssumedRole', 'outcome': 'success'}, 'aws': {'cloudtrail': {'user_identity': {'session_context': {'session_issuer': {'type': 'Role'}}}}}, '@timestamp': 0}]
+[{'aws': {'cloudtrail': {'user_identity': {'session_context': {'session_issuer': {'type': 'Role'}}}}}, 'event': {'dataset': 'aws.cloudtrail', 'provider': 'sts.amazonaws.com', 'action': 'AssumedRole', 'outcome': 'success'}, '@timestamp': 0}]
 ```
 
 
@@ -1035,12 +1035,12 @@ event.category:(network or network_traffic) and destination.port:53 and
 ```
 
 ```python
-[{'event': {'category': ['network'], 'dataset': 'zeek.dns'}, 'destination': {'port': 53}, 'network': {'bytes': 4289315490}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'destination': {'port': 53}, 'type': 'dns', 'network': {'bytes': 3844421733}, '@timestamp': 1},
- {'event': {'category': ['network'], 'type': ['connection']}, 'destination': {'port': 53}, 'network': {'bytes': 2633854608}, '@timestamp': 2},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dns'}, 'destination': {'port': 53}, 'network': {'bytes': 3734515522}, '@timestamp': 3},
- {'event': {'category': ['network_traffic']}, 'destination': {'port': 53}, 'type': 'dns', 'network': {'bytes': 2043283025}, '@timestamp': 4},
- {'event': {'category': ['network_traffic'], 'type': ['connection']}, 'destination': {'port': 53}, 'network': {'bytes': 1797270498}, '@timestamp': 5}]
+[{'destination': {'port': 53}, 'event': {'category': ['network'], 'dataset': 'zeek.dns'}, 'network': {'bytes': 4289315490}, '@timestamp': 0},
+ {'destination': {'port': 53}, 'event': {'category': ['network']}, 'network': {'bytes': 3844421733}, 'type': 'dns', '@timestamp': 1},
+ {'destination': {'port': 53}, 'event': {'category': ['network'], 'type': ['connection']}, 'network': {'bytes': 2633854608}, '@timestamp': 2},
+ {'destination': {'port': 53}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.dns'}, 'network': {'bytes': 3734515522}, '@timestamp': 3},
+ {'destination': {'port': 53}, 'event': {'category': ['network_traffic']}, 'network': {'bytes': 2043283025}, 'type': 'dns', '@timestamp': 4},
+ {'destination': {'port': 53}, 'event': {'category': ['network_traffic'], 'type': ['connection']}, 'network': {'bytes': 1797270498}, '@timestamp': 5}]
 ```
 
 
@@ -1108,8 +1108,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'args': ['/Users/*/Library/Keychains/*', '/Library/Keychains/*', '/Network/Library/Keychains/*', 'System.keychain', 'login.keychain-db', 'login.keychain'], 'parent': {'executable': 'ZFy'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'args': ['/Users/*/Library/Keychains/*', '/Library/Keychains/*', '/Network/Library/Keychains/*', 'System.keychain', 'login.keychain-db', 'login.keychain'], 'parent': {'executable': 'XIU'}}, '@timestamp': 1}]
+[{'process': {'parent': {'executable': 'ZFy'}, 'args': ['/Users/*/Library/Keychains/*', '/Library/Keychains/*', '/Network/Library/Keychains/*', 'System.keychain', 'login.keychain-db', 'login.keychain']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'executable': 'XIU'}, 'args': ['/Users/*/Library/Keychains/*', '/Library/Keychains/*', '/Network/Library/Keychains/*', 'System.keychain', 'login.keychain-db', 'login.keychain']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -1129,14 +1129,14 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'name': 'whoami.exe'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'name': 'net1.exe', 'parent': {'name': 'ZFy'}}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'process': {'name': 'whoami.exe'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'process': {'name': 'net1.exe', 'parent': {'name': 'XIU'}}, '@timestamp': 3},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'name': 'whoami.exe'}, '@timestamp': 4},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'name': 'net1.exe', 'parent': {'name': 'tkN'}}, '@timestamp': 5},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'process': {'name': 'whoami.exe'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'process': {'name': 'net1.exe', 'parent': {'name': 'Ioi'}}, '@timestamp': 7}]
+[{'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'name': 'whoami.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'parent': {'name': 'ZFy'}, 'name': 'net1.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'whoami.exe'}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'XIU'}, 'name': 'net1.exe'}, 'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'name': 'whoami.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'parent': {'name': 'tkN'}, 'name': 'net1.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 5},
+ {'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'whoami.exe'}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'Ioi'}, 'name': 'net1.exe'}, 'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 7}]
 ```
 
 
@@ -1158,8 +1158,8 @@ sequence by host.id with maxspan=5m
 ```
 
 ```python
-[{'event': {'action': 'logged-in', 'outcome': 'success', 'category': ['authentication']}, 'winlog': {'logon': {'type': 'Network'}, 'event_data': {'TargetLogonId': 'yFj'}}, 'source': {'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, 'host': {'id': 'fUy'}, '@timestamp': 0},
- {'event': {'action': 'reset-password', 'category': ['iam']}, 'host': {'id': 'fUy'}, 'winlog': {'event_data': {'SubjectLogonId': 'yFj'}}, '@timestamp': 1}]
+[{'winlog': {'event_data': {'TargetLogonId': 'ZFy'}, 'logon': {'type': 'Network'}}, 'event': {'action': 'logged-in', 'outcome': 'success', 'category': ['authentication']}, 'host': {'id': 'XIU'}, 'source': {'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, '@timestamp': 0},
+ {'winlog': {'event_data': {'SubjectLogonId': 'ZFy'}}, 'event': {'action': 'reset-password', 'category': ['iam']}, 'host': {'id': 'XIU'}, '@timestamp': 1}]
 ```
 
 
@@ -1184,9 +1184,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'AdFind.exe', 'args': ['objectcategory=computer', '(objectcategory=computer)', 'objectcategory=person', '(objectcategory=person)', 'objectcategory=subnet', '(objectcategory=subnet)', 'objectcategory=group', '(objectcategory=group)', 'objectcategory=organizationalunit', '(objectcategory=organizationalunit)', 'objectcategory=attributeschema', '(objectcategory=attributeschema)', 'domainlist', 'dcmodes', 'adinfo', 'dclist', 'computers_pwnotreqd', 'trustdmp']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'AdFind.exe'}, 'args': ['objectcategory=computer', '(objectcategory=computer)', 'objectcategory=person', '(objectcategory=person)', 'objectcategory=subnet', '(objectcategory=subnet)', 'objectcategory=group', '(objectcategory=group)', 'objectcategory=organizationalunit', '(objectcategory=organizationalunit)', 'objectcategory=attributeschema', '(objectcategory=attributeschema)', 'domainlist', 'dcmodes', 'adinfo', 'dclist', 'computers_pwnotreqd', 'trustdmp']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'AdFind.exe'}, 'args': ['objectcategory=computer', '(objectcategory=computer)', 'objectcategory=person', '(objectcategory=person)', 'objectcategory=subnet', '(objectcategory=subnet)', 'objectcategory=group', '(objectcategory=group)', 'objectcategory=organizationalunit', '(objectcategory=organizationalunit)', 'objectcategory=attributeschema', '(objectcategory=attributeschema)', 'domainlist', 'dcmodes', 'adinfo', 'dclist', 'computers_pwnotreqd', 'trustdmp']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'AdFind.exe', 'args': ['objectcategory=computer', '(objectcategory=computer)', 'objectcategory=person', '(objectcategory=person)', 'objectcategory=subnet', '(objectcategory=subnet)', 'objectcategory=group', '(objectcategory=group)', 'objectcategory=organizationalunit', '(objectcategory=organizationalunit)', 'objectcategory=attributeschema', '(objectcategory=attributeschema)', 'domainlist', 'dcmodes', 'adinfo', 'dclist', 'computers_pwnotreqd', 'trustdmp']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'AdFind.exe'}, 'args': ['objectcategory=computer', '(objectcategory=computer)', 'objectcategory=person', '(objectcategory=person)', 'objectcategory=subnet', '(objectcategory=subnet)', 'objectcategory=group', '(objectcategory=group)', 'objectcategory=organizationalunit', '(objectcategory=organizationalunit)', 'objectcategory=attributeschema', '(objectcategory=attributeschema)', 'domainlist', 'dcmodes', 'adinfo', 'dclist', 'computers_pwnotreqd', 'trustdmp']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'AdFind.exe'}, 'args': ['objectcategory=computer', '(objectcategory=computer)', 'objectcategory=person', '(objectcategory=person)', 'objectcategory=subnet', '(objectcategory=subnet)', 'objectcategory=group', '(objectcategory=group)', 'objectcategory=organizationalunit', '(objectcategory=organizationalunit)', 'objectcategory=attributeschema', '(objectcategory=attributeschema)', 'domainlist', 'dcmodes', 'adinfo', 'dclist', 'computers_pwnotreqd', 'trustdmp']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -1220,7 +1220,7 @@ event.action:"Directory Service Changes" and event.code:5136 and winlog.event_da
 ```
 
 ```python
-[{'event': {'action': 'Directory Service Changes', 'code': 5136}, 'winlog': {'event_data': {'ObjectDN': 'CN=AdminSDHolder,CN=SystemXIUtkNI'}}, '@timestamp': 0}]
+[{'winlog': {'event_data': {'ObjectDN': 'CN=AdminSDHolder,CN=SystemXIUtkNI'}}, 'event': {'action': 'Directory Service Changes', 'code': 5136}, '@timestamp': 0}]
 ```
 
 
@@ -1288,7 +1288,7 @@ event.kind:alert and event.module:endgame and (event.action:rules_engine_event o
 
 ```python
 [{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'rules_engine_event'}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'event_subtype_full': 'rules_engine_event'}, '@timestamp': 1}]
+ {'endgame': {'event_subtype_full': 'rules_engine_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -1327,8 +1327,8 @@ sequence by host.id, process.entity_id with maxspan=30s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'entity_id': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['tkN'], 'category': ['network']}, 'process': {'name': 'osascript', 'entity_id': 'XIU'}, 'destination': {'ip': '48.35.95.170'}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'osascript', 'entity_id': 'XIU'}, '@timestamp': 0},
+ {'destination': {'ip': '122.143.223.236'}, 'event': {'type': ['kNI'], 'category': ['network']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'osascript', 'entity_id': 'XIU'}, '@timestamp': 1}]
 ```
 
 
@@ -1883,10 +1883,10 @@ event.dataset:azure.signinlogs and
 ```
 
 ```python
-[{'event': {'dataset': 'azure.signinlogs', 'outcome': 'success'}, 'azure': {'signinlogs': {'properties': {'risk_level_during_signin': 'high'}}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.signinlogs', 'outcome': 'Success'}, 'azure': {'signinlogs': {'properties': {'risk_level_during_signin': 'high'}}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.signinlogs', 'outcome': 'success'}, 'azure': {'signinlogs': {'properties': {'risk_level_aggregated': 'high'}}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.signinlogs', 'outcome': 'Success'}, 'azure': {'signinlogs': {'properties': {'risk_level_aggregated': 'high'}}}, '@timestamp': 3}]
+[{'azure': {'signinlogs': {'properties': {'risk_level_during_signin': 'high'}}}, 'event': {'dataset': 'azure.signinlogs', 'outcome': 'success'}, '@timestamp': 0},
+ {'azure': {'signinlogs': {'properties': {'risk_level_during_signin': 'high'}}}, 'event': {'dataset': 'azure.signinlogs', 'outcome': 'Success'}, '@timestamp': 1},
+ {'azure': {'signinlogs': {'properties': {'risk_level_aggregated': 'high'}}}, 'event': {'dataset': 'azure.signinlogs', 'outcome': 'success'}, '@timestamp': 2},
+ {'azure': {'signinlogs': {'properties': {'risk_level_aggregated': 'high'}}}, 'event': {'dataset': 'azure.signinlogs', 'outcome': 'Success'}, '@timestamp': 3}]
 ```
 
 
@@ -1903,10 +1903,10 @@ event.dataset:azure.signinlogs and
 ```
 
 ```python
-[{'event': {'dataset': 'azure.signinlogs', 'outcome': 'success'}, 'azure': {'signinlogs': {'properties': {'risk_state': 'confirmedCompromised'}}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.signinlogs', 'outcome': 'Success'}, 'azure': {'signinlogs': {'properties': {'risk_state': 'confirmedCompromised'}}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.signinlogs', 'outcome': 'success'}, 'azure': {'signinlogs': {'properties': {'risk_state': 'atRisk'}}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.signinlogs', 'outcome': 'Success'}, 'azure': {'signinlogs': {'properties': {'risk_state': 'atRisk'}}}, '@timestamp': 3}]
+[{'azure': {'signinlogs': {'properties': {'risk_state': 'confirmedCompromised'}}}, 'event': {'dataset': 'azure.signinlogs', 'outcome': 'success'}, '@timestamp': 0},
+ {'azure': {'signinlogs': {'properties': {'risk_state': 'confirmedCompromised'}}}, 'event': {'dataset': 'azure.signinlogs', 'outcome': 'Success'}, '@timestamp': 1},
+ {'azure': {'signinlogs': {'properties': {'risk_state': 'atRisk'}}}, 'event': {'dataset': 'azure.signinlogs', 'outcome': 'success'}, '@timestamp': 2},
+ {'azure': {'signinlogs': {'properties': {'risk_state': 'atRisk'}}}, 'event': {'dataset': 'azure.signinlogs', 'outcome': 'Success'}, '@timestamp': 3}]
 ```
 
 
@@ -1924,8 +1924,8 @@ event.dataset:azure.signinlogs and
 ```
 
 ```python
-[{'event': {'dataset': 'azure.signinlogs', 'outcome': 'success'}, 'azure': {'signinlogs': {'properties': {'app_display_name': 'Azure Active Directory PowerShell', 'token_issuer_type': 'AzureAD'}}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.signinlogs', 'outcome': 'Success'}, 'azure': {'signinlogs': {'properties': {'app_display_name': 'Azure Active Directory PowerShell', 'token_issuer_type': 'AzureAD'}}}, '@timestamp': 1}]
+[{'azure': {'signinlogs': {'properties': {'app_display_name': 'Azure Active Directory PowerShell', 'token_issuer_type': 'AzureAD'}}}, 'event': {'dataset': 'azure.signinlogs', 'outcome': 'success'}, '@timestamp': 0},
+ {'azure': {'signinlogs': {'properties': {'app_display_name': 'Azure Active Directory PowerShell', 'token_issuer_type': 'AzureAD'}}}, 'event': {'dataset': 'azure.signinlogs', 'outcome': 'Success'}, '@timestamp': 1}]
 ```
 
 
@@ -1942,7 +1942,7 @@ event.outcome: "success"
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.SECURITY/ALERTSSUPPRESSIONRULES/WRITE'}}, '@timestamp': 0}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.SECURITY/ALERTSSUPPRESSIONRULES/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 0}]
 ```
 
 
@@ -1958,8 +1958,8 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Update applica
 ```
 
 ```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Update application - Certificates and secrets management'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Update application - Certificates and secrets management'}}, '@timestamp': 1}]
+[{'azure': {'auditlogs': {'operation_name': 'Update application - Certificates and secrets management'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 0},
+ {'azure': {'auditlogs': {'operation_name': 'Update application - Certificates and secrets management'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 1}]
 ```
 
 
@@ -1975,8 +1975,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WRITE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WRITE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -1999,12 +1999,12 @@ event.dataset:azure.activitylogs and
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/DRAFT/WRITE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/DRAFT/WRITE'}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/WRITE'}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/WRITE'}}, '@timestamp': 3},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/PUBLISH/ACTION'}}, '@timestamp': 4},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/PUBLISH/ACTION'}}, '@timestamp': 5}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/DRAFT/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/DRAFT/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 2},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 3},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/PUBLISH/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 4},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/PUBLISH/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 5}]
 ```
 
 
@@ -2020,8 +2020,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/DELETE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/DELETE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2043,10 +2043,10 @@ event.dataset:azure.activitylogs and
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WEBHOOKS/ACTION'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WEBHOOKS/ACTION'}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WEBHOOKS/WRITE'}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WEBHOOKS/WRITE'}}, '@timestamp': 3}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WEBHOOKS/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WEBHOOKS/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WEBHOOKS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 2},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WEBHOOKS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 3}]
 ```
 
 
@@ -2062,8 +2062,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/WRITE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/WRITE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2082,10 +2082,10 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:(
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/MANAGEOWNERSHIP/ACTION'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/MANAGEOWNERSHIP/ACTION'}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/MODIFYPERMISSIONS/ACTION'}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/MODIFYPERMISSIONS/ACTION'}}, '@timestamp': 3}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/MANAGEOWNERSHIP/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/MANAGEOWNERSHIP/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/MODIFYPERMISSIONS/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 2},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/MODIFYPERMISSIONS/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 3}]
 ```
 
 
@@ -2101,8 +2101,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.COMPUTE/VIRTUALMACHINES/RUNCOMMAND/ACTION'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.COMPUTE/VIRTUALMACHINES/RUNCOMMAND/ACTION'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.COMPUTE/VIRTUALMACHINES/RUNCOMMAND/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.COMPUTE/VIRTUALMACHINES/RUNCOMMAND/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2138,8 +2138,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.INSIGHTS/DIAGNOSTICSETTINGS/DELETE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.INSIGHTS/DIAGNOSTICSETTINGS/DELETE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.INSIGHTS/DIAGNOSTICSETTINGS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.INSIGHTS/DIAGNOSTICSETTINGS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2155,8 +2155,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.EVENTHUB/NAMESPACES/AUTHORIZATIONRULES/WRITE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.EVENTHUB/NAMESPACES/AUTHORIZATIONRULES/WRITE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.EVENTHUB/NAMESPACES/AUTHORIZATIONRULES/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.EVENTHUB/NAMESPACES/AUTHORIZATIONRULES/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2172,8 +2172,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.EVENTHUB/NAMESPACES/EVENTHUBS/DELETE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.EVENTHUB/NAMESPACES/EVENTHUBS/DELETE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.EVENTHUB/NAMESPACES/EVENTHUBS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.EVENTHUB/NAMESPACES/EVENTHUBS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2189,8 +2189,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/FIREWALLPOLICIES/DELETE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/FIREWALLPOLICIES/DELETE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/FIREWALLPOLICIES/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/FIREWALLPOLICIES/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2206,8 +2206,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/FRONTDOORWEBAPPLICATIONFIREWALLPOLICIES/DELETE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/FRONTDOORWEBAPPLICATIONFIREWALLPOLICIES/DELETE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/FRONTDOORWEBAPPLICATIONFIREWALLPOLICIES/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/FRONTDOORWEBAPPLICATIONFIREWALLPOLICIES/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2223,8 +2223,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KEYVAULT/VAULTS/WRITE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KEYVAULT/VAULTS/WRITE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KEYVAULT/VAULTS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KEYVAULT/VAULTS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2241,8 +2241,8 @@ event.outcome:(Success or success)
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/EVENTS.K8S.IO/EVENTS/DELETE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/EVENTS.K8S.IO/EVENTS/DELETE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/EVENTS.K8S.IO/EVENTS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/EVENTS.K8S.IO/EVENTS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2259,8 +2259,8 @@ event.outcome:(Success or success)
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/PODS/DELETE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/PODS/DELETE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/PODS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/PODS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2279,10 +2279,10 @@ event.outcome:(Success or success)
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/RBAC.AUTHORIZATION.K8S.IO/ROLEBINDINGS/WRITE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/RBAC.AUTHORIZATION.K8S.IO/ROLEBINDINGS/WRITE'}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/RBAC.AUTHORIZATION.K8S.IO/CLUSTERROLEBINDINGS/WRITE'}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/RBAC.AUTHORIZATION.K8S.IO/CLUSTERROLEBINDINGS/WRITE'}}, '@timestamp': 3}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/RBAC.AUTHORIZATION.K8S.IO/ROLEBINDINGS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/RBAC.AUTHORIZATION.K8S.IO/ROLEBINDINGS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/RBAC.AUTHORIZATION.K8S.IO/CLUSTERROLEBINDINGS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 2},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/RBAC.AUTHORIZATION.K8S.IO/CLUSTERROLEBINDINGS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 3}]
 ```
 
 
@@ -2298,8 +2298,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKWATCHERS/DELETE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKWATCHERS/DELETE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKWATCHERS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKWATCHERS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2315,8 +2315,8 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Update role se
 ```
 
 ```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Update role setting in PIM'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Update role setting in PIM'}}, '@timestamp': 1}]
+[{'azure': {'auditlogs': {'operation_name': 'Update role setting in PIM'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'auditlogs': {'operation_name': 'Update role setting in PIM'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2332,8 +2332,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.RESOURCES/SUBSCRIPTIONS/RESOURCEGROUPS/DELETE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.RESOURCES/SUBSCRIPTIONS/RESOURCEGROUPS/DELETE'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.RESOURCES/SUBSCRIPTIONS/RESOURCEGROUPS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.RESOURCES/SUBSCRIPTIONS/RESOURCEGROUPS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2349,8 +2349,8 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Add service pr
 ```
 
 ```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Add service principal'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Add service principal'}}, '@timestamp': 1}]
+[{'azure': {'auditlogs': {'operation_name': 'Add service principal'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 0},
+ {'azure': {'auditlogs': {'operation_name': 'Add service principal'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 1}]
 ```
 
 
@@ -2366,8 +2366,8 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Add service pr
 ```
 
 ```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Add service principal credentials'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Add service principal credentials'}}, '@timestamp': 1}]
+[{'azure': {'auditlogs': {'operation_name': 'Add service principal credentials'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 0},
+ {'azure': {'auditlogs': {'operation_name': 'Add service principal credentials'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 1}]
 ```
 
 
@@ -2383,8 +2383,8 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/REGENERATEKEY/ACTION'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/REGENERATEKEY/ACTION'}}, '@timestamp': 1}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/REGENERATEKEY/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.STORAGE/STORAGEACCOUNTS/REGENERATEKEY/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -2406,28 +2406,28 @@ event.outcome:(Success or success)
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/TAPCONFIGURATIONS/WRITE'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/TAPCONFIGURATIONS/WRITE'}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/TAPCONFIGURATIONS/DELETE'}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/TAPCONFIGURATIONS/DELETE'}}, '@timestamp': 3},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/WRITE'}}, '@timestamp': 4},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/WRITE'}}, '@timestamp': 5},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/JOIN/ACTION'}}, '@timestamp': 6},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/JOIN/ACTION'}}, '@timestamp': 7},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/DELETE'}}, '@timestamp': 8},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/DELETE'}}, '@timestamp': 9},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKVIRTUALAPPLIANCES/DELETE'}}, '@timestamp': 10},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKVIRTUALAPPLIANCES/DELETE'}}, '@timestamp': 11},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKVIRTUALAPPLIANCES/WRITE'}}, '@timestamp': 12},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKVIRTUALAPPLIANCES/WRITE'}}, '@timestamp': 13},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALHUBS/DELETE'}}, '@timestamp': 14},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALHUBS/DELETE'}}, '@timestamp': 15},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALHUBS/WRITE'}}, '@timestamp': 16},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALHUBS/WRITE'}}, '@timestamp': 17},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALROUTERS/WRITE'}}, '@timestamp': 18},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALROUTERS/WRITE'}}, '@timestamp': 19},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALROUTERS/DELETE'}}, '@timestamp': 20},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALROUTERS/DELETE'}}, '@timestamp': 21}]
+[{'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/TAPCONFIGURATIONS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/TAPCONFIGURATIONS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/TAPCONFIGURATIONS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 2},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/TAPCONFIGURATIONS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 3},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 4},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 5},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/JOIN/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 6},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/JOIN/ACTION'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 7},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 8},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKINTERFACES/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 9},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKVIRTUALAPPLIANCES/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 10},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKVIRTUALAPPLIANCES/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 11},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKVIRTUALAPPLIANCES/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 12},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/NETWORKVIRTUALAPPLIANCES/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 13},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALHUBS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 14},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALHUBS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 15},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALHUBS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 16},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALHUBS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 17},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALROUTERS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 18},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALROUTERS/WRITE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 19},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALROUTERS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 20},
+ {'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/VIRTUALROUTERS/DELETE'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 21}]
 ```
 
 
@@ -2516,9 +2516,9 @@ event.category:file and event.type:change and
 ```
 
 ```python
-[{'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'ZFy', 'executable': 'XIU'}, 'file': {'path': '/private/etc/rc.local'}, '@timestamp': 0},
- {'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'tkN', 'executable': 'Ioi'}, 'file': {'path': '/etc/rc.local'}, '@timestamp': 1},
- {'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'xTF', 'executable': 'lEz'}, 'file': {'path': '/home/wuEE/.bash_profile'}, '@timestamp': 2}]
+[{'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/private/etc/rc.local'}, 'process': {'name': 'ZFy', 'executable': 'XIU'}, '@timestamp': 0},
+ {'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/etc/rc.local'}, 'process': {'name': 'tkN', 'executable': 'Ioi'}, '@timestamp': 1},
+ {'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/home/TFlEzswuEEX/.bash_profile1'}, 'process': {'name': 'pWq', 'executable': 'NVR'}, '@timestamp': 2}]
 ```
 
 
@@ -2540,8 +2540,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'eventvwr.exe'}, 'executable': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'eventvwr.exe'}, 'executable': 'XIU'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'eventvwr.exe'}, 'executable': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'eventvwr.exe'}, 'executable': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -2572,13 +2572,13 @@ sequence with maxspan=1m
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sdclt.exe', 'args': ['/kickoffelev'], 'entity_id': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'sdclt.exe', 'entity_id': 'ZFy'}, 'executable': 'XIU'}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'sdclt.exe', 'entity_id': 'ZFy'}, 'executable': 'XIU'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sdclt.exe', 'args': ['/kickoffelev'], 'entity_id': 'tkN'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'sdclt.exe', 'entity_id': 'tkN'}, 'executable': 'Ioi'}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'sdclt.exe', 'entity_id': 'tkN'}, 'executable': 'Ioi'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sdclt.exe', 'args': ['/kickoffelev'], 'entity_id': 'xTF'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'sdclt.exe', 'entity_id': 'xTF'}, 'executable': 'lEz'}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'sdclt.exe', 'entity_id': 'xTF'}, 'executable': 'lEz'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 5},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sdclt.exe', 'args': ['/kickoffelev'], 'entity_id': 'swu'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'sdclt.exe', 'entity_id': 'swu'}, 'executable': 'EEX'}, '@timestamp': 7}]
+ {'process': {'parent': {'name': 'sdclt.exe', 'entity_id': 'swu'}, 'executable': 'EEX'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 7}]
 ```
 
 
@@ -2601,9 +2601,9 @@ process where event.action == "start" and
 [{'event': {'action': 'start', 'category': ['process']}, 'process': {'name': 'pwsh.exe', 'args': ['*Clear-History*']}, '@timestamp': 0},
  {'event': {'action': 'start', 'category': ['process']}, 'process': {'name': 'powershell_ise.exe', 'args': ['*Remove-Item*', 'rm', '*ConsoleHost_history.txt*', '*(Get-PSReadlineOption).HistorySavePath*']}, '@timestamp': 1},
  {'event': {'action': 'start', 'category': ['process']}, 'process': {'name': 'powershell_ise.exe', 'args': ['*Set-PSReadlineOption*', '*SaveNothing*']}, '@timestamp': 2},
- {'event': {'action': 'start', 'category': ['process']}, 'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['*Clear-History*']}, '@timestamp': 3},
- {'event': {'action': 'start', 'category': ['process']}, 'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['*Remove-Item*', 'rm', '*ConsoleHost_history.txt*', '*(Get-PSReadlineOption).HistorySavePath*']}, '@timestamp': 4},
- {'event': {'action': 'start', 'category': ['process']}, 'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['*Set-PSReadlineOption*', '*SaveNothing*']}, '@timestamp': 5}]
+ {'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['*Clear-History*']}, 'event': {'action': 'start', 'category': ['process']}, '@timestamp': 3},
+ {'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['*Remove-Item*', 'rm', '*ConsoleHost_history.txt*', '*(Get-PSReadlineOption).HistorySavePath*']}, 'event': {'action': 'start', 'category': ['process']}, '@timestamp': 4},
+ {'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['*Set-PSReadlineOption*', '*SaveNothing*']}, 'event': {'action': 'start', 'category': ['process']}, '@timestamp': 5}]
 ```
 
 
@@ -2623,10 +2623,10 @@ process where event.type in ("process_started", "start") and
 
 ```python
 [{'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'wevtutil.exe', 'args': ['/e:false', 'cl', 'clear-log']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wevtutil.exe'}, 'args': ['/e:false', 'cl', 'clear-log']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'wevtutil.exe'}, 'args': ['/e:false', 'cl', 'clear-log']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'wevtutil.exe', 'args': ['/e:false', 'cl', 'clear-log']}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wevtutil.exe'}, 'args': ['/e:false', 'cl', 'clear-log']}, '@timestamp': 3},
- {'process': {'name': 'pwsh.exe', 'args': ['Clear-EventLog']}, 'event': {'category': ['process']}, '@timestamp': 4}]
+ {'process': {'pe': {'original_file_name': 'wevtutil.exe'}, 'args': ['/e:false', 'cl', 'clear-log']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'event': {'category': ['process']}, 'process': {'name': 'pwsh.exe', 'args': ['Clear-EventLog']}, '@timestamp': 4}]
 ```
 
 
@@ -2650,8 +2650,8 @@ process.parent.name: (
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'powershell.exe', 'parent': {'name': 'SolarWinds.AdministrationIUtkNIoix.exe'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'NetflowDatabaseMaintenanceOHmxBnLeOA.exe'}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'SolarWinds.Collector.ServiceyXIUtkNIoixTFl.exe'}, 'name': 'powershell.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'SolarwindsDiagnosticsmxBnLe.exe'}, 'name': 'powershell.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -2675,8 +2675,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'cmd.exe', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, 'process': {'name': 'cmd.exe', 'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -2696,8 +2696,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'conhost.exe', 'parent': {'name': 'winlogon.exe'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'conhost.exe', 'parent': {'name': 'spoolsv.exe'}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'conhost.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'spoolsv.exe'}, 'name': 'conhost.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -2726,7 +2726,7 @@ network where network.protocol == "dns" and
 ```
 
 ```python
-[{'network': {'protocol': 'dns'}, 'dns': {'question': {'name': 'XIUtkNIletsencrypt.org'}}, 'process': {'executable': 'C:\\Windows\\System32\\ixTFlEzswuEEXp.exe', 'name': 'WqN'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'dns': {'question': {'name': 'XIUtkNIletsencrypt.org'}}, 'event': {'category': ['network']}, 'network': {'protocol': 'dns'}, 'process': {'executable': 'C:\\Windows\\System32\\ixTFlEzswuEEXp.exe', 'name': 'WqN'}, '@timestamp': 0}]
 ```
 
 
@@ -2791,7 +2791,7 @@ network where network.protocol == "dns" and
 ```
 
 ```python
-[{'network': {'protocol': 'dns'}, 'process': {'name': 'ZFy', 'executable': 'lEz'}, 'user': {'id': 'XIU'}, 'dns': {'question': {'name': 'kNIoixTFnotabug.org'}}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'dns': {'question': {'name': 'controlc.com'}}, 'event': {'category': ['network']}, 'network': {'protocol': 'dns'}, 'process': {'name': 'TvC', 'executable': 'fUy'}, 'user': {'id': 'yFj'}, '@timestamp': 0}]
 ```
 
 
@@ -2815,8 +2815,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'telnet', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'telnet', 'entity_id': 'ZFy'}, 'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'telnet', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, 'process': {'name': 'telnet', 'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -2840,8 +2840,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'telnet', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'telnet', 'entity_id': 'ZFy'}, 'destination': {'ip': '192.175.48.54'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'telnet', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'destination': {'ip': '192.175.48.54'}, 'event': {'category': ['network']}, 'process': {'name': 'telnet', 'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -2881,7 +2881,7 @@ registry where registry.path : "HKLM\\SAM\\SAM\\Domains\\Account\\Users\\Names\\
 ```
 
 ```python
-[{'registry': {'path': 'HKLM\\SAM\\SAM\\Domains\\Account\\Users\\Names\\XIUtkNI$\\'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'event': {'category': ['registry']}, 'registry': {'path': 'HKLM\\SAM\\SAM\\Domains\\Account\\Users\\Names\\XIUtkNI$\\'}, '@timestamp': 0}]
 ```
 
 
@@ -2975,8 +2975,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'reg.exe'}, 'args': ['save', 'export', 'hklm\\sam', 'hklm\\security']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'reg.exe'}, 'args': ['save', 'export', 'hklm\\sam', 'hklm\\security']}, '@timestamp': 1}]
+[{'process': {'pe': {'original_file_name': 'reg.exe'}, 'args': ['save', 'export', 'hklm\\sam', 'hklm\\security']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'pe': {'original_file_name': 'reg.exe'}, 'args': ['save', 'export', 'hklm\\sam', 'hklm\\security']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -2992,8 +2992,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'cred_theft_event'}, 'endgame': {'metadata': {'type': 'detection'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'cred_theft_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'detection'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'cred_theft_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'cred_theft_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -3009,8 +3009,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'cred_theft_event'}, 'endgame': {'metadata': {'type': 'prevention'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'cred_theft_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'prevention'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'cred_theft_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'cred_theft_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -3026,8 +3026,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'token_manipulation_event'}, 'endgame': {'metadata': {'type': 'detection'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'token_manipulation_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'detection'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'token_manipulation_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'token_manipulation_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -3043,8 +3043,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'token_manipulation_event'}, 'endgame': {'metadata': {'type': 'prevention'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'token_manipulation_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'prevention'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'token_manipulation_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'token_manipulation_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -3147,30 +3147,30 @@ event.category:(network or network_traffic) and (event.type:connection or type:d
 ```
 
 ```python
-[{'event': {'category': ['network'], 'type': ['connection']}, 'destination': {'port': 53, 'ip': '170.121.236.89'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network'], 'type': ['connection']}, 'destination': {'port': 53, 'ip': '54.2.158.30'}, 'source': {'ip': '172.28.20.160'}, '@timestamp': 1},
- {'event': {'category': ['network'], 'type': ['connection']}, 'destination': {'port': 53, 'ip': '219.54.168.90'}, 'source': {'ip': '192.168.96.70'}, '@timestamp': 2},
- {'event': {'category': ['network'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '10.209.3.152'}, 'destination': {'ip': '169.225.121.243'}, '@timestamp': 3},
- {'event': {'category': ['network'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '172.24.207.103'}, 'destination': {'ip': '199.127.185.194'}, '@timestamp': 4},
- {'event': {'category': ['network'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '192.168.186.159'}, 'destination': {'ip': '112.141.185.70'}, '@timestamp': 5},
- {'event': {'category': ['network']}, 'type': 'dns', 'destination': {'port': 53, 'ip': '149.102.124.168'}, 'source': {'ip': '10.197.122.33'}, '@timestamp': 6},
- {'event': {'category': ['network']}, 'type': 'dns', 'destination': {'port': 53, 'ip': '197.7.114.246'}, 'source': {'ip': '172.18.192.161'}, '@timestamp': 7},
- {'event': {'category': ['network']}, 'type': 'dns', 'destination': {'port': 53, 'ip': 'd5e4:e45:48d:758d:eac9:ff60:21ff:ce20'}, 'source': {'ip': '192.168.1.78'}, '@timestamp': 8},
- {'event': {'category': ['network'], 'dataset': 'zeek.dns'}, 'type': 'dns', 'source': {'ip': '10.29.111.63'}, 'destination': {'ip': '121.161.84.247'}, '@timestamp': 9},
- {'event': {'category': ['network'], 'dataset': 'zeek.dns'}, 'type': 'dns', 'source': {'ip': '172.23.250.187'}, 'destination': {'ip': '151.149.0.92'}, '@timestamp': 10},
- {'event': {'category': ['network'], 'dataset': 'zeek.dns'}, 'type': 'dns', 'source': {'ip': '192.168.247.115'}, 'destination': {'ip': '178.204.52.89'}, '@timestamp': 11},
- {'event': {'category': ['network_traffic'], 'type': ['connection']}, 'destination': {'port': 53, 'ip': '7ee8:2ac7:8fd8:c24b:a168:4644:d2ea:bc0f'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 12},
- {'event': {'category': ['network_traffic'], 'type': ['connection']}, 'destination': {'port': 53, 'ip': '60.47.190.229'}, 'source': {'ip': '172.19.127.35'}, '@timestamp': 13},
- {'event': {'category': ['network_traffic'], 'type': ['connection']}, 'destination': {'port': 53, 'ip': 'd693:36a4:eaa1:660b:fe6b:8957:739e:8b1b'}, 'source': {'ip': '192.168.165.29'}, '@timestamp': 14},
- {'event': {'category': ['network_traffic'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '10.209.145.8'}, 'destination': {'ip': '139.59.60.34'}, '@timestamp': 15},
- {'event': {'category': ['network_traffic'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '172.21.68.62'}, 'destination': {'ip': '189.141.142.160'}, '@timestamp': 16},
- {'event': {'category': ['network_traffic'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '192.168.64.185'}, 'destination': {'ip': '60.8.116.38'}, '@timestamp': 17},
- {'event': {'category': ['network_traffic']}, 'type': 'dns', 'destination': {'port': 53, 'ip': '147.73.59.170'}, 'source': {'ip': '10.178.22.53'}, '@timestamp': 18},
- {'event': {'category': ['network_traffic']}, 'type': 'dns', 'destination': {'port': 53, 'ip': '184.97.58.102'}, 'source': {'ip': '172.18.235.169'}, '@timestamp': 19},
- {'event': {'category': ['network_traffic']}, 'type': 'dns', 'destination': {'port': 53, 'ip': '46.77.189.36'}, 'source': {'ip': '192.168.22.13'}, '@timestamp': 20},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dns'}, 'type': 'dns', 'source': {'ip': '10.139.227.125'}, 'destination': {'ip': '159.213.231.147'}, '@timestamp': 21},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dns'}, 'type': 'dns', 'source': {'ip': '172.23.111.141'}, 'destination': {'ip': '547b:40e6:6d4a:85e0:ec27:61ef:77cd:b63c'}, '@timestamp': 22},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dns'}, 'type': 'dns', 'source': {'ip': '192.168.253.192'}, 'destination': {'ip': '169.49.132.205'}, '@timestamp': 23}]
+[{'destination': {'port': 53, 'ip': '222.151.68.226'}, 'event': {'category': ['network'], 'type': ['connection']}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
+ {'destination': {'port': 53, 'ip': '170.121.236.89'}, 'event': {'category': ['network'], 'type': ['connection']}, 'source': {'ip': '172.28.20.160'}, '@timestamp': 1},
+ {'destination': {'port': 53, 'ip': '54.2.158.30'}, 'event': {'category': ['network'], 'type': ['connection']}, 'source': {'ip': '192.168.96.70'}, '@timestamp': 2},
+ {'destination': {'ip': '219.54.168.90'}, 'event': {'category': ['network'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '10.209.3.152'}, '@timestamp': 3},
+ {'destination': {'ip': '169.225.121.243'}, 'event': {'category': ['network'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '172.24.207.103'}, '@timestamp': 4},
+ {'destination': {'ip': '199.127.185.194'}, 'event': {'category': ['network'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '192.168.186.159'}, '@timestamp': 5},
+ {'destination': {'port': 53, 'ip': '112.141.185.70'}, 'event': {'category': ['network']}, 'source': {'ip': '10.197.122.33'}, 'type': 'dns', '@timestamp': 6},
+ {'destination': {'port': 53, 'ip': '149.102.124.168'}, 'event': {'category': ['network']}, 'source': {'ip': '172.18.192.161'}, 'type': 'dns', '@timestamp': 7},
+ {'destination': {'port': 53, 'ip': '197.7.114.246'}, 'event': {'category': ['network']}, 'source': {'ip': '192.168.1.78'}, 'type': 'dns', '@timestamp': 8},
+ {'destination': {'ip': 'd5e4:e45:48d:758d:eac9:ff60:21ff:ce20'}, 'event': {'category': ['network'], 'dataset': 'zeek.dns'}, 'source': {'ip': '10.29.111.63'}, 'type': 'dns', '@timestamp': 9},
+ {'destination': {'ip': '121.161.84.247'}, 'event': {'category': ['network'], 'dataset': 'zeek.dns'}, 'source': {'ip': '172.23.250.187'}, 'type': 'dns', '@timestamp': 10},
+ {'destination': {'ip': '151.149.0.92'}, 'event': {'category': ['network'], 'dataset': 'zeek.dns'}, 'source': {'ip': '192.168.247.115'}, 'type': 'dns', '@timestamp': 11},
+ {'destination': {'port': 53, 'ip': '178.204.52.89'}, 'event': {'category': ['network_traffic'], 'type': ['connection']}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 12},
+ {'destination': {'port': 53, 'ip': '7ee8:2ac7:8fd8:c24b:a168:4644:d2ea:bc0f'}, 'event': {'category': ['network_traffic'], 'type': ['connection']}, 'source': {'ip': '172.19.127.35'}, '@timestamp': 13},
+ {'destination': {'port': 53, 'ip': '60.47.190.229'}, 'event': {'category': ['network_traffic'], 'type': ['connection']}, 'source': {'ip': '192.168.165.29'}, '@timestamp': 14},
+ {'destination': {'ip': 'd693:36a4:eaa1:660b:fe6b:8957:739e:8b1b'}, 'event': {'category': ['network_traffic'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '10.209.145.8'}, '@timestamp': 15},
+ {'destination': {'ip': '139.59.60.34'}, 'event': {'category': ['network_traffic'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '172.21.68.62'}, '@timestamp': 16},
+ {'destination': {'ip': '189.141.142.160'}, 'event': {'category': ['network_traffic'], 'type': ['connection'], 'dataset': 'zeek.dns'}, 'source': {'ip': '192.168.64.185'}, '@timestamp': 17},
+ {'destination': {'port': 53, 'ip': '60.8.116.38'}, 'event': {'category': ['network_traffic']}, 'source': {'ip': '10.178.22.53'}, 'type': 'dns', '@timestamp': 18},
+ {'destination': {'port': 53, 'ip': '147.73.59.170'}, 'event': {'category': ['network_traffic']}, 'source': {'ip': '172.18.235.169'}, 'type': 'dns', '@timestamp': 19},
+ {'destination': {'port': 53, 'ip': '184.97.58.102'}, 'event': {'category': ['network_traffic']}, 'source': {'ip': '192.168.22.13'}, 'type': 'dns', '@timestamp': 20},
+ {'destination': {'ip': '46.77.189.36'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.dns'}, 'source': {'ip': '10.139.227.125'}, 'type': 'dns', '@timestamp': 21},
+ {'destination': {'ip': '159.213.231.147'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.dns'}, 'source': {'ip': '172.23.111.141'}, 'type': 'dns', '@timestamp': 22},
+ {'destination': {'ip': '547b:40e6:6d4a:85e0:ec27:61ef:77cd:b63c'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.dns'}, 'source': {'ip': '192.168.253.192'}, 'type': 'dns', '@timestamp': 23}]
 ```
 
 
@@ -3188,12 +3188,12 @@ event.category:(network or network_traffic) and (tls.server.hash.md5:950098276A4
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'tls': {'server': {'hash': {'md5': '950098276A495286EB2A2556FBAB6D83'}}}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'tls': {'server': {'hash': {'sha1': '6ECE5ECE4192683D2D84E25B0BA7E04F9CB7EB7C'}}}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'tls': {'server': {'hash': {'sha256': '87F2085C32B6A2CC709B365F55873E207A9CAA10BFFECF2FD16D3CF9D94D390C'}}}, '@timestamp': 2},
- {'event': {'category': ['network_traffic']}, 'tls': {'server': {'hash': {'md5': '950098276A495286EB2A2556FBAB6D83'}}}, '@timestamp': 3},
- {'event': {'category': ['network_traffic']}, 'tls': {'server': {'hash': {'sha1': '6ECE5ECE4192683D2D84E25B0BA7E04F9CB7EB7C'}}}, '@timestamp': 4},
- {'event': {'category': ['network_traffic']}, 'tls': {'server': {'hash': {'sha256': '87F2085C32B6A2CC709B365F55873E207A9CAA10BFFECF2FD16D3CF9D94D390C'}}}, '@timestamp': 5}]
+[{'tls': {'server': {'hash': {'md5': '950098276A495286EB2A2556FBAB6D83'}}}, 'event': {'category': ['network']}, '@timestamp': 0},
+ {'tls': {'server': {'hash': {'sha1': '6ECE5ECE4192683D2D84E25B0BA7E04F9CB7EB7C'}}}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'tls': {'server': {'hash': {'sha256': '87F2085C32B6A2CC709B365F55873E207A9CAA10BFFECF2FD16D3CF9D94D390C'}}}, 'event': {'category': ['network']}, '@timestamp': 2},
+ {'tls': {'server': {'hash': {'md5': '950098276A495286EB2A2556FBAB6D83'}}}, 'event': {'category': ['network_traffic']}, '@timestamp': 3},
+ {'tls': {'server': {'hash': {'sha1': '6ECE5ECE4192683D2D84E25B0BA7E04F9CB7EB7C'}}}, 'event': {'category': ['network_traffic']}, '@timestamp': 4},
+ {'tls': {'server': {'hash': {'sha256': '87F2085C32B6A2CC709B365F55873E207A9CAA10BFFECF2FD16D3CF9D94D390C'}}}, 'event': {'category': ['network_traffic']}, '@timestamp': 5}]
 ```
 
 
@@ -3212,9 +3212,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'fsutil.exe', 'args': ['deletejournal', 'usn']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'fsutil.exe'}, 'args': ['deletejournal', 'usn']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'fsutil.exe'}, 'args': ['deletejournal', 'usn']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'fsutil.exe', 'args': ['deletejournal', 'usn']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'fsutil.exe'}, 'args': ['deletejournal', 'usn']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'fsutil.exe'}, 'args': ['deletejournal', 'usn']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -3233,9 +3233,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'wbadmin.exe', 'args': ['catalog', 'delete']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'WBADMIN.EXE'}, 'args': ['catalog', 'delete']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'WBADMIN.EXE'}, 'args': ['catalog', 'delete']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'wbadmin.exe', 'args': ['catalog', 'delete']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'WBADMIN.EXE'}, 'args': ['catalog', 'delete']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'WBADMIN.EXE'}, 'args': ['catalog', 'delete']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -3255,7 +3255,7 @@ sequence by process.entity_id
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pid': 4289255490, 'entity_id': 'UTv'}, '@timestamp': 0},
- {'destination': {'port': 445, 'ip': '229.172.181.141'}, 'process': {'pid': 2366908802, 'entity_id': 'UTv'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+ {'destination': {'port': 445, 'ip': '229.172.181.141'}, 'event': {'category': ['network']}, 'process': {'pid': 3874133221, 'entity_id': 'UTv'}, '@timestamp': 1}]
 ```
 
 
@@ -3281,14 +3281,14 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'logman.exe', 'args': ['EventLog-*', 'stop', 'delete']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Logman.exe'}, 'args': ['EventLog-*', 'stop', 'delete']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'Logman.exe'}, 'args': ['EventLog-*', 'stop', 'delete']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'logman.exe', 'args': ['EventLog-*', 'stop', 'delete']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Logman.exe'}, 'args': ['EventLog-*', 'stop', 'delete']}, '@timestamp': 3},
- {'process': {'name': 'pwsh.exe', 'args': ['Set-Service', 'EventLog', 'Disabled']}, 'event': {'category': ['process']}, '@timestamp': 4},
+ {'process': {'pe': {'original_file_name': 'Logman.exe'}, 'args': ['EventLog-*', 'stop', 'delete']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3},
+ {'event': {'category': ['process']}, 'process': {'name': 'pwsh.exe', 'args': ['Set-Service', 'EventLog', 'Disabled']}, '@timestamp': 4},
  {'process': {'pe': {'original_file_name': 'pwsh.exe'}, 'args': ['Set-Service', 'EventLog', 'Disabled']}, 'event': {'category': ['process']}, '@timestamp': 5},
  {'process': {'pe': {'original_file_name': 'powershell.exe'}, 'args': ['Set-Service', 'EventLog', 'Disabled']}, 'event': {'category': ['process']}, '@timestamp': 6},
  {'process': {'pe': {'original_file_name': 'powershell_ise.exe'}, 'args': ['Set-Service', 'EventLog', 'Disabled']}, 'event': {'category': ['process']}, '@timestamp': 7},
- {'process': {'name': 'auditpol.exe', 'args': ['/success:disable']}, 'event': {'category': ['process']}, '@timestamp': 8},
+ {'event': {'category': ['process']}, 'process': {'name': 'auditpol.exe', 'args': ['/success:disable']}, '@timestamp': 8},
  {'process': {'pe': {'original_file_name': 'AUDITPOL.EXE'}, 'args': ['/success:disable']}, 'event': {'category': ['process']}, '@timestamp': 9}]
 ```
 
@@ -3310,7 +3310,7 @@ process where event.type in ("start", "process_started") and
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netsh.exe', 'args': ['disable', 'firewall', 'set']}, '@timestamp': 0},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'netsh.exe', 'args': ['disable', 'firewall', 'set']}, '@timestamp': 1},
- {'process': {'args': ['advfirewall', 'off', 'state']}, 'event': {'category': ['process']}, '@timestamp': 2}]
+ {'event': {'category': ['process']}, 'process': {'args': ['advfirewall', 'off', 'state']}, '@timestamp': 2}]
 ```
 
 
@@ -3329,9 +3329,9 @@ process where event.type == "start" and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'pwsh.exe', 'args': ['Set-MpPreference', '-Disable*', 'Disabled', 'NeverSend', '-Exclusion*']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'powershell.exe'}, 'args': ['Set-MpPreference', '-Disable*', 'Disabled', 'NeverSend', '-Exclusion*']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'pwsh.dll'}, 'args': ['Set-MpPreference', '-Disable*', 'Disabled', 'NeverSend', '-Exclusion*']}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'powershell_ise.exe'}, 'args': ['Set-MpPreference', '-Disable*', 'Disabled', 'NeverSend', '-Exclusion*']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'powershell.exe'}, 'args': ['Set-MpPreference', '-Disable*', 'Disabled', 'NeverSend', '-Exclusion*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'pwsh.dll'}, 'args': ['Set-MpPreference', '-Disable*', 'Disabled', 'NeverSend', '-Exclusion*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'powershell_ise.exe'}, 'args': ['Set-MpPreference', '-Disable*', 'Disabled', 'NeverSend', '-Exclusion*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -3463,11 +3463,11 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'rar.exe', 'args': ['-hp*', '-p*', '-dw', '-tb', '-ta', '/hp*', '/p*', '/dw', '/tb', '/ta', 'a']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'subject_name': 'win.rar GmbH'}, 'args': ['-hp*', '-p*', '-dw', '-tb', '-ta', '/hp*', '/p*', '/dw', '/tb', '/ta', 'a']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Command line RAR'}, 'args': ['-hp*', '-p*', '-dw', '-tb', '-ta', '/hp*', '/p*', '/dw', '/tb', '/ta', 'a']}, '@timestamp': 2},
+ {'process': {'code_signature': {'subject_name': 'win.rar GmbH'}, 'args': ['-hp*', '-p*', '-dw', '-tb', '-ta', '/hp*', '/p*', '/dw', '/tb', '/ta', 'a']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'Command line RAR'}, 'args': ['-hp*', '-p*', '-dw', '-tb', '-ta', '/hp*', '/p*', '/dw', '/tb', '/ta', 'a']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'rar.exe', 'args': ['-hp*', '-p*', '-dw', '-tb', '-ta', '/hp*', '/p*', '/dw', '/tb', '/ta', 'a']}, '@timestamp': 3},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'code_signature': {'subject_name': 'win.rar GmbH'}, 'args': ['-hp*', '-p*', '-dw', '-tb', '-ta', '/hp*', '/p*', '/dw', '/tb', '/ta', 'a']}, '@timestamp': 4},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Command line RAR'}, 'args': ['-hp*', '-p*', '-dw', '-tb', '-ta', '/hp*', '/p*', '/dw', '/tb', '/ta', 'a']}, '@timestamp': 5},
+ {'process': {'code_signature': {'subject_name': 'win.rar GmbH'}, 'args': ['-hp*', '-p*', '-dw', '-tb', '-ta', '/hp*', '/p*', '/dw', '/tb', '/ta', 'a']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'pe': {'original_file_name': 'Command line RAR'}, 'args': ['-hp*', '-p*', '-dw', '-tb', '-ta', '/hp*', '/p*', '/dw', '/tb', '/ta', 'a']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 5},
  {'process': {'pe': {'original_file_name': '7z.exe'}, 'args': ['-p*', '-sdel', 'a']}, 'event': {'category': ['process']}, '@timestamp': 6},
  {'process': {'pe': {'original_file_name': '7za.exe'}, 'args': ['-p*', '-sdel', 'a']}, 'event': {'category': ['process']}, '@timestamp': 7}]
 ```
@@ -3527,8 +3527,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'tasklist.exe', 'parent': {'name': 'wmiprvse.exe'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'qwinsta.exe', 'parent': {'name': 'wmiprvse.exe'}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'wmiprvse.exe'}, 'name': 'tasklist.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'wmiprvse.exe'}, 'name': 'qwinsta.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -3556,14 +3556,14 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'net.exe', 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'net1.exe', 'parent': {'name': 'ZFy'}, 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net1.exe'}, 'parent': {'name': 'XIU'}, 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, '@timestamp': 3},
+ {'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'ZFy'}, 'name': 'net1.exe', 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'XIU'}, 'pe': {'original_file_name': 'net1.exe'}, 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'net.exe', 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, '@timestamp': 4},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, '@timestamp': 5},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'net1.exe', 'parent': {'name': 'tkN'}, 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net1.exe'}, 'parent': {'name': 'Ioi'}, 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, '@timestamp': 7},
- {'process': {'name': 'wmic.exe', 'args': ['group', 'useraccount']}, 'event': {'category': ['process']}, '@timestamp': 8},
+ {'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'tkN'}, 'name': 'net1.exe', 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'Ioi'}, 'pe': {'original_file_name': 'net1.exe'}, 'args': ['group', 'user', 'localgroup', 'admin', 'Domain Admins', 'Remote Desktop Users', 'Enterprise Admins', 'Organization Management']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 7},
+ {'event': {'category': ['process']}, 'process': {'name': 'wmic.exe', 'args': ['group', 'useraccount']}, '@timestamp': 8},
  {'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['group', 'useraccount']}, 'event': {'category': ['process']}, '@timestamp': 9}]
 ```
 
@@ -3620,8 +3620,8 @@ iam where event.action == "user-member-enumerated" and
 ```
 
 ```python
-[{'event': {'action': 'user-member-enumerated', 'category': ['iam']}, 'winlog': {'event_data': {'CallerProcessName': 'ZFy'}}, 'group': {'name': 'RemoteDesktopUsers'}, '@timestamp': 0},
- {'event': {'action': 'user-member-enumerated', 'category': ['iam']}, 'winlog': {'event_data': {'CallerProcessName': 'Utk', 'TargetSid': 'S-1-5-32-544'}}, '@timestamp': 1}]
+[{'winlog': {'event_data': {'CallerProcessName': 'ZFy'}}, 'event': {'action': 'user-member-enumerated', 'category': ['iam']}, 'group': {'name': 'RemoteDesktopUsers'}, '@timestamp': 0},
+ {'winlog': {'event_data': {'CallerProcessName': 'Utk', 'TargetSid': 'S-1-5-32-544'}}, 'event': {'action': 'user-member-enumerated', 'category': ['iam']}, '@timestamp': 1}]
 ```
 
 
@@ -3648,9 +3648,9 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'executable': 'ZFy'}, 'name': 'dsmemberutil'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'executable': 'Utk'}, 'name': 'dsmemberutil'}, '@timestamp': 1},
- {'process': {'name': 'dscl', 'args': ['read', '-read', 'list', '-list', 'ls', 'search', '-search', '/Active Directory/*', '/Users*', '/Groups*']}, 'event': {'category': ['process']}, '@timestamp': 2}]
+[{'process': {'parent': {'executable': 'ZFy'}, 'name': 'dsmemberutil'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'executable': 'Utk'}, 'name': 'dsmemberutil'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1},
+ {'event': {'category': ['process']}, 'process': {'name': 'dscl', 'args': ['read', '-read', 'list', '-list', 'ls', 'search', '-search', '/Active Directory/*', '/Users*', '/Groups*']}, '@timestamp': 2}]
 ```
 
 
@@ -3673,10 +3673,10 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'xwizard.exe'}, 'args': ['RunWizard', '{*}']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'xwizard.exe'}, 'executable': 'ZFy'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'xwizard.exe'}, 'args': ['RunWizard', '{*}']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'xwizard.exe'}, 'executable': 'XIU'}, '@timestamp': 3}]
+[{'process': {'pe': {'original_file_name': 'xwizard.exe'}, 'args': ['RunWizard', '{*}']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'pe': {'original_file_name': 'xwizard.exe'}, 'executable': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'xwizard.exe'}, 'args': ['RunWizard', '{*}']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'xwizard.exe'}, 'executable': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -3703,10 +3703,10 @@ sequence with maxspan=2h
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'NIo'}, 'process': {'name': 'MSACCESS.EXE'}, 'host': {'id': 'Utk'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Utk'}, 'process': {'executable': 'NIo'}, '@timestamp': 1},
- {'event': {'type': ['ixT'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'mxB'}, 'process': {'name': 'OUTLOOK.EXE'}, 'host': {'id': 'oOH'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oOH'}, 'process': {'executable': 'mxB'}, '@timestamp': 3}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'XIU'}, 'host': {'id': 'tkN'}, 'process': {'name': 'OUTLOOK.EXE'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'tkN'}, 'process': {'executable': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['oix'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'TFl'}, 'host': {'id': 'Ezs'}, 'process': {'name': 'fltldr.exe'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Ezs'}, 'process': {'executable': 'TFl'}, '@timestamp': 3}]
 ```
 
 
@@ -3735,10 +3735,10 @@ sequence with maxspan=2h
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'Utk', 'path': 'ixT'}, 'process': {'name': 'AcroRd32.exe'}, 'host': {'id': 'NIo'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'NIo'}, 'process': {'executable': 'ixT'}, '@timestamp': 1},
- {'event': {'type': ['FlE'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'Hmx', 'path': 'eOA'}, 'process': {'name': 'rdrcef.exe'}, 'host': {'id': 'BnL'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'BnL'}, 'process': {'executable': 'eOA'}, '@timestamp': 3}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'XIU', 'path': 'tkN'}, 'host': {'id': 'Ioi'}, 'process': {'name': 'rdrcef.exe'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Ioi'}, 'process': {'executable': 'tkN'}, '@timestamp': 1},
+ {'event': {'type': ['ILO'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'oOH', 'path': 'mxB'}, 'host': {'id': 'nLe'}, 'process': {'name': 'FoxitReader.exe'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'nLe'}, 'process': {'executable': 'mxB'}, '@timestamp': 3}]
 ```
 
 
@@ -3771,222 +3771,222 @@ sequence by host.id, user.name with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'tkN'}, 'user': {'name': 'Ioi'}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'tkN'}, 'user': {'name': 'Ioi'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'tkN'}, 'user': {'name': 'Ioi'}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'xTF'}, 'user': {'name': 'lEz'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'xTF'}, 'user': {'name': 'lEz'}, '@timestamp': 7},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'xTF'}, 'user': {'name': 'lEz'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'swu'}, 'user': {'name': 'EEX'}, '@timestamp': 9},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'swu'}, 'user': {'name': 'EEX'}, '@timestamp': 10},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'swu'}, 'user': {'name': 'EEX'}, '@timestamp': 11},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'pWq'}, 'user': {'name': 'NVR'}, '@timestamp': 12},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'pWq'}, 'user': {'name': 'NVR'}, '@timestamp': 13},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'pWq'}, 'user': {'name': 'NVR'}, '@timestamp': 14},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'cym'}, 'user': {'name': 'EEw'}, '@timestamp': 15},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'cym'}, 'user': {'name': 'EEw'}, '@timestamp': 16},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'cym'}, 'user': {'name': 'EEw'}, '@timestamp': 17},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'VPY'}, 'user': {'name': 'MGz'}, '@timestamp': 18},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'VPY'}, 'user': {'name': 'MGz'}, '@timestamp': 19},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'VPY'}, 'user': {'name': 'MGz'}, '@timestamp': 20},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'Nfm'}, 'user': {'name': 'lOP'}, '@timestamp': 21},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'Nfm'}, 'user': {'name': 'lOP'}, '@timestamp': 22},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'Nfm'}, 'user': {'name': 'lOP'}, '@timestamp': 23},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'ZRg'}, 'user': {'name': 'UvW'}, '@timestamp': 24},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'ZRg'}, 'user': {'name': 'UvW'}, '@timestamp': 25},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'ZRg'}, 'user': {'name': 'UvW'}, '@timestamp': 26},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'CiM'}, 'user': {'name': 'ZOf'}, '@timestamp': 27},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'CiM'}, 'user': {'name': 'ZOf'}, '@timestamp': 28},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'CiM'}, 'user': {'name': 'ZOf'}, '@timestamp': 29},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'HaT'}, 'user': {'name': 'Dgz'}, '@timestamp': 30},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'HaT'}, 'user': {'name': 'Dgz'}, '@timestamp': 31},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'HaT'}, 'user': {'name': 'Dgz'}, '@timestamp': 32},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'RJi'}, 'user': {'name': 'LSj'}, '@timestamp': 33},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'RJi'}, 'user': {'name': 'LSj'}, '@timestamp': 34},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'RJi'}, 'user': {'name': 'LSj'}, '@timestamp': 35},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'oGr'}, 'user': {'name': 'myw'}, '@timestamp': 36},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'oGr'}, 'user': {'name': 'myw'}, '@timestamp': 37},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'oGr'}, 'user': {'name': 'myw'}, '@timestamp': 38},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'DUN'}, 'user': {'name': 'rZj'}, '@timestamp': 39},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'DUN'}, 'user': {'name': 'rZj'}, '@timestamp': 40},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'DUN'}, 'user': {'name': 'rZj'}, '@timestamp': 41},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'eyL'}, 'user': {'name': 'uZf'}, '@timestamp': 42},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'eyL'}, 'user': {'name': 'uZf'}, '@timestamp': 43},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'eyL'}, 'user': {'name': 'uZf'}, '@timestamp': 44},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'Izm'}, 'user': {'name': 'iEG'}, '@timestamp': 45},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'Izm'}, 'user': {'name': 'iEG'}, '@timestamp': 46},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'Izm'}, 'user': {'name': 'iEG'}, '@timestamp': 47},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'gav'}, 'user': {'name': 'KEI'}, '@timestamp': 48},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'gav'}, 'user': {'name': 'KEI'}, '@timestamp': 49},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'gav'}, 'user': {'name': 'KEI'}, '@timestamp': 50},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'pdu'}, 'user': {'name': 'DJL'}, '@timestamp': 51},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'pdu'}, 'user': {'name': 'DJL'}, '@timestamp': 52},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'pdu'}, 'user': {'name': 'DJL'}, '@timestamp': 53},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'Mru'}, 'user': {'name': 'Toc'}, '@timestamp': 54},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'Mru'}, 'user': {'name': 'Toc'}, '@timestamp': 55},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'Mru'}, 'user': {'name': 'Toc'}, '@timestamp': 56},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'svB'}, 'user': {'name': 'ayA'}, '@timestamp': 57},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'svB'}, 'user': {'name': 'ayA'}, '@timestamp': 58},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'svB'}, 'user': {'name': 'ayA'}, '@timestamp': 59},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'olI'}, 'user': {'name': 'YAR'}, '@timestamp': 60},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'olI'}, 'user': {'name': 'YAR'}, '@timestamp': 61},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'olI'}, 'user': {'name': 'YAR'}, '@timestamp': 62},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'LbR'}, 'user': {'name': 'zWY'}, '@timestamp': 63},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'LbR'}, 'user': {'name': 'zWY'}, '@timestamp': 64},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'LbR'}, 'user': {'name': 'zWY'}, '@timestamp': 65},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'srf'}, 'user': {'name': 'ybO'}, '@timestamp': 66},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'srf'}, 'user': {'name': 'ybO'}, '@timestamp': 67},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'srf'}, 'user': {'name': 'ybO'}, '@timestamp': 68},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'YUa'}, 'user': {'name': 'gTr'}, '@timestamp': 69},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'YUa'}, 'user': {'name': 'gTr'}, '@timestamp': 70},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'YUa'}, 'user': {'name': 'gTr'}, '@timestamp': 71},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'NYj'}, 'user': {'name': 'LwO'}, '@timestamp': 72},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'NYj'}, 'user': {'name': 'LwO'}, '@timestamp': 73},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'NYj'}, 'user': {'name': 'LwO'}, '@timestamp': 74},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'Tvb'}, 'user': {'name': 'zIv'}, '@timestamp': 75},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'Tvb'}, 'user': {'name': 'zIv'}, '@timestamp': 76},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'Tvb'}, 'user': {'name': 'zIv'}, '@timestamp': 77},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'lLx'}, 'user': {'name': 'tPu'}, '@timestamp': 78},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'lLx'}, 'user': {'name': 'tPu'}, '@timestamp': 79},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'lLx'}, 'user': {'name': 'tPu'}, '@timestamp': 80},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'AMM'}, 'user': {'name': 'Fqp'}, '@timestamp': 81},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'AMM'}, 'user': {'name': 'Fqp'}, '@timestamp': 82},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'AMM'}, 'user': {'name': 'Fqp'}, '@timestamp': 83},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'kOO'}, 'user': {'name': 'kis'}, '@timestamp': 84},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'kOO'}, 'user': {'name': 'kis'}, '@timestamp': 85},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'kOO'}, 'user': {'name': 'kis'}, '@timestamp': 86},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'thB'}, 'user': {'name': 'Czn'}, '@timestamp': 87},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'thB'}, 'user': {'name': 'Czn'}, '@timestamp': 88},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'thB'}, 'user': {'name': 'Czn'}, '@timestamp': 89},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'Njd'}, 'user': {'name': 'yQm'}, '@timestamp': 90},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'Njd'}, 'user': {'name': 'yQm'}, '@timestamp': 91},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'Njd'}, 'user': {'name': 'yQm'}, '@timestamp': 92},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'SbA'}, 'user': {'name': 'gZp'}, '@timestamp': 93},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'SbA'}, 'user': {'name': 'gZp'}, '@timestamp': 94},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'SbA'}, 'user': {'name': 'gZp'}, '@timestamp': 95},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'GZa'}, 'user': {'name': 'Tdb'}, '@timestamp': 96},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'GZa'}, 'user': {'name': 'Tdb'}, '@timestamp': 97},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'GZa'}, 'user': {'name': 'Tdb'}, '@timestamp': 98},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'FRI'}, 'user': {'name': 'sji'}, '@timestamp': 99},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'FRI'}, 'user': {'name': 'sji'}, '@timestamp': 100},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'FRI'}, 'user': {'name': 'sji'}, '@timestamp': 101},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'LnP'}, 'user': {'name': 'tYo'}, '@timestamp': 102},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'LnP'}, 'user': {'name': 'tYo'}, '@timestamp': 103},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'LnP'}, 'user': {'name': 'tYo'}, '@timestamp': 104},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'Ufu'}, 'user': {'name': 'FWk'}, '@timestamp': 105},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'Ufu'}, 'user': {'name': 'FWk'}, '@timestamp': 106},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'Ufu'}, 'user': {'name': 'FWk'}, '@timestamp': 107},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'PRa'}, 'user': {'name': 'QXr'}, '@timestamp': 108},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'PRa'}, 'user': {'name': 'QXr'}, '@timestamp': 109},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'PRa'}, 'user': {'name': 'QXr'}, '@timestamp': 110},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'kNg'}, 'user': {'name': 'yXL'}, '@timestamp': 111},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'kNg'}, 'user': {'name': 'yXL'}, '@timestamp': 112},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'kNg'}, 'user': {'name': 'yXL'}, '@timestamp': 113},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'ZiZ'}, 'user': {'name': 'pAg'}, '@timestamp': 114},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'ZiZ'}, 'user': {'name': 'pAg'}, '@timestamp': 115},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'ZiZ'}, 'user': {'name': 'pAg'}, '@timestamp': 116},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'pPT'}, 'user': {'name': 'PzX'}, '@timestamp': 117},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'pPT'}, 'user': {'name': 'PzX'}, '@timestamp': 118},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'pPT'}, 'user': {'name': 'PzX'}, '@timestamp': 119},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'Lhv'}, 'user': {'name': 'NEh'}, '@timestamp': 120},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'Lhv'}, 'user': {'name': 'NEh'}, '@timestamp': 121},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'Lhv'}, 'user': {'name': 'NEh'}, '@timestamp': 122},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'Rrd'}, 'user': {'name': 'FNh'}, '@timestamp': 123},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'Rrd'}, 'user': {'name': 'FNh'}, '@timestamp': 124},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'Rrd'}, 'user': {'name': 'FNh'}, '@timestamp': 125},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'oQP'}, 'user': {'name': 'sNG'}, '@timestamp': 126},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'oQP'}, 'user': {'name': 'sNG'}, '@timestamp': 127},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'oQP'}, 'user': {'name': 'sNG'}, '@timestamp': 128},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'ATJ'}, 'user': {'name': 'mwZ'}, '@timestamp': 129},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'ATJ'}, 'user': {'name': 'mwZ'}, '@timestamp': 130},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'ATJ'}, 'user': {'name': 'mwZ'}, '@timestamp': 131},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'HQy'}, 'user': {'name': 'Bcb'}, '@timestamp': 132},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'HQy'}, 'user': {'name': 'Bcb'}, '@timestamp': 133},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'HQy'}, 'user': {'name': 'Bcb'}, '@timestamp': 134},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'qJj'}, 'user': {'name': 'vmQ'}, '@timestamp': 135},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'qJj'}, 'user': {'name': 'vmQ'}, '@timestamp': 136},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'qJj'}, 'user': {'name': 'vmQ'}, '@timestamp': 137},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'EYJ'}, 'user': {'name': 'XuO'}, '@timestamp': 138},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'EYJ'}, 'user': {'name': 'XuO'}, '@timestamp': 139},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'EYJ'}, 'user': {'name': 'XuO'}, '@timestamp': 140},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'LNy'}, 'user': {'name': 'JDj'}, '@timestamp': 141},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'LNy'}, 'user': {'name': 'JDj'}, '@timestamp': 142},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'LNy'}, 'user': {'name': 'JDj'}, '@timestamp': 143},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'LAG'}, 'user': {'name': 'yXj'}, '@timestamp': 144},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'LAG'}, 'user': {'name': 'yXj'}, '@timestamp': 145},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'LAG'}, 'user': {'name': 'yXj'}, '@timestamp': 146},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'TFO'}, 'user': {'name': 'gMM'}, '@timestamp': 147},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'TFO'}, 'user': {'name': 'gMM'}, '@timestamp': 148},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'TFO'}, 'user': {'name': 'gMM'}, '@timestamp': 149},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'Pkz'}, 'user': {'name': 'BsU'}, '@timestamp': 150},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'Pkz'}, 'user': {'name': 'BsU'}, '@timestamp': 151},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'Pkz'}, 'user': {'name': 'BsU'}, '@timestamp': 152},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'TCj'}, 'user': {'name': 'fwZ'}, '@timestamp': 153},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'TCj'}, 'user': {'name': 'fwZ'}, '@timestamp': 154},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'TCj'}, 'user': {'name': 'fwZ'}, '@timestamp': 155},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'iGt'}, 'user': {'name': 'xuX'}, '@timestamp': 156},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'iGt'}, 'user': {'name': 'xuX'}, '@timestamp': 157},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'iGt'}, 'user': {'name': 'xuX'}, '@timestamp': 158},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'xWg'}, 'user': {'name': 'uzn'}, '@timestamp': 159},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'xWg'}, 'user': {'name': 'uzn'}, '@timestamp': 160},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'xWg'}, 'user': {'name': 'uzn'}, '@timestamp': 161},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'kkC'}, 'user': {'name': 'GpD'}, '@timestamp': 162},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'kkC'}, 'user': {'name': 'GpD'}, '@timestamp': 163},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'kkC'}, 'user': {'name': 'GpD'}, '@timestamp': 164},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'BGQ'}, 'user': {'name': 'zgU'}, '@timestamp': 165},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'BGQ'}, 'user': {'name': 'zgU'}, '@timestamp': 166},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'BGQ'}, 'user': {'name': 'zgU'}, '@timestamp': 167},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'Nph'}, 'user': {'name': 'HcY'}, '@timestamp': 168},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'Nph'}, 'user': {'name': 'HcY'}, '@timestamp': 169},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'Nph'}, 'user': {'name': 'HcY'}, '@timestamp': 170},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'efW'}, 'user': {'name': 'ryE'}, '@timestamp': 171},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'efW'}, 'user': {'name': 'ryE'}, '@timestamp': 172},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'efW'}, 'user': {'name': 'ryE'}, '@timestamp': 173},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'YNp'}, 'user': {'name': 'ksi'}, '@timestamp': 174},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'YNp'}, 'user': {'name': 'ksi'}, '@timestamp': 175},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'YNp'}, 'user': {'name': 'ksi'}, '@timestamp': 176},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'hfo'}, 'user': {'name': 'HNU'}, '@timestamp': 177},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'hfo'}, 'user': {'name': 'HNU'}, '@timestamp': 178},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'hfo'}, 'user': {'name': 'HNU'}, '@timestamp': 179},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'tWb'}, 'user': {'name': 'yTv'}, '@timestamp': 180},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'tWb'}, 'user': {'name': 'yTv'}, '@timestamp': 181},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'tWb'}, 'user': {'name': 'yTv'}, '@timestamp': 182},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'xUm'}, 'user': {'name': 'tVt'}, '@timestamp': 183},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'xUm'}, 'user': {'name': 'tVt'}, '@timestamp': 184},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'xUm'}, 'user': {'name': 'tVt'}, '@timestamp': 185},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'nYh'}, 'user': {'name': 'bqj'}, '@timestamp': 186},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'nYh'}, 'user': {'name': 'bqj'}, '@timestamp': 187},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'nYh'}, 'user': {'name': 'bqj'}, '@timestamp': 188},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'oFZ'}, 'user': {'name': 'iFm'}, '@timestamp': 189},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'oFZ'}, 'user': {'name': 'iFm'}, '@timestamp': 190},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'oFZ'}, 'user': {'name': 'iFm'}, '@timestamp': 191},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'hdx'}, 'user': {'name': 'tgm'}, '@timestamp': 192},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'hdx'}, 'user': {'name': 'tgm'}, '@timestamp': 193},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'hdx'}, 'user': {'name': 'tgm'}, '@timestamp': 194},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'FTY'}, 'user': {'name': 'eaU'}, '@timestamp': 195},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'FTY'}, 'user': {'name': 'eaU'}, '@timestamp': 196},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'FTY'}, 'user': {'name': 'eaU'}, '@timestamp': 197},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'qVU'}, 'user': {'name': 'CGs'}, '@timestamp': 198},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'qVU'}, 'user': {'name': 'CGs'}, '@timestamp': 199},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'qVU'}, 'user': {'name': 'CGs'}, '@timestamp': 200},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'tMP'}, 'user': {'name': 'VTT'}, '@timestamp': 201},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'tMP'}, 'user': {'name': 'VTT'}, '@timestamp': 202},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'tMP'}, 'user': {'name': 'VTT'}, '@timestamp': 203},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'USR'}, 'user': {'name': 'JtZ'}, '@timestamp': 204},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'USR'}, 'user': {'name': 'JtZ'}, '@timestamp': 205},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'USR'}, 'user': {'name': 'JtZ'}, '@timestamp': 206},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'gOH'}, 'user': {'name': 'Zpa'}, '@timestamp': 207},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'gOH'}, 'user': {'name': 'Zpa'}, '@timestamp': 208},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'gOH'}, 'user': {'name': 'Zpa'}, '@timestamp': 209},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'waE'}, 'user': {'name': 'Mwa'}, '@timestamp': 210},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'waE'}, 'user': {'name': 'Mwa'}, '@timestamp': 211},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'waE'}, 'user': {'name': 'Mwa'}, '@timestamp': 212},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'userinit.exe', 'parent': {'name': 'winlogon.exe'}}, 'host': {'id': 'NUW'}, 'user': {'name': 'Bkk'}, '@timestamp': 213},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'explorer.exe'}, 'host': {'id': 'NUW'}, 'user': {'name': 'Bkk'}, '@timestamp': 214},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'host': {'id': 'NUW'}, 'user': {'name': 'Bkk'}, '@timestamp': 215}]
+[{'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'XIU'}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'tkN'}, 'user': {'name': 'Ioi'}, '@timestamp': 3},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'tkN'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'Ioi'}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'tkN'}, 'user': {'name': 'Ioi'}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'xTF'}, 'user': {'name': 'lEz'}, '@timestamp': 6},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'xTF'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'lEz'}, '@timestamp': 7},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'xTF'}, 'user': {'name': 'lEz'}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'swu'}, 'user': {'name': 'EEX'}, '@timestamp': 9},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'swu'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'EEX'}, '@timestamp': 10},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'swu'}, 'user': {'name': 'EEX'}, '@timestamp': 11},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'pWq'}, 'user': {'name': 'NVR'}, '@timestamp': 12},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'pWq'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'NVR'}, '@timestamp': 13},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'pWq'}, 'user': {'name': 'NVR'}, '@timestamp': 14},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'cym'}, 'user': {'name': 'EEw'}, '@timestamp': 15},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'cym'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'EEw'}, '@timestamp': 16},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'cym'}, 'user': {'name': 'EEw'}, '@timestamp': 17},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'VPY'}, 'user': {'name': 'MGz'}, '@timestamp': 18},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'VPY'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'MGz'}, '@timestamp': 19},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'VPY'}, 'user': {'name': 'MGz'}, '@timestamp': 20},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Nfm'}, 'user': {'name': 'lOP'}, '@timestamp': 21},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Nfm'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'lOP'}, '@timestamp': 22},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Nfm'}, 'user': {'name': 'lOP'}, '@timestamp': 23},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZRg'}, 'user': {'name': 'UvW'}, '@timestamp': 24},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZRg'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'UvW'}, '@timestamp': 25},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZRg'}, 'user': {'name': 'UvW'}, '@timestamp': 26},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'CiM'}, 'user': {'name': 'ZOf'}, '@timestamp': 27},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'CiM'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'ZOf'}, '@timestamp': 28},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'CiM'}, 'user': {'name': 'ZOf'}, '@timestamp': 29},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'HaT'}, 'user': {'name': 'Dgz'}, '@timestamp': 30},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'HaT'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'Dgz'}, '@timestamp': 31},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'HaT'}, 'user': {'name': 'Dgz'}, '@timestamp': 32},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'RJi'}, 'user': {'name': 'LSj'}, '@timestamp': 33},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'RJi'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'LSj'}, '@timestamp': 34},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'RJi'}, 'user': {'name': 'LSj'}, '@timestamp': 35},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'oGr'}, 'user': {'name': 'myw'}, '@timestamp': 36},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'oGr'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'myw'}, '@timestamp': 37},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oGr'}, 'user': {'name': 'myw'}, '@timestamp': 38},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'DUN'}, 'user': {'name': 'rZj'}, '@timestamp': 39},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'DUN'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'rZj'}, '@timestamp': 40},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'DUN'}, 'user': {'name': 'rZj'}, '@timestamp': 41},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'eyL'}, 'user': {'name': 'uZf'}, '@timestamp': 42},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'eyL'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'uZf'}, '@timestamp': 43},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'eyL'}, 'user': {'name': 'uZf'}, '@timestamp': 44},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Izm'}, 'user': {'name': 'iEG'}, '@timestamp': 45},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Izm'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'iEG'}, '@timestamp': 46},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Izm'}, 'user': {'name': 'iEG'}, '@timestamp': 47},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'gav'}, 'user': {'name': 'KEI'}, '@timestamp': 48},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'gav'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'KEI'}, '@timestamp': 49},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'gav'}, 'user': {'name': 'KEI'}, '@timestamp': 50},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'pdu'}, 'user': {'name': 'DJL'}, '@timestamp': 51},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'pdu'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'DJL'}, '@timestamp': 52},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'pdu'}, 'user': {'name': 'DJL'}, '@timestamp': 53},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Mru'}, 'user': {'name': 'Toc'}, '@timestamp': 54},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Mru'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'Toc'}, '@timestamp': 55},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Mru'}, 'user': {'name': 'Toc'}, '@timestamp': 56},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'svB'}, 'user': {'name': 'ayA'}, '@timestamp': 57},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'svB'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'ayA'}, '@timestamp': 58},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'svB'}, 'user': {'name': 'ayA'}, '@timestamp': 59},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'olI'}, 'user': {'name': 'YAR'}, '@timestamp': 60},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'olI'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'YAR'}, '@timestamp': 61},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'olI'}, 'user': {'name': 'YAR'}, '@timestamp': 62},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'LbR'}, 'user': {'name': 'zWY'}, '@timestamp': 63},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LbR'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'zWY'}, '@timestamp': 64},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'LbR'}, 'user': {'name': 'zWY'}, '@timestamp': 65},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'srf'}, 'user': {'name': 'ybO'}, '@timestamp': 66},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'srf'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'ybO'}, '@timestamp': 67},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'srf'}, 'user': {'name': 'ybO'}, '@timestamp': 68},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'YUa'}, 'user': {'name': 'gTr'}, '@timestamp': 69},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'YUa'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'gTr'}, '@timestamp': 70},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'YUa'}, 'user': {'name': 'gTr'}, '@timestamp': 71},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'NYj'}, 'user': {'name': 'LwO'}, '@timestamp': 72},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'NYj'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'LwO'}, '@timestamp': 73},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'NYj'}, 'user': {'name': 'LwO'}, '@timestamp': 74},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Tvb'}, 'user': {'name': 'zIv'}, '@timestamp': 75},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Tvb'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'zIv'}, '@timestamp': 76},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Tvb'}, 'user': {'name': 'zIv'}, '@timestamp': 77},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'lLx'}, 'user': {'name': 'tPu'}, '@timestamp': 78},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'lLx'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'tPu'}, '@timestamp': 79},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'lLx'}, 'user': {'name': 'tPu'}, '@timestamp': 80},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'AMM'}, 'user': {'name': 'Fqp'}, '@timestamp': 81},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'AMM'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'Fqp'}, '@timestamp': 82},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'AMM'}, 'user': {'name': 'Fqp'}, '@timestamp': 83},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'kOO'}, 'user': {'name': 'kis'}, '@timestamp': 84},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'kOO'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'kis'}, '@timestamp': 85},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'kOO'}, 'user': {'name': 'kis'}, '@timestamp': 86},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'thB'}, 'user': {'name': 'Czn'}, '@timestamp': 87},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'thB'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'Czn'}, '@timestamp': 88},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'thB'}, 'user': {'name': 'Czn'}, '@timestamp': 89},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Njd'}, 'user': {'name': 'yQm'}, '@timestamp': 90},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Njd'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'yQm'}, '@timestamp': 91},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Njd'}, 'user': {'name': 'yQm'}, '@timestamp': 92},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'SbA'}, 'user': {'name': 'gZp'}, '@timestamp': 93},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'SbA'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'gZp'}, '@timestamp': 94},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'SbA'}, 'user': {'name': 'gZp'}, '@timestamp': 95},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'GZa'}, 'user': {'name': 'Tdb'}, '@timestamp': 96},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'GZa'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'Tdb'}, '@timestamp': 97},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'GZa'}, 'user': {'name': 'Tdb'}, '@timestamp': 98},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'FRI'}, 'user': {'name': 'sji'}, '@timestamp': 99},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'FRI'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'sji'}, '@timestamp': 100},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'FRI'}, 'user': {'name': 'sji'}, '@timestamp': 101},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'LnP'}, 'user': {'name': 'tYo'}, '@timestamp': 102},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LnP'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'tYo'}, '@timestamp': 103},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LnP'}, 'user': {'name': 'tYo'}, '@timestamp': 104},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Ufu'}, 'user': {'name': 'FWk'}, '@timestamp': 105},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Ufu'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'FWk'}, '@timestamp': 106},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Ufu'}, 'user': {'name': 'FWk'}, '@timestamp': 107},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'PRa'}, 'user': {'name': 'QXr'}, '@timestamp': 108},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'PRa'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'QXr'}, '@timestamp': 109},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'PRa'}, 'user': {'name': 'QXr'}, '@timestamp': 110},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'kNg'}, 'user': {'name': 'yXL'}, '@timestamp': 111},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'kNg'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'yXL'}, '@timestamp': 112},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'kNg'}, 'user': {'name': 'yXL'}, '@timestamp': 113},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'ZiZ'}, 'user': {'name': 'pAg'}, '@timestamp': 114},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZiZ'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'pAg'}, '@timestamp': 115},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZiZ'}, 'user': {'name': 'pAg'}, '@timestamp': 116},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'pPT'}, 'user': {'name': 'PzX'}, '@timestamp': 117},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'pPT'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'PzX'}, '@timestamp': 118},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'pPT'}, 'user': {'name': 'PzX'}, '@timestamp': 119},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Lhv'}, 'user': {'name': 'NEh'}, '@timestamp': 120},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Lhv'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'NEh'}, '@timestamp': 121},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Lhv'}, 'user': {'name': 'NEh'}, '@timestamp': 122},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Rrd'}, 'user': {'name': 'FNh'}, '@timestamp': 123},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Rrd'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'FNh'}, '@timestamp': 124},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Rrd'}, 'user': {'name': 'FNh'}, '@timestamp': 125},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oQP'}, 'user': {'name': 'sNG'}, '@timestamp': 126},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'oQP'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'sNG'}, '@timestamp': 127},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'oQP'}, 'user': {'name': 'sNG'}, '@timestamp': 128},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'ATJ'}, 'user': {'name': 'mwZ'}, '@timestamp': 129},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ATJ'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'mwZ'}, '@timestamp': 130},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ATJ'}, 'user': {'name': 'mwZ'}, '@timestamp': 131},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'HQy'}, 'user': {'name': 'Bcb'}, '@timestamp': 132},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'HQy'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'Bcb'}, '@timestamp': 133},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'HQy'}, 'user': {'name': 'Bcb'}, '@timestamp': 134},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'qJj'}, 'user': {'name': 'vmQ'}, '@timestamp': 135},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'qJj'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'vmQ'}, '@timestamp': 136},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'qJj'}, 'user': {'name': 'vmQ'}, '@timestamp': 137},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'EYJ'}, 'user': {'name': 'XuO'}, '@timestamp': 138},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'EYJ'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'XuO'}, '@timestamp': 139},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'EYJ'}, 'user': {'name': 'XuO'}, '@timestamp': 140},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LNy'}, 'user': {'name': 'JDj'}, '@timestamp': 141},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'LNy'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'JDj'}, '@timestamp': 142},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LNy'}, 'user': {'name': 'JDj'}, '@timestamp': 143},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LAG'}, 'user': {'name': 'yXj'}, '@timestamp': 144},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'LAG'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'yXj'}, '@timestamp': 145},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LAG'}, 'user': {'name': 'yXj'}, '@timestamp': 146},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'TFO'}, 'user': {'name': 'gMM'}, '@timestamp': 147},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'TFO'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'gMM'}, '@timestamp': 148},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'TFO'}, 'user': {'name': 'gMM'}, '@timestamp': 149},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Pkz'}, 'user': {'name': 'BsU'}, '@timestamp': 150},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Pkz'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'BsU'}, '@timestamp': 151},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Pkz'}, 'user': {'name': 'BsU'}, '@timestamp': 152},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'TCj'}, 'user': {'name': 'fwZ'}, '@timestamp': 153},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'TCj'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'fwZ'}, '@timestamp': 154},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'TCj'}, 'user': {'name': 'fwZ'}, '@timestamp': 155},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'iGt'}, 'user': {'name': 'xuX'}, '@timestamp': 156},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'iGt'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'xuX'}, '@timestamp': 157},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'iGt'}, 'user': {'name': 'xuX'}, '@timestamp': 158},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'xWg'}, 'user': {'name': 'uzn'}, '@timestamp': 159},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'xWg'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'uzn'}, '@timestamp': 160},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'xWg'}, 'user': {'name': 'uzn'}, '@timestamp': 161},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'kkC'}, 'user': {'name': 'GpD'}, '@timestamp': 162},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'kkC'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'GpD'}, '@timestamp': 163},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'kkC'}, 'user': {'name': 'GpD'}, '@timestamp': 164},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'BGQ'}, 'user': {'name': 'zgU'}, '@timestamp': 165},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'BGQ'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'zgU'}, '@timestamp': 166},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'BGQ'}, 'user': {'name': 'zgU'}, '@timestamp': 167},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Nph'}, 'user': {'name': 'HcY'}, '@timestamp': 168},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Nph'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'HcY'}, '@timestamp': 169},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Nph'}, 'user': {'name': 'HcY'}, '@timestamp': 170},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'efW'}, 'user': {'name': 'ryE'}, '@timestamp': 171},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'efW'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'ryE'}, '@timestamp': 172},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'efW'}, 'user': {'name': 'ryE'}, '@timestamp': 173},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'YNp'}, 'user': {'name': 'ksi'}, '@timestamp': 174},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'YNp'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'ksi'}, '@timestamp': 175},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'YNp'}, 'user': {'name': 'ksi'}, '@timestamp': 176},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'hfo'}, 'user': {'name': 'HNU'}, '@timestamp': 177},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'hfo'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'HNU'}, '@timestamp': 178},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'hfo'}, 'user': {'name': 'HNU'}, '@timestamp': 179},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'tWb'}, 'user': {'name': 'yTv'}, '@timestamp': 180},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'tWb'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'yTv'}, '@timestamp': 181},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'tWb'}, 'user': {'name': 'yTv'}, '@timestamp': 182},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'xUm'}, 'user': {'name': 'tVt'}, '@timestamp': 183},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'xUm'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'tVt'}, '@timestamp': 184},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'xUm'}, 'user': {'name': 'tVt'}, '@timestamp': 185},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'nYh'}, 'user': {'name': 'bqj'}, '@timestamp': 186},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'nYh'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'bqj'}, '@timestamp': 187},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'nYh'}, 'user': {'name': 'bqj'}, '@timestamp': 188},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oFZ'}, 'user': {'name': 'iFm'}, '@timestamp': 189},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oFZ'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'iFm'}, '@timestamp': 190},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oFZ'}, 'user': {'name': 'iFm'}, '@timestamp': 191},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'hdx'}, 'user': {'name': 'tgm'}, '@timestamp': 192},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'hdx'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'tgm'}, '@timestamp': 193},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'hdx'}, 'user': {'name': 'tgm'}, '@timestamp': 194},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'FTY'}, 'user': {'name': 'eaU'}, '@timestamp': 195},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'FTY'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'eaU'}, '@timestamp': 196},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'FTY'}, 'user': {'name': 'eaU'}, '@timestamp': 197},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'qVU'}, 'user': {'name': 'CGs'}, '@timestamp': 198},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'qVU'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'CGs'}, '@timestamp': 199},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'qVU'}, 'user': {'name': 'CGs'}, '@timestamp': 200},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'tMP'}, 'user': {'name': 'VTT'}, '@timestamp': 201},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'tMP'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'VTT'}, '@timestamp': 202},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'tMP'}, 'user': {'name': 'VTT'}, '@timestamp': 203},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'USR'}, 'user': {'name': 'JtZ'}, '@timestamp': 204},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'USR'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'JtZ'}, '@timestamp': 205},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'USR'}, 'user': {'name': 'JtZ'}, '@timestamp': 206},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'gOH'}, 'user': {'name': 'Zpa'}, '@timestamp': 207},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'gOH'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'Zpa'}, '@timestamp': 208},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'gOH'}, 'user': {'name': 'Zpa'}, '@timestamp': 209},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'waE'}, 'user': {'name': 'Mwa'}, '@timestamp': 210},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'waE'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'Mwa'}, '@timestamp': 211},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'waE'}, 'user': {'name': 'Mwa'}, '@timestamp': 212},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'NUW'}, 'user': {'name': 'Bkk'}, '@timestamp': 213},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'NUW'}, 'process': {'name': 'explorer.exe'}, 'user': {'name': 'Bkk'}, '@timestamp': 214},
+ {'process': {'parent': {'name': 'explorer.exe'}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'NUW'}, 'user': {'name': 'Bkk'}, '@timestamp': 215}]
 ```
 
 
@@ -4020,8 +4020,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'sqlservr.exe'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'sqlservr.exe'}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'sqlservr.exe'}, 'name': 'cmd.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'sqlservr.exe'}, 'name': 'cmd.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -4073,7 +4073,7 @@ file where file.extension : "dll" and file.path : "C:\\*\\*.exe.local\\*.dll"
 ```
 
 ```python
-[{'file': {'extension': 'dll', 'path': 'C:\\XIUtkNI\\SvILO.exe.local\\Ezswu.dll'}, 'event': {'category': ['file']}, '@timestamp': 0}]
+[{'event': {'category': ['file']}, 'file': {'extension': 'dll', 'path': 'C:\\XIUtkNI\\SvILO.exe.local\\Ezswu.dll'}, '@timestamp': 0}]
 ```
 
 
@@ -4091,24 +4091,24 @@ event.category:process and event.type:(start or process_started) and
 ```
 
 ```python
-[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'osascript'}}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'com.apple.automator.runner'}}, '@timestamp': 1},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'sh'}}, '@timestamp': 2},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'bash'}}, '@timestamp': 3},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'dash'}}, '@timestamp': 4},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'zsh'}}, '@timestamp': 5},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'pythonyXIUtkNIoixTFl'}}, '@timestamp': 6},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'ruby'}}, '@timestamp': 7},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'pwsh'}}, '@timestamp': 8},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'osascript'}}, '@timestamp': 9},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'com.apple.automator.runner'}}, '@timestamp': 10},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'sh'}}, '@timestamp': 11},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'bash'}}, '@timestamp': 12},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'dash'}}, '@timestamp': 13},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'zsh'}}, '@timestamp': 14},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'pythonzswuEEXpWqNVR'}}, '@timestamp': 15},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'ruby'}}, '@timestamp': 16},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'security_authtrampoline', 'parent': {'name': 'pwsh'}}, '@timestamp': 17}]
+[{'process': {'parent': {'name': 'osascript'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'com.apple.automator.runner'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'sh'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'bash'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'dash'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'zsh'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'pythonyXIUtkNIoixTFl'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'ruby'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 7},
+ {'process': {'parent': {'name': 'pwsh'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'osascript'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 9},
+ {'process': {'parent': {'name': 'com.apple.automator.runner'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 10},
+ {'process': {'parent': {'name': 'sh'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 11},
+ {'process': {'parent': {'name': 'bash'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 12},
+ {'process': {'parent': {'name': 'dash'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 13},
+ {'process': {'parent': {'name': 'zsh'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 14},
+ {'process': {'parent': {'name': 'pythonzswuEEXpWqNVR'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 15},
+ {'process': {'parent': {'name': 'ruby'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 16},
+ {'process': {'parent': {'name': 'pwsh'}, 'name': 'security_authtrampoline'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 17}]
 ```
 
 
@@ -4124,8 +4124,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'exploit_event'}, 'endgame': {'metadata': {'type': 'detection'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'exploit_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'detection'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'exploit_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'exploit_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -4141,8 +4141,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'exploit_event'}, 'endgame': {'metadata': {'type': 'prevention'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'exploit_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'prevention'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'exploit_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'exploit_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -4231,7 +4231,7 @@ network where network.protocol == "dns" and
 ```
 
 ```python
-[{'network': {'protocol': 'dns'}, 'process': {'name': 'ZFy', 'executable': 'lEz'}, 'user': {'id': 'XIU'}, 'event': {'action': 'lookup_requested', 'category': ['network']}, 'dns': {'question': {'name': 'kNIoixTFipstack.com'}}, '@timestamp': 0}]
+[{'dns': {'question': {'name': 'XIUtkNIshowipaddress.com'}}, 'event': {'action': 'lookup_requested', 'category': ['network']}, 'network': {'protocol': 'dns'}, 'process': {'name': 'oix', 'executable': 'TFl'}, 'user': {'id': 'Ezs'}, '@timestamp': 0}]
 ```
 
 
@@ -4263,24 +4263,24 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 20, 'ip': 'e6ea:94e4:e5ac:b58c:1b43:3a53:aa79:ec59'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 20, 'ip': '119.10.44.216'}, 'source': {'ip': '172.31.81.251'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 20, 'ip': '104.129.204.102'}, 'source': {'ip': '192.168.147.58'}, '@timestamp': 2},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 21, 'ip': '149.239.86.175'}, 'source': {'ip': '10.111.13.86'}, '@timestamp': 3},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 21, 'ip': '112.141.185.70'}, 'source': {'ip': '172.27.169.243'}, '@timestamp': 4},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 21, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'source': {'ip': '192.168.197.122'}, '@timestamp': 5},
- {'event': {'category': ['network'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.155.175.169'}, 'destination': {'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, '@timestamp': 6},
- {'event': {'category': ['network'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.21.27.73'}, 'destination': {'ip': '156.105.128.203'}, '@timestamp': 7},
- {'event': {'category': ['network'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.162.120'}, 'destination': {'ip': '93.16.168.118'}, '@timestamp': 8},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 20, 'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'source': {'ip': '10.247.115.164'}, '@timestamp': 9},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 20, 'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'source': {'ip': '172.30.255.121'}, '@timestamp': 10},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 20, 'ip': '147.172.30.18'}, 'source': {'ip': '192.168.120.95'}, '@timestamp': 11},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 21, 'ip': '200.44.53.86'}, 'source': {'ip': '10.231.61.22'}, '@timestamp': 12},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 21, 'ip': 'bd8d:8e9f:3c38:5e93:2a21:f2e3:2a70:2899'}, 'source': {'ip': '172.27.220.217'}, '@timestamp': 13},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 21, 'ip': '3.79.219.137'}, 'source': {'ip': '192.168.64.185'}, '@timestamp': 14},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.77.111.86'}, 'destination': {'ip': 'b861:3a65:7d92:a4ae:175d:4ee4:1dd9:801e'}, '@timestamp': 15},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.17.96.216'}, 'destination': {'ip': '46.77.189.36'}, '@timestamp': 16},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.139.227'}, 'destination': {'ip': '159.213.231.147'}, '@timestamp': 17}]
+[{'destination': {'port': 20, 'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.193.74.7'}, '@timestamp': 0},
+ {'destination': {'port': 20, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.25.51.169'}, '@timestamp': 1},
+ {'destination': {'port': 20, 'ip': '104.129.204.102'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.111.13'}, '@timestamp': 2},
+ {'destination': {'port': 21, 'ip': '149.239.86.175'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.186.159.60'}, '@timestamp': 3},
+ {'destination': {'port': 21, 'ip': '112.141.185.70'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.87.162'}, '@timestamp': 4},
+ {'destination': {'port': 21, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.155.175'}, '@timestamp': 5},
+ {'destination': {'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'event': {'category': ['network'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.81.180.150'}, '@timestamp': 6},
+ {'destination': {'ip': '156.105.128.203'}, 'event': {'category': ['network'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.26.39.143'}, '@timestamp': 7},
+ {'destination': {'ip': '93.16.168.118'}, 'event': {'category': ['network'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 8},
+ {'destination': {'port': 20, 'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 9},
+ {'destination': {'port': 20, 'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.133.247'}, '@timestamp': 10},
+ {'destination': {'port': 20, 'ip': '147.172.30.18'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.231.61'}, '@timestamp': 11},
+ {'destination': {'port': 21, 'ip': '200.44.53.86'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.189.205.159'}, '@timestamp': 12},
+ {'destination': {'port': 21, 'ip': 'bd8d:8e9f:3c38:5e93:2a21:f2e3:2a70:2899'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.20.11.158'}, '@timestamp': 13},
+ {'destination': {'port': 21, 'ip': '3.79.219.137'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.77.111'}, '@timestamp': 14},
+ {'destination': {'ip': 'b861:3a65:7d92:a4ae:175d:4ee4:1dd9:801e'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.22.13.138'}, '@timestamp': 15},
+ {'destination': {'ip': '46.77.189.36'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.24.190.55'}, '@timestamp': 16},
+ {'destination': {'ip': '159.213.231.147'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.ftp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.118.248'}, '@timestamp': 17}]
 ```
 
 
@@ -4371,381 +4371,381 @@ sequence by agent.id, user.name with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'tkN'}, 'user': {'name': 'Ioi'}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'tkN'}, 'user': {'name': 'Ioi'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'tkN'}, 'user': {'name': 'Ioi'}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'xTF'}, 'user': {'name': 'lEz'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'xTF'}, 'user': {'name': 'lEz'}, '@timestamp': 7},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'xTF'}, 'user': {'name': 'lEz'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'swu'}, 'user': {'name': 'EEX'}, '@timestamp': 9},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'swu'}, 'user': {'name': 'EEX'}, '@timestamp': 10},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'swu'}, 'user': {'name': 'EEX'}, '@timestamp': 11},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'pWq'}, 'user': {'name': 'NVR'}, '@timestamp': 12},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'pWq'}, 'user': {'name': 'NVR'}, '@timestamp': 13},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'pWq'}, 'user': {'name': 'NVR'}, '@timestamp': 14},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'cym'}, 'user': {'name': 'EEw'}, '@timestamp': 15},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'cym'}, 'user': {'name': 'EEw'}, '@timestamp': 16},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'cym'}, 'user': {'name': 'EEw'}, '@timestamp': 17},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'VPY'}, 'user': {'name': 'MGz'}, '@timestamp': 18},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'VPY'}, 'user': {'name': 'MGz'}, '@timestamp': 19},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'VPY'}, 'user': {'name': 'MGz'}, '@timestamp': 20},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Nfm'}, 'user': {'name': 'lOP'}, '@timestamp': 21},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Nfm'}, 'user': {'name': 'lOP'}, '@timestamp': 22},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Nfm'}, 'user': {'name': 'lOP'}, '@timestamp': 23},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'ZRg'}, 'user': {'name': 'UvW'}, '@timestamp': 24},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ZRg'}, 'user': {'name': 'UvW'}, '@timestamp': 25},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ZRg'}, 'user': {'name': 'UvW'}, '@timestamp': 26},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'CiM'}, 'user': {'name': 'ZOf'}, '@timestamp': 27},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'CiM'}, 'user': {'name': 'ZOf'}, '@timestamp': 28},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'CiM'}, 'user': {'name': 'ZOf'}, '@timestamp': 29},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'HaT'}, 'user': {'name': 'Dgz'}, '@timestamp': 30},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'HaT'}, 'user': {'name': 'Dgz'}, '@timestamp': 31},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'HaT'}, 'user': {'name': 'Dgz'}, '@timestamp': 32},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'RJi'}, 'user': {'name': 'LSj'}, '@timestamp': 33},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'RJi'}, 'user': {'name': 'LSj'}, '@timestamp': 34},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'RJi'}, 'user': {'name': 'LSj'}, '@timestamp': 35},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'oGr'}, 'user': {'name': 'myw'}, '@timestamp': 36},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'oGr'}, 'user': {'name': 'myw'}, '@timestamp': 37},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'oGr'}, 'user': {'name': 'myw'}, '@timestamp': 38},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'DUN'}, 'user': {'name': 'rZj'}, '@timestamp': 39},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'DUN'}, 'user': {'name': 'rZj'}, '@timestamp': 40},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'DUN'}, 'user': {'name': 'rZj'}, '@timestamp': 41},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'eyL'}, 'user': {'name': 'uZf'}, '@timestamp': 42},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'eyL'}, 'user': {'name': 'uZf'}, '@timestamp': 43},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'eyL'}, 'user': {'name': 'uZf'}, '@timestamp': 44},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Izm'}, 'user': {'name': 'iEG'}, '@timestamp': 45},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Izm'}, 'user': {'name': 'iEG'}, '@timestamp': 46},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Izm'}, 'user': {'name': 'iEG'}, '@timestamp': 47},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'gav'}, 'user': {'name': 'KEI'}, '@timestamp': 48},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'gav'}, 'user': {'name': 'KEI'}, '@timestamp': 49},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'gav'}, 'user': {'name': 'KEI'}, '@timestamp': 50},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'pdu'}, 'user': {'name': 'DJL'}, '@timestamp': 51},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'pdu'}, 'user': {'name': 'DJL'}, '@timestamp': 52},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'pdu'}, 'user': {'name': 'DJL'}, '@timestamp': 53},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Mru'}, 'user': {'name': 'Toc'}, '@timestamp': 54},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Mru'}, 'user': {'name': 'Toc'}, '@timestamp': 55},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Mru'}, 'user': {'name': 'Toc'}, '@timestamp': 56},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'svB'}, 'user': {'name': 'ayA'}, '@timestamp': 57},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'svB'}, 'user': {'name': 'ayA'}, '@timestamp': 58},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'svB'}, 'user': {'name': 'ayA'}, '@timestamp': 59},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'olI'}, 'user': {'name': 'YAR'}, '@timestamp': 60},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'olI'}, 'user': {'name': 'YAR'}, '@timestamp': 61},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'olI'}, 'user': {'name': 'YAR'}, '@timestamp': 62},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'LbR'}, 'user': {'name': 'zWY'}, '@timestamp': 63},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'LbR'}, 'user': {'name': 'zWY'}, '@timestamp': 64},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LbR'}, 'user': {'name': 'zWY'}, '@timestamp': 65},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'srf'}, 'user': {'name': 'ybO'}, '@timestamp': 66},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'srf'}, 'user': {'name': 'ybO'}, '@timestamp': 67},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'srf'}, 'user': {'name': 'ybO'}, '@timestamp': 68},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'YUa'}, 'user': {'name': 'gTr'}, '@timestamp': 69},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'YUa'}, 'user': {'name': 'gTr'}, '@timestamp': 70},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'YUa'}, 'user': {'name': 'gTr'}, '@timestamp': 71},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'NYj'}, 'user': {'name': 'LwO'}, '@timestamp': 72},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'NYj'}, 'user': {'name': 'LwO'}, '@timestamp': 73},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'NYj'}, 'user': {'name': 'LwO'}, '@timestamp': 74},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Tvb'}, 'user': {'name': 'zIv'}, '@timestamp': 75},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Tvb'}, 'user': {'name': 'zIv'}, '@timestamp': 76},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Tvb'}, 'user': {'name': 'zIv'}, '@timestamp': 77},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'lLx'}, 'user': {'name': 'tPu'}, '@timestamp': 78},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'lLx'}, 'user': {'name': 'tPu'}, '@timestamp': 79},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'lLx'}, 'user': {'name': 'tPu'}, '@timestamp': 80},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'AMM'}, 'user': {'name': 'Fqp'}, '@timestamp': 81},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'AMM'}, 'user': {'name': 'Fqp'}, '@timestamp': 82},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'AMM'}, 'user': {'name': 'Fqp'}, '@timestamp': 83},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'kOO'}, 'user': {'name': 'kis'}, '@timestamp': 84},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'kOO'}, 'user': {'name': 'kis'}, '@timestamp': 85},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'kOO'}, 'user': {'name': 'kis'}, '@timestamp': 86},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'thB'}, 'user': {'name': 'Czn'}, '@timestamp': 87},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'thB'}, 'user': {'name': 'Czn'}, '@timestamp': 88},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'thB'}, 'user': {'name': 'Czn'}, '@timestamp': 89},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Njd'}, 'user': {'name': 'yQm'}, '@timestamp': 90},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Njd'}, 'user': {'name': 'yQm'}, '@timestamp': 91},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Njd'}, 'user': {'name': 'yQm'}, '@timestamp': 92},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'SbA'}, 'user': {'name': 'gZp'}, '@timestamp': 93},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'SbA'}, 'user': {'name': 'gZp'}, '@timestamp': 94},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'SbA'}, 'user': {'name': 'gZp'}, '@timestamp': 95},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'GZa'}, 'user': {'name': 'Tdb'}, '@timestamp': 96},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'GZa'}, 'user': {'name': 'Tdb'}, '@timestamp': 97},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'GZa'}, 'user': {'name': 'Tdb'}, '@timestamp': 98},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'FRI'}, 'user': {'name': 'sji'}, '@timestamp': 99},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'FRI'}, 'user': {'name': 'sji'}, '@timestamp': 100},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'FRI'}, 'user': {'name': 'sji'}, '@timestamp': 101},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LnP'}, 'user': {'name': 'tYo'}, '@timestamp': 102},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LnP'}, 'user': {'name': 'tYo'}, '@timestamp': 103},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'LnP'}, 'user': {'name': 'tYo'}, '@timestamp': 104},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Ufu'}, 'user': {'name': 'FWk'}, '@timestamp': 105},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Ufu'}, 'user': {'name': 'FWk'}, '@timestamp': 106},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Ufu'}, 'user': {'name': 'FWk'}, '@timestamp': 107},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'PRa'}, 'user': {'name': 'QXr'}, '@timestamp': 108},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'PRa'}, 'user': {'name': 'QXr'}, '@timestamp': 109},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'PRa'}, 'user': {'name': 'QXr'}, '@timestamp': 110},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'kNg'}, 'user': {'name': 'yXL'}, '@timestamp': 111},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'kNg'}, 'user': {'name': 'yXL'}, '@timestamp': 112},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'kNg'}, 'user': {'name': 'yXL'}, '@timestamp': 113},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ZiZ'}, 'user': {'name': 'pAg'}, '@timestamp': 114},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'ZiZ'}, 'user': {'name': 'pAg'}, '@timestamp': 115},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ZiZ'}, 'user': {'name': 'pAg'}, '@timestamp': 116},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'pPT'}, 'user': {'name': 'PzX'}, '@timestamp': 117},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'pPT'}, 'user': {'name': 'PzX'}, '@timestamp': 118},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'pPT'}, 'user': {'name': 'PzX'}, '@timestamp': 119},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Lhv'}, 'user': {'name': 'NEh'}, '@timestamp': 120},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Lhv'}, 'user': {'name': 'NEh'}, '@timestamp': 121},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Lhv'}, 'user': {'name': 'NEh'}, '@timestamp': 122},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Rrd'}, 'user': {'name': 'FNh'}, '@timestamp': 123},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Rrd'}, 'user': {'name': 'FNh'}, '@timestamp': 124},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Rrd'}, 'user': {'name': 'FNh'}, '@timestamp': 125},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'oQP'}, 'user': {'name': 'sNG'}, '@timestamp': 126},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'oQP'}, 'user': {'name': 'sNG'}, '@timestamp': 127},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'oQP'}, 'user': {'name': 'sNG'}, '@timestamp': 128},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ATJ'}, 'user': {'name': 'mwZ'}, '@timestamp': 129},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ATJ'}, 'user': {'name': 'mwZ'}, '@timestamp': 130},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ATJ'}, 'user': {'name': 'mwZ'}, '@timestamp': 131},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'HQy'}, 'user': {'name': 'Bcb'}, '@timestamp': 132},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'HQy'}, 'user': {'name': 'Bcb'}, '@timestamp': 133},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'HQy'}, 'user': {'name': 'Bcb'}, '@timestamp': 134},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'qJj'}, 'user': {'name': 'vmQ'}, '@timestamp': 135},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'qJj'}, 'user': {'name': 'vmQ'}, '@timestamp': 136},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'qJj'}, 'user': {'name': 'vmQ'}, '@timestamp': 137},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'EYJ'}, 'user': {'name': 'XuO'}, '@timestamp': 138},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'EYJ'}, 'user': {'name': 'XuO'}, '@timestamp': 139},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'EYJ'}, 'user': {'name': 'XuO'}, '@timestamp': 140},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LNy'}, 'user': {'name': 'JDj'}, '@timestamp': 141},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'LNy'}, 'user': {'name': 'JDj'}, '@timestamp': 142},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'LNy'}, 'user': {'name': 'JDj'}, '@timestamp': 143},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LAG'}, 'user': {'name': 'yXj'}, '@timestamp': 144},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'LAG'}, 'user': {'name': 'yXj'}, '@timestamp': 145},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LAG'}, 'user': {'name': 'yXj'}, '@timestamp': 146},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'TFO'}, 'user': {'name': 'gMM'}, '@timestamp': 147},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'TFO'}, 'user': {'name': 'gMM'}, '@timestamp': 148},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'TFO'}, 'user': {'name': 'gMM'}, '@timestamp': 149},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Pkz'}, 'user': {'name': 'BsU'}, '@timestamp': 150},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Pkz'}, 'user': {'name': 'BsU'}, '@timestamp': 151},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Pkz'}, 'user': {'name': 'BsU'}, '@timestamp': 152},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'TCj'}, 'user': {'name': 'fwZ'}, '@timestamp': 153},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'TCj'}, 'user': {'name': 'fwZ'}, '@timestamp': 154},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'TCj'}, 'user': {'name': 'fwZ'}, '@timestamp': 155},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'iGt'}, 'user': {'name': 'xuX'}, '@timestamp': 156},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'iGt'}, 'user': {'name': 'xuX'}, '@timestamp': 157},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'iGt'}, 'user': {'name': 'xuX'}, '@timestamp': 158},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'xWg'}, 'user': {'name': 'uzn'}, '@timestamp': 159},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'xWg'}, 'user': {'name': 'uzn'}, '@timestamp': 160},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xWg'}, 'user': {'name': 'uzn'}, '@timestamp': 161},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'kkC'}, 'user': {'name': 'GpD'}, '@timestamp': 162},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'kkC'}, 'user': {'name': 'GpD'}, '@timestamp': 163},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'kkC'}, 'user': {'name': 'GpD'}, '@timestamp': 164},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'BGQ'}, 'user': {'name': 'zgU'}, '@timestamp': 165},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'BGQ'}, 'user': {'name': 'zgU'}, '@timestamp': 166},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'BGQ'}, 'user': {'name': 'zgU'}, '@timestamp': 167},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Nph'}, 'user': {'name': 'HcY'}, '@timestamp': 168},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Nph'}, 'user': {'name': 'HcY'}, '@timestamp': 169},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Nph'}, 'user': {'name': 'HcY'}, '@timestamp': 170},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'efW'}, 'user': {'name': 'ryE'}, '@timestamp': 171},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'efW'}, 'user': {'name': 'ryE'}, '@timestamp': 172},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'efW'}, 'user': {'name': 'ryE'}, '@timestamp': 173},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'YNp'}, 'user': {'name': 'ksi'}, '@timestamp': 174},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'YNp'}, 'user': {'name': 'ksi'}, '@timestamp': 175},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'YNp'}, 'user': {'name': 'ksi'}, '@timestamp': 176},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'hfo'}, 'user': {'name': 'HNU'}, '@timestamp': 177},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'hfo'}, 'user': {'name': 'HNU'}, '@timestamp': 178},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'hfo'}, 'user': {'name': 'HNU'}, '@timestamp': 179},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'tWb'}, 'user': {'name': 'yTv'}, '@timestamp': 180},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'tWb'}, 'user': {'name': 'yTv'}, '@timestamp': 181},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'tWb'}, 'user': {'name': 'yTv'}, '@timestamp': 182},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'xUm'}, 'user': {'name': 'tVt'}, '@timestamp': 183},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'xUm'}, 'user': {'name': 'tVt'}, '@timestamp': 184},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xUm'}, 'user': {'name': 'tVt'}, '@timestamp': 185},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'nYh'}, 'user': {'name': 'bqj'}, '@timestamp': 186},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'nYh'}, 'user': {'name': 'bqj'}, '@timestamp': 187},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'nYh'}, 'user': {'name': 'bqj'}, '@timestamp': 188},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'oFZ'}, 'user': {'name': 'iFm'}, '@timestamp': 189},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'oFZ'}, 'user': {'name': 'iFm'}, '@timestamp': 190},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'oFZ'}, 'user': {'name': 'iFm'}, '@timestamp': 191},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'hdx'}, 'user': {'name': 'tgm'}, '@timestamp': 192},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'hdx'}, 'user': {'name': 'tgm'}, '@timestamp': 193},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'hdx'}, 'user': {'name': 'tgm'}, '@timestamp': 194},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'FTY'}, 'user': {'name': 'eaU'}, '@timestamp': 195},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'FTY'}, 'user': {'name': 'eaU'}, '@timestamp': 196},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'FTY'}, 'user': {'name': 'eaU'}, '@timestamp': 197},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'qVU'}, 'user': {'name': 'CGs'}, '@timestamp': 198},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'qVU'}, 'user': {'name': 'CGs'}, '@timestamp': 199},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'qVU'}, 'user': {'name': 'CGs'}, '@timestamp': 200},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'tMP'}, 'user': {'name': 'VTT'}, '@timestamp': 201},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'tMP'}, 'user': {'name': 'VTT'}, '@timestamp': 202},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'tMP'}, 'user': {'name': 'VTT'}, '@timestamp': 203},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'USR'}, 'user': {'name': 'JtZ'}, '@timestamp': 204},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'USR'}, 'user': {'name': 'JtZ'}, '@timestamp': 205},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'USR'}, 'user': {'name': 'JtZ'}, '@timestamp': 206},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'gOH'}, 'user': {'name': 'Zpa'}, '@timestamp': 207},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'gOH'}, 'user': {'name': 'Zpa'}, '@timestamp': 208},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'gOH'}, 'user': {'name': 'Zpa'}, '@timestamp': 209},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'waE'}, 'user': {'name': 'Mwa'}, '@timestamp': 210},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'waE'}, 'user': {'name': 'Mwa'}, '@timestamp': 211},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'waE'}, 'user': {'name': 'Mwa'}, '@timestamp': 212},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'NUW'}, 'user': {'name': 'Bkk'}, '@timestamp': 213},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'NUW'}, 'user': {'name': 'Bkk'}, '@timestamp': 214},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'NUW'}, 'user': {'name': 'Bkk'}, '@timestamp': 215},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'EvW'}, 'user': {'name': 'pDa'}, '@timestamp': 216},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'EvW'}, 'user': {'name': 'pDa'}, '@timestamp': 217},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'EvW'}, 'user': {'name': 'pDa'}, '@timestamp': 218},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'EHo'}, 'user': {'name': 'LUQ'}, '@timestamp': 219},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'EHo'}, 'user': {'name': 'LUQ'}, '@timestamp': 220},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'EHo'}, 'user': {'name': 'LUQ'}, '@timestamp': 221},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'rOp'}, 'user': {'name': 'AoP'}, '@timestamp': 222},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'rOp'}, 'user': {'name': 'AoP'}, '@timestamp': 223},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'rOp'}, 'user': {'name': 'AoP'}, '@timestamp': 224},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'snA'}, 'user': {'name': 'zfT'}, '@timestamp': 225},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'snA'}, 'user': {'name': 'zfT'}, '@timestamp': 226},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'snA'}, 'user': {'name': 'zfT'}, '@timestamp': 227},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'GhC'}, 'user': {'name': 'SBI'}, '@timestamp': 228},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'GhC'}, 'user': {'name': 'SBI'}, '@timestamp': 229},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'GhC'}, 'user': {'name': 'SBI'}, '@timestamp': 230},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'evW'}, 'user': {'name': 'DFj'}, '@timestamp': 231},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'evW'}, 'user': {'name': 'DFj'}, '@timestamp': 232},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'evW'}, 'user': {'name': 'DFj'}, '@timestamp': 233},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'vNw'}, 'user': {'name': 'Zvp'}, '@timestamp': 234},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'vNw'}, 'user': {'name': 'Zvp'}, '@timestamp': 235},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'vNw'}, 'user': {'name': 'Zvp'}, '@timestamp': 236},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'lGK'}, 'user': {'name': 'nmJ'}, '@timestamp': 237},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'lGK'}, 'user': {'name': 'nmJ'}, '@timestamp': 238},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'lGK'}, 'user': {'name': 'nmJ'}, '@timestamp': 239},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xAR'}, 'user': {'name': 'fvC'}, '@timestamp': 240},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xAR'}, 'user': {'name': 'fvC'}, '@timestamp': 241},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'xAR'}, 'user': {'name': 'fvC'}, '@timestamp': 242},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'JYG'}, 'user': {'name': 'JPo'}, '@timestamp': 243},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'JYG'}, 'user': {'name': 'JPo'}, '@timestamp': 244},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'JYG'}, 'user': {'name': 'JPo'}, '@timestamp': 245},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'rCs'}, 'user': {'name': 'mbe'}, '@timestamp': 246},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'rCs'}, 'user': {'name': 'mbe'}, '@timestamp': 247},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'rCs'}, 'user': {'name': 'mbe'}, '@timestamp': 248},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'csu'}, 'user': {'name': 'jVM'}, '@timestamp': 249},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'csu'}, 'user': {'name': 'jVM'}, '@timestamp': 250},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'csu'}, 'user': {'name': 'jVM'}, '@timestamp': 251},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LxI'}, 'user': {'name': 'epS'}, '@timestamp': 252},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LxI'}, 'user': {'name': 'epS'}, '@timestamp': 253},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'LxI'}, 'user': {'name': 'epS'}, '@timestamp': 254},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Bva'}, 'user': {'name': 'ffs'}, '@timestamp': 255},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Bva'}, 'user': {'name': 'ffs'}, '@timestamp': 256},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Bva'}, 'user': {'name': 'ffs'}, '@timestamp': 257},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'DZs'}, 'user': {'name': 'QGm'}, '@timestamp': 258},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'DZs'}, 'user': {'name': 'QGm'}, '@timestamp': 259},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'DZs'}, 'user': {'name': 'QGm'}, '@timestamp': 260},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'WCV'}, 'user': {'name': 'gEm'}, '@timestamp': 261},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'WCV'}, 'user': {'name': 'gEm'}, '@timestamp': 262},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'WCV'}, 'user': {'name': 'gEm'}, '@timestamp': 263},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Wbt'}, 'user': {'name': 'HvQ'}, '@timestamp': 264},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Wbt'}, 'user': {'name': 'HvQ'}, '@timestamp': 265},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Wbt'}, 'user': {'name': 'HvQ'}, '@timestamp': 266},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'dZp'}, 'user': {'name': 'gGg'}, '@timestamp': 267},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'dZp'}, 'user': {'name': 'gGg'}, '@timestamp': 268},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'dZp'}, 'user': {'name': 'gGg'}, '@timestamp': 269},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ClA'}, 'user': {'name': 'IUu'}, '@timestamp': 270},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ClA'}, 'user': {'name': 'IUu'}, '@timestamp': 271},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'ClA'}, 'user': {'name': 'IUu'}, '@timestamp': 272},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Idq'}, 'user': {'name': 'CpZ'}, '@timestamp': 273},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Idq'}, 'user': {'name': 'CpZ'}, '@timestamp': 274},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Idq'}, 'user': {'name': 'CpZ'}, '@timestamp': 275},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'mvu'}, 'user': {'name': 'YwG'}, '@timestamp': 276},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'mvu'}, 'user': {'name': 'YwG'}, '@timestamp': 277},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'mvu'}, 'user': {'name': 'YwG'}, '@timestamp': 278},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'WGR'}, 'user': {'name': 'LbR'}, '@timestamp': 279},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'WGR'}, 'user': {'name': 'LbR'}, '@timestamp': 280},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'WGR'}, 'user': {'name': 'LbR'}, '@timestamp': 281},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'iPS'}, 'user': {'name': 'zSY'}, '@timestamp': 282},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'iPS'}, 'user': {'name': 'zSY'}, '@timestamp': 283},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'iPS'}, 'user': {'name': 'zSY'}, '@timestamp': 284},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xes'}, 'user': {'name': 'FNF'}, '@timestamp': 285},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'xes'}, 'user': {'name': 'FNF'}, '@timestamp': 286},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'xes'}, 'user': {'name': 'FNF'}, '@timestamp': 287},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'hyW'}, 'user': {'name': 'KCK'}, '@timestamp': 288},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'hyW'}, 'user': {'name': 'KCK'}, '@timestamp': 289},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'hyW'}, 'user': {'name': 'KCK'}, '@timestamp': 290},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'CsB'}, 'user': {'name': 'cMQ'}, '@timestamp': 291},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'CsB'}, 'user': {'name': 'cMQ'}, '@timestamp': 292},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'CsB'}, 'user': {'name': 'cMQ'}, '@timestamp': 293},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xXQ'}, 'user': {'name': 'rxL'}, '@timestamp': 294},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'xXQ'}, 'user': {'name': 'rxL'}, '@timestamp': 295},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xXQ'}, 'user': {'name': 'rxL'}, '@timestamp': 296},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'lBR'}, 'user': {'name': 'KKv'}, '@timestamp': 297},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'lBR'}, 'user': {'name': 'KKv'}, '@timestamp': 298},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'lBR'}, 'user': {'name': 'KKv'}, '@timestamp': 299},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'zkE'}, 'user': {'name': 'AQn'}, '@timestamp': 300},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'zkE'}, 'user': {'name': 'AQn'}, '@timestamp': 301},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'zkE'}, 'user': {'name': 'AQn'}, '@timestamp': 302},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'wFZ'}, 'user': {'name': 'hyq'}, '@timestamp': 303},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'wFZ'}, 'user': {'name': 'hyq'}, '@timestamp': 304},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'wFZ'}, 'user': {'name': 'hyq'}, '@timestamp': 305},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'LZO'}, 'user': {'name': 'TxJ'}, '@timestamp': 306},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'LZO'}, 'user': {'name': 'TxJ'}, '@timestamp': 307},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'LZO'}, 'user': {'name': 'TxJ'}, '@timestamp': 308},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'HdA'}, 'user': {'name': 'yIe'}, '@timestamp': 309},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'HdA'}, 'user': {'name': 'yIe'}, '@timestamp': 310},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'HdA'}, 'user': {'name': 'yIe'}, '@timestamp': 311},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'iAt'}, 'user': {'name': 'EOw'}, '@timestamp': 312},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'iAt'}, 'user': {'name': 'EOw'}, '@timestamp': 313},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'iAt'}, 'user': {'name': 'EOw'}, '@timestamp': 314},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'lKr'}, 'user': {'name': 'QNG'}, '@timestamp': 315},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'lKr'}, 'user': {'name': 'QNG'}, '@timestamp': 316},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'lKr'}, 'user': {'name': 'QNG'}, '@timestamp': 317},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'CxX'}, 'user': {'name': 'SbS'}, '@timestamp': 318},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'CxX'}, 'user': {'name': 'SbS'}, '@timestamp': 319},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'CxX'}, 'user': {'name': 'SbS'}, '@timestamp': 320},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'aex'}, 'user': {'name': 'ShP'}, '@timestamp': 321},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'aex'}, 'user': {'name': 'ShP'}, '@timestamp': 322},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'aex'}, 'user': {'name': 'ShP'}, '@timestamp': 323},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'TDf'}, 'user': {'name': 'tFl'}, '@timestamp': 324},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'TDf'}, 'user': {'name': 'tFl'}, '@timestamp': 325},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'TDf'}, 'user': {'name': 'tFl'}, '@timestamp': 326},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'gOZ'}, 'user': {'name': 'DDw'}, '@timestamp': 327},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'gOZ'}, 'user': {'name': 'DDw'}, '@timestamp': 328},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'gOZ'}, 'user': {'name': 'DDw'}, '@timestamp': 329},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'pUd'}, 'user': {'name': 'qEn'}, '@timestamp': 330},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'pUd'}, 'user': {'name': 'qEn'}, '@timestamp': 331},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'pUd'}, 'user': {'name': 'qEn'}, '@timestamp': 332},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'Gnj'}, 'user': {'name': 'KWM'}, '@timestamp': 333},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Gnj'}, 'user': {'name': 'KWM'}, '@timestamp': 334},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Gnj'}, 'user': {'name': 'KWM'}, '@timestamp': 335},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'sHa'}, 'user': {'name': 'DyX'}, '@timestamp': 336},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'sHa'}, 'user': {'name': 'DyX'}, '@timestamp': 337},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'sHa'}, 'user': {'name': 'DyX'}, '@timestamp': 338},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'oKb'}, 'user': {'name': 'Yqz'}, '@timestamp': 339},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'oKb'}, 'user': {'name': 'Yqz'}, '@timestamp': 340},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'oKb'}, 'user': {'name': 'Yqz'}, '@timestamp': 341},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'JzZ'}, 'user': {'name': 'Wjx'}, '@timestamp': 342},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'JzZ'}, 'user': {'name': 'Wjx'}, '@timestamp': 343},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'JzZ'}, 'user': {'name': 'Wjx'}, '@timestamp': 344},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'sdq'}, 'user': {'name': 'IVV'}, '@timestamp': 345},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'sdq'}, 'user': {'name': 'IVV'}, '@timestamp': 346},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'sdq'}, 'user': {'name': 'IVV'}, '@timestamp': 347},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'Wkj'}, 'user': {'name': 'tNG'}, '@timestamp': 348},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Wkj'}, 'user': {'name': 'tNG'}, '@timestamp': 349},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Wkj'}, 'user': {'name': 'tNG'}, '@timestamp': 350},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'amc'}, 'user': {'name': 'tZp'}, '@timestamp': 351},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'amc'}, 'user': {'name': 'tZp'}, '@timestamp': 352},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'amc'}, 'user': {'name': 'tZp'}, '@timestamp': 353},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'kSK'}, 'user': {'name': 'EYk'}, '@timestamp': 354},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'kSK'}, 'user': {'name': 'EYk'}, '@timestamp': 355},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'kSK'}, 'user': {'name': 'EYk'}, '@timestamp': 356},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'LGV'}, 'user': {'name': 'aoY'}, '@timestamp': 357},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LGV'}, 'user': {'name': 'aoY'}, '@timestamp': 358},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'LGV'}, 'user': {'name': 'aoY'}, '@timestamp': 359},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'hvW'}, 'user': {'name': 'cyi'}, '@timestamp': 360},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'hvW'}, 'user': {'name': 'cyi'}, '@timestamp': 361},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'hvW'}, 'user': {'name': 'cyi'}, '@timestamp': 362},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'aVE'}, 'user': {'name': 'DpR'}, '@timestamp': 363},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'aVE'}, 'user': {'name': 'DpR'}, '@timestamp': 364},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'aVE'}, 'user': {'name': 'DpR'}, '@timestamp': 365},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'Jks'}, 'user': {'name': 'rhV'}, '@timestamp': 366},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'Jks'}, 'user': {'name': 'rhV'}, '@timestamp': 367},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'agent': {'id': 'Jks'}, 'user': {'name': 'rhV'}, '@timestamp': 368},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'Csw'}, 'user': {'name': 'Muj'}, '@timestamp': 369},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'Csw'}, 'user': {'name': 'Muj'}, '@timestamp': 370},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Csw'}, 'user': {'name': 'Muj'}, '@timestamp': 371},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'epT'}, 'user': {'name': 'rxP'}, '@timestamp': 372},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'epT'}, 'user': {'name': 'rxP'}, '@timestamp': 373},
- {'process': {'name': 'tree.com'}, 'event': {'category': ['process']}, 'agent': {'id': 'epT'}, 'user': {'name': 'rxP'}, '@timestamp': 374}]
+[{'agent': {'id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'XIU'}, '@timestamp': 0},
+ {'agent': {'id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'XIU'}, '@timestamp': 1},
+ {'agent': {'id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'XIU'}, '@timestamp': 2},
+ {'agent': {'id': 'tkN'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Ioi'}, '@timestamp': 3},
+ {'agent': {'id': 'tkN'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Ioi'}, '@timestamp': 4},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'tkN'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'Ioi'}, '@timestamp': 5},
+ {'agent': {'id': 'xTF'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'lEz'}, '@timestamp': 6},
+ {'agent': {'id': 'xTF'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'lEz'}, '@timestamp': 7},
+ {'agent': {'id': 'xTF'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'lEz'}, '@timestamp': 8},
+ {'agent': {'id': 'swu'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'EEX'}, '@timestamp': 9},
+ {'agent': {'id': 'swu'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'EEX'}, '@timestamp': 10},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'swu'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'EEX'}, '@timestamp': 11},
+ {'agent': {'id': 'pWq'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'NVR'}, '@timestamp': 12},
+ {'agent': {'id': 'pWq'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'NVR'}, '@timestamp': 13},
+ {'agent': {'id': 'pWq'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'NVR'}, '@timestamp': 14},
+ {'agent': {'id': 'cym'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'EEw'}, '@timestamp': 15},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'cym'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'EEw'}, '@timestamp': 16},
+ {'agent': {'id': 'cym'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'EEw'}, '@timestamp': 17},
+ {'agent': {'id': 'VPY'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'MGz'}, '@timestamp': 18},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'VPY'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'MGz'}, '@timestamp': 19},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'VPY'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'MGz'}, '@timestamp': 20},
+ {'agent': {'id': 'Nfm'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'lOP'}, '@timestamp': 21},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Nfm'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'lOP'}, '@timestamp': 22},
+ {'agent': {'id': 'Nfm'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'lOP'}, '@timestamp': 23},
+ {'agent': {'id': 'ZRg'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'UvW'}, '@timestamp': 24},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ZRg'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'UvW'}, '@timestamp': 25},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ZRg'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'UvW'}, '@timestamp': 26},
+ {'agent': {'id': 'CiM'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'ZOf'}, '@timestamp': 27},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'CiM'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'ZOf'}, '@timestamp': 28},
+ {'agent': {'id': 'CiM'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'ZOf'}, '@timestamp': 29},
+ {'agent': {'id': 'HaT'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Dgz'}, '@timestamp': 30},
+ {'agent': {'id': 'HaT'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Dgz'}, '@timestamp': 31},
+ {'agent': {'id': 'HaT'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Dgz'}, '@timestamp': 32},
+ {'agent': {'id': 'RJi'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'LSj'}, '@timestamp': 33},
+ {'agent': {'id': 'RJi'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'LSj'}, '@timestamp': 34},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'RJi'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'LSj'}, '@timestamp': 35},
+ {'agent': {'id': 'oGr'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'myw'}, '@timestamp': 36},
+ {'agent': {'id': 'oGr'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'myw'}, '@timestamp': 37},
+ {'agent': {'id': 'oGr'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'myw'}, '@timestamp': 38},
+ {'agent': {'id': 'DUN'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'rZj'}, '@timestamp': 39},
+ {'agent': {'id': 'DUN'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'rZj'}, '@timestamp': 40},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'DUN'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'rZj'}, '@timestamp': 41},
+ {'agent': {'id': 'eyL'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'uZf'}, '@timestamp': 42},
+ {'agent': {'id': 'eyL'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'uZf'}, '@timestamp': 43},
+ {'agent': {'id': 'eyL'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'uZf'}, '@timestamp': 44},
+ {'agent': {'id': 'Izm'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'iEG'}, '@timestamp': 45},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Izm'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'iEG'}, '@timestamp': 46},
+ {'agent': {'id': 'Izm'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'iEG'}, '@timestamp': 47},
+ {'agent': {'id': 'gav'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'KEI'}, '@timestamp': 48},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'gav'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'KEI'}, '@timestamp': 49},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'gav'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'KEI'}, '@timestamp': 50},
+ {'agent': {'id': 'pdu'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'DJL'}, '@timestamp': 51},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'pdu'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'DJL'}, '@timestamp': 52},
+ {'agent': {'id': 'pdu'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'DJL'}, '@timestamp': 53},
+ {'agent': {'id': 'Mru'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Toc'}, '@timestamp': 54},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Mru'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'Toc'}, '@timestamp': 55},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Mru'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'Toc'}, '@timestamp': 56},
+ {'agent': {'id': 'svB'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'ayA'}, '@timestamp': 57},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'svB'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'ayA'}, '@timestamp': 58},
+ {'agent': {'id': 'svB'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'ayA'}, '@timestamp': 59},
+ {'agent': {'id': 'olI'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'YAR'}, '@timestamp': 60},
+ {'agent': {'id': 'olI'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'YAR'}, '@timestamp': 61},
+ {'agent': {'id': 'olI'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'YAR'}, '@timestamp': 62},
+ {'agent': {'id': 'LbR'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'zWY'}, '@timestamp': 63},
+ {'agent': {'id': 'LbR'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'zWY'}, '@timestamp': 64},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LbR'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'zWY'}, '@timestamp': 65},
+ {'agent': {'id': 'srf'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'ybO'}, '@timestamp': 66},
+ {'agent': {'id': 'srf'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'ybO'}, '@timestamp': 67},
+ {'agent': {'id': 'srf'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'ybO'}, '@timestamp': 68},
+ {'agent': {'id': 'YUa'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'gTr'}, '@timestamp': 69},
+ {'agent': {'id': 'YUa'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'gTr'}, '@timestamp': 70},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'YUa'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'gTr'}, '@timestamp': 71},
+ {'agent': {'id': 'NYj'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'LwO'}, '@timestamp': 72},
+ {'agent': {'id': 'NYj'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'LwO'}, '@timestamp': 73},
+ {'agent': {'id': 'NYj'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'LwO'}, '@timestamp': 74},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Tvb'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'zIv'}, '@timestamp': 75},
+ {'agent': {'id': 'Tvb'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'zIv'}, '@timestamp': 76},
+ {'agent': {'id': 'Tvb'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'zIv'}, '@timestamp': 77},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'lLx'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'tPu'}, '@timestamp': 78},
+ {'agent': {'id': 'lLx'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'tPu'}, '@timestamp': 79},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'lLx'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'tPu'}, '@timestamp': 80},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'AMM'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'Fqp'}, '@timestamp': 81},
+ {'agent': {'id': 'AMM'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Fqp'}, '@timestamp': 82},
+ {'agent': {'id': 'AMM'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Fqp'}, '@timestamp': 83},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'kOO'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'kis'}, '@timestamp': 84},
+ {'agent': {'id': 'kOO'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'kis'}, '@timestamp': 85},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'kOO'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'kis'}, '@timestamp': 86},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'thB'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'Czn'}, '@timestamp': 87},
+ {'agent': {'id': 'thB'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Czn'}, '@timestamp': 88},
+ {'agent': {'id': 'thB'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'Czn'}, '@timestamp': 89},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Njd'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'yQm'}, '@timestamp': 90},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Njd'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'yQm'}, '@timestamp': 91},
+ {'agent': {'id': 'Njd'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'yQm'}, '@timestamp': 92},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'SbA'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'gZp'}, '@timestamp': 93},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'SbA'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'gZp'}, '@timestamp': 94},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'SbA'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'gZp'}, '@timestamp': 95},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'GZa'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'Tdb'}, '@timestamp': 96},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'GZa'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'Tdb'}, '@timestamp': 97},
+ {'agent': {'id': 'GZa'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Tdb'}, '@timestamp': 98},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'FRI'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'sji'}, '@timestamp': 99},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'FRI'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'sji'}, '@timestamp': 100},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'FRI'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'sji'}, '@timestamp': 101},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LnP'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'tYo'}, '@timestamp': 102},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LnP'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'tYo'}, '@timestamp': 103},
+ {'agent': {'id': 'LnP'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'tYo'}, '@timestamp': 104},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Ufu'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'FWk'}, '@timestamp': 105},
+ {'agent': {'id': 'Ufu'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'FWk'}, '@timestamp': 106},
+ {'agent': {'id': 'Ufu'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'FWk'}, '@timestamp': 107},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'PRa'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'QXr'}, '@timestamp': 108},
+ {'agent': {'id': 'PRa'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'QXr'}, '@timestamp': 109},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'PRa'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'QXr'}, '@timestamp': 110},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'kNg'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'yXL'}, '@timestamp': 111},
+ {'agent': {'id': 'kNg'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'yXL'}, '@timestamp': 112},
+ {'agent': {'id': 'kNg'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'yXL'}, '@timestamp': 113},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ZiZ'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'pAg'}, '@timestamp': 114},
+ {'agent': {'id': 'ZiZ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'pAg'}, '@timestamp': 115},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ZiZ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'pAg'}, '@timestamp': 116},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'pPT'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'PzX'}, '@timestamp': 117},
+ {'agent': {'id': 'pPT'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'PzX'}, '@timestamp': 118},
+ {'agent': {'id': 'pPT'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'PzX'}, '@timestamp': 119},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Lhv'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'NEh'}, '@timestamp': 120},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Lhv'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'NEh'}, '@timestamp': 121},
+ {'agent': {'id': 'Lhv'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'NEh'}, '@timestamp': 122},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Rrd'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'FNh'}, '@timestamp': 123},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Rrd'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'FNh'}, '@timestamp': 124},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Rrd'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'FNh'}, '@timestamp': 125},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'oQP'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'sNG'}, '@timestamp': 126},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'oQP'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'sNG'}, '@timestamp': 127},
+ {'agent': {'id': 'oQP'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'sNG'}, '@timestamp': 128},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ATJ'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'mwZ'}, '@timestamp': 129},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ATJ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'mwZ'}, '@timestamp': 130},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ATJ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'mwZ'}, '@timestamp': 131},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'HQy'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'Bcb'}, '@timestamp': 132},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'HQy'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'Bcb'}, '@timestamp': 133},
+ {'agent': {'id': 'HQy'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'Bcb'}, '@timestamp': 134},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'qJj'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'vmQ'}, '@timestamp': 135},
+ {'agent': {'id': 'qJj'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'vmQ'}, '@timestamp': 136},
+ {'agent': {'id': 'qJj'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'vmQ'}, '@timestamp': 137},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'EYJ'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'XuO'}, '@timestamp': 138},
+ {'agent': {'id': 'EYJ'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'XuO'}, '@timestamp': 139},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'EYJ'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'XuO'}, '@timestamp': 140},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LNy'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'JDj'}, '@timestamp': 141},
+ {'agent': {'id': 'LNy'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'JDj'}, '@timestamp': 142},
+ {'agent': {'id': 'LNy'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'JDj'}, '@timestamp': 143},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LAG'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'yXj'}, '@timestamp': 144},
+ {'agent': {'id': 'LAG'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'yXj'}, '@timestamp': 145},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LAG'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'yXj'}, '@timestamp': 146},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'TFO'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'gMM'}, '@timestamp': 147},
+ {'agent': {'id': 'TFO'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'gMM'}, '@timestamp': 148},
+ {'agent': {'id': 'TFO'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'gMM'}, '@timestamp': 149},
+ {'agent': {'id': 'Pkz'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'BsU'}, '@timestamp': 150},
+ {'agent': {'id': 'Pkz'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'BsU'}, '@timestamp': 151},
+ {'agent': {'id': 'Pkz'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'BsU'}, '@timestamp': 152},
+ {'agent': {'id': 'TCj'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'fwZ'}, '@timestamp': 153},
+ {'agent': {'id': 'TCj'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'fwZ'}, '@timestamp': 154},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'TCj'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'fwZ'}, '@timestamp': 155},
+ {'agent': {'id': 'iGt'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'xuX'}, '@timestamp': 156},
+ {'agent': {'id': 'iGt'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'xuX'}, '@timestamp': 157},
+ {'agent': {'id': 'iGt'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'xuX'}, '@timestamp': 158},
+ {'agent': {'id': 'xWg'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'uzn'}, '@timestamp': 159},
+ {'agent': {'id': 'xWg'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'uzn'}, '@timestamp': 160},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xWg'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'uzn'}, '@timestamp': 161},
+ {'agent': {'id': 'kkC'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'GpD'}, '@timestamp': 162},
+ {'agent': {'id': 'kkC'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'GpD'}, '@timestamp': 163},
+ {'agent': {'id': 'kkC'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'GpD'}, '@timestamp': 164},
+ {'agent': {'id': 'BGQ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'zgU'}, '@timestamp': 165},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'BGQ'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'zgU'}, '@timestamp': 166},
+ {'agent': {'id': 'BGQ'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'zgU'}, '@timestamp': 167},
+ {'agent': {'id': 'Nph'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'HcY'}, '@timestamp': 168},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Nph'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'HcY'}, '@timestamp': 169},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Nph'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'HcY'}, '@timestamp': 170},
+ {'agent': {'id': 'efW'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'ryE'}, '@timestamp': 171},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'efW'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'ryE'}, '@timestamp': 172},
+ {'agent': {'id': 'efW'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'ryE'}, '@timestamp': 173},
+ {'agent': {'id': 'YNp'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'ksi'}, '@timestamp': 174},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'YNp'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'ksi'}, '@timestamp': 175},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'YNp'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'ksi'}, '@timestamp': 176},
+ {'agent': {'id': 'hfo'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'HNU'}, '@timestamp': 177},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'hfo'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'HNU'}, '@timestamp': 178},
+ {'agent': {'id': 'hfo'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'HNU'}, '@timestamp': 179},
+ {'agent': {'id': 'tWb'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'yTv'}, '@timestamp': 180},
+ {'agent': {'id': 'tWb'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'yTv'}, '@timestamp': 181},
+ {'agent': {'id': 'tWb'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'yTv'}, '@timestamp': 182},
+ {'agent': {'id': 'xUm'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'tVt'}, '@timestamp': 183},
+ {'agent': {'id': 'xUm'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'tVt'}, '@timestamp': 184},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xUm'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'tVt'}, '@timestamp': 185},
+ {'agent': {'id': 'nYh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'bqj'}, '@timestamp': 186},
+ {'agent': {'id': 'nYh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'bqj'}, '@timestamp': 187},
+ {'agent': {'id': 'nYh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'bqj'}, '@timestamp': 188},
+ {'agent': {'id': 'oFZ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'iFm'}, '@timestamp': 189},
+ {'agent': {'id': 'oFZ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'iFm'}, '@timestamp': 190},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'oFZ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'iFm'}, '@timestamp': 191},
+ {'agent': {'id': 'hdx'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'tgm'}, '@timestamp': 192},
+ {'agent': {'id': 'hdx'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'tgm'}, '@timestamp': 193},
+ {'agent': {'id': 'hdx'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'tgm'}, '@timestamp': 194},
+ {'agent': {'id': 'FTY'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'eaU'}, '@timestamp': 195},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'FTY'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'eaU'}, '@timestamp': 196},
+ {'agent': {'id': 'FTY'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'eaU'}, '@timestamp': 197},
+ {'agent': {'id': 'qVU'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'CGs'}, '@timestamp': 198},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'qVU'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'CGs'}, '@timestamp': 199},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'qVU'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'CGs'}, '@timestamp': 200},
+ {'agent': {'id': 'tMP'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'VTT'}, '@timestamp': 201},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'tMP'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'VTT'}, '@timestamp': 202},
+ {'agent': {'id': 'tMP'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'VTT'}, '@timestamp': 203},
+ {'agent': {'id': 'USR'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'JtZ'}, '@timestamp': 204},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'USR'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'JtZ'}, '@timestamp': 205},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'USR'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'JtZ'}, '@timestamp': 206},
+ {'agent': {'id': 'gOH'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Zpa'}, '@timestamp': 207},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'gOH'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'Zpa'}, '@timestamp': 208},
+ {'agent': {'id': 'gOH'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'Zpa'}, '@timestamp': 209},
+ {'agent': {'id': 'waE'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Mwa'}, '@timestamp': 210},
+ {'agent': {'id': 'waE'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'Mwa'}, '@timestamp': 211},
+ {'agent': {'id': 'waE'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Mwa'}, '@timestamp': 212},
+ {'agent': {'id': 'NUW'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Bkk'}, '@timestamp': 213},
+ {'agent': {'id': 'NUW'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'Bkk'}, '@timestamp': 214},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'NUW'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'Bkk'}, '@timestamp': 215},
+ {'agent': {'id': 'EvW'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'pDa'}, '@timestamp': 216},
+ {'agent': {'id': 'EvW'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'pDa'}, '@timestamp': 217},
+ {'agent': {'id': 'EvW'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'pDa'}, '@timestamp': 218},
+ {'agent': {'id': 'EHo'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'LUQ'}, '@timestamp': 219},
+ {'agent': {'id': 'EHo'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'LUQ'}, '@timestamp': 220},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'EHo'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'LUQ'}, '@timestamp': 221},
+ {'agent': {'id': 'rOp'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'AoP'}, '@timestamp': 222},
+ {'agent': {'id': 'rOp'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'AoP'}, '@timestamp': 223},
+ {'agent': {'id': 'rOp'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'AoP'}, '@timestamp': 224},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'snA'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'zfT'}, '@timestamp': 225},
+ {'agent': {'id': 'snA'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'zfT'}, '@timestamp': 226},
+ {'agent': {'id': 'snA'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'zfT'}, '@timestamp': 227},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'GhC'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'SBI'}, '@timestamp': 228},
+ {'agent': {'id': 'GhC'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'SBI'}, '@timestamp': 229},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'GhC'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'SBI'}, '@timestamp': 230},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'evW'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'DFj'}, '@timestamp': 231},
+ {'agent': {'id': 'evW'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'DFj'}, '@timestamp': 232},
+ {'agent': {'id': 'evW'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'DFj'}, '@timestamp': 233},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'vNw'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'Zvp'}, '@timestamp': 234},
+ {'agent': {'id': 'vNw'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Zvp'}, '@timestamp': 235},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'vNw'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'Zvp'}, '@timestamp': 236},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'lGK'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'nmJ'}, '@timestamp': 237},
+ {'agent': {'id': 'lGK'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'nmJ'}, '@timestamp': 238},
+ {'agent': {'id': 'lGK'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'nmJ'}, '@timestamp': 239},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xAR'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'fvC'}, '@timestamp': 240},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xAR'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'fvC'}, '@timestamp': 241},
+ {'agent': {'id': 'xAR'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'fvC'}, '@timestamp': 242},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'JYG'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'JPo'}, '@timestamp': 243},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'JYG'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'JPo'}, '@timestamp': 244},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'JYG'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'JPo'}, '@timestamp': 245},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'rCs'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'mbe'}, '@timestamp': 246},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'rCs'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'mbe'}, '@timestamp': 247},
+ {'agent': {'id': 'rCs'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'mbe'}, '@timestamp': 248},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'csu'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'jVM'}, '@timestamp': 249},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'csu'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'jVM'}, '@timestamp': 250},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'csu'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'jVM'}, '@timestamp': 251},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LxI'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'epS'}, '@timestamp': 252},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LxI'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'epS'}, '@timestamp': 253},
+ {'agent': {'id': 'LxI'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'epS'}, '@timestamp': 254},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Bva'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'ffs'}, '@timestamp': 255},
+ {'agent': {'id': 'Bva'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'ffs'}, '@timestamp': 256},
+ {'agent': {'id': 'Bva'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'ffs'}, '@timestamp': 257},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'DZs'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'QGm'}, '@timestamp': 258},
+ {'agent': {'id': 'DZs'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'QGm'}, '@timestamp': 259},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'DZs'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'QGm'}, '@timestamp': 260},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'WCV'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'gEm'}, '@timestamp': 261},
+ {'agent': {'id': 'WCV'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'gEm'}, '@timestamp': 262},
+ {'agent': {'id': 'WCV'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'gEm'}, '@timestamp': 263},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Wbt'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'HvQ'}, '@timestamp': 264},
+ {'agent': {'id': 'Wbt'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'HvQ'}, '@timestamp': 265},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Wbt'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'HvQ'}, '@timestamp': 266},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'dZp'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'gGg'}, '@timestamp': 267},
+ {'agent': {'id': 'dZp'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'gGg'}, '@timestamp': 268},
+ {'agent': {'id': 'dZp'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'gGg'}, '@timestamp': 269},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ClA'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'IUu'}, '@timestamp': 270},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'ClA'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'IUu'}, '@timestamp': 271},
+ {'agent': {'id': 'ClA'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'IUu'}, '@timestamp': 272},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Idq'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'CpZ'}, '@timestamp': 273},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Idq'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'CpZ'}, '@timestamp': 274},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Idq'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'CpZ'}, '@timestamp': 275},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'mvu'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'YwG'}, '@timestamp': 276},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'mvu'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'YwG'}, '@timestamp': 277},
+ {'agent': {'id': 'mvu'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'YwG'}, '@timestamp': 278},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'WGR'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'LbR'}, '@timestamp': 279},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'WGR'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'LbR'}, '@timestamp': 280},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'WGR'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'LbR'}, '@timestamp': 281},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'iPS'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'zSY'}, '@timestamp': 282},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'iPS'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'zSY'}, '@timestamp': 283},
+ {'agent': {'id': 'iPS'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'zSY'}, '@timestamp': 284},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xes'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'FNF'}, '@timestamp': 285},
+ {'agent': {'id': 'xes'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'FNF'}, '@timestamp': 286},
+ {'agent': {'id': 'xes'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'FNF'}, '@timestamp': 287},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'hyW'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'KCK'}, '@timestamp': 288},
+ {'agent': {'id': 'hyW'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'KCK'}, '@timestamp': 289},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'hyW'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'KCK'}, '@timestamp': 290},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'CsB'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'cMQ'}, '@timestamp': 291},
+ {'agent': {'id': 'CsB'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'cMQ'}, '@timestamp': 292},
+ {'agent': {'id': 'CsB'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'cMQ'}, '@timestamp': 293},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xXQ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'rxL'}, '@timestamp': 294},
+ {'agent': {'id': 'xXQ'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'rxL'}, '@timestamp': 295},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'xXQ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'rxL'}, '@timestamp': 296},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'lBR'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'KKv'}, '@timestamp': 297},
+ {'agent': {'id': 'lBR'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'KKv'}, '@timestamp': 298},
+ {'agent': {'id': 'lBR'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'KKv'}, '@timestamp': 299},
+ {'agent': {'id': 'zkE'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'AQn'}, '@timestamp': 300},
+ {'agent': {'id': 'zkE'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'AQn'}, '@timestamp': 301},
+ {'agent': {'id': 'zkE'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'AQn'}, '@timestamp': 302},
+ {'agent': {'id': 'wFZ'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'hyq'}, '@timestamp': 303},
+ {'agent': {'id': 'wFZ'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'hyq'}, '@timestamp': 304},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'wFZ'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'hyq'}, '@timestamp': 305},
+ {'agent': {'id': 'LZO'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'TxJ'}, '@timestamp': 306},
+ {'agent': {'id': 'LZO'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'TxJ'}, '@timestamp': 307},
+ {'agent': {'id': 'LZO'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'TxJ'}, '@timestamp': 308},
+ {'agent': {'id': 'HdA'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'yIe'}, '@timestamp': 309},
+ {'agent': {'id': 'HdA'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'yIe'}, '@timestamp': 310},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'HdA'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'yIe'}, '@timestamp': 311},
+ {'agent': {'id': 'iAt'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'EOw'}, '@timestamp': 312},
+ {'agent': {'id': 'iAt'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'EOw'}, '@timestamp': 313},
+ {'agent': {'id': 'iAt'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'EOw'}, '@timestamp': 314},
+ {'agent': {'id': 'lKr'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'QNG'}, '@timestamp': 315},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'lKr'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'QNG'}, '@timestamp': 316},
+ {'agent': {'id': 'lKr'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'QNG'}, '@timestamp': 317},
+ {'agent': {'id': 'CxX'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'SbS'}, '@timestamp': 318},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'CxX'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'SbS'}, '@timestamp': 319},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'CxX'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'SbS'}, '@timestamp': 320},
+ {'agent': {'id': 'aex'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'ShP'}, '@timestamp': 321},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'aex'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'ShP'}, '@timestamp': 322},
+ {'agent': {'id': 'aex'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'ShP'}, '@timestamp': 323},
+ {'agent': {'id': 'TDf'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'tFl'}, '@timestamp': 324},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'TDf'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'tFl'}, '@timestamp': 325},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'TDf'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'tFl'}, '@timestamp': 326},
+ {'agent': {'id': 'gOZ'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'DDw'}, '@timestamp': 327},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'gOZ'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'DDw'}, '@timestamp': 328},
+ {'agent': {'id': 'gOZ'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'DDw'}, '@timestamp': 329},
+ {'agent': {'id': 'pUd'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'qEn'}, '@timestamp': 330},
+ {'agent': {'id': 'pUd'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'qEn'}, '@timestamp': 331},
+ {'agent': {'id': 'pUd'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'qEn'}, '@timestamp': 332},
+ {'agent': {'id': 'Gnj'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'KWM'}, '@timestamp': 333},
+ {'agent': {'id': 'Gnj'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'KWM'}, '@timestamp': 334},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Gnj'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'KWM'}, '@timestamp': 335},
+ {'agent': {'id': 'sHa'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'DyX'}, '@timestamp': 336},
+ {'agent': {'id': 'sHa'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'DyX'}, '@timestamp': 337},
+ {'agent': {'id': 'sHa'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'DyX'}, '@timestamp': 338},
+ {'agent': {'id': 'oKb'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'Yqz'}, '@timestamp': 339},
+ {'agent': {'id': 'oKb'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Yqz'}, '@timestamp': 340},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'oKb'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'Yqz'}, '@timestamp': 341},
+ {'agent': {'id': 'JzZ'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'Wjx'}, '@timestamp': 342},
+ {'agent': {'id': 'JzZ'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'Wjx'}, '@timestamp': 343},
+ {'agent': {'id': 'JzZ'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'Wjx'}, '@timestamp': 344},
+ {'agent': {'id': 'sdq'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'IVV'}, '@timestamp': 345},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'sdq'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'IVV'}, '@timestamp': 346},
+ {'agent': {'id': 'sdq'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'IVV'}, '@timestamp': 347},
+ {'agent': {'id': 'Wkj'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'tNG'}, '@timestamp': 348},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Wkj'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'tNG'}, '@timestamp': 349},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Wkj'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'tNG'}, '@timestamp': 350},
+ {'agent': {'id': 'amc'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'tZp'}, '@timestamp': 351},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'amc'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'tZp'}, '@timestamp': 352},
+ {'agent': {'id': 'amc'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'tZp'}, '@timestamp': 353},
+ {'agent': {'id': 'kSK'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'EYk'}, '@timestamp': 354},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'kSK'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'EYk'}, '@timestamp': 355},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'kSK'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'EYk'}, '@timestamp': 356},
+ {'agent': {'id': 'LGV'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'aoY'}, '@timestamp': 357},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'LGV'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'aoY'}, '@timestamp': 358},
+ {'agent': {'id': 'LGV'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'aoY'}, '@timestamp': 359},
+ {'agent': {'id': 'hvW'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'cyi'}, '@timestamp': 360},
+ {'agent': {'id': 'hvW'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'cyi'}, '@timestamp': 361},
+ {'agent': {'id': 'hvW'}, 'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'cyi'}, '@timestamp': 362},
+ {'agent': {'id': 'aVE'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'DpR'}, '@timestamp': 363},
+ {'agent': {'id': 'aVE'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'DpR'}, '@timestamp': 364},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'aVE'}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'DpR'}, '@timestamp': 365},
+ {'agent': {'id': 'Jks'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'rhV'}, '@timestamp': 366},
+ {'agent': {'id': 'Jks'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'rhV'}, '@timestamp': 367},
+ {'agent': {'id': 'Jks'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'args': ['dir']}, 'user': {'name': 'rhV'}, '@timestamp': 368},
+ {'agent': {'id': 'Csw'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'Muj'}, '@timestamp': 369},
+ {'agent': {'id': 'Csw'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'Muj'}, '@timestamp': 370},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['dir']}, 'agent': {'id': 'Csw'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'Muj'}, '@timestamp': 371},
+ {'agent': {'id': 'epT'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'rxP'}, '@timestamp': 372},
+ {'agent': {'id': 'epT'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'rxP'}, '@timestamp': 373},
+ {'agent': {'id': 'epT'}, 'event': {'category': ['process']}, 'process': {'name': 'tree.com'}, 'user': {'name': 'rxP'}, '@timestamp': 374}]
 ```
 
 
@@ -4775,14 +4775,14 @@ sequence by host.id, user.id with maxspan = 5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'pluginkit', 'args': ['-a']}, 'host': {'id': 'ZFy'}, 'user': {'id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'pluginkit', 'args': ['-e', 'use', '-i']}, 'host': {'id': 'ZFy'}, 'user': {'id': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'pluginkit', 'args': ['-a']}, 'host': {'id': 'tkN'}, 'user': {'id': 'Ioi'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'pluginkit', 'args': ['-e', 'use', '-i']}, 'host': {'id': 'tkN'}, 'user': {'id': 'Ioi'}, '@timestamp': 3},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'pluginkit', 'args': ['-a']}, 'host': {'id': 'xTF'}, 'user': {'id': 'lEz'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'pluginkit', 'args': ['-e', 'use', '-i']}, 'host': {'id': 'xTF'}, 'user': {'id': 'lEz'}, '@timestamp': 5},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'pluginkit', 'args': ['-a']}, 'host': {'id': 'swu'}, 'user': {'id': 'EEX'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'pluginkit', 'args': ['-e', 'use', '-i']}, 'host': {'id': 'swu'}, 'user': {'id': 'EEX'}, '@timestamp': 7}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'pluginkit', 'args': ['-a']}, 'user': {'id': 'XIU'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'pluginkit', 'args': ['-e', 'use', '-i']}, 'user': {'id': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'tkN'}, 'process': {'name': 'pluginkit', 'args': ['-a']}, 'user': {'id': 'Ioi'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'tkN'}, 'process': {'name': 'pluginkit', 'args': ['-e', 'use', '-i']}, 'user': {'id': 'Ioi'}, '@timestamp': 3},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'xTF'}, 'process': {'name': 'pluginkit', 'args': ['-a']}, 'user': {'id': 'lEz'}, '@timestamp': 4},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'xTF'}, 'process': {'name': 'pluginkit', 'args': ['-e', 'use', '-i']}, 'user': {'id': 'lEz'}, '@timestamp': 5},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'swu'}, 'process': {'name': 'pluginkit', 'args': ['-a']}, 'user': {'id': 'EEX'}, '@timestamp': 6},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'swu'}, 'process': {'name': 'pluginkit', 'args': ['-e', 'use', '-i']}, 'user': {'id': 'EEX'}, '@timestamp': 7}]
 ```
 
 
@@ -4903,8 +4903,8 @@ not gcp.audit.authentication_info.principal_email:"system:addon-manager"
 ```
 
 ```python
-[{'event': {'dataset': 'googlecloud.audit', 'action': 'io.k8s.authorization.rbac.vXIUtkNI.rolebindings.patch', 'outcome': 'success'}, 'gcp': {'audit': {'authentication_info': {'principal_email': 'oix'}}}, '@timestamp': 0},
- {'event': {'dataset': 'gcp.audit', 'action': 'io.k8s.authorization.rbac.vEzswu.clusterrolebindings.patch', 'outcome': 'success'}, 'gcp': {'audit': {'authentication_info': {'principal_email': 'EEX'}}}, '@timestamp': 1}]
+[{'gcp': {'audit': {'authentication_info': {'principal_email': 'ZFy'}}}, 'event': {'dataset': 'googlecloud.audit', 'action': 'io.k8s.authorization.rbac.vUyyFjSvILOoOHmx.clusterrolebindings.create', 'outcome': 'success'}, '@timestamp': 0},
+ {'gcp': {'audit': {'authentication_info': {'principal_email': 'BnL'}}}, 'event': {'dataset': 'gcp.audit', 'action': 'io.k8s.authorization.rbac.vOAaga.clusterrolebindings.create', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -5275,7 +5275,7 @@ event.dataset:google_workspace.admin and event.provider:admin and event.category
 ```
 
 ```python
-[{'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'ENFORCE_STRONG_AUTHENTICATION'}, 'google_workspace': {'admin': {'new_value': False}}, '@timestamp': 0}]
+[{'google_workspace': {'admin': {'new_value': False}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'ENFORCE_STRONG_AUTHENTICATION'}, '@timestamp': 0}]
 ```
 
 
@@ -5300,18 +5300,18 @@ event.dataset:google_workspace.admin and event.provider:admin and event.category
 ```
 
 ```python
-[{'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enforce strong password'}}}, '@timestamp': 0},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Password reset frequency'}}}, '@timestamp': 1},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enable password reuse'}}}, '@timestamp': 2},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enforce password policy at next login'}}}, '@timestamp': 3},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Minimum password length'}}}, '@timestamp': 4},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Maximum password length'}}}, '@timestamp': 5},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enforce strong password'}}}, '@timestamp': 6},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Password reset frequency'}}}, '@timestamp': 7},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enable password reuse'}}}, '@timestamp': 8},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enforce password policy at next login'}}}, '@timestamp': 9},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Minimum password length'}}}, '@timestamp': 10},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, 'google_workspace': {'admin': {'setting': {'name': 'Password Management - Maximum password length'}}}, '@timestamp': 11}]
+[{'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enforce strong password'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, '@timestamp': 0},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Password reset frequency'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, '@timestamp': 1},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enable password reuse'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, '@timestamp': 2},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enforce password policy at next login'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, '@timestamp': 3},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Minimum password length'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, '@timestamp': 4},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Maximum password length'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CHANGE_APPLICATION_SETTING'}, '@timestamp': 5},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enforce strong password'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, '@timestamp': 6},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Password reset frequency'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, '@timestamp': 7},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enable password reuse'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, '@timestamp': 8},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Enforce password policy at next login'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, '@timestamp': 9},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Minimum password length'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, '@timestamp': 10},
+ {'google_workspace': {'admin': {'setting': {'name': 'Password Management - Maximum password length'}}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'CREATE_APPLICATION_SETTING'}, '@timestamp': 11}]
 ```
 
 
@@ -5427,10 +5427,10 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'appcmd.exe', 'args': ['/dontLog*:*True'], 'parent': {'name': 'ZFy'}}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'appcmd.exe'}, 'args': ['/dontLog*:*True'], 'parent': {'name': 'XIU'}}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'appcmd.exe', 'args': ['/dontLog*:*True'], 'parent': {'name': 'tkN'}}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'appcmd.exe'}, 'args': ['/dontLog*:*True'], 'parent': {'name': 'Ioi'}}, '@timestamp': 3}]
+[{'process': {'parent': {'name': 'ZFy'}, 'name': 'appcmd.exe', 'args': ['/dontLog*:*True']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'XIU'}, 'pe': {'original_file_name': 'appcmd.exe'}, 'args': ['/dontLog*:*True']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'tkN'}, 'name': 'appcmd.exe', 'args': ['/dontLog*:*True']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'Ioi'}, 'pe': {'original_file_name': 'appcmd.exe'}, 'args': ['/dontLog*:*True']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -5446,8 +5446,8 @@ event.category:(network or network_traffic) and network.transport:udp and destin
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'udp'}, 'destination': {'port': 4500}, '@timestamp': 0},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'udp'}, 'destination': {'port': 4500}, '@timestamp': 1}]
+[{'destination': {'port': 4500}, 'event': {'category': ['network']}, 'network': {'transport': 'udp'}, '@timestamp': 0},
+ {'destination': {'port': 4500}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'udp'}, '@timestamp': 1}]
 ```
 
 
@@ -5479,24 +5479,24 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6667, 'ip': 'e6ea:94e4:e5ac:b58c:1b43:3a53:aa79:ec59'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6667, 'ip': '119.10.44.216'}, 'source': {'ip': '172.31.81.251'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6667, 'ip': '104.129.204.102'}, 'source': {'ip': '192.168.147.58'}, '@timestamp': 2},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6697, 'ip': '149.239.86.175'}, 'source': {'ip': '10.111.13.86'}, '@timestamp': 3},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6697, 'ip': '112.141.185.70'}, 'source': {'ip': '172.27.169.243'}, '@timestamp': 4},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6697, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'source': {'ip': '192.168.197.122'}, '@timestamp': 5},
- {'event': {'category': ['network'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.155.175.169'}, 'destination': {'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, '@timestamp': 6},
- {'event': {'category': ['network'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.21.27.73'}, 'destination': {'ip': '156.105.128.203'}, '@timestamp': 7},
- {'event': {'category': ['network'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.162.120'}, 'destination': {'ip': '93.16.168.118'}, '@timestamp': 8},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6667, 'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'source': {'ip': '10.247.115.164'}, '@timestamp': 9},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6667, 'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'source': {'ip': '172.30.255.121'}, '@timestamp': 10},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6667, 'ip': '147.172.30.18'}, 'source': {'ip': '192.168.120.95'}, '@timestamp': 11},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6697, 'ip': '200.44.53.86'}, 'source': {'ip': '10.231.61.22'}, '@timestamp': 12},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6697, 'ip': 'bd8d:8e9f:3c38:5e93:2a21:f2e3:2a70:2899'}, 'source': {'ip': '172.27.220.217'}, '@timestamp': 13},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 6697, 'ip': '3.79.219.137'}, 'source': {'ip': '192.168.64.185'}, '@timestamp': 14},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.77.111.86'}, 'destination': {'ip': 'b861:3a65:7d92:a4ae:175d:4ee4:1dd9:801e'}, '@timestamp': 15},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.17.96.216'}, 'destination': {'ip': '46.77.189.36'}, '@timestamp': 16},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.139.227'}, 'destination': {'ip': '159.213.231.147'}, '@timestamp': 17}]
+[{'destination': {'port': 6667, 'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.193.74.7'}, '@timestamp': 0},
+ {'destination': {'port': 6667, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.25.51.169'}, '@timestamp': 1},
+ {'destination': {'port': 6667, 'ip': '104.129.204.102'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.111.13'}, '@timestamp': 2},
+ {'destination': {'port': 6697, 'ip': '149.239.86.175'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.186.159.60'}, '@timestamp': 3},
+ {'destination': {'port': 6697, 'ip': '112.141.185.70'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.87.162'}, '@timestamp': 4},
+ {'destination': {'port': 6697, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.155.175'}, '@timestamp': 5},
+ {'destination': {'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'event': {'category': ['network'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.81.180.150'}, '@timestamp': 6},
+ {'destination': {'ip': '156.105.128.203'}, 'event': {'category': ['network'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.26.39.143'}, '@timestamp': 7},
+ {'destination': {'ip': '93.16.168.118'}, 'event': {'category': ['network'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 8},
+ {'destination': {'port': 6667, 'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 9},
+ {'destination': {'port': 6667, 'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.133.247'}, '@timestamp': 10},
+ {'destination': {'port': 6667, 'ip': '147.172.30.18'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.231.61'}, '@timestamp': 11},
+ {'destination': {'port': 6697, 'ip': '200.44.53.86'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.189.205.159'}, '@timestamp': 12},
+ {'destination': {'port': 6697, 'ip': 'bd8d:8e9f:3c38:5e93:2a21:f2e3:2a70:2899'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.20.11.158'}, '@timestamp': 13},
+ {'destination': {'port': 6697, 'ip': '3.79.219.137'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.77.111'}, '@timestamp': 14},
+ {'destination': {'ip': 'b861:3a65:7d92:a4ae:175d:4ee4:1dd9:801e'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.22.13.138'}, '@timestamp': 15},
+ {'destination': {'ip': '46.77.189.36'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.24.190.55'}, '@timestamp': 16},
+ {'destination': {'ip': '159.213.231.147'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.irc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.118.248'}, '@timestamp': 17}]
 ```
 
 
@@ -5517,9 +5517,9 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wuauclt.exe'}, 'args': ['/RunHandlerComServer', '/UpdateDeploymentProvider', 'C:\\Users\\*.dll', 'C:\\ProgramData\\*.dll', 'C:\\Windows\\Temp\\*.dll', 'C:\\Windows\\Tasks\\*.dll']}, '@timestamp': 0},
+[{'process': {'pe': {'original_file_name': 'wuauclt.exe'}, 'args': ['/RunHandlerComServer', '/UpdateDeploymentProvider', 'C:\\Users\\*.dll', 'C:\\ProgramData\\*.dll', 'C:\\Windows\\Temp\\*.dll', 'C:\\Windows\\Tasks\\*.dll']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'wuauclt.exe', 'args': ['/RunHandlerComServer', '/UpdateDeploymentProvider', 'C:\\Users\\*.dll', 'C:\\ProgramData\\*.dll', 'C:\\Windows\\Temp\\*.dll', 'C:\\Windows\\Tasks\\*.dll']}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wuauclt.exe'}, 'args': ['/RunHandlerComServer', '/UpdateDeploymentProvider', 'C:\\Users\\*.dll', 'C:\\ProgramData\\*.dll', 'C:\\Windows\\Temp\\*.dll', 'C:\\Windows\\Tasks\\*.dll']}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'wuauclt.exe'}, 'args': ['/RunHandlerComServer', '/UpdateDeploymentProvider', 'C:\\Users\\*.dll', 'C:\\ProgramData\\*.dll', 'C:\\Windows\\Temp\\*.dll', 'C:\\Windows\\Tasks\\*.dll']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 2},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'wuauclt.exe', 'args': ['/RunHandlerComServer', '/UpdateDeploymentProvider', 'C:\\Users\\*.dll', 'C:\\ProgramData\\*.dll', 'C:\\Windows\\Temp\\*.dll', 'C:\\Windows\\Tasks\\*.dll']}, '@timestamp': 3}]
 ```
 
@@ -5543,10 +5543,10 @@ sequence with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'args': ['-Embedding'], 'entity_id': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mshta.exe', 'entity_id': 'XIU'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 64839, 'ip': '3023:5fa9:a92d:c839:9a9f:e89a:c443:b67b'}, 'destination': {'port': 56065}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'args': ['-Embedding'], 'entity_id': 'TFl'}, 'host': {'id': 'oix'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mshta.exe', 'entity_id': 'TFl'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 61095, 'ip': '9566:7ca7:8676:5e58:62bd:10db:7472:f04c'}, 'destination': {'port': 57092}, 'host': {'id': 'oix'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'mshta.exe', 'args': ['-Embedding'], 'entity_id': 'XIU'}, '@timestamp': 0},
+ {'destination': {'port': 61522}, 'event': {'type': ['start'], 'category': ['network']}, 'host': {'id': 'ZFy'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'process': {'name': 'mshta.exe', 'entity_id': 'XIU'}, 'source': {'port': 56065, 'ip': '3023:5fa9:a92d:c839:9a9f:e89a:c443:b67b'}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oix'}, 'process': {'name': 'mshta.exe', 'args': ['-Embedding'], 'entity_id': 'TFl'}, '@timestamp': 2},
+ {'destination': {'port': 65131}, 'event': {'type': ['start'], 'category': ['network']}, 'host': {'id': 'oix'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'process': {'name': 'mshta.exe', 'entity_id': 'TFl'}, 'source': {'port': 57092, 'ip': '9566:7ca7:8676:5e58:62bd:10db:7472:f04c'}, '@timestamp': 3}]
 ```
 
 
@@ -5568,10 +5568,10 @@ sequence by host.id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mmc.exe', 'entity_id': 'jSv'}, 'source': {'port': 64740, 'ip': '229.172.181.141'}, 'destination': {'port': 62863}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'host': {'id': 'yyF'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'mmc.exe', 'entity_id': 'jSv'}}, 'host': {'id': 'yyF'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mmc.exe', 'entity_id': 'XpW'}, 'source': {'port': 56259, 'ip': '708d:b945:3e09:df7f:5d4f:9e31:a728:d9ac'}, 'destination': {'port': 58173}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'host': {'id': 'uEE'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'mmc.exe', 'entity_id': 'XpW'}}, 'host': {'id': 'uEE'}, '@timestamp': 3}]
+[{'destination': {'port': 64740}, 'event': {'type': ['start'], 'category': ['network']}, 'host': {'id': 'vCf'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'process': {'name': 'mmc.exe', 'entity_id': 'yyF'}, 'source': {'port': 55313, 'ip': '73bd:f2bd:6881:cc65:28a5:9ecc:db36:a85a'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'mmc.exe', 'entity_id': 'yyF'}}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'vCf'}, '@timestamp': 1},
+ {'destination': {'port': 56259}, 'event': {'type': ['start'], 'category': ['network']}, 'host': {'id': 'oOH'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'process': {'name': 'mmc.exe', 'entity_id': 'wuE'}, 'source': {'port': 51970, 'ip': '506a:fac2:8499:c98f:ee87:44c2:c507:72f6'}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'mmc.exe', 'entity_id': 'wuE'}}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oOH'}, '@timestamp': 3}]
 ```
 
 
@@ -5594,10 +5594,10 @@ sequence by host.id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'explorer.exe', 'entity_id': 'vIL'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 62863, 'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, 'destination': {'port': 52641}, 'host': {'id': 'FjS'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe', 'entity_id': 'vIL'}}, 'host': {'id': 'FjS'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'explorer.exe', 'entity_id': 'eOA'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'port': 58173, 'ip': '62bd:10db:7472:f04b:708d:b945:3e09:df80'}, 'destination': {'port': 65131}, 'host': {'id': 'BnL'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe', 'entity_id': 'eOA'}}, 'host': {'id': 'BnL'}, '@timestamp': 3}]
+[{'destination': {'port': 64740}, 'event': {'type': ['start'], 'category': ['network']}, 'host': {'id': 'vCf'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'process': {'name': 'explorer.exe', 'entity_id': 'yyF'}, 'source': {'port': 55313, 'ip': '73bd:f2bd:6881:cc65:28a5:9ecc:db36:a85a'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'explorer.exe', 'entity_id': 'yyF'}}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'vCf'}, '@timestamp': 1},
+ {'destination': {'port': 56259}, 'event': {'type': ['start'], 'category': ['network']}, 'host': {'id': 'oOH'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'process': {'name': 'explorer.exe', 'entity_id': 'wuE'}, 'source': {'port': 51970, 'ip': '506a:fac2:8499:c98f:ee87:44c2:c507:72f6'}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'explorer.exe', 'entity_id': 'wuE'}}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oOH'}, '@timestamp': 3}]
 ```
 
 
@@ -5617,10 +5617,10 @@ sequence by host.id with maxspan = 30s
 ```
 
 ```python
-[{'network': {'direction': 'ingress', 'protocol': 'http'}, 'destination': {'port': 5985}, 'source': {'ip': '1b43:3a53:aa79:ec58:8d14:2981:f18d:f2a7'}, 'event': {'category': ['network']}, 'host': {'id': 'Utk'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wsmprovhost.exe'}, 'name': 'NIo'}, 'host': {'id': 'Utk'}, '@timestamp': 1},
- {'network': {'direction': 'incoming', 'protocol': 'http'}, 'destination': {'port': 5986}, 'source': {'ip': 'baf5:6682:de3c:cb58:a9e1:79f2:73bd:f2be'}, 'event': {'category': ['network']}, 'host': {'id': 'FlE'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wsmprovhost.exe'}, 'name': 'zsw'}, 'host': {'id': 'FlE'}, '@timestamp': 3}]
+[{'destination': {'port': 5985}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, 'network': {'direction': 'incoming', 'protocol': 'http'}, 'source': {'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'wsmprovhost.exe'}, 'name': 'FjS'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'destination': {'port': 5986}, 'event': {'category': ['network']}, 'host': {'id': 'vIL'}, 'network': {'direction': 'incoming', 'protocol': 'http'}, 'source': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af'}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'wsmprovhost.exe'}, 'name': 'swu'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'vIL'}, '@timestamp': 3}]
 ```
 
 
@@ -5640,10 +5640,10 @@ sequence by host.id with maxspan=30s
 ```
 
 ```python
-[{'process': {'pid': 4}, 'network': {'direction': 'ingress', 'protocol': 'http'}, 'destination': {'port': 5985}, 'source': {'ip': '1b43:3a53:aa79:ec58:8d14:2981:f18d:f2a7'}, 'event': {'category': ['network']}, 'host': {'id': 'Utk'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'winrshost.exe'}, 'name': 'NIo'}, 'host': {'id': 'Utk'}, '@timestamp': 1},
- {'process': {'pid': 4}, 'network': {'direction': 'incoming', 'protocol': 'http'}, 'destination': {'port': 5986}, 'source': {'ip': 'baf5:6682:de3c:cb58:a9e1:79f2:73bd:f2be'}, 'event': {'category': ['network']}, 'host': {'id': 'FlE'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'winrshost.exe'}, 'name': 'zsw'}, 'host': {'id': 'FlE'}, '@timestamp': 3}]
+[{'destination': {'port': 5985}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, 'network': {'direction': 'incoming', 'protocol': 'http'}, 'process': {'pid': 4}, 'source': {'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'winrshost.exe'}, 'name': 'FjS'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'destination': {'port': 5986}, 'event': {'category': ['network']}, 'host': {'id': 'vIL'}, 'network': {'direction': 'incoming', 'protocol': 'http'}, 'process': {'pid': 4}, 'source': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af'}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'winrshost.exe'}, 'name': 'swu'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'vIL'}, '@timestamp': 3}]
 ```
 
 
@@ -5664,9 +5664,9 @@ sequence by process.entity_id
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'installutil.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
- {'process': {'name': 'installutil.exe', 'entity_id': 'ZFy'}, 'network': {'direction': 'egress'}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'event': {'category': ['network']}, 'network': {'direction': 'egress'}, 'process': {'name': 'installutil.exe', 'entity_id': 'ZFy'}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'installutil.exe', 'entity_id': 'Utk'}, '@timestamp': 2},
- {'process': {'name': 'installutil.exe', 'entity_id': 'Utk'}, 'network': {'direction': 'egress'}, 'event': {'category': ['network']}, '@timestamp': 3}]
+ {'event': {'category': ['network']}, 'network': {'direction': 'egress'}, 'process': {'name': 'installutil.exe', 'entity_id': 'Utk'}, '@timestamp': 3}]
 ```
 
 
@@ -5687,21 +5687,21 @@ sequence by process.entity_id with maxspan = 5m
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ZFy', 'entity_id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\kNIoixTF.sdb'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'process': {'entity_id': 'XIU'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\kNIoixTF.sdb'}, '@timestamp': 1},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'lEz', 'entity_id': 'swu'}, '@timestamp': 2},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\LeOAagaiFq.sdb'}, 'process': {'entity_id': 'swu'}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'syz'}, 'entity_id': 'KNy'}, '@timestamp': 4},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\QDpUEUDqxVTO.sdb'}, 'process': {'entity_id': 'KNy'}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'LWt'}, 'entity_id': 'imr'}, '@timestamp': 6},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\Tm.sdb'}, 'process': {'entity_id': 'imr'}, '@timestamp': 7},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'process': {'entity_id': 'swu'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\LeOAagaiFq.sdb'}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'syz'}, 'entity_id': 'KNy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'process': {'entity_id': 'KNy'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\QDpUEUDqxVTO.sdb'}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'LWt'}, 'entity_id': 'imr'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 6},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'process': {'entity_id': 'imr'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\Tm.sdb'}, '@timestamp': 7},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'shC', 'entity_id': 'eLW'}, '@timestamp': 8},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\L.sdb'}, 'process': {'entity_id': 'eLW'}, '@timestamp': 9},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'process': {'entity_id': 'eLW'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\L.sdb'}, '@timestamp': 9},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'Sjo', 'entity_id': 'Grm'}, '@timestamp': 10},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\wDUNrZjeyLuZfIz.sdb'}, 'process': {'entity_id': 'Grm'}, '@timestamp': 11},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'miE'}, 'entity_id': 'Gga'}, '@timestamp': 12},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\K.sdb'}, 'process': {'entity_id': 'Gga'}, '@timestamp': 13},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'EIp'}, 'entity_id': 'duD'}, '@timestamp': 14},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\xFEiZBTXzJCW.sdb'}, 'process': {'entity_id': 'duD'}, '@timestamp': 15}]
+ {'event': {'type': ['change'], 'category': ['registry']}, 'process': {'entity_id': 'Grm'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\wDUNrZjeyLuZfIz.sdb'}, '@timestamp': 11},
+ {'process': {'parent': {'name': 'miE'}, 'entity_id': 'Gga'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 12},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'process': {'entity_id': 'Gga'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\K.sdb'}, '@timestamp': 13},
+ {'process': {'parent': {'name': 'EIp'}, 'entity_id': 'duD'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 14},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'process': {'entity_id': 'duD'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\xFEiZBTXzJCW.sdb'}, '@timestamp': 15}]
 ```
 
 
@@ -5720,7 +5720,7 @@ registry where
 ```
 
 ```python
-[{'registry': {'path': 'HKLM\\SYSTEM\\XIUtkNIControlSetSvILO\\Control\\Lsa\\Security PackagesEzswu'}, 'process': {'executable': 'EEX'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'event': {'category': ['registry']}, 'process': {'executable': 'ZFy'}, 'registry': {'path': 'HKLM\\SYSTEM\\UyyFjSvILOoOHmxControlSetEEXpWqNVR\\Control\\Lsa\\OSConfig\\Security PackagesF'}, '@timestamp': 0}]
 ```
 
 
@@ -5783,7 +5783,7 @@ event.action:modified-user-account and event.code:4738 and winlog.event_data.All
 ```
 
 ```python
-[{'event': {'action': 'modified-user-account', 'code': 4738}, 'winlog': {'event_data': {'AllowedToDelegateTo': 'XIUtkNIkrbtgtSvILO'}}, '@timestamp': 0}]
+[{'winlog': {'event_data': {'AllowedToDelegateTo': 'XIUtkNIkrbtgtSvILO'}}, 'event': {'action': 'modified-user-account', 'code': 4738}, '@timestamp': 0}]
 ```
 
 
@@ -5822,7 +5822,7 @@ network where event.type == "start" and network.direction : ("outgoing", "egress
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['network']}, 'network': {'direction': 'outgoing'}, 'destination': {'port': 88, 'address': 'tkN'}, 'source': {'port': 62863}, 'process': {'executable': 'XIU', 'name': 'Ioi'}, '@timestamp': 0}]
+[{'destination': {'port': 88, 'address': 'ZFy'}, 'event': {'type': ['start'], 'category': ['network']}, 'network': {'direction': 'egress'}, 'process': {'executable': 'Utk', 'name': 'NIo'}, 'source': {'port': 54354}, '@timestamp': 0}]
 ```
 
 
@@ -5859,7 +5859,7 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'security', 'args': ['-wa', 'find-generic-password', 'find-internet-password', 'Chrome*', 'Chromium', 'Opera', 'Safari*', 'Brave', 'Microsoft Edge', 'Edge', 'Firefox*'], 'parent': {'executable': 'ZFy'}}, '@timestamp': 0}]
+[{'process': {'parent': {'executable': 'ZFy'}, 'name': 'security', 'args': ['-wa', 'find-generic-password', 'find-internet-password', 'Chrome*', 'Chromium', 'Opera', 'Safari*', 'Brave', 'Microsoft Edge', 'Edge', 'Firefox*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -5875,7 +5875,7 @@ file where file.name : ("lsass*.dmp", "dumpert.dmp", "Andrew.dmp", "SQLDmpr*.mdm
 ```
 
 ```python
-[{'file': {'name': 'lsassyXIUtkNIoixTFl.dmp'}, 'event': {'category': ['file']}, '@timestamp': 0}]
+[{'event': {'category': ['file']}, 'file': {'name': 'lsassyXIUtkNIoixTFl.dmp'}, '@timestamp': 0}]
 ```
 
 
@@ -5913,8 +5913,8 @@ any where event.action == "File System" and event.code == "4656" and
 ```
 
 ```python
-[{'event': {'action': 'File System', 'code': '4656'}, 'winlog': {'event_data': {'ObjectName': '\\Device\\HarddiskVolumeE\\Windows\\System32\\lsass.exe', 'AccessMask': '0x1fffff', 'ProcessName': 'XIU'}}, '@timestamp': 0},
- {'event': {'action': 'File System', 'code': '4656'}, 'winlog': {'event_data': {'ObjectName': '\\Device\\HarddiskVolumeEn\\Windows\\System32\\lsass.exe', 'AccessMaskDescription': 'Read from process memory', 'ProcessName': 'NIo'}}, '@timestamp': 1}]
+[{'winlog': {'event_data': {'ObjectName': '\\Device\\HarddiskVolumeE\\Windows\\System32\\lsass.exe', 'AccessMask': '0x1fffff', 'ProcessName': 'XIU'}}, 'event': {'action': 'File System', 'code': '4656'}, '@timestamp': 0},
+ {'winlog': {'event_data': {'ObjectName': '\\Device\\HarddiskVolumeEn\\Windows\\System32\\lsass.exe', 'AccessMaskDescription': 'Read from process memory', 'ProcessName': 'NIo'}}, 'event': {'action': 'File System', 'code': '4656'}, '@timestamp': 1}]
 ```
 
 
@@ -5933,10 +5933,10 @@ file where event.type in ("creation", "change") and
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'mstsc.exe'}, 'file': {'path': 'C:\\XIUtkNI\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\SvILO'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'path': 'C:\\OHmxBnLeOA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\N'}, '@timestamp': 1},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'name': 'mstsc.exe'}, 'file': {'path': 'C:\\iFqsyzKNyyQDpU\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\mlOPZRgUvW'}, '@timestamp': 2},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'path': 'C:\\mrF\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\fHa'}, '@timestamp': 3}]
+[{'event': {'type': ['creation'], 'category': ['file']}, 'file': {'path': 'C:\\XIUtkNI\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\SvILO'}, 'process': {'name': 'mstsc.exe'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'path': 'C:\\OHmxBnLeOA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\N'}, 'process': {'pid': 4}, '@timestamp': 1},
+ {'event': {'type': ['change'], 'category': ['file']}, 'file': {'path': 'C:\\iFqsyzKNyyQDpU\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\mlOPZRgUvW'}, 'process': {'name': 'mstsc.exe'}, '@timestamp': 2},
+ {'event': {'type': ['change'], 'category': ['file']}, 'file': {'path': 'C:\\mrF\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\fHa'}, 'process': {'pid': 4}, '@timestamp': 3}]
 ```
 
 
@@ -5958,10 +5958,10 @@ sequence by host.id with maxspan=30s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['network']}, 'process': {'pid': 4, 'entity_id': 'NIo'}, 'destination': {'port': 445}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'ip': '1b43:3a53:aa79:ec58:8d14:2981:f18d:f2a7'}, 'host': {'id': 'Utk'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4, 'entity_id': 'NIo'}, 'file': {'extension': 'cmd'}, 'host': {'id': 'Utk'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['network']}, 'process': {'pid': 4, 'entity_id': 'Hmx'}, 'destination': {'port': 445}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'ip': '9a3d:9c72:baf5:6682:de3c:cb58:a9e1:79f3'}, 'host': {'id': 'OoO'}, '@timestamp': 2},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4, 'entity_id': 'Hmx'}, 'file': {'extension': 'dll'}, 'host': {'id': 'OoO'}, '@timestamp': 3}]
+[{'destination': {'port': 445}, 'event': {'type': ['start'], 'category': ['network']}, 'host': {'id': 'ZFy'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'process': {'pid': 4, 'entity_id': 'Utk'}, 'source': {'ip': '73.157.79.25'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'cmd'}, 'host': {'id': 'ZFy'}, 'process': {'pid': 4, 'entity_id': 'Utk'}, '@timestamp': 1},
+ {'destination': {'port': 445}, 'event': {'type': ['start'], 'category': ['network']}, 'host': {'id': 'vIL'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'process': {'pid': 4, 'entity_id': 'oOH'}, 'source': {'ip': '112.141.185.70'}, '@timestamp': 2},
+ {'event': {'type': ['change'], 'category': ['file']}, 'file': {'extension': 'exe'}, 'host': {'id': 'vIL'}, 'process': {'pid': 4, 'entity_id': 'oOH'}, '@timestamp': 3}]
 ```
 
 
@@ -5982,9 +5982,9 @@ sequence by host.id with maxspan=1m
 
 ```python
 [{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/Users/fUyyFjSvILO/Library/LaunchAgents/Ezswu'}, 'host': {'id': 'EEX'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'EEX'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'EEX'}, 'process': {'name': 'launchctl', 'args': ['load']}, '@timestamp': 1},
  {'event': {'type': ['pWq'], 'category': ['file']}, 'file': {'path': '/Library/LaunchAgents/aiFqsyzKNyyQDpU'}, 'host': {'id': 'EUD'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'EUD'}, '@timestamp': 3}]
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'EUD'}, 'process': {'name': 'launchctl', 'args': ['load']}, '@timestamp': 3}]
 ```
 
 
@@ -6002,18 +6002,18 @@ process where event.type == "start" and process.name == "sensible-pager" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['/bin/sh'], 'parent': {'name': 'apt', 'args': ['changelog']}}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['/bin/sh'], 'parent': {'name': 'apt-get', 'args': ['changelog']}}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['/bin/bash'], 'parent': {'name': 'apt', 'args': ['changelog']}}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['/bin/bash'], 'parent': {'name': 'apt-get', 'args': ['changelog']}}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['/bin/dash'], 'parent': {'name': 'apt', 'args': ['changelog']}}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['/bin/dash'], 'parent': {'name': 'apt-get', 'args': ['changelog']}}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['sh'], 'parent': {'name': 'apt', 'args': ['changelog']}}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['sh'], 'parent': {'name': 'apt-get', 'args': ['changelog']}}, '@timestamp': 7},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['bash'], 'parent': {'name': 'apt', 'args': ['changelog']}}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['bash'], 'parent': {'name': 'apt-get', 'args': ['changelog']}}, '@timestamp': 9},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['dash'], 'parent': {'name': 'apt', 'args': ['changelog']}}, '@timestamp': 10},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sensible-pager', 'args': ['dash'], 'parent': {'name': 'apt-get', 'args': ['changelog']}}, '@timestamp': 11}]
+[{'process': {'parent': {'name': 'apt', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['/bin/sh']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'apt-get', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['/bin/sh']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'apt', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['/bin/bash']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'apt-get', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['/bin/bash']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'apt', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['/bin/dash']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'apt-get', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['/bin/dash']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'apt', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['sh']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'apt-get', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['sh']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 7},
+ {'process': {'parent': {'name': 'apt', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['bash']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'apt-get', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['bash']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 9},
+ {'process': {'parent': {'name': 'apt', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['dash']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 10},
+ {'process': {'parent': {'name': 'apt-get', 'args': ['changelog']}, 'name': 'sensible-pager', 'args': ['dash']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 11}]
 ```
 
 
@@ -6030,18 +6030,18 @@ process where event.type == "start" and process.name in ("sh", "bash", "dash") a
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'nawk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'mawk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'awk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'gawk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'nawk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'mawk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'awk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'gawk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 7},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'nawk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'mawk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 9},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'awk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 10},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'gawk', 'args': ['BEGIN {system(*)}']}}, '@timestamp': 11}]
+[{'process': {'parent': {'name': 'nawk', 'args': ['BEGIN {system(*)}']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'mawk', 'args': ['BEGIN {system(*)}']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'awk', 'args': ['BEGIN {system(*)}']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'gawk', 'args': ['BEGIN {system(*)}']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'nawk', 'args': ['BEGIN {system(*)}']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'mawk', 'args': ['BEGIN {system(*)}']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'awk', 'args': ['BEGIN {system(*)}']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'gawk', 'args': ['BEGIN {system(*)}']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 7},
+ {'process': {'parent': {'name': 'nawk', 'args': ['BEGIN {system(*)}']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'mawk', 'args': ['BEGIN {system(*)}']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 9},
+ {'process': {'parent': {'name': 'awk', 'args': ['BEGIN {system(*)}']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 10},
+ {'process': {'parent': {'name': 'gawk', 'args': ['BEGIN {system(*)}']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 11}]
 ```
 
 
@@ -6076,7 +6076,7 @@ process where event.type == "start" and process.parent.name == "crash" and proce
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'crash', 'args': ['-h']}, 'name': 'sh'}, '@timestamp': 0}]
+[{'process': {'parent': {'name': 'crash', 'args': ['-h']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -6109,24 +6109,24 @@ process where event.type == "start" and process.name in ("bash", "sh", "dash") a
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'nice', 'args': ['/bin/bash']}}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'nice', 'args': ['/bin/sh']}}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'nice', 'args': ['/bin/dash']}}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'nice', 'args': ['sh']}}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'nice', 'args': ['bash']}}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'nice', 'args': ['dash']}}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'nice', 'args': ['/bin/bash']}}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'nice', 'args': ['/bin/sh']}}, '@timestamp': 7},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'nice', 'args': ['/bin/dash']}}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'nice', 'args': ['sh']}}, '@timestamp': 9},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'nice', 'args': ['bash']}}, '@timestamp': 10},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'nice', 'args': ['dash']}}, '@timestamp': 11},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'nice', 'args': ['/bin/bash']}}, '@timestamp': 12},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'nice', 'args': ['/bin/sh']}}, '@timestamp': 13},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'nice', 'args': ['/bin/dash']}}, '@timestamp': 14},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'nice', 'args': ['sh']}}, '@timestamp': 15},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'nice', 'args': ['bash']}}, '@timestamp': 16},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'nice', 'args': ['dash']}}, '@timestamp': 17}]
+[{'process': {'parent': {'name': 'nice', 'args': ['/bin/bash']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'nice', 'args': ['/bin/sh']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'nice', 'args': ['/bin/dash']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'nice', 'args': ['sh']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'nice', 'args': ['bash']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'nice', 'args': ['dash']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'nice', 'args': ['/bin/bash']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'nice', 'args': ['/bin/sh']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 7},
+ {'process': {'parent': {'name': 'nice', 'args': ['/bin/dash']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'nice', 'args': ['sh']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 9},
+ {'process': {'parent': {'name': 'nice', 'args': ['bash']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 10},
+ {'process': {'parent': {'name': 'nice', 'args': ['dash']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 11},
+ {'process': {'parent': {'name': 'nice', 'args': ['/bin/bash']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 12},
+ {'process': {'parent': {'name': 'nice', 'args': ['/bin/sh']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 13},
+ {'process': {'parent': {'name': 'nice', 'args': ['/bin/dash']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 14},
+ {'process': {'parent': {'name': 'nice', 'args': ['sh']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 15},
+ {'process': {'parent': {'name': 'nice', 'args': ['bash']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 16},
+ {'process': {'parent': {'name': 'nice', 'args': ['dash']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 17}]
 ```
 
 
@@ -6144,9 +6144,9 @@ process where event.type == "start" and process.name in ("bash", "sh", "dash") a
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'name': 'mysql', 'args': ['\\!*sh', '\\!*bash', '\\!*dash', '\\!*/bin/sh', '\\!*/bin/bash', '\\!*/bin/dash', '-e']}}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'name': 'mysql', 'args': ['\\!*sh', '\\!*bash', '\\!*dash', '\\!*/bin/sh', '\\!*/bin/bash', '\\!*/bin/dash', '-e']}}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dash', 'parent': {'name': 'mysql', 'args': ['\\!*sh', '\\!*bash', '\\!*dash', '\\!*/bin/sh', '\\!*/bin/bash', '\\!*/bin/dash', '-e']}}, '@timestamp': 2}]
+[{'process': {'parent': {'name': 'mysql', 'args': ['\\!*sh', '\\!*bash', '\\!*dash', '\\!*/bin/sh', '\\!*/bin/bash', '\\!*/bin/dash', '-e']}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'mysql', 'args': ['\\!*sh', '\\!*bash', '\\!*dash', '\\!*/bin/sh', '\\!*/bin/bash', '\\!*/bin/dash', '-e']}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'mysql', 'args': ['\\!*sh', '\\!*bash', '\\!*dash', '\\!*/bin/sh', '\\!*/bin/bash', '\\!*/bin/dash', '-e']}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2}]
 ```
 
 
@@ -6176,17 +6176,17 @@ sequence with maxspan=1m
 
 ```python
 [{'event': {'type': ['ZFy'], 'category': ['process']}, 'process': {'name': 'winrshost.exe', 'entity_id': 'IUt'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'kNI'}}, 'parent': {'entity_id': 'IUt'}}, 'winlog': {'event_data': {'IntegrityLevel': 'oix'}}, '@timestamp': 1},
+ {'process': {'Ext': {'token': {'integrity_level_name': 'kNI'}}, 'parent': {'entity_id': 'IUt'}, 'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML']}, 'winlog': {'event_data': {'IntegrityLevel': 'oix'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['TFl'], 'category': ['process']}, 'process': {'name': 'wmic.exe', 'entity_id': 'OHm'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'xBn'}}, 'parent': {'entity_id': 'OHm'}}, 'winlog': {'event_data': {'IntegrityLevel': 'LeO'}}, '@timestamp': 3},
- {'event': {'type': ['Aag'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'WmiPrvSe.exe'}, 'entity_id': 'Rcy'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'mEE'}}, 'parent': {'entity_id': 'Rcy'}}, 'winlog': {'event_data': {'IntegrityLevel': 'wVP'}}, '@timestamp': 5},
- {'event': {'type': ['YMG'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'rundll32.exe'}, 'entity_id': 'pUE'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'UDq'}}, 'parent': {'entity_id': 'pUE'}}, 'winlog': {'event_data': {'IntegrityLevel': 'xVT'}}, '@timestamp': 7},
- {'event': {'type': ['OLW'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'entity_id': 'tim'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'rFg'}}, 'parent': {'entity_id': 'tim'}}, 'winlog': {'event_data': {'IntegrityLevel': 'Tms'}}, '@timestamp': 9},
- {'event': {'type': ['hCe'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'entity_id': 'LWY'}, '@timestamp': 10},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'cYs'}}, 'parent': {'entity_id': 'LWY'}}, 'winlog': {'event_data': {'IntegrityLevel': 'cnU'}}, '@timestamp': 11}]
+ {'process': {'Ext': {'token': {'integrity_level_name': 'xBn'}}, 'parent': {'entity_id': 'OHm'}, 'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML']}, 'winlog': {'event_data': {'IntegrityLevel': 'LeO'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'pe': {'original_file_name': 'winrshost.exe'}, 'entity_id': 'Rcy'}, 'event': {'type': ['qNV'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'Ext': {'token': {'integrity_level_name': 'mEE'}}, 'parent': {'entity_id': 'Rcy'}, 'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML']}, 'winlog': {'event_data': {'IntegrityLevel': 'wVP'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'pe': {'original_file_name': 'rundll32.exe'}, 'entity_id': 'Nfm'}, 'event': {'type': ['MGz'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'Ext': {'token': {'integrity_level_name': 'lOP'}}, 'parent': {'entity_id': 'Nfm'}, 'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML']}, 'winlog': {'event_data': {'IntegrityLevel': 'ZRg'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 7},
+ {'process': {'code_signature': {'trusted': False}, 'entity_id': 'CiM'}, 'event': {'type': ['UvW'], 'category': ['process']}, '@timestamp': 8},
+ {'process': {'Ext': {'token': {'integrity_level_name': 'ZOf'}}, 'parent': {'entity_id': 'CiM'}, 'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML']}, 'winlog': {'event_data': {'IntegrityLevel': 'HaT'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 9},
+ {'process': {'code_signature': {'trusted': False}, 'entity_id': 'RJi'}, 'event': {'type': ['Dgz'], 'category': ['process']}, '@timestamp': 10},
+ {'process': {'Ext': {'token': {'integrity_level_name': 'LSj'}}, 'parent': {'entity_id': 'RJi'}, 'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML']}, 'winlog': {'event_data': {'IntegrityLevel': 'oGr'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 11}]
 ```
 
 
@@ -6202,8 +6202,8 @@ event.dataset:google_workspace.admin and event.provider:admin and event.category
 ```
 
 ```python
-[{'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'ENFORCE_STRONG_AUTHENTICATION'}, 'google_workspace': {'admin': {'new_value': False}}, '@timestamp': 0},
- {'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'ALLOW_STRONG_AUTHENTICATION'}, 'google_workspace': {'admin': {'new_value': False}}, '@timestamp': 1}]
+[{'google_workspace': {'admin': {'new_value': False}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'ENFORCE_STRONG_AUTHENTICATION'}, '@timestamp': 0},
+ {'google_workspace': {'admin': {'new_value': False}}, 'event': {'dataset': 'google_workspace.admin', 'provider': 'admin', 'category': ['iam'], 'action': 'ALLOW_STRONG_AUTHENTICATION'}, '@timestamp': 1}]
 ```
 
 
@@ -6219,8 +6219,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'file_classification_event'}, 'endgame': {'metadata': {'type': 'detection'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'file_classification_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'detection'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'file_classification_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'file_classification_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -6236,8 +6236,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'file_classification_event'}, 'endgame': {'metadata': {'type': 'prevention'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'file_classification_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'prevention'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'file_classification_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'file_classification_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -6286,7 +6286,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 ```
 
 ```python
-[{'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'category': ['web'], 'action': 'Set-DkimSigningConfig', 'outcome': 'success'}, 'o365': {'audit': {'Parameters': {'Enabled': 'False'}}}, '@timestamp': 0}]
+[{'o365': {'audit': {'Parameters': {'Enabled': 'False'}}}, 'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'category': ['web'], 'action': 'Set-DkimSigningConfig', 'outcome': 'success'}, '@timestamp': 0}]
 ```
 
 
@@ -6433,7 +6433,7 @@ o365.audit.ModifiedProperties.Role_DisplayName.NewValue:"Global Administrator"
 ```
 
 ```python
-[{'event': {'dataset': 'o365.audit', 'code': 'AzureActiveDirectory', 'action': 'Add member to role.'}, 'o365': {'audit': {'ModifiedProperties': {'Role_DisplayName': {'NewValue': 'Global Administrator'}}}}, '@timestamp': 0}]
+[{'o365': {'audit': {'ModifiedProperties': {'Role_DisplayName': {'NewValue': 'Global Administrator'}}}}, 'event': {'dataset': 'o365.audit', 'code': 'AzureActiveDirectory', 'action': 'Add member to role.'}, '@timestamp': 0}]
 ```
 
 
@@ -6472,9 +6472,9 @@ event.category:web and event.action:"New-InboxRule" and
 ```
 
 ```python
-[{'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'category': ['web'], 'action': 'New-InboxRule', 'outcome': 'success'}, 'o365audit': {'Parameters': {'ForwardTo': 'ZFy'}}, '@timestamp': 0},
- {'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'category': ['web'], 'action': 'New-InboxRule', 'outcome': 'success'}, 'o365audit': {'Parameters': {'ForwardAsAttachmentTo': 'XIU'}}, '@timestamp': 1},
- {'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'category': ['web'], 'action': 'New-InboxRule', 'outcome': 'success'}, 'o365audit': {'Parameters': {'RedirectTo': 'tkN'}}, '@timestamp': 2}]
+[{'o365audit': {'Parameters': {'ForwardTo': 'ZFy'}}, 'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'category': ['web'], 'action': 'New-InboxRule', 'outcome': 'success'}, '@timestamp': 0},
+ {'o365audit': {'Parameters': {'ForwardAsAttachmentTo': 'XIU'}}, 'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'category': ['web'], 'action': 'New-InboxRule', 'outcome': 'success'}, '@timestamp': 1},
+ {'o365audit': {'Parameters': {'RedirectTo': 'tkN'}}, 'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'category': ['web'], 'action': 'New-InboxRule', 'outcome': 'success'}, '@timestamp': 2}]
 ```
 
 
@@ -6525,7 +6525,7 @@ o365.audit.NewValue:True and event.outcome:success
 ```
 
 ```python
-[{'event': {'dataset': 'o365.audit', 'provider': 'MicrosoftTeams', 'category': ['web'], 'action': 'TeamsTenantSettingChanged', 'outcome': 'success'}, 'o365': {'audit': {'Name': 'Allow sideloading and interaction of custom apps', 'NewValue': 'True'}}, '@timestamp': 0}]
+[{'o365': {'audit': {'Name': 'Allow sideloading and interaction of custom apps', 'NewValue': 'True'}}, 'event': {'dataset': 'o365.audit', 'provider': 'MicrosoftTeams', 'category': ['web'], 'action': 'TeamsTenantSettingChanged', 'outcome': 'success'}, '@timestamp': 0}]
 ```
 
 
@@ -6543,8 +6543,8 @@ o365.audit.Parameters.AllowFederatedUsers:True and event.outcome:success
 ```
 
 ```python
-[{'event': {'dataset': 'o365.audit', 'provider': 'SkypeForBusiness', 'category': ['web'], 'action': 'Set-CsTenantFederationConfiguration', 'outcome': 'success'}, 'o365': {'audit': {'Parameters': {'AllowFederatedUsers': 'True'}}}, '@timestamp': 0},
- {'event': {'dataset': 'o365.audit', 'provider': 'MicrosoftTeams', 'category': ['web'], 'action': 'Set-CsTenantFederationConfiguration', 'outcome': 'success'}, 'o365': {'audit': {'Parameters': {'AllowFederatedUsers': 'True'}}}, '@timestamp': 1}]
+[{'o365': {'audit': {'Parameters': {'AllowFederatedUsers': 'True'}}}, 'event': {'dataset': 'o365.audit', 'provider': 'SkypeForBusiness', 'category': ['web'], 'action': 'Set-CsTenantFederationConfiguration', 'outcome': 'success'}, '@timestamp': 0},
+ {'o365': {'audit': {'Parameters': {'AllowFederatedUsers': 'True'}}}, 'event': {'dataset': 'o365.audit', 'provider': 'MicrosoftTeams', 'category': ['web'], 'action': 'Set-CsTenantFederationConfiguration', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -6562,8 +6562,8 @@ o365.audit.Parameters.AllowGuestUser:True and event.outcome:success
 ```
 
 ```python
-[{'event': {'dataset': 'o365.audit', 'provider': 'SkypeForBusiness', 'category': ['web'], 'action': 'Set-CsTeamsClientConfiguration', 'outcome': 'success'}, 'o365': {'audit': {'Parameters': {'AllowGuestUser': 'True'}}}, '@timestamp': 0},
- {'event': {'dataset': 'o365.audit', 'provider': 'MicrosoftTeams', 'category': ['web'], 'action': 'Set-CsTeamsClientConfiguration', 'outcome': 'success'}, 'o365': {'audit': {'Parameters': {'AllowGuestUser': 'True'}}}, '@timestamp': 1}]
+[{'o365': {'audit': {'Parameters': {'AllowGuestUser': 'True'}}}, 'event': {'dataset': 'o365.audit', 'provider': 'SkypeForBusiness', 'category': ['web'], 'action': 'Set-CsTeamsClientConfiguration', 'outcome': 'success'}, '@timestamp': 0},
+ {'o365': {'audit': {'Parameters': {'AllowGuestUser': 'True'}}}, 'event': {'dataset': 'o365.audit', 'provider': 'MicrosoftTeams', 'category': ['web'], 'action': 'Set-CsTeamsClientConfiguration', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -6615,7 +6615,7 @@ sequence by process.entity_id
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
  {'dll': {'name': 'SAMLib.DLL'}, 'event': {'category': ['library']}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'MSBuild.exe'}, 'entity_id': 'Utk'}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'MSBuild.exe'}, 'entity_id': 'Utk'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
  {'dll': {'name': 'SAMLib.DLL'}, 'event': {'category': ['library']}, 'process': {'entity_id': 'Utk'}, '@timestamp': 3}]
 ```
 
@@ -6634,8 +6634,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'MSBuild.exe'}, 'name': 'powershell.exe'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'MSBuild.exe'}, 'name': 'iexplore.exe'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'MSBuild.exe'}, 'name': 'powershell.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'MSBuild.exe'}, 'name': 'iexplore.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -6653,8 +6653,8 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'parent': {'name': 'powershell_ise.exe'}}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'MSBuild.exe'}, 'parent': {'name': 'wscript.exe'}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'powershell_ise.exe'}, 'name': 'MSBuild.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'wscript.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -6672,8 +6672,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'parent': {'name': 'wmiprvse.exe'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'parent': {'name': 'wmiprvse.exe'}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'wmiprvse.exe'}, 'name': 'MSBuild.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'wmiprvse.exe'}, 'name': 'MSBuild.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -6698,8 +6698,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'parent': {'name': 'winword.exe'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'parent': {'name': 'powerpnt.exe'}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'winword.exe'}, 'name': 'MSBuild.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'powerpnt.exe'}, 'name': 'MSBuild.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -6717,8 +6717,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'MSBuild.exe'}, 'name': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'MSBuild.exe'}, 'name': 'XIU'}, '@timestamp': 1}]
+[{'process': {'pe': {'original_file_name': 'MSBuild.exe'}, 'name': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'pe': {'original_file_name': 'MSBuild.exe'}, 'name': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -6736,7 +6736,7 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'UMWorkerProcess.exe'}, 'name': 'vCf'}, '@timestamp': 0}]
+[{'process': {'parent': {'name': 'UMWorkerProcess.exe'}, 'name': 'vCf'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -6765,9 +6765,9 @@ file where event.type == "creation" and
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'umservice.exe'}, 'file': {'extension': 'php', 'path': 'y:\\inetpub\\wwwroot\\aspnet_client\\kNIoixTF'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'UMWorkerProcess.exe'}, 'file': {'extension': 'js', 'path': 'P:\\mxBnLe\\Microsoft\\Exchange ServerWqNVRcymEEwVP\\FrontEnd\\HttpProxy\\owa\\auth\\MGzNfmlO', 'name': 'PZR'}, '@timestamp': 1},
- {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'UMWorkerProcess.exe'}, 'file': {'extension': 'php', 'path': 'I:\\iMZ\\Microsoft\\Exchange ServergTmshCeLWYcYs\\FrontEnd\\HttpProxy\\ecp\\auth\\o', 'name': 'Grm'}, '@timestamp': 2}]
+[{'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'shtml', 'path': 'J:\\inetpub\\wwwroot\\aspnet_client\\fUyyFjSvILO'}, 'process': {'name': 'umservice.exe'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'shtml', 'path': 'p:\\xBnLeOAa\\Microsoft\\Exchange ServerVRc\\FrontEnd\\HttpProxy\\owa\\auth\\qsyzKNyy', 'name': 'QDp'}, 'process': {'name': 'UMWorkerProcess.exe'}, '@timestamp': 1},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'cfm', 'path': 'K:\\qxVTOLWtimrFg\\Microsoft\\Exchange ServerHaTDgzRJiLSjoGr\\FrontEnd\\HttpProxy\\ecp\\auth\\MVrH', 'name': 'tzI'}, 'process': {'name': 'UMWorkerProcess.exe'}, '@timestamp': 2}]
 ```
 
 
@@ -6786,11 +6786,11 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'w3wp.exe', 'args': ['MSExchange*AppPool']}, 'name': 'pwsh.exe'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'w3wp.exe', 'args': ['MSExchange*AppPool']}, 'pe': {'original_file_name': 'cmd.exe'}}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'w3wp.exe', 'args': ['MSExchange*AppPool']}, 'pe': {'original_file_name': 'powershell.exe'}}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'w3wp.exe', 'args': ['MSExchange*AppPool']}, 'pe': {'original_file_name': 'pwsh.dll'}}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'w3wp.exe', 'args': ['MSExchange*AppPool']}, 'pe': {'original_file_name': 'powershell_ise.exe'}}, '@timestamp': 4}]
+[{'process': {'parent': {'name': 'w3wp.exe', 'args': ['MSExchange*AppPool']}, 'name': 'pwsh.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'w3wp.exe', 'args': ['MSExchange*AppPool']}, 'pe': {'original_file_name': 'cmd.exe'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'w3wp.exe', 'args': ['MSExchange*AppPool']}, 'pe': {'original_file_name': 'powershell.exe'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'w3wp.exe', 'args': ['MSExchange*AppPool']}, 'pe': {'original_file_name': 'pwsh.dll'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'w3wp.exe', 'args': ['MSExchange*AppPool']}, 'pe': {'original_file_name': 'powershell_ise.exe'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4}]
 ```
 
 
@@ -6809,9 +6809,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'aspnet_regiis.exe', 'args': ['connectionStrings', '-pdf']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'aspnet_regiis.exe'}, 'args': ['connectionStrings', '-pdf']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'aspnet_regiis.exe'}, 'args': ['connectionStrings', '-pdf']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'aspnet_regiis.exe', 'args': ['connectionStrings', '-pdf']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'aspnet_regiis.exe'}, 'args': ['connectionStrings', '-pdf']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'aspnet_regiis.exe'}, 'args': ['connectionStrings', '-pdf']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -6830,9 +6830,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'appcmd.exe', 'args': ['/list', '/text*password']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'appcmd.exe'}, 'args': ['/list', '/text*password']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'appcmd.exe'}, 'args': ['/list', '/text*password']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'appcmd.exe', 'args': ['/list', '/text*password']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'appcmd.exe'}, 'args': ['/list', '/text*password']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'appcmd.exe'}, 'args': ['/list', '/text*password']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -6848,7 +6848,7 @@ file where file.name : "mimilsa.log" and process.name : "lsass.exe"
 ```
 
 ```python
-[{'file': {'name': 'mimilsa.log'}, 'process': {'name': 'lsass.exe'}, 'event': {'category': ['file']}, '@timestamp': 0}]
+[{'event': {'category': ['file']}, 'file': {'name': 'mimilsa.log'}, 'process': {'name': 'lsass.exe'}, '@timestamp': 0}]
 ```
 
 
@@ -6903,10 +6903,10 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bcdedit.exe', 'args': ['/set', 'bootstatuspolicy', 'ignoreallfailures']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'bcdedit.exe'}, 'args': ['/set', 'bootstatuspolicy', 'ignoreallfailures']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'bcdedit.exe'}, 'args': ['/set', 'bootstatuspolicy', 'ignoreallfailures']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'bcdedit.exe', 'args': ['/set', 'bootstatuspolicy', 'ignoreallfailures']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'bcdedit.exe'}, 'args': ['/set', 'bootstatuspolicy', 'ignoreallfailures']}, '@timestamp': 3},
- {'process': {'args': ['no', 'recoveryenabled']}, 'event': {'category': ['process']}, '@timestamp': 4}]
+ {'process': {'pe': {'original_file_name': 'bcdedit.exe'}, 'args': ['/set', 'bootstatuspolicy', 'ignoreallfailures']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3},
+ {'event': {'category': ['process']}, 'process': {'args': ['no', 'recoveryenabled']}, '@timestamp': 4}]
 ```
 
 
@@ -6951,7 +6951,7 @@ event.category:process and event.type:start and
 ```
 
 ```python
-[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'launchctl', 'args': ['setenv'], 'parent': {'executable': 'ZFy'}}, '@timestamp': 0}]
+[{'process': {'parent': {'executable': 'ZFy'}, 'name': 'launchctl', 'args': ['setenv']}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 0}]
 ```
 
 
@@ -6970,11 +6970,11 @@ event.category:file and event.type:change and
 ```
 
 ```python
-[{'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'ZFy', 'executable': 'XIU'}, 'file': {'path': '/usr/sbin/sshd'}, '@timestamp': 0},
- {'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'tkN', 'executable': 'Ioi'}, 'file': {'path': '/usr/bin/ssh'}, '@timestamp': 1},
- {'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'xTF', 'executable': 'lEz'}, 'file': {'path': '/usr/bin/sftp'}, '@timestamp': 2},
- {'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'swu', 'executable': 'EEX'}, 'file': {'path': '/usr/bin/scp'}, '@timestamp': 3},
- {'event': {'category': ['file'], 'type': ['change']}, 'process': {'name': 'pWq', 'executable': 'NVR'}, 'file': {'name': 'libkeyutils.so'}, '@timestamp': 4}]
+[{'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/usr/sbin/sshd'}, 'process': {'name': 'ZFy', 'executable': 'XIU'}, '@timestamp': 0},
+ {'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/usr/bin/ssh'}, 'process': {'name': 'tkN', 'executable': 'Ioi'}, '@timestamp': 1},
+ {'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/usr/bin/sftp'}, 'process': {'name': 'xTF', 'executable': 'lEz'}, '@timestamp': 2},
+ {'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/usr/bin/scp'}, 'process': {'name': 'swu', 'executable': 'EEX'}, '@timestamp': 3},
+ {'event': {'category': ['file'], 'type': ['change']}, 'file': {'name': 'libkeyutils.so'}, 'process': {'name': 'pWq', 'executable': 'NVR'}, '@timestamp': 4}]
 ```
 
 
@@ -7044,7 +7044,7 @@ event.category:file and event.type:change and
 ```
 
 ```python
-[{'event': {'category': ['file'], 'type': ['change']}, 'file': {'name': 'pam_XIUtkNI.so', 'path': 'TFl'}, 'process': {'executable': 'oix'}, '@timestamp': 0},
+[{'event': {'category': ['file'], 'type': ['change']}, 'file': {'name': 'pam_XIUtkNI.so', 'path': 'oix'}, 'process': {'executable': 'TFl'}, '@timestamp': 0},
  {'event': {'category': ['file'], 'type': ['change']}, 'file': {'path': '/private/etc/pam.d/swuEEXpWqNV'}, 'process': {'executable': 'Rcy'}, '@timestamp': 1}]
 ```
 
@@ -7086,13 +7086,13 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'net.exe', 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'net1.exe', 'parent': {'name': 'ZFy'}, 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net1.exe'}, 'parent': {'name': 'XIU'}, 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, '@timestamp': 3},
+ {'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'ZFy'}, 'name': 'net1.exe', 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'XIU'}, 'pe': {'original_file_name': 'net1.exe'}, 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'net.exe', 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, '@timestamp': 4},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, '@timestamp': 5},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'net1.exe', 'parent': {'name': 'tkN'}, 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net1.exe'}, 'parent': {'name': 'Ioi'}, 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, '@timestamp': 7}]
+ {'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'tkN'}, 'name': 'net1.exe', 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'Ioi'}, 'pe': {'original_file_name': 'net1.exe'}, 'args': ['use', '\\\\*\\*$*', '\\\\*@SSL\\*', 'http*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 7}]
 ```
 
 
@@ -7111,8 +7111,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'MSBuild.exe', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'MSBuild.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '229.172.181.141'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'destination': {'ip': '229.172.181.141'}, 'event': {'category': ['network']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -7134,13 +7134,13 @@ sequence by process.entity_id
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
- {'process': {'name': 'MSBuild.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '229.172.181.141'}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'destination': {'ip': '229.172.181.141'}, 'event': {'category': ['network']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'ZFy'}, '@timestamp': 1},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'Uyy'}, '@timestamp': 2},
- {'process': {'name': 'MSBuild.exe', 'entity_id': 'Uyy'}, 'source': {'ip': '73.157.79.25'}, 'event': {'category': ['network']}, '@timestamp': 3},
+ {'event': {'category': ['network']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'Uyy'}, 'source': {'ip': '73.157.79.25'}, '@timestamp': 3},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'SvI'}, '@timestamp': 4},
- {'process': {'name': 'MSBuild.exe', 'entity_id': 'SvI'}, 'destination': {'ip': '70.123.63.77'}, 'event': {'category': ['network']}, '@timestamp': 5},
+ {'destination': {'ip': '70.123.63.77'}, 'event': {'category': ['network']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'SvI'}, '@timestamp': 5},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'Ezs'}, '@timestamp': 6},
- {'process': {'name': 'MSBuild.exe', 'entity_id': 'Ezs'}, 'source': {'ip': '116.114.240.76'}, 'event': {'category': ['network']}, '@timestamp': 7}]
+ {'event': {'category': ['network']}, 'process': {'name': 'MSBuild.exe', 'entity_id': 'Ezs'}, 'source': {'ip': '116.114.240.76'}, '@timestamp': 7}]
 ```
 
 
@@ -7161,9 +7161,9 @@ sequence by process.entity_id
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'msxsl.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
- {'process': {'name': 'msxsl.exe', 'entity_id': 'ZFy'}, 'network': {'direction': 'egress'}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'event': {'category': ['network']}, 'network': {'direction': 'egress'}, 'process': {'name': 'msxsl.exe', 'entity_id': 'ZFy'}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'msxsl.exe', 'entity_id': 'Utk'}, '@timestamp': 2},
- {'process': {'name': 'msxsl.exe', 'entity_id': 'Utk'}, 'network': {'direction': 'egress'}, 'event': {'category': ['network']}, '@timestamp': 3}]
+ {'event': {'category': ['network']}, 'network': {'direction': 'egress'}, 'process': {'name': 'msxsl.exe', 'entity_id': 'Utk'}, '@timestamp': 3}]
 ```
 
 
@@ -7185,10 +7185,10 @@ sequence by process.entity_id with maxspan=10m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'parent': {'name': 'ZFy', 'executable': 'XIU'}, 'args': ['tkN'], 'entity_id': 'Ioi'}, '@timestamp': 0},
- {'process': {'name': 'mshta.exe', 'entity_id': 'Ioi'}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'parent': {'name': 'xTF', 'executable': 'lEz'}, 'args': ['swu'], 'entity_id': 'EEX'}, '@timestamp': 2},
- {'process': {'name': 'mshta.exe', 'entity_id': 'EEX'}, 'event': {'category': ['network']}, '@timestamp': 3}]
+[{'process': {'parent': {'name': 'ZFy', 'executable': 'XIU'}, 'name': 'mshta.exe', 'args': ['tkN'], 'entity_id': 'Ioi'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'event': {'category': ['network']}, 'process': {'name': 'mshta.exe', 'entity_id': 'Ioi'}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'xTF', 'executable': 'lEz'}, 'name': 'mshta.exe', 'args': ['swu'], 'entity_id': 'EEX'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 2},
+ {'event': {'category': ['network']}, 'process': {'name': 'mshta.exe', 'entity_id': 'EEX'}, '@timestamp': 3}]
 ```
 
 
@@ -7204,8 +7204,8 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Disable Strong
 ```
 
 ```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Disable Strong Authentication'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Disable Strong Authentication'}}, '@timestamp': 1}]
+[{'azure': {'auditlogs': {'operation_name': 'Disable Strong Authentication'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'auditlogs': {'operation_name': 'Disable Strong Authentication'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -7228,14 +7228,14 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'XCOPY.EXE'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'esentutl.exe'}, 'args': ['*/y*', '*/vss*', '*/d*', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, '@timestamp': 3},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, '@timestamp': 4},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, '@timestamp': 5},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'XCOPY.EXE'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'esentutl.exe'}, 'args': ['*/y*', '*/vss*', '*/d*', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, '@timestamp': 7}]
+[{'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'XCOPY.EXE'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'esentutl.exe'}, 'args': ['*/y*', '*/vss*', '*/d*', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'pe': {'original_file_name': 'XCOPY.EXE'}, 'args': ['copy', 'xcopy', 'Copy-Item', 'move', 'cp', 'mv', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'pe': {'original_file_name': 'esentutl.exe'}, 'args': ['*/y*', '*/vss*', '*/d*', '*\\ntds.dit', '*\\config\\SAM', '\\*\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*\\*', '*/system32/config/SAM*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 7}]
 ```
 
 
@@ -7256,56 +7256,56 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'nc', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'nc', 'entity_id': 'ZFy'}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'process': {'name': 'nc', 'entity_id': 'XIU'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
- {'process': {'name': 'ncat', 'entity_id': 'XIU'}, 'event': {'category': ['network']}, '@timestamp': 3},
- {'process': {'name': 'nc', 'entity_id': 'tkN'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
- {'process': {'name': 'netcat', 'entity_id': 'tkN'}, 'event': {'category': ['network']}, '@timestamp': 5},
- {'process': {'name': 'nc', 'entity_id': 'Ioi'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 6},
- {'process': {'name': 'netcat.openbsd', 'entity_id': 'Ioi'}, 'event': {'category': ['network']}, '@timestamp': 7},
- {'process': {'name': 'nc', 'entity_id': 'xTF'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 8},
- {'process': {'name': 'netcat.traditional', 'entity_id': 'xTF'}, 'event': {'category': ['network']}, '@timestamp': 9},
- {'process': {'name': 'ncat', 'entity_id': 'lEz'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 10},
- {'process': {'name': 'nc', 'entity_id': 'lEz'}, 'event': {'category': ['network']}, '@timestamp': 11},
- {'process': {'name': 'ncat', 'entity_id': 'swu'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 12},
- {'process': {'name': 'ncat', 'entity_id': 'swu'}, 'event': {'category': ['network']}, '@timestamp': 13},
- {'process': {'name': 'ncat', 'entity_id': 'EEX'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 14},
- {'process': {'name': 'netcat', 'entity_id': 'EEX'}, 'event': {'category': ['network']}, '@timestamp': 15},
- {'process': {'name': 'ncat', 'entity_id': 'pWq'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 16},
- {'process': {'name': 'netcat.openbsd', 'entity_id': 'pWq'}, 'event': {'category': ['network']}, '@timestamp': 17},
- {'process': {'name': 'ncat', 'entity_id': 'NVR'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 18},
- {'process': {'name': 'netcat.traditional', 'entity_id': 'NVR'}, 'event': {'category': ['network']}, '@timestamp': 19},
- {'process': {'name': 'netcat', 'entity_id': 'cym'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 20},
- {'process': {'name': 'nc', 'entity_id': 'cym'}, 'event': {'category': ['network']}, '@timestamp': 21},
- {'process': {'name': 'netcat', 'entity_id': 'EEw'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 22},
- {'process': {'name': 'ncat', 'entity_id': 'EEw'}, 'event': {'category': ['network']}, '@timestamp': 23},
- {'process': {'name': 'netcat', 'entity_id': 'VPY'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 24},
- {'process': {'name': 'netcat', 'entity_id': 'VPY'}, 'event': {'category': ['network']}, '@timestamp': 25},
- {'process': {'name': 'netcat', 'entity_id': 'MGz'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 26},
- {'process': {'name': 'netcat.openbsd', 'entity_id': 'MGz'}, 'event': {'category': ['network']}, '@timestamp': 27},
- {'process': {'name': 'netcat', 'entity_id': 'Nfm'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 28},
- {'process': {'name': 'netcat.traditional', 'entity_id': 'Nfm'}, 'event': {'category': ['network']}, '@timestamp': 29},
- {'process': {'name': 'netcat.openbsd', 'entity_id': 'lOP'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 30},
- {'process': {'name': 'nc', 'entity_id': 'lOP'}, 'event': {'category': ['network']}, '@timestamp': 31},
- {'process': {'name': 'netcat.openbsd', 'entity_id': 'ZRg'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 32},
- {'process': {'name': 'ncat', 'entity_id': 'ZRg'}, 'event': {'category': ['network']}, '@timestamp': 33},
- {'process': {'name': 'netcat.openbsd', 'entity_id': 'UvW'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 34},
- {'process': {'name': 'netcat', 'entity_id': 'UvW'}, 'event': {'category': ['network']}, '@timestamp': 35},
- {'process': {'name': 'netcat.openbsd', 'entity_id': 'CiM'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 36},
- {'process': {'name': 'netcat.openbsd', 'entity_id': 'CiM'}, 'event': {'category': ['network']}, '@timestamp': 37},
- {'process': {'name': 'netcat.openbsd', 'entity_id': 'ZOf'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 38},
- {'process': {'name': 'netcat.traditional', 'entity_id': 'ZOf'}, 'event': {'category': ['network']}, '@timestamp': 39},
- {'process': {'name': 'netcat.traditional', 'entity_id': 'HaT'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 40},
- {'process': {'name': 'nc', 'entity_id': 'HaT'}, 'event': {'category': ['network']}, '@timestamp': 41},
- {'process': {'name': 'netcat.traditional', 'entity_id': 'Dgz'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 42},
- {'process': {'name': 'ncat', 'entity_id': 'Dgz'}, 'event': {'category': ['network']}, '@timestamp': 43},
- {'process': {'name': 'netcat.traditional', 'entity_id': 'RJi'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 44},
- {'process': {'name': 'netcat', 'entity_id': 'RJi'}, 'event': {'category': ['network']}, '@timestamp': 45},
- {'process': {'name': 'netcat.traditional', 'entity_id': 'LSj'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 46},
- {'process': {'name': 'netcat.openbsd', 'entity_id': 'LSj'}, 'event': {'category': ['network']}, '@timestamp': 47},
- {'process': {'name': 'netcat.traditional', 'entity_id': 'oGr'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 48},
- {'process': {'name': 'netcat.traditional', 'entity_id': 'oGr'}, 'event': {'category': ['network']}, '@timestamp': 49}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'nc', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'category': ['network']}, 'process': {'name': 'nc', 'entity_id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'nc', 'entity_id': 'XIU'}, '@timestamp': 2},
+ {'event': {'category': ['network']}, 'process': {'name': 'ncat', 'entity_id': 'XIU'}, '@timestamp': 3},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'nc', 'entity_id': 'tkN'}, '@timestamp': 4},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat', 'entity_id': 'tkN'}, '@timestamp': 5},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'nc', 'entity_id': 'Ioi'}, '@timestamp': 6},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat.openbsd', 'entity_id': 'Ioi'}, '@timestamp': 7},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'nc', 'entity_id': 'xTF'}, '@timestamp': 8},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat.traditional', 'entity_id': 'xTF'}, '@timestamp': 9},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ncat', 'entity_id': 'lEz'}, '@timestamp': 10},
+ {'event': {'category': ['network']}, 'process': {'name': 'nc', 'entity_id': 'lEz'}, '@timestamp': 11},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ncat', 'entity_id': 'swu'}, '@timestamp': 12},
+ {'event': {'category': ['network']}, 'process': {'name': 'ncat', 'entity_id': 'swu'}, '@timestamp': 13},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ncat', 'entity_id': 'EEX'}, '@timestamp': 14},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat', 'entity_id': 'EEX'}, '@timestamp': 15},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ncat', 'entity_id': 'pWq'}, '@timestamp': 16},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat.openbsd', 'entity_id': 'pWq'}, '@timestamp': 17},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ncat', 'entity_id': 'NVR'}, '@timestamp': 18},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat.traditional', 'entity_id': 'NVR'}, '@timestamp': 19},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat', 'entity_id': 'cym'}, '@timestamp': 20},
+ {'event': {'category': ['network']}, 'process': {'name': 'nc', 'entity_id': 'cym'}, '@timestamp': 21},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat', 'entity_id': 'EEw'}, '@timestamp': 22},
+ {'event': {'category': ['network']}, 'process': {'name': 'ncat', 'entity_id': 'EEw'}, '@timestamp': 23},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat', 'entity_id': 'VPY'}, '@timestamp': 24},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat', 'entity_id': 'VPY'}, '@timestamp': 25},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat', 'entity_id': 'MGz'}, '@timestamp': 26},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat.openbsd', 'entity_id': 'MGz'}, '@timestamp': 27},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat', 'entity_id': 'Nfm'}, '@timestamp': 28},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat.traditional', 'entity_id': 'Nfm'}, '@timestamp': 29},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat.openbsd', 'entity_id': 'lOP'}, '@timestamp': 30},
+ {'event': {'category': ['network']}, 'process': {'name': 'nc', 'entity_id': 'lOP'}, '@timestamp': 31},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat.openbsd', 'entity_id': 'ZRg'}, '@timestamp': 32},
+ {'event': {'category': ['network']}, 'process': {'name': 'ncat', 'entity_id': 'ZRg'}, '@timestamp': 33},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat.openbsd', 'entity_id': 'UvW'}, '@timestamp': 34},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat', 'entity_id': 'UvW'}, '@timestamp': 35},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat.openbsd', 'entity_id': 'CiM'}, '@timestamp': 36},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat.openbsd', 'entity_id': 'CiM'}, '@timestamp': 37},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat.openbsd', 'entity_id': 'ZOf'}, '@timestamp': 38},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat.traditional', 'entity_id': 'ZOf'}, '@timestamp': 39},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat.traditional', 'entity_id': 'HaT'}, '@timestamp': 40},
+ {'event': {'category': ['network']}, 'process': {'name': 'nc', 'entity_id': 'HaT'}, '@timestamp': 41},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat.traditional', 'entity_id': 'Dgz'}, '@timestamp': 42},
+ {'event': {'category': ['network']}, 'process': {'name': 'ncat', 'entity_id': 'Dgz'}, '@timestamp': 43},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat.traditional', 'entity_id': 'RJi'}, '@timestamp': 44},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat', 'entity_id': 'RJi'}, '@timestamp': 45},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat.traditional', 'entity_id': 'LSj'}, '@timestamp': 46},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat.openbsd', 'entity_id': 'LSj'}, '@timestamp': 47},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netcat.traditional', 'entity_id': 'oGr'}, '@timestamp': 48},
+ {'event': {'category': ['network']}, 'process': {'name': 'netcat.traditional', 'entity_id': 'oGr'}, '@timestamp': 49}]
 ```
 
 
@@ -7329,8 +7329,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'certutil.exe', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'certutil.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'certutil.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, 'process': {'name': 'certutil.exe', 'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -7353,8 +7353,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'hh.exe', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'hh.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'hh.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, 'process': {'name': 'hh.exe', 'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -7377,8 +7377,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'msxsl.exe', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'msxsl.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'msxsl.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, 'process': {'name': 'msxsl.exe', 'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -7398,8 +7398,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'mshta.exe', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'mshta.exe', 'entity_id': 'ZFy'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'category': ['network']}, 'process': {'name': 'mshta.exe', 'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -7428,10 +7428,10 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'regsvr32.exe', 'Ext': {'token': {'integrity_level_name': 'TvC'}}, 'entity_id': 'yFj'}, 'winlog': {'event_data': {'IntegrityLevel': 'fUy'}}, '@timestamp': 0},
- {'process': {'name': 'RegAsm.exe', 'entity_id': 'yFj'}, 'destination': {'ip': '115.189.242.190'}, 'network': {'protocol': 'ILO'}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'RegSvcs.exe', 'parent': {'name': 'Ezs', 'executable': 'wuE'}, 'entity_id': 'EXp'}, '@timestamp': 2},
- {'process': {'name': 'regsvr32.exe', 'entity_id': 'EXp'}, 'destination': {'ip': '0.167.86.71'}, 'network': {'protocol': 'NVR'}, 'event': {'category': ['network']}, '@timestamp': 3}]
+[{'process': {'Ext': {'token': {'integrity_level_name': 'ZFy'}}, 'name': 'RegSvcs.exe', 'entity_id': 'yyF'}, 'winlog': {'event_data': {'IntegrityLevel': 'XIU'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'destination': {'ip': '73.157.79.25'}, 'event': {'category': ['network']}, 'network': {'protocol': 'SvI'}, 'process': {'name': 'regsvr32.exe', 'entity_id': 'yyF'}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'FlE', 'executable': 'zsw'}, 'name': 'RegSvcs.exe', 'entity_id': 'BnL'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'destination': {'ip': '77.215.212.249'}, 'event': {'category': ['network']}, 'network': {'protocol': 'OAa'}, 'process': {'name': 'RegAsm.exe', 'entity_id': 'BnL'}, '@timestamp': 3}]
 ```
 
 
@@ -7457,8 +7457,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'makecab.exe', 'entity_id': 'vCf'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'makecab.exe', 'entity_id': 'vCf'}, 'destination': {'ip': '54.2.158.30'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'makecab.exe', 'entity_id': 'vCf'}, '@timestamp': 0},
+ {'destination': {'ip': '122.143.223.236'}, 'event': {'category': ['network']}, 'process': {'name': 'extrac32.exe', 'entity_id': 'vCf'}, '@timestamp': 1}]
 ```
 
 
@@ -7584,9 +7584,9 @@ not user.id : "NT AUTHORITY\SYSTEM (Microsoft.Exchange.Servicehost)"
 ```
 
 ```python
-[{'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'action': 'Add-MailboxPermission', 'outcome': 'success'}, 'o365': {'audit': {'Parameters': {'AccessRights': 'FullAccess'}}}, 'user': {'id': 'ZFy'}, '@timestamp': 0},
- {'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'action': 'Add-MailboxPermission', 'outcome': 'success'}, 'o365': {'audit': {'Parameters': {'AccessRights': 'SendAs'}}}, 'user': {'id': 'XIU'}, '@timestamp': 1},
- {'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'action': 'Add-MailboxPermission', 'outcome': 'success'}, 'o365': {'audit': {'Parameters': {'AccessRights': 'SendOnBehalf'}}}, 'user': {'id': 'tkN'}, '@timestamp': 2}]
+[{'o365': {'audit': {'Parameters': {'AccessRights': 'FullAccess'}}}, 'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'action': 'Add-MailboxPermission', 'outcome': 'success'}, 'user': {'id': 'ZFy'}, '@timestamp': 0},
+ {'o365': {'audit': {'Parameters': {'AccessRights': 'SendAs'}}}, 'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'action': 'Add-MailboxPermission', 'outcome': 'success'}, 'user': {'id': 'XIU'}, '@timestamp': 1},
+ {'o365': {'audit': {'Parameters': {'AccessRights': 'SendOnBehalf'}}}, 'event': {'dataset': 'o365.audit', 'provider': 'Exchange', 'action': 'Add-MailboxPermission', 'outcome': 'success'}, 'user': {'id': 'tkN'}, '@timestamp': 2}]
 ```
 
 
@@ -7652,8 +7652,8 @@ sequence by host.id, process.entity_id with maxspan = 5s
 ```
 
 ```python
-[{'dll': {'name': 'taskschd.dll'}, 'process': {'name': 'pwsh.exe', 'entity_id': 'fUy'}, 'event': {'category': ['library']}, 'host': {'id': 'TvC'}, '@timestamp': 0},
- {'process': {'name': 'powershell_ise.exe', 'entity_id': 'fUy'}, 'destination': {'port': 135, 'address': 'NIo'}, 'event': {'category': ['network']}, 'host': {'id': 'TvC'}, '@timestamp': 1}]
+[{'dll': {'name': 'taskschd.dll'}, 'event': {'category': ['library']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'pwsh.exe', 'entity_id': 'IUt'}, '@timestamp': 0},
+ {'destination': {'port': 135, 'address': 'kNI'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'powershell_ise.exe', 'entity_id': 'IUt'}, '@timestamp': 1}]
 ```
 
 
@@ -7669,8 +7669,8 @@ event.category:(network or network_traffic) and network.transport:tcp and destin
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1723}, '@timestamp': 0},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1723}, '@timestamp': 1}]
+[{'destination': {'port': 1723}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, '@timestamp': 0},
+ {'destination': {'port': 1723}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, '@timestamp': 1}]
 ```
 
 
@@ -7689,9 +7689,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'fsutil.exe', 'args': ['fsinfo', 'drives']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'fsutil.exe'}, 'args': ['fsinfo', 'drives']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'fsutil.exe'}, 'args': ['fsinfo', 'drives']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'fsutil.exe', 'args': ['fsinfo', 'drives']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'fsutil.exe'}, 'args': ['fsinfo', 'drives']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'fsutil.exe'}, 'args': ['fsinfo', 'drives']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -7707,8 +7707,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'token_protection_event'}, 'endgame': {'metadata': {'type': 'detection'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'token_protection_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'detection'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'token_protection_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'token_protection_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -7724,8 +7724,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'token_protection_event'}, 'endgame': {'metadata': {'type': 'prevention'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'token_protection_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'prevention'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'token_protection_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'token_protection_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -7747,7 +7747,7 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['BITS']}, 'executable': 'ZFy'}, '@timestamp': 0}]
+[{'process': {'parent': {'name': 'svchost.exe', 'args': ['BITS']}, 'executable': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -7800,138 +7800,138 @@ sequence by host.id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4052611751}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 4052611751}}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2056249324}, 'host': {'id': 'CfU'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 2056249324}}, 'host': {'id': 'CfU'}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1235046169}, 'host': {'id': 'kNI'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 1235046169}}, 'host': {'id': 'kNI'}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3136644739}, 'host': {'id': 'SvI'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 3136644739}}, 'host': {'id': 'SvI'}, '@timestamp': 7},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2094521982}, 'host': {'id': 'FlE'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 2094521982}}, 'host': {'id': 'FlE'}, '@timestamp': 9},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2255904345}, 'host': {'id': 'Hmx'}, '@timestamp': 10},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 2255904345}}, 'host': {'id': 'Hmx'}, '@timestamp': 11},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1305990393}, 'host': {'id': 'EEX'}, '@timestamp': 12},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 1305990393}}, 'host': {'id': 'EEX'}, '@timestamp': 13},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 570412576}, 'host': {'id': 'OAa'}, '@timestamp': 14},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 570412576}}, 'host': {'id': 'OAa'}, '@timestamp': 15},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2040616183}, 'host': {'id': 'VRc'}, '@timestamp': 16},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 2040616183}}, 'host': {'id': 'VRc'}, '@timestamp': 17},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2075775563}, 'host': {'id': 'qsy'}, '@timestamp': 18},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 2075775563}}, 'host': {'id': 'qsy'}, '@timestamp': 19},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4163567191}, 'host': {'id': 'wVP'}, '@timestamp': 20},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 4163567191}}, 'host': {'id': 'wVP'}, '@timestamp': 21},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1266848455}, 'host': {'id': 'yQD'}, '@timestamp': 22},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 1266848455}}, 'host': {'id': 'yQD'}, '@timestamp': 23},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 977141374}, 'host': {'id': 'Nfm'}, '@timestamp': 24},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 977141374}}, 'host': {'id': 'Nfm'}, '@timestamp': 25},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3936445964}, 'host': {'id': 'Dqx'}, '@timestamp': 26},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 3936445964}}, 'host': {'id': 'Dqx'}, '@timestamp': 27},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1757971487}, 'host': {'id': 'RgU'}, '@timestamp': 28},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 1757971487}}, 'host': {'id': 'RgU'}, '@timestamp': 29},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1010327188}, 'host': {'id': 'Wti'}, '@timestamp': 30},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 1010327188}}, 'host': {'id': 'Wti'}, '@timestamp': 31},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 424121613}, 'host': {'id': 'MZO'}, '@timestamp': 32},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 424121613}}, 'host': {'id': 'MZO'}, '@timestamp': 33},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 649571089}, 'host': {'id': 'Tms'}, '@timestamp': 34},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 649571089}}, 'host': {'id': 'Tms'}, '@timestamp': 35},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3611702861}, 'host': {'id': 'Dgz'}, '@timestamp': 36},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 3611702861}}, 'host': {'id': 'Dgz'}, '@timestamp': 37},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4137067386}, 'host': {'id': 'WYc'}, '@timestamp': 38},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 4137067386}}, 'host': {'id': 'WYc'}, '@timestamp': 39},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2681595795}, 'host': {'id': 'Sjo'}, '@timestamp': 40},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 2681595795}}, 'host': {'id': 'Sjo'}, '@timestamp': 41},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3962003952}, 'host': {'id': 'UJM'}, '@timestamp': 42},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 3962003952}}, 'host': {'id': 'UJM'}, '@timestamp': 43},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3302194335}, 'host': {'id': 'wDU'}, '@timestamp': 44},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 3302194335}}, 'host': {'id': 'wDU'}, '@timestamp': 45},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 335194986}, 'host': {'id': 'zIg'}, '@timestamp': 46},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 335194986}}, 'host': {'id': 'zIg'}, '@timestamp': 47},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1690413928}, 'host': {'id': 'eyL'}, '@timestamp': 48},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 1690413928}}, 'host': {'id': 'eyL'}, '@timestamp': 49},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2576449812}, 'host': {'id': 'moE'}, '@timestamp': 50},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 2576449812}}, 'host': {'id': 'moE'}, '@timestamp': 51},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2553210391}, 'host': {'id': 'zmi'}, '@timestamp': 52},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 2553210391}}, 'host': {'id': 'zmi'}, '@timestamp': 53},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 875903594}, 'host': {'id': 'pgI'}, '@timestamp': 54},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 875903594}}, 'host': {'id': 'pgI'}, '@timestamp': 55},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2886210066}, 'host': {'id': 'vKE'}, '@timestamp': 56},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 2886210066}}, 'host': {'id': 'vKE'}, '@timestamp': 57},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1020915657}, 'host': {'id': 'YnD'}, '@timestamp': 58},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 1020915657}}, 'host': {'id': 'YnD'}, '@timestamp': 59},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3189187129}, 'host': {'id': 'DJL'}, '@timestamp': 60},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 3189187129}}, 'host': {'id': 'DJL'}, '@timestamp': 61},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 731296981}, 'host': {'id': 'xFE'}, '@timestamp': 62},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 731296981}}, 'host': {'id': 'xFE'}, '@timestamp': 63},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1747979819}, 'host': {'id': 'ocs'}, '@timestamp': 64},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 1747979819}}, 'host': {'id': 'ocs'}, '@timestamp': 65},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2331735818}, 'host': {'id': 'XzJ'}, '@timestamp': 66},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 2331735818}}, 'host': {'id': 'XzJ'}, '@timestamp': 67},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2827813567}, 'host': {'id': 'Aol'}, '@timestamp': 68},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 2827813567}}, 'host': {'id': 'Aol'}, '@timestamp': 69},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2610465613}, 'host': {'id': 'yqv'}, '@timestamp': 70},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 2610465613}}, 'host': {'id': 'yqv'}, '@timestamp': 71},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2119610071}, 'host': {'id': 'LbR'}, '@timestamp': 72},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 2119610071}}, 'host': {'id': 'LbR'}, '@timestamp': 73},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1319961685}, 'host': {'id': 'dmT'}, '@timestamp': 74},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 1319961685}}, 'host': {'id': 'dmT'}, '@timestamp': 75},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 96872843}, 'host': {'id': 'rfy'}, '@timestamp': 76},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 96872843}}, 'host': {'id': 'rfy'}, '@timestamp': 77},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 321018594}, 'host': {'id': 'nVT'}, '@timestamp': 78},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 321018594}}, 'host': {'id': 'nVT'}, '@timestamp': 79},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1484942953}, 'host': {'id': 'agT'}, '@timestamp': 80},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 1484942953}}, 'host': {'id': 'agT'}, '@timestamp': 81},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 364282236}, 'host': {'id': 'MVU'}, '@timestamp': 82},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 364282236}}, 'host': {'id': 'MVU'}, '@timestamp': 83},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3793706889}, 'host': {'id': 'LwO'}, '@timestamp': 84},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 3793706889}}, 'host': {'id': 'LwO'}, '@timestamp': 85},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2433853372}, 'host': {'id': 'bdC'}, '@timestamp': 86},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 2433853372}}, 'host': {'id': 'bdC'}, '@timestamp': 87},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3097938760}, 'host': {'id': 'Ivl'}, '@timestamp': 88},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 3097938760}}, 'host': {'id': 'Ivl'}, '@timestamp': 89},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4017982120}, 'host': {'id': 'SsF'}, '@timestamp': 90},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 4017982120}}, 'host': {'id': 'SsF'}, '@timestamp': 91},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3187763082}, 'host': {'id': 'uAM'}, '@timestamp': 92},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 3187763082}}, 'host': {'id': 'uAM'}, '@timestamp': 93},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2039378787}, 'host': {'id': 'Pmm'}, '@timestamp': 94},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 2039378787}}, 'host': {'id': 'Pmm'}, '@timestamp': 95},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 846858696}, 'host': {'id': 'kOO'}, '@timestamp': 96},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 846858696}}, 'host': {'id': 'kOO'}, '@timestamp': 97},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1687397388}, 'host': {'id': 'ebK'}, '@timestamp': 98},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 1687397388}}, 'host': {'id': 'ebK'}, '@timestamp': 99},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2122179744}, 'host': {'id': 'hBC'}, '@timestamp': 100},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 2122179744}}, 'host': {'id': 'hBC'}, '@timestamp': 101},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2937055128}, 'host': {'id': 'dJs'}, '@timestamp': 102},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 2937055128}}, 'host': {'id': 'dJs'}, '@timestamp': 103},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1072533441}, 'host': {'id': 'dyQ'}, '@timestamp': 104},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 1072533441}}, 'host': {'id': 'dyQ'}, '@timestamp': 105},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2451257571}, 'host': {'id': 'qhw'}, '@timestamp': 106},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 2451257571}}, 'host': {'id': 'qhw'}, '@timestamp': 107},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2685579375}, 'host': {'id': 'gZp'}, '@timestamp': 108},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 2685579375}}, 'host': {'id': 'gZp'}, '@timestamp': 109},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2215758242}, 'host': {'id': 'QRL'}, '@timestamp': 110},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 2215758242}}, 'host': {'id': 'QRL'}, '@timestamp': 111},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3594559144}, 'host': {'id': 'dbF'}, '@timestamp': 112},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 3594559144}}, 'host': {'id': 'dbF'}, '@timestamp': 113},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2806789095}, 'host': {'id': 'yvI'}, '@timestamp': 114},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 2806789095}}, 'host': {'id': 'yvI'}, '@timestamp': 115},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3446719455}, 'host': {'id': 'iLn'}, '@timestamp': 116},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 3446719455}}, 'host': {'id': 'iLn'}, '@timestamp': 117},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3559344598}, 'host': {'id': 'nGb'}, '@timestamp': 118},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 3559344598}}, 'host': {'id': 'nGb'}, '@timestamp': 119},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2580185788}, 'host': {'id': 'Ufu'}, '@timestamp': 120},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 2580185788}}, 'host': {'id': 'Ufu'}, '@timestamp': 121},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2468689419}, 'host': {'id': 'NMV'}, '@timestamp': 122},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 2468689419}}, 'host': {'id': 'NMV'}, '@timestamp': 123},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4070540704}, 'host': {'id': 'RaQ'}, '@timestamp': 124},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 4070540704}}, 'host': {'id': 'RaQ'}, '@timestamp': 125},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4273915087}, 'host': {'id': 'dVl'}, '@timestamp': 126},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 4273915087}}, 'host': {'id': 'dVl'}, '@timestamp': 127},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3093363983}, 'host': {'id': 'gyX'}, '@timestamp': 128},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 3093363983}}, 'host': {'id': 'gyX'}, '@timestamp': 129},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1824210849}, 'host': {'id': 'MZn'}, '@timestamp': 130},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 1824210849}}, 'host': {'id': 'MZn'}, '@timestamp': 131}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4052611751}, '@timestamp': 0},
+ {'process': {'parent': {'pid': 4052611751}, 'name': 'osascript'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'CfU'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2056249324}, '@timestamp': 2},
+ {'process': {'parent': {'pid': 2056249324}, 'name': 'python'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'CfU'}, '@timestamp': 3},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'kNI'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1235046169}, '@timestamp': 4},
+ {'process': {'parent': {'pid': 1235046169}, 'name': 'tcl'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'kNI'}, '@timestamp': 5},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'SvI'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3136644739}, '@timestamp': 6},
+ {'process': {'parent': {'pid': 3136644739}, 'name': 'node'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'SvI'}, '@timestamp': 7},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'FlE'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2094521982}, '@timestamp': 8},
+ {'process': {'parent': {'pid': 2094521982}, 'name': 'perl'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'FlE'}, '@timestamp': 9},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Hmx'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2255904345}, '@timestamp': 10},
+ {'process': {'parent': {'pid': 2255904345}, 'name': 'ruby'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Hmx'}, '@timestamp': 11},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'EEX'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1305990393}, '@timestamp': 12},
+ {'process': {'parent': {'pid': 1305990393}, 'name': 'php'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'EEX'}, '@timestamp': 13},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'OAa'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 570412576}, '@timestamp': 14},
+ {'process': {'parent': {'pid': 570412576}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'OAa'}, '@timestamp': 15},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'VRc'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2040616183}, '@timestamp': 16},
+ {'process': {'parent': {'pid': 2040616183}, 'name': 'csh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'VRc'}, '@timestamp': 17},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'qsy'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2075775563}, '@timestamp': 18},
+ {'process': {'parent': {'pid': 2075775563}, 'name': 'zsh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'qsy'}, '@timestamp': 19},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'wVP'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4163567191}, '@timestamp': 20},
+ {'process': {'parent': {'pid': 4163567191}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'wVP'}, '@timestamp': 21},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'yQD'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1266848455}, '@timestamp': 22},
+ {'process': {'parent': {'pid': 1266848455}, 'name': 'osascript'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'yQD'}, '@timestamp': 23},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Nfm'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 977141374}, '@timestamp': 24},
+ {'process': {'parent': {'pid': 977141374}, 'name': 'python'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Nfm'}, '@timestamp': 25},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Dqx'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3936445964}, '@timestamp': 26},
+ {'process': {'parent': {'pid': 3936445964}, 'name': 'tcl'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Dqx'}, '@timestamp': 27},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'RgU'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1757971487}, '@timestamp': 28},
+ {'process': {'parent': {'pid': 1757971487}, 'name': 'node'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'RgU'}, '@timestamp': 29},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Wti'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1010327188}, '@timestamp': 30},
+ {'process': {'parent': {'pid': 1010327188}, 'name': 'perl'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Wti'}, '@timestamp': 31},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'MZO'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 424121613}, '@timestamp': 32},
+ {'process': {'parent': {'pid': 424121613}, 'name': 'ruby'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'MZO'}, '@timestamp': 33},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Tms'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 649571089}, '@timestamp': 34},
+ {'process': {'parent': {'pid': 649571089}, 'name': 'php'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Tms'}, '@timestamp': 35},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Dgz'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3611702861}, '@timestamp': 36},
+ {'process': {'parent': {'pid': 3611702861}, 'name': 'bash'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Dgz'}, '@timestamp': 37},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'WYc'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4137067386}, '@timestamp': 38},
+ {'process': {'parent': {'pid': 4137067386}, 'name': 'csh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'WYc'}, '@timestamp': 39},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Sjo'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2681595795}, '@timestamp': 40},
+ {'process': {'parent': {'pid': 2681595795}, 'name': 'zsh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Sjo'}, '@timestamp': 41},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'UJM'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3962003952}, '@timestamp': 42},
+ {'process': {'parent': {'pid': 3962003952}, 'name': 'sh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'UJM'}, '@timestamp': 43},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'wDU'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3302194335}, '@timestamp': 44},
+ {'process': {'parent': {'pid': 3302194335}, 'name': 'osascript'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'wDU'}, '@timestamp': 45},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'zIg'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 335194986}, '@timestamp': 46},
+ {'process': {'parent': {'pid': 335194986}, 'name': 'python'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'zIg'}, '@timestamp': 47},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'eyL'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1690413928}, '@timestamp': 48},
+ {'process': {'parent': {'pid': 1690413928}, 'name': 'tcl'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'eyL'}, '@timestamp': 49},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'moE'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2576449812}, '@timestamp': 50},
+ {'process': {'parent': {'pid': 2576449812}, 'name': 'node'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'moE'}, '@timestamp': 51},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'zmi'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2553210391}, '@timestamp': 52},
+ {'process': {'parent': {'pid': 2553210391}, 'name': 'perl'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'zmi'}, '@timestamp': 53},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'pgI'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 875903594}, '@timestamp': 54},
+ {'process': {'parent': {'pid': 875903594}, 'name': 'ruby'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'pgI'}, '@timestamp': 55},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'vKE'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2886210066}, '@timestamp': 56},
+ {'process': {'parent': {'pid': 2886210066}, 'name': 'php'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'vKE'}, '@timestamp': 57},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'YnD'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1020915657}, '@timestamp': 58},
+ {'process': {'parent': {'pid': 1020915657}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'YnD'}, '@timestamp': 59},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'DJL'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3189187129}, '@timestamp': 60},
+ {'process': {'parent': {'pid': 3189187129}, 'name': 'csh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'DJL'}, '@timestamp': 61},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'xFE'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 731296981}, '@timestamp': 62},
+ {'process': {'parent': {'pid': 731296981}, 'name': 'zsh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'xFE'}, '@timestamp': 63},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'ocs'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1747979819}, '@timestamp': 64},
+ {'process': {'parent': {'pid': 1747979819}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ocs'}, '@timestamp': 65},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'XzJ'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2331735818}, '@timestamp': 66},
+ {'process': {'parent': {'pid': 2331735818}, 'name': 'osascript'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'XzJ'}, '@timestamp': 67},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Aol'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2827813567}, '@timestamp': 68},
+ {'process': {'parent': {'pid': 2827813567}, 'name': 'python'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Aol'}, '@timestamp': 69},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'yqv'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2610465613}, '@timestamp': 70},
+ {'process': {'parent': {'pid': 2610465613}, 'name': 'tcl'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'yqv'}, '@timestamp': 71},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LbR'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2119610071}, '@timestamp': 72},
+ {'process': {'parent': {'pid': 2119610071}, 'name': 'node'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LbR'}, '@timestamp': 73},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'dmT'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1319961685}, '@timestamp': 74},
+ {'process': {'parent': {'pid': 1319961685}, 'name': 'perl'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'dmT'}, '@timestamp': 75},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'rfy'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 96872843}, '@timestamp': 76},
+ {'process': {'parent': {'pid': 96872843}, 'name': 'ruby'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'rfy'}, '@timestamp': 77},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'nVT'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 321018594}, '@timestamp': 78},
+ {'process': {'parent': {'pid': 321018594}, 'name': 'php'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'nVT'}, '@timestamp': 79},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'agT'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1484942953}, '@timestamp': 80},
+ {'process': {'parent': {'pid': 1484942953}, 'name': 'bash'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'agT'}, '@timestamp': 81},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'MVU'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 364282236}, '@timestamp': 82},
+ {'process': {'parent': {'pid': 364282236}, 'name': 'csh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'MVU'}, '@timestamp': 83},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LwO'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3793706889}, '@timestamp': 84},
+ {'process': {'parent': {'pid': 3793706889}, 'name': 'zsh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'LwO'}, '@timestamp': 85},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'bdC'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2433853372}, '@timestamp': 86},
+ {'process': {'parent': {'pid': 2433853372}, 'name': 'sh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'bdC'}, '@timestamp': 87},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'Ivl'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3097938760}, '@timestamp': 88},
+ {'process': {'parent': {'pid': 3097938760}, 'name': 'osascript'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Ivl'}, '@timestamp': 89},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'SsF'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4017982120}, '@timestamp': 90},
+ {'process': {'parent': {'pid': 4017982120}, 'name': 'python'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'SsF'}, '@timestamp': 91},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'uAM'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3187763082}, '@timestamp': 92},
+ {'process': {'parent': {'pid': 3187763082}, 'name': 'tcl'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'uAM'}, '@timestamp': 93},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'Pmm'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2039378787}, '@timestamp': 94},
+ {'process': {'parent': {'pid': 2039378787}, 'name': 'node'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Pmm'}, '@timestamp': 95},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'kOO'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 846858696}, '@timestamp': 96},
+ {'process': {'parent': {'pid': 846858696}, 'name': 'perl'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'kOO'}, '@timestamp': 97},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'ebK'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1687397388}, '@timestamp': 98},
+ {'process': {'parent': {'pid': 1687397388}, 'name': 'ruby'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ebK'}, '@timestamp': 99},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'hBC'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2122179744}, '@timestamp': 100},
+ {'process': {'parent': {'pid': 2122179744}, 'name': 'php'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'hBC'}, '@timestamp': 101},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'dJs'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2937055128}, '@timestamp': 102},
+ {'process': {'parent': {'pid': 2937055128}, 'name': 'bash'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'dJs'}, '@timestamp': 103},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'dyQ'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1072533441}, '@timestamp': 104},
+ {'process': {'parent': {'pid': 1072533441}, 'name': 'csh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'dyQ'}, '@timestamp': 105},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'qhw'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2451257571}, '@timestamp': 106},
+ {'process': {'parent': {'pid': 2451257571}, 'name': 'zsh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'qhw'}, '@timestamp': 107},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'gZp'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2685579375}, '@timestamp': 108},
+ {'process': {'parent': {'pid': 2685579375}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'gZp'}, '@timestamp': 109},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'QRL'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2215758242}, '@timestamp': 110},
+ {'process': {'parent': {'pid': 2215758242}, 'name': 'osascript'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'QRL'}, '@timestamp': 111},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'dbF'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3594559144}, '@timestamp': 112},
+ {'process': {'parent': {'pid': 3594559144}, 'name': 'python'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'dbF'}, '@timestamp': 113},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'yvI'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2806789095}, '@timestamp': 114},
+ {'process': {'parent': {'pid': 2806789095}, 'name': 'tcl'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'yvI'}, '@timestamp': 115},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'iLn'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3446719455}, '@timestamp': 116},
+ {'process': {'parent': {'pid': 3446719455}, 'name': 'node'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'iLn'}, '@timestamp': 117},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'nGb'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3559344598}, '@timestamp': 118},
+ {'process': {'parent': {'pid': 3559344598}, 'name': 'perl'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'nGb'}, '@timestamp': 119},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'Ufu'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2580185788}, '@timestamp': 120},
+ {'process': {'parent': {'pid': 2580185788}, 'name': 'ruby'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Ufu'}, '@timestamp': 121},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'NMV'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2468689419}, '@timestamp': 122},
+ {'process': {'parent': {'pid': 2468689419}, 'name': 'php'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'NMV'}, '@timestamp': 123},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'RaQ'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4070540704}, '@timestamp': 124},
+ {'process': {'parent': {'pid': 4070540704}, 'name': 'bash'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'RaQ'}, '@timestamp': 125},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'dVl'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4273915087}, '@timestamp': 126},
+ {'process': {'parent': {'pid': 4273915087}, 'name': 'csh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'dVl'}, '@timestamp': 127},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'gyX'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3093363983}, '@timestamp': 128},
+ {'process': {'parent': {'pid': 3093363983}, 'name': 'zsh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'gyX'}, '@timestamp': 129},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'MZn'}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1824210849}, '@timestamp': 130},
+ {'process': {'parent': {'pid': 1824210849}, 'name': 'sh'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'MZn'}, '@timestamp': 131}]
 ```
 
 
@@ -7955,7 +7955,7 @@ registry where /* length(registry.data.strings) > 0 and */
 ```
 
 ```python
-[{'registry': {'path': 'HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'event': {'category': ['registry']}, 'registry': {'path': 'HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\'}, '@timestamp': 0}]
 ```
 
 
@@ -8087,8 +8087,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'CompatTelRunner.exe'}, 'args': ['-cv*'], 'name': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'CompatTelRunner.exe'}, 'args': ['-cv*'], 'name': 'XIU'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'CompatTelRunner.exe'}, 'args': ['-cv*'], 'name': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'CompatTelRunner.exe'}, 'args': ['-cv*'], 'name': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -8115,7 +8115,7 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'executable': 'C:\\Windows\\System32\\svchost.exe', 'args': ['UsoSvc']}, 'executable': 'ZFy'}, '@timestamp': 0}]
+[{'process': {'parent': {'executable': 'C:\\Windows\\System32\\svchost.exe', 'args': ['UsoSvc']}, 'executable': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -8135,9 +8135,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'wmic.exe', 'args': ['create', 'ActiveScriptEventConsumer', 'CommandLineEventConsumer']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['create', 'ActiveScriptEventConsumer', 'CommandLineEventConsumer']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['create', 'ActiveScriptEventConsumer', 'CommandLineEventConsumer']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'wmic.exe', 'args': ['create', 'ActiveScriptEventConsumer', 'CommandLineEventConsumer']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['create', 'ActiveScriptEventConsumer', 'CommandLineEventConsumer']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['create', 'ActiveScriptEventConsumer', 'CommandLineEventConsumer']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -8164,8 +8164,8 @@ file where event.type != "deletion" and user.domain != "NT AUTHORITY" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'user': {'domain': 'XIU'}, 'file': {'path': 'C:\\kNIoixTF\\Programs\\Startup\\oOHm.lnk'}, 'process': {'name': 'wscript.exe'}, '@timestamp': 0},
- {'file': {'path': 'C:\\EEXpWqNVR\\Programs\\Startup\\F.wsf'}, 'event': {'category': ['file']}, '@timestamp': 1}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': 'C:\\UyyFjSvILOoOHmx\\Programs\\Startup\\EEXpWqNVR.lnk'}, 'process': {'name': 'cscript.exe'}, 'user': {'domain': 'Fqs'}, '@timestamp': 0},
+ {'event': {'category': ['file']}, 'file': {'path': 'C:\\zKNyyQDpUE\\Programs\\Startup\\lOPZRgUvWCiMZOf.wsf'}, '@timestamp': 1}]
 ```
 
 
@@ -8181,7 +8181,7 @@ registry where registry.path : "HKLM\\SYSTEM\\*ControlSet*\\Services\\PortProxy\
 ```
 
 ```python
-[{'registry': {'path': 'HKLM\\SYSTEM\\XIUtkNIControlSetSvILO\\Services\\PortProxy\\v4tov4\\Ezswu'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'event': {'category': ['registry']}, 'registry': {'path': 'HKLM\\SYSTEM\\XIUtkNIControlSetSvILO\\Services\\PortProxy\\v4tov4\\Ezswu'}, '@timestamp': 0}]
 ```
 
 
@@ -8203,24 +8203,24 @@ event.dataset:(azure.activitylogs or azure.auditlogs or o365.audit) and
 ```
 
 ```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, '@timestamp': 3},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'o365': {'audit': {'Operation': 'Consent to application.'}}, '@timestamp': 4},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'o365': {'audit': {'Operation': 'Consent to application.'}}, '@timestamp': 5},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, '@timestamp': 6},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, '@timestamp': 7},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, '@timestamp': 8},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, '@timestamp': 9},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'o365': {'audit': {'Operation': 'Consent to application.'}}, '@timestamp': 10},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'o365': {'audit': {'Operation': 'Consent to application.'}}, '@timestamp': 11},
- {'event': {'dataset': 'o365.audit', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, '@timestamp': 12},
- {'event': {'dataset': 'o365.audit', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, '@timestamp': 13},
- {'event': {'dataset': 'o365.audit', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, '@timestamp': 14},
- {'event': {'dataset': 'o365.audit', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, '@timestamp': 15},
- {'event': {'dataset': 'o365.audit', 'outcome': 'Success'}, 'o365': {'audit': {'Operation': 'Consent to application.'}}, '@timestamp': 16},
- {'event': {'dataset': 'o365.audit', 'outcome': 'success'}, 'o365': {'audit': {'Operation': 'Consent to application.'}}, '@timestamp': 17}]
+[{'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 1},
+ {'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 2},
+ {'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 3},
+ {'o365': {'audit': {'Operation': 'Consent to application.'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, '@timestamp': 4},
+ {'o365': {'audit': {'Operation': 'Consent to application.'}}, 'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, '@timestamp': 5},
+ {'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 6},
+ {'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 7},
+ {'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 8},
+ {'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 9},
+ {'o365': {'audit': {'Operation': 'Consent to application.'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 10},
+ {'o365': {'audit': {'Operation': 'Consent to application.'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 11},
+ {'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'o365.audit', 'outcome': 'Success'}, '@timestamp': 12},
+ {'azure': {'activitylogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'o365.audit', 'outcome': 'success'}, '@timestamp': 13},
+ {'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'o365.audit', 'outcome': 'Success'}, '@timestamp': 14},
+ {'azure': {'auditlogs': {'operation_name': 'Consent to application'}}, 'event': {'dataset': 'o365.audit', 'outcome': 'success'}, '@timestamp': 15},
+ {'o365': {'audit': {'Operation': 'Consent to application.'}}, 'event': {'dataset': 'o365.audit', 'outcome': 'Success'}, '@timestamp': 16},
+ {'o365': {'audit': {'Operation': 'Consent to application.'}}, 'event': {'dataset': 'o365.audit', 'outcome': 'success'}, '@timestamp': 17}]
 ```
 
 
@@ -8310,9 +8310,9 @@ sequence by host.id, user.name with maxspan = 5s
 ```
 
 ```python
-[{'dll': {'name': 'IEProxy.dll'}, 'process': {'name': 'rundll32.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'vCf'}, 'user': {'name': 'Uyy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'iexplore.exe', 'args': ['-Embedding']}}, 'host': {'id': 'vCf'}, 'user': {'name': 'Uyy'}, '@timestamp': 1},
- {'network': {'protocol': 'dns'}, 'process': {'name': 'iexplore.exe'}, 'dns': {'question': {'name': 'FjS'}}, 'event': {'category': ['network']}, 'host': {'id': 'vCf'}, 'user': {'name': 'Uyy'}, '@timestamp': 2}]
+[{'dll': {'name': 'IEProxy.dll'}, 'event': {'category': ['library']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'regsvr32.exe'}, 'user': {'name': 'Utk'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'iexplore.exe', 'args': ['-Embedding']}}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'user': {'name': 'Utk'}, '@timestamp': 1},
+ {'dns': {'question': {'name': 'NIo'}}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, 'network': {'protocol': 'dns'}, 'process': {'name': 'iexplore.exe'}, 'user': {'name': 'Utk'}, '@timestamp': 2}]
 ```
 
 
@@ -8394,7 +8394,7 @@ any where event.action == "Directory Service Access" and
 ```
 
 ```python
-[{'event': {'action': 'Directory Service Access', 'code': '4662'}, 'winlog': {'event_data': {'Properties': 'yXIUtkNIoixTFlDS-Replication-Get-Changes-AllOHmxBnLeOA', 'AccessMask': '0x100', 'SubjectUserName': 'aga'}}, '@timestamp': 0}]
+[{'winlog': {'event_data': {'Properties': 'yXIUtkNIoixTFlDS-Replication-Get-Changes-AllOHmxBnLeOA', 'AccessMask': '0x100', 'SubjectUserName': 'aga'}}, 'event': {'action': 'Directory Service Access', 'code': '4662'}, '@timestamp': 0}]
 ```
 
 
@@ -8416,7 +8416,7 @@ process where event.code == "10" and
 ```
 
 ```python
-[{'event': {'code': '10', 'category': ['process']}, 'process': {'name': 'lsass.exe'}, 'winlog': {'event_data': {'GrantedAccess': '0x40', 'CallTrace': 'XIUtkNIUNKNOWNSvILO'}}, '@timestamp': 0}]
+[{'winlog': {'event_data': {'GrantedAccess': '0x40', 'CallTrace': 'XIUtkNIUNKNOWNSvILO'}}, 'event': {'code': '10', 'category': ['process']}, 'process': {'name': 'lsass.exe'}, '@timestamp': 0}]
 ```
 
 
@@ -8439,7 +8439,7 @@ process where event.code == "10" and
 ```
 
 ```python
-[{'event': {'code': '10', 'category': ['process']}, 'winlog': {'event_data': {'TargetImage': 'A:\\WINDOWS\\system32\\lsass.exe', 'CallTrace': 'UyyFjSvILOoOHmxdbgcoreEEXpWqNVR'}}, 'process': {'executable': 'cym'}, '@timestamp': 0}]
+[{'winlog': {'event_data': {'TargetImage': 'A:\\WINDOWS\\system32\\lsass.exe', 'CallTrace': 'UyyFjSvILOoOHmxdbgcoreEEXpWqNVR'}}, 'event': {'code': '10', 'category': ['process']}, 'process': {'executable': 'cym'}, '@timestamp': 0}]
 ```
 
 
@@ -8462,9 +8462,9 @@ sequence by process.entity_id with maxspan=1m
 
 ```python
 [{'event': {'category': ['process', 'process']}, 'process': {'name': 'rundll32.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
- {'event': {'category': ['process', 'process'], 'dataset': 'windows.sysmon_operational', 'code': '7'}, 'file': {'pe': {'original_file_name': 'COMSVCS.DLL'}, 'name': 'XIU'}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1},
+ {'file': {'pe': {'original_file_name': 'COMSVCS.DLL'}, 'name': 'XIU'}, 'event': {'category': ['process', 'process'], 'dataset': 'windows.sysmon_operational', 'code': '7'}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1},
  {'event': {'category': ['process', 'process']}, 'process': {'name': 'rundll32.exe', 'entity_id': 'tkN'}, '@timestamp': 2},
- {'event': {'category': ['process', 'process'], 'dataset': 'windows.sysmon_operational', 'code': '7'}, 'file': {'pe': {'imphash': 'EADBCCBB324829ACB5F2BBE87E5549A8'}, 'name': 'Ioi'}, 'process': {'entity_id': 'tkN'}, '@timestamp': 3}]
+ {'file': {'pe': {'imphash': 'EADBCCBB324829ACB5F2BBE87E5549A8'}, 'name': 'Ioi'}, 'event': {'category': ['process', 'process'], 'dataset': 'windows.sysmon_operational', 'code': '7'}, 'process': {'entity_id': 'tkN'}, '@timestamp': 3}]
 ```
 
 
@@ -8487,8 +8487,8 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'MsMpEng.exe'}, 'name': 'ZFy'}, '@timestamp': 0},
- {'process': {'name': 'MsMpEng.exe', 'executable': 'XIU'}, 'event': {'category': ['process']}, '@timestamp': 1}]
+[{'process': {'pe': {'original_file_name': 'MsMpEng.exe'}, 'name': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'event': {'category': ['process']}, 'process': {'name': 'MsMpEng.exe', 'executable': 'XIU'}, '@timestamp': 1}]
 ```
 
 
@@ -8513,10 +8513,10 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'WinWord.exe'}, 'name': 'ZFy', 'executable': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'EXPLORER.EXE'}, 'name': 'tkN', 'executable': 'Ioi'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'w3wp.exe'}, 'name': 'xTF', 'executable': 'lEz'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'DISM.EXE'}, 'name': 'swu', 'executable': 'EEX'}, '@timestamp': 3}]
+[{'process': {'pe': {'original_file_name': 'WinWord.exe'}, 'name': 'ZFy', 'executable': 'XIU'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'pe': {'original_file_name': 'EXPLORER.EXE'}, 'name': 'tkN', 'executable': 'Ioi'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'w3wp.exe'}, 'name': 'xTF', 'executable': 'lEz'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'DISM.EXE'}, 'name': 'swu', 'executable': 'EEX'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -8610,16 +8610,16 @@ sequence by host.id with maxspan=1m
 ```
 
 ```python
-[{'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 4052611751}, 'destination': {'port': 1389}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 4052611751}, 'name': 'sh'}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
- {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 906141214}, 'destination': {'port': 389}, 'host': {'id': 'IUt'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 906141214}, 'name': 'rubyFjSvILOoOHmxB'}, 'host': {'id': 'IUt'}, '@timestamp': 3},
- {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 3305599734}, 'destination': {'port': 1099}, 'host': {'id': 'nLe'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 3305599734}, 'name': 'sh'}, 'host': {'id': 'nLe'}, '@timestamp': 5},
- {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 3588492870}, 'destination': {'port': 53}, 'host': {'id': 'qNV'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 3588492870}, 'name': 'dash'}, 'host': {'id': 'qNV'}, '@timestamp': 7},
- {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 2543124572}, 'destination': {'port': 5353}, 'host': {'id': 'cym'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 2543124572}, 'name': 'rubyzKNyyQDpUE'}, 'host': {'id': 'cym'}, '@timestamp': 9}]
+[{'destination': {'port': 1389}, 'event': {'action': 'connection_attempted', 'category': ['network']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'java', 'pid': 4052611751}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'java', 'pid': 4052611751}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'destination': {'port': 389}, 'event': {'action': 'connection_attempted', 'category': ['network']}, 'host': {'id': 'IUt'}, 'process': {'name': 'java', 'pid': 906141214}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'java', 'pid': 906141214}, 'name': 'rubyFjSvILOoOHmxB'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'IUt'}, '@timestamp': 3},
+ {'destination': {'port': 1099}, 'event': {'action': 'connection_attempted', 'category': ['network']}, 'host': {'id': 'nLe'}, 'process': {'name': 'java', 'pid': 3305599734}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'java', 'pid': 3305599734}, 'name': 'sh'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'nLe'}, '@timestamp': 5},
+ {'destination': {'port': 53}, 'event': {'action': 'connection_attempted', 'category': ['network']}, 'host': {'id': 'qNV'}, 'process': {'name': 'java', 'pid': 3588492870}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'java', 'pid': 3588492870}, 'name': 'dash'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'qNV'}, '@timestamp': 7},
+ {'destination': {'port': 5353}, 'event': {'action': 'connection_attempted', 'category': ['network']}, 'host': {'id': 'cym'}, 'process': {'name': 'java', 'pid': 2543124572}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'java', 'pid': 2543124572}, 'name': 'rubyzKNyyQDpUE'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'cym'}, '@timestamp': 9}]
 ```
 
 
@@ -8678,7 +8678,7 @@ process where event.code:"4688" and
 ```
 
 ```python
-[{'event': {'code': '4688', 'category': ['process']}, 'process': {'executable': 'A:\\Windows\\System32\\lsass.exe', 'parent': {'executable': 'y:\\Windows\\System32\\lsass.exe'}}, '@timestamp': 0}]
+[{'process': {'parent': {'executable': 'A:\\Windows\\System32\\lsass.exe'}, 'executable': 'y:\\Windows\\System32\\lsass.exe'}, 'event': {'code': '4688', 'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -8738,9 +8738,9 @@ process where event.type in ("start", "process_started", "info") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'winlogon.exe'}, 'args': ['C:\\Windows\\System32\\osk.exe', 'C:\\Windows\\System32\\Magnify.exe', 'C:\\Windows\\System32\\Narrator.exe', 'C:\\Windows\\System32\\Sethc.exe', 'utilman.exe', 'ATBroker.exe', 'DisplaySwitch.exe', 'sethc.exe'], 'pe': {'original_file_name': 'vCf'}}, 'user': {'name': 'SYSTEM'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'winlogon.exe'}, 'args': ['C:\\Windows\\System32\\osk.exe', 'C:\\Windows\\System32\\Magnify.exe', 'C:\\Windows\\System32\\Narrator.exe', 'C:\\Windows\\System32\\Sethc.exe', 'utilman.exe', 'ATBroker.exe', 'DisplaySwitch.exe', 'sethc.exe'], 'pe': {'original_file_name': 'yyF'}}, 'user': {'name': 'SYSTEM'}, '@timestamp': 1},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'parent': {'name': 'Utilman.exe'}, 'args': ['C:\\Windows\\System32\\osk.exe', 'C:\\Windows\\System32\\Magnify.exe', 'C:\\Windows\\System32\\Narrator.exe', 'C:\\Windows\\System32\\Sethc.exe', 'utilman.exe', 'ATBroker.exe', 'DisplaySwitch.exe', 'sethc.exe'], 'pe': {'original_file_name': 'oix'}}, 'user': {'name': 'SYSTEM'}, '@timestamp': 2}]
+[{'process': {'parent': {'name': 'winlogon.exe'}, 'pe': {'original_file_name': 'vCf'}, 'args': ['C:\\Windows\\System32\\osk.exe', 'C:\\Windows\\System32\\Magnify.exe', 'C:\\Windows\\System32\\Narrator.exe', 'C:\\Windows\\System32\\Sethc.exe', 'utilman.exe', 'ATBroker.exe', 'DisplaySwitch.exe', 'sethc.exe']}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'name': 'SYSTEM'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'winlogon.exe'}, 'pe': {'original_file_name': 'yyF'}, 'args': ['C:\\Windows\\System32\\osk.exe', 'C:\\Windows\\System32\\Magnify.exe', 'C:\\Windows\\System32\\Narrator.exe', 'C:\\Windows\\System32\\Sethc.exe', 'utilman.exe', 'ATBroker.exe', 'DisplaySwitch.exe', 'sethc.exe']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'user': {'name': 'SYSTEM'}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'Utilman.exe'}, 'pe': {'original_file_name': 'oix'}, 'args': ['C:\\Windows\\System32\\osk.exe', 'C:\\Windows\\System32\\Magnify.exe', 'C:\\Windows\\System32\\Narrator.exe', 'C:\\Windows\\System32\\Sethc.exe', 'utilman.exe', 'ATBroker.exe', 'DisplaySwitch.exe', 'sethc.exe']}, 'event': {'type': ['info'], 'category': ['process']}, 'user': {'name': 'SYSTEM'}, '@timestamp': 2}]
 ```
 
 
@@ -8784,9 +8784,9 @@ file where event.type == "change" and process.executable : ("/usr/sbin/sshd", "/
 ```
 
 ```python
-[{'event': {'type': ['change'], 'category': ['file']}, 'process': {'executable': '/usr/sbin/sshd'}, 'file': {'name': '~IUtkNIoix'}, '@timestamp': 0},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'executable': '/usr/bin/ssh'}, 'file': {'extension': '8'}, '@timestamp': 1},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'executable': '/usr/sbin/sshd'}, 'file': {'path': '/var/run/udevd.pid'}, '@timestamp': 2}]
+[{'event': {'type': ['change'], 'category': ['file']}, 'file': {'name': '~XIUtkNI'}, 'process': {'executable': '/usr/sbin/sshd'}, '@timestamp': 0},
+ {'event': {'type': ['change'], 'category': ['file']}, 'file': {'extension': '5'}, 'process': {'executable': '/usr/sbin/sshd'}, '@timestamp': 1},
+ {'event': {'type': ['change'], 'category': ['file']}, 'file': {'path': '/usr/share/TFlEzswuEEX'}, 'process': {'executable': '/usr/sbin/sshd'}, '@timestamp': 2}]
 ```
 
 
@@ -8828,12 +8828,12 @@ event.category:process and event.type:(start or process_started or info) and
 ```
 
 ```python
-[{'event': {'category': ['process'], 'type': ['start']}, 'user': {'name': 'ZFy'}, 'process': {'name': 'crontab', 'args': ['XIU']}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['start']}, 'user': {'name': 'tkN'}, 'process': {'parent': {'name': 'cron'}, 'name': 'Ioi', 'executable': 'xTF'}, '@timestamp': 1},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'user': {'name': 'lEz'}, 'process': {'name': 'crontab', 'args': ['swu']}, '@timestamp': 2},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'user': {'name': 'EEX'}, 'process': {'parent': {'name': 'cron'}, 'name': 'pWq', 'executable': 'NVR'}, '@timestamp': 3},
- {'event': {'category': ['process'], 'type': ['info']}, 'user': {'name': 'cym'}, 'process': {'name': 'crontab', 'args': ['EEw']}, '@timestamp': 4},
- {'event': {'category': ['process'], 'type': ['info']}, 'user': {'name': 'VPY'}, 'process': {'parent': {'name': 'cron'}, 'name': 'MGz', 'executable': 'Nfm'}, '@timestamp': 5}]
+[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'crontab', 'args': ['ZFy']}, 'user': {'name': 'XIU'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'cron'}, 'name': 'tkN', 'executable': 'Ioi'}, 'event': {'category': ['process'], 'type': ['start']}, 'user': {'name': 'xTF'}, '@timestamp': 1},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'crontab', 'args': ['lEz']}, 'user': {'name': 'swu'}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'cron'}, 'name': 'EEX', 'executable': 'pWq'}, 'event': {'category': ['process'], 'type': ['process_started']}, 'user': {'name': 'NVR'}, '@timestamp': 3},
+ {'event': {'category': ['process'], 'type': ['info']}, 'process': {'name': 'crontab', 'args': ['cym']}, 'user': {'name': 'EEw'}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'cron'}, 'name': 'VPY', 'executable': 'MGz'}, 'event': {'category': ['process'], 'type': ['info']}, 'user': {'name': 'Nfm'}, '@timestamp': 5}]
 ```
 
 
@@ -8890,7 +8890,7 @@ file where process.name : "spoolsv.exe" and
 ```
 
 ```python
-[{'process': {'name': 'spoolsv.exe'}, 'file': {'name': 'winhttp.dll', 'path': 'A:\\Windows\\System32\\spool\\drivers\\x64\\3\\IUtkNIoix'}, 'event': {'category': ['file']}, '@timestamp': 0}]
+[{'event': {'category': ['file']}, 'file': {'name': 'winhttp.dll', 'path': 'A:\\Windows\\System32\\spool\\drivers\\x64\\3\\IUtkNIoix'}, 'process': {'name': 'spoolsv.exe'}, '@timestamp': 0}]
 ```
 
 
@@ -8935,10 +8935,10 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'name': 'elevation_service.exe', 'pe': {'original_file_name': 'ZFy'}}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'parent': {'name': 'elevation_service.exe'}, 'name': 'rundll32.exe'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'process': {'name': 'elevation_service.exe', 'pe': {'original_file_name': 'IUt'}}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'process': {'parent': {'name': 'elevation_service.exe'}, 'name': 'cmd.exe'}, '@timestamp': 3}]
+[{'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'pe': {'original_file_name': 'ZFy'}, 'name': 'elevation_service.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'Ext': {'token': {'integrity_level_name': 'System'}}, 'parent': {'name': 'elevation_service.exe'}, 'name': 'rundll32.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'IUt'}, 'name': 'elevation_service.exe'}, 'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'elevation_service.exe'}, 'name': 'cmd.exe'}, 'winlog': {'event_data': {'IntegrityLevel': 'System'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -8954,7 +8954,7 @@ file where file.path : "/*GCONV_PATH*"
 ```
 
 ```python
-[{'file': {'path': '/XIUtkNIGCONV_PATHSvILO'}, 'event': {'category': ['file']}, '@timestamp': 0}]
+[{'event': {'category': ['file']}, 'file': {'path': '/XIUtkNIGCONV_PATHSvILO'}, '@timestamp': 0}]
 ```
 
 
@@ -8988,7 +8988,7 @@ iam where event.action == "renamed-user-account" and
 ```
 
 ```python
-[{'event': {'action': 'renamed-user-account', 'category': ['iam']}, 'winlog': {'event_data': {'OldTargetUserName': 'XIUtkNI$', 'NewTargetUserName': 'oix'}}, '@timestamp': 0}]
+[{'winlog': {'event_data': {'OldTargetUserName': 'XIUtkNI$', 'NewTargetUserName': 'oix'}}, 'event': {'action': 'renamed-user-account', 'category': ['iam']}, '@timestamp': 0}]
 ```
 
 
@@ -9006,8 +9006,8 @@ sequence with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'executable': 'ZFy', 'entity_id': 'Ioi'}, 'executable': 'tkN'}, 'host': {'id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['change'], 'action': 'overwrite', 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'tkN'}, 'host': {'id': 'XIU'}, 'process': {'entity_id': 'Ioi'}, '@timestamp': 1}]
+[{'process': {'parent': {'executable': 'ZFy', 'entity_id': 'XIU'}, 'executable': 'Ioi'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'tkN'}, '@timestamp': 0},
+ {'event': {'type': ['change'], 'action': 'overwrite', 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'Ioi'}, 'host': {'id': 'tkN'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1}]
 ```
 
 
@@ -9051,7 +9051,7 @@ any where
 
 ```python
 [{'event': {'category': ['registry']}, 'registry': {'path': 'HKLM\\Software\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Shadow'}, '@timestamp': 0},
- {'event': {'category': ['process']}, 'process': {'name': 'RdpSaUacHelper.exe', 'parent': {'name': 'svchost.exe'}}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'svchost.exe'}, 'name': 'RdpSaUacHelper.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
  {'process': {'pe': {'original_file_name': 'mstsc.exe'}, 'args': ['/shadow:*']}, '@timestamp': 2}]
 ```
 
@@ -9131,7 +9131,7 @@ event.action:"Directory Service Changes" and event.code:"5136" and winlog.event_
 ```
 
 ```python
-[{'event': {'action': 'Directory Service Changes', 'code': '5136'}, 'winlog': {'event_data': {'AttributeLDAPDisplayName': 'msDS-KeyCredentialLink'}}, '@timestamp': 0}]
+[{'winlog': {'event_data': {'AttributeLDAPDisplayName': 'msDS-KeyCredentialLink'}}, 'event': {'action': 'Directory Service Changes', 'code': '5136'}, '@timestamp': 0}]
 ```
 
 
@@ -9183,8 +9183,8 @@ sequence by host.id, process.entity_id with maxspan = 5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'wermgr.exe', 'args_count': 1, 'entity_id': 'Uyy'}, 'host': {'id': 'vCf'}, '@timestamp': 0},
- {'process': {'name': 'WerFault.exe', 'entity_id': 'Uyy'}, 'network': {'protocol': 'oix', 'direction': 'egress'}, 'destination': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af'}, 'event': {'category': ['network']}, 'host': {'id': 'vCf'}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'WerFault.exe', 'args_count': 1, 'entity_id': 'Utk'}, '@timestamp': 0},
+ {'destination': {'ip': '73.157.79.25'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, 'network': {'protocol': 'SvI', 'direction': 'egress'}, 'process': {'name': 'wermgr.exe', 'entity_id': 'Utk'}, '@timestamp': 1}]
 ```
 
 
@@ -9203,7 +9203,7 @@ event.category:process and
 ```
 
 ```python
-[{'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'KerberosRequestorSecurityToken'}}, '@timestamp': 0}]
+[{'powershell': {'file': {'script_block_text': 'KerberosRequestorSecurityToken'}}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -9226,10 +9226,10 @@ event.category:process and
 ```
 
 ```python
-[{'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'GetAsyncKeyState'}}, '@timestamp': 0},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'NtUserGetAsyncKeyState'}}, '@timestamp': 1},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'GetKeyboardState'}}, '@timestamp': 2},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'Get-Keystrokes'}}, '@timestamp': 3}]
+[{'powershell': {'file': {'script_block_text': 'GetAsyncKeyState'}}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'powershell': {'file': {'script_block_text': 'NtUserGetAsyncKeyState'}}, 'event': {'category': ['process']}, '@timestamp': 1},
+ {'powershell': {'file': {'script_block_text': 'GetKeyboardState'}}, 'event': {'category': ['process']}, '@timestamp': 2},
+ {'powershell': {'file': {'script_block_text': 'Get-Keystrokes'}}, 'event': {'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -9245,9 +9245,9 @@ event.category:process and powershell.file.script_block_text:(MiniDumpWriteDump 
 ```
 
 ```python
-[{'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'MiniDumpWriteDump'}}, '@timestamp': 0},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'MiniDumpWithFullMemory'}}, '@timestamp': 1},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'pmuDetirWpmuDiniM'}}, '@timestamp': 2}]
+[{'powershell': {'file': {'script_block_text': 'MiniDumpWriteDump'}}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'powershell': {'file': {'script_block_text': 'MiniDumpWithFullMemory'}}, 'event': {'category': ['process']}, '@timestamp': 1},
+ {'powershell': {'file': {'script_block_text': 'pmuDetirWpmuDiniM'}}, 'event': {'category': ['process']}, '@timestamp': 2}]
 ```
 
 
@@ -9274,15 +9274,15 @@ event.category:process and
 ```
 
 ```python
-[{'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'New-InMemoryModule'}}, '@timestamp': 0},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'Add-Win32Type'}}, '@timestamp': 1},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'psenum'}}, '@timestamp': 2},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'DefineDynamicAssembly'}}, '@timestamp': 3},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'DefineDynamicModule'}}, '@timestamp': 4},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'Reflection.TypeAttributes'}}, '@timestamp': 5},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'Reflection.Emit.OpCodes'}}, '@timestamp': 6},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'Reflection.Emit.CustomAttributeBuilder'}}, '@timestamp': 7},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'Runtime.InteropServices.DllImportAttribute'}}, '@timestamp': 8}]
+[{'powershell': {'file': {'script_block_text': 'New-InMemoryModule'}}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'powershell': {'file': {'script_block_text': 'Add-Win32Type'}}, 'event': {'category': ['process']}, '@timestamp': 1},
+ {'powershell': {'file': {'script_block_text': 'psenum'}}, 'event': {'category': ['process']}, '@timestamp': 2},
+ {'powershell': {'file': {'script_block_text': 'DefineDynamicAssembly'}}, 'event': {'category': ['process']}, '@timestamp': 3},
+ {'powershell': {'file': {'script_block_text': 'DefineDynamicModule'}}, 'event': {'category': ['process']}, '@timestamp': 4},
+ {'powershell': {'file': {'script_block_text': 'Reflection.TypeAttributes'}}, 'event': {'category': ['process']}, '@timestamp': 5},
+ {'powershell': {'file': {'script_block_text': 'Reflection.Emit.OpCodes'}}, 'event': {'category': ['process']}, '@timestamp': 6},
+ {'powershell': {'file': {'script_block_text': 'Reflection.Emit.CustomAttributeBuilder'}}, 'event': {'category': ['process']}, '@timestamp': 7},
+ {'powershell': {'file': {'script_block_text': 'Runtime.InteropServices.DllImportAttribute'}}, 'event': {'category': ['process']}, '@timestamp': 8}]
 ```
 
 
@@ -9311,17 +9311,17 @@ event.category:process and
 ```
 
 ```python
-[{'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'NetShareEnum'}}, '@timestamp': 0},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'NetWkstaUserEnum'}}, '@timestamp': 1},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'NetSessionEnum'}}, '@timestamp': 2},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'NetLocalGroupEnum'}}, '@timestamp': 3},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'NetLocalGroupGetMembers'}}, '@timestamp': 4},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'DsGetSiteName'}}, '@timestamp': 5},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'DsEnumerateDomainTrusts'}}, '@timestamp': 6},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'WTSEnumerateSessionsEx'}}, '@timestamp': 7},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'WTSQuerySessionInformation'}}, '@timestamp': 8},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'LsaGetLogonSessionData'}}, '@timestamp': 9},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'QueryServiceObjectSecurity'}}, '@timestamp': 10}]
+[{'powershell': {'file': {'script_block_text': 'NetShareEnum'}}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'powershell': {'file': {'script_block_text': 'NetWkstaUserEnum'}}, 'event': {'category': ['process']}, '@timestamp': 1},
+ {'powershell': {'file': {'script_block_text': 'NetSessionEnum'}}, 'event': {'category': ['process']}, '@timestamp': 2},
+ {'powershell': {'file': {'script_block_text': 'NetLocalGroupEnum'}}, 'event': {'category': ['process']}, '@timestamp': 3},
+ {'powershell': {'file': {'script_block_text': 'NetLocalGroupGetMembers'}}, 'event': {'category': ['process']}, '@timestamp': 4},
+ {'powershell': {'file': {'script_block_text': 'DsGetSiteName'}}, 'event': {'category': ['process']}, '@timestamp': 5},
+ {'powershell': {'file': {'script_block_text': 'DsEnumerateDomainTrusts'}}, 'event': {'category': ['process']}, '@timestamp': 6},
+ {'powershell': {'file': {'script_block_text': 'WTSEnumerateSessionsEx'}}, 'event': {'category': ['process']}, '@timestamp': 7},
+ {'powershell': {'file': {'script_block_text': 'WTSQuerySessionInformation'}}, 'event': {'category': ['process']}, '@timestamp': 8},
+ {'powershell': {'file': {'script_block_text': 'LsaGetLogonSessionData'}}, 'event': {'category': ['process']}, '@timestamp': 9},
+ {'powershell': {'file': {'script_block_text': 'QueryServiceObjectSecurity'}}, 'event': {'category': ['process']}, '@timestamp': 10}]
 ```
 
 
@@ -9338,8 +9338,8 @@ event.category:process and event.type:(start or process_started) and
 ```
 
 ```python
-[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'parent': {'name': 'powershell.exe'}, 'name': 'cmd.exe'}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'parent': {'name': 'powershell.exe'}, 'name': 'cmd.exe'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'powershell.exe'}, 'name': 'cmd.exe'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'powershell.exe'}, 'name': 'cmd.exe'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 1}]
 ```
 
 
@@ -9357,10 +9357,10 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['echo', '>', '\\\\.\\pipe\\*']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['echo', '>', '\\\\.\\pipe\\*']}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['echo', '>', '\\\\.\\pipe\\*']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['echo', '>', '\\\\.\\pipe\\*']}, '@timestamp': 3}]
+[{'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['echo', '>', '\\\\.\\pipe\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['echo', '>', '\\\\.\\pipe\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['echo', '>', '\\\\.\\pipe\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['echo', '>', '\\\\.\\pipe\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -9413,8 +9413,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'hh.exe'}, 'name': 'powershell_ise.exe'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'hh.exe'}, 'name': 'wscript.exe'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'hh.exe'}, 'name': 'powershell_ise.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'hh.exe'}, 'name': 'wscript.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -9481,8 +9481,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'kernel_shellcode_event'}, 'endgame': {'metadata': {'type': 'detection'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'kernel_shellcode_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'detection'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'kernel_shellcode_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'kernel_shellcode_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -9498,8 +9498,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'kernel_shellcode_event'}, 'endgame': {'metadata': {'type': 'prevention'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'kernel_shellcode_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'prevention'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'kernel_shellcode_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'kernel_shellcode_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -9515,7 +9515,7 @@ process.name:MSBuild.exe and event.action:"CreateRemoteThread detected (rule: Cr
 ```
 
 ```python
-[{'process': {'name': 'MSBuild.exe'}, 'event': {'action': 'CreateRemoteThread detected (rule: CreateRemoteThread)'}, '@timestamp': 0}]
+[{'event': {'action': 'CreateRemoteThread detected (rule: CreateRemoteThread)'}, 'process': {'name': 'MSBuild.exe'}, '@timestamp': 0}]
 ```
 
 
@@ -9536,8 +9536,8 @@ sequence by host.id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['end'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 1}]
+[{'process': {'code_signature': {'trusted': False}, 'executable': 'XIU'}, 'event': {'type': ['end'], 'category': ['process']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -9587,30 +9587,30 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1080, 'ip': 'e6ea:94e4:e5ac:b58c:1b43:3a53:aa79:ec59'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1080, 'ip': '119.10.44.216'}, 'source': {'ip': '172.31.81.251'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1080, 'ip': '104.129.204.102'}, 'source': {'ip': '192.168.147.58'}, '@timestamp': 2},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3128, 'ip': '149.239.86.175'}, 'source': {'ip': '10.111.13.86'}, '@timestamp': 3},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3128, 'ip': '112.141.185.70'}, 'source': {'ip': '172.27.169.243'}, '@timestamp': 4},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3128, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'source': {'ip': '192.168.197.122'}, '@timestamp': 5},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8080, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'source': {'ip': '10.155.175.169'}, '@timestamp': 6},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8080, 'ip': '156.105.128.203'}, 'source': {'ip': '172.21.27.73'}, '@timestamp': 7},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8080, 'ip': '93.16.168.118'}, 'source': {'ip': '192.168.162.120'}, '@timestamp': 8},
- {'event': {'category': ['network'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.247.115.164'}, 'destination': {'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, '@timestamp': 9},
- {'event': {'category': ['network'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.30.255.121'}, 'destination': {'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, '@timestamp': 10},
- {'event': {'category': ['network'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.120.95'}, 'destination': {'ip': '147.172.30.18'}, '@timestamp': 11},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1080, 'ip': '200.44.53.86'}, 'source': {'ip': '10.231.61.22'}, '@timestamp': 12},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1080, 'ip': 'bd8d:8e9f:3c38:5e93:2a21:f2e3:2a70:2899'}, 'source': {'ip': '172.27.220.217'}, '@timestamp': 13},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1080, 'ip': '3.79.219.137'}, 'source': {'ip': '192.168.64.185'}, '@timestamp': 14},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3128, 'ip': 'b861:3a65:7d92:a4ae:175d:4ee4:1dd9:801e'}, 'source': {'ip': '10.77.111.86'}, '@timestamp': 15},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3128, 'ip': '46.77.189.36'}, 'source': {'ip': '172.17.96.216'}, '@timestamp': 16},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3128, 'ip': '159.213.231.147'}, 'source': {'ip': '192.168.139.227'}, '@timestamp': 17},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8080, 'ip': '926e:7af:547b:40e6:6d4a:85e0:ec27:61f0'}, 'source': {'ip': '10.118.248.208'}, '@timestamp': 18},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8080, 'ip': '169.49.132.205'}, 'source': {'ip': '172.31.220.4'}, '@timestamp': 19},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8080, 'ip': '23.217.57.149'}, 'source': {'ip': '192.168.96.227'}, '@timestamp': 20},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.59.195.236'}, 'destination': {'ip': '18bd:8fde:45bf:faed:fdf6:3054:3d28:170f'}, '@timestamp': 21},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.169.85'}, 'destination': {'ip': '255.18.123.234'}, '@timestamp': 22},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.63.15'}, 'destination': {'ip': '171.232.70.1'}, '@timestamp': 23}]
+[{'destination': {'port': 1080, 'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.193.74.7'}, '@timestamp': 0},
+ {'destination': {'port': 1080, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.25.51.169'}, '@timestamp': 1},
+ {'destination': {'port': 1080, 'ip': '104.129.204.102'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.111.13'}, '@timestamp': 2},
+ {'destination': {'port': 3128, 'ip': '149.239.86.175'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.186.159.60'}, '@timestamp': 3},
+ {'destination': {'port': 3128, 'ip': '112.141.185.70'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.87.162'}, '@timestamp': 4},
+ {'destination': {'port': 3128, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.155.175'}, '@timestamp': 5},
+ {'destination': {'port': 8080, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.81.180.150'}, '@timestamp': 6},
+ {'destination': {'port': 8080, 'ip': '156.105.128.203'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.26.39.143'}, '@timestamp': 7},
+ {'destination': {'port': 8080, 'ip': '93.16.168.118'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 8},
+ {'destination': {'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'event': {'category': ['network'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 9},
+ {'destination': {'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'event': {'category': ['network'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.133.247'}, '@timestamp': 10},
+ {'destination': {'ip': '147.172.30.18'}, 'event': {'category': ['network'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.231.61'}, '@timestamp': 11},
+ {'destination': {'port': 1080, 'ip': '200.44.53.86'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.189.205.159'}, '@timestamp': 12},
+ {'destination': {'port': 1080, 'ip': 'bd8d:8e9f:3c38:5e93:2a21:f2e3:2a70:2899'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.20.11.158'}, '@timestamp': 13},
+ {'destination': {'port': 1080, 'ip': '3.79.219.137'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.77.111'}, '@timestamp': 14},
+ {'destination': {'port': 3128, 'ip': 'b861:3a65:7d92:a4ae:175d:4ee4:1dd9:801e'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.22.13.138'}, '@timestamp': 15},
+ {'destination': {'port': 3128, 'ip': '46.77.189.36'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.24.190.55'}, '@timestamp': 16},
+ {'destination': {'port': 3128, 'ip': '159.213.231.147'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.118.248'}, '@timestamp': 17},
+ {'destination': {'port': 8080, 'ip': '926e:7af:547b:40e6:6d4a:85e0:ec27:61f0'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.253.192.72'}, '@timestamp': 18},
+ {'destination': {'port': 8080, 'ip': '169.49.132.205'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.22.14.52'}, '@timestamp': 19},
+ {'destination': {'port': 8080, 'ip': '23.217.57.149'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.59.195'}, '@timestamp': 20},
+ {'destination': {'ip': '18bd:8fde:45bf:faed:fdf6:3054:3d28:170f'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.122.149.87'}, '@timestamp': 21},
+ {'destination': {'ip': '255.18.123.234'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.19.240.244'}, '@timestamp': 22},
+ {'destination': {'ip': '171.232.70.1'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.socks'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.104.106'}, '@timestamp': 23}]
 ```
 
 
@@ -9628,8 +9628,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'PsExec.exe', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'PsExec.exe', 'entity_id': 'ZFy'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'PsExec.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'category': ['network']}, 'process': {'name': 'PsExec.exe', 'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -9666,9 +9666,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'reg.exe', 'args': ['query']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'reg.exe'}, 'args': ['query']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'reg.exe'}, 'args': ['query']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'reg.exe', 'args': ['query']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'reg.exe'}, 'args': ['query']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'reg.exe'}, 'args': ['query']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -9717,18 +9717,18 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '10.214.62.131'}, 'source': {'ip': '222.151.68.226'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '172.28.20.160'}, 'source': {'ip': '170.121.236.89'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '192.168.96.70'}, 'source': {'ip': '54.2.158.30'}, '@timestamp': 2},
- {'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '219.54.168.90'}, 'destination': {'ip': '10.209.3.152'}, '@timestamp': 3},
- {'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '169.225.121.243'}, 'destination': {'ip': '172.24.207.103'}, '@timestamp': 4},
- {'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '199.127.185.194'}, 'destination': {'ip': '192.168.186.159'}, '@timestamp': 5},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '10.197.122.33'}, 'source': {'ip': '112.141.185.70'}, '@timestamp': 6},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '172.18.192.161'}, 'source': {'ip': '149.102.124.168'}, '@timestamp': 7},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '192.168.1.78'}, 'source': {'ip': '197.7.114.246'}, '@timestamp': 8},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'd5e4:e45:48d:758d:eac9:ff60:21ff:ce20'}, 'destination': {'ip': '10.29.111.63'}, '@timestamp': 9},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '121.161.84.247'}, 'destination': {'ip': '172.23.250.187'}, '@timestamp': 10},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '151.149.0.92'}, 'destination': {'ip': '192.168.247.115'}, '@timestamp': 11}]
+[{'destination': {'port': 3389, 'ip': '10.214.62.131'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '170.121.236.89'}, '@timestamp': 0},
+ {'destination': {'port': 3389, 'ip': '172.28.20.160'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '54.2.158.30'}, '@timestamp': 1},
+ {'destination': {'port': 3389, 'ip': '192.168.96.70'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '219.54.168.90'}, '@timestamp': 2},
+ {'destination': {'ip': '10.209.3.152'}, 'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '169.225.121.243'}, '@timestamp': 3},
+ {'destination': {'ip': '172.24.207.103'}, 'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '199.127.185.194'}, '@timestamp': 4},
+ {'destination': {'ip': '192.168.186.159'}, 'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '112.141.185.70'}, '@timestamp': 5},
+ {'destination': {'port': 3389, 'ip': '10.197.122.33'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '149.102.124.168'}, '@timestamp': 6},
+ {'destination': {'port': 3389, 'ip': '172.18.192.161'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '197.7.114.246'}, '@timestamp': 7},
+ {'destination': {'port': 3389, 'ip': '192.168.1.78'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'd5e4:e45:48d:758d:eac9:ff60:21ff:ce20'}, '@timestamp': 8},
+ {'destination': {'ip': '10.29.111.63'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '121.161.84.247'}, '@timestamp': 9},
+ {'destination': {'ip': '172.23.250.187'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '151.149.0.92'}, '@timestamp': 10},
+ {'destination': {'ip': '192.168.247.115'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '178.204.52.89'}, '@timestamp': 11}]
 ```
 
 
@@ -9760,18 +9760,18 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': 'e6ea:94e4:e5ac:b58c:1b43:3a53:aa79:ec59'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '119.10.44.216'}, 'source': {'ip': '172.31.81.251'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '104.129.204.102'}, 'source': {'ip': '192.168.147.58'}, '@timestamp': 2},
- {'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.111.13.86'}, 'destination': {'ip': '149.239.86.175'}, '@timestamp': 3},
- {'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.27.169.243'}, 'destination': {'ip': '112.141.185.70'}, '@timestamp': 4},
- {'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.197.122'}, 'destination': {'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, '@timestamp': 5},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'source': {'ip': '10.155.175.169'}, '@timestamp': 6},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '156.105.128.203'}, 'source': {'ip': '172.21.27.73'}, '@timestamp': 7},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3389, 'ip': '93.16.168.118'}, 'source': {'ip': '192.168.162.120'}, '@timestamp': 8},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.247.115.164'}, 'destination': {'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, '@timestamp': 9},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.30.255.121'}, 'destination': {'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, '@timestamp': 10},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.120.95'}, 'destination': {'ip': '147.172.30.18'}, '@timestamp': 11}]
+[{'destination': {'port': 3389, 'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.193.74.7'}, '@timestamp': 0},
+ {'destination': {'port': 3389, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.25.51.169'}, '@timestamp': 1},
+ {'destination': {'port': 3389, 'ip': '104.129.204.102'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.111.13'}, '@timestamp': 2},
+ {'destination': {'ip': '149.239.86.175'}, 'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.186.159.60'}, '@timestamp': 3},
+ {'destination': {'ip': '112.141.185.70'}, 'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.87.162'}, '@timestamp': 4},
+ {'destination': {'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'event': {'category': ['network'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.155.175'}, '@timestamp': 5},
+ {'destination': {'port': 3389, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.81.180.150'}, '@timestamp': 6},
+ {'destination': {'port': 3389, 'ip': '156.105.128.203'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.26.39.143'}, '@timestamp': 7},
+ {'destination': {'port': 3389, 'ip': '93.16.168.118'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 8},
+ {'destination': {'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 9},
+ {'destination': {'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.133.247'}, '@timestamp': 10},
+ {'destination': {'ip': '147.172.30.18'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.rdp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.231.61'}, '@timestamp': 11}]
 ```
 
 
@@ -9820,18 +9820,18 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '10.214.62.131'}, 'source': {'ip': '222.151.68.226'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '172.28.20.160'}, 'source': {'ip': '170.121.236.89'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '192.168.96.70'}, 'source': {'ip': '54.2.158.30'}, '@timestamp': 2},
- {'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '219.54.168.90'}, 'destination': {'ip': '10.209.3.152'}, '@timestamp': 3},
- {'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '169.225.121.243'}, 'destination': {'ip': '172.24.207.103'}, '@timestamp': 4},
- {'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '199.127.185.194'}, 'destination': {'ip': '192.168.186.159'}, '@timestamp': 5},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '10.197.122.33'}, 'source': {'ip': '112.141.185.70'}, '@timestamp': 6},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '172.18.192.161'}, 'source': {'ip': '149.102.124.168'}, '@timestamp': 7},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '192.168.1.78'}, 'source': {'ip': '197.7.114.246'}, '@timestamp': 8},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'd5e4:e45:48d:758d:eac9:ff60:21ff:ce20'}, 'destination': {'ip': '10.29.111.63'}, '@timestamp': 9},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '121.161.84.247'}, 'destination': {'ip': '172.23.250.187'}, '@timestamp': 10},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '151.149.0.92'}, 'destination': {'ip': '192.168.247.115'}, '@timestamp': 11}]
+[{'destination': {'port': 135, 'ip': '10.214.62.131'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '170.121.236.89'}, '@timestamp': 0},
+ {'destination': {'port': 135, 'ip': '172.28.20.160'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '54.2.158.30'}, '@timestamp': 1},
+ {'destination': {'port': 135, 'ip': '192.168.96.70'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '219.54.168.90'}, '@timestamp': 2},
+ {'destination': {'ip': '10.209.3.152'}, 'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '169.225.121.243'}, '@timestamp': 3},
+ {'destination': {'ip': '172.24.207.103'}, 'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '199.127.185.194'}, '@timestamp': 4},
+ {'destination': {'ip': '192.168.186.159'}, 'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '112.141.185.70'}, '@timestamp': 5},
+ {'destination': {'port': 135, 'ip': '10.197.122.33'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '149.102.124.168'}, '@timestamp': 6},
+ {'destination': {'port': 135, 'ip': '172.18.192.161'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '197.7.114.246'}, '@timestamp': 7},
+ {'destination': {'port': 135, 'ip': '192.168.1.78'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'd5e4:e45:48d:758d:eac9:ff60:21ff:ce20'}, '@timestamp': 8},
+ {'destination': {'ip': '10.29.111.63'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '121.161.84.247'}, '@timestamp': 9},
+ {'destination': {'ip': '172.23.250.187'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '151.149.0.92'}, '@timestamp': 10},
+ {'destination': {'ip': '192.168.247.115'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '178.204.52.89'}, '@timestamp': 11}]
 ```
 
 
@@ -9880,18 +9880,18 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '170.121.236.89'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '54.2.158.30'}, 'source': {'ip': '172.28.20.160'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '219.54.168.90'}, 'source': {'ip': '192.168.96.70'}, '@timestamp': 2},
- {'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.209.3.152'}, 'destination': {'ip': '169.225.121.243'}, '@timestamp': 3},
- {'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.24.207.103'}, 'destination': {'ip': '199.127.185.194'}, '@timestamp': 4},
- {'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.186.159'}, 'destination': {'ip': '112.141.185.70'}, '@timestamp': 5},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '149.102.124.168'}, 'source': {'ip': '10.197.122.33'}, '@timestamp': 6},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': '197.7.114.246'}, 'source': {'ip': '172.18.192.161'}, '@timestamp': 7},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 135, 'ip': 'd5e4:e45:48d:758d:eac9:ff60:21ff:ce20'}, 'source': {'ip': '192.168.1.78'}, '@timestamp': 8},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.29.111.63'}, 'destination': {'ip': '121.161.84.247'}, '@timestamp': 9},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.250.187'}, 'destination': {'ip': '151.149.0.92'}, '@timestamp': 10},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, 'destination': {'ip': '178.204.52.89'}, '@timestamp': 11}]
+[{'destination': {'port': 135, 'ip': '222.151.68.226'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
+ {'destination': {'port': 135, 'ip': '170.121.236.89'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.20.160'}, '@timestamp': 1},
+ {'destination': {'port': 135, 'ip': '54.2.158.30'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.96.70'}, '@timestamp': 2},
+ {'destination': {'ip': '219.54.168.90'}, 'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.209.3.152'}, '@timestamp': 3},
+ {'destination': {'ip': '169.225.121.243'}, 'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.24.207.103'}, '@timestamp': 4},
+ {'destination': {'ip': '199.127.185.194'}, 'event': {'category': ['network'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.186.159'}, '@timestamp': 5},
+ {'destination': {'port': 135, 'ip': '112.141.185.70'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.197.122.33'}, '@timestamp': 6},
+ {'destination': {'port': 135, 'ip': '149.102.124.168'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.18.192.161'}, '@timestamp': 7},
+ {'destination': {'port': 135, 'ip': '197.7.114.246'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.1.78'}, '@timestamp': 8},
+ {'destination': {'ip': 'd5e4:e45:48d:758d:eac9:ff60:21ff:ce20'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.29.111.63'}, '@timestamp': 9},
+ {'destination': {'ip': '121.161.84.247'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.250.187'}, '@timestamp': 10},
+ {'destination': {'ip': '151.149.0.92'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.dce_rpc'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 11}]
 ```
 
 
@@ -9907,8 +9907,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'ransomware_event'}, 'endgame': {'metadata': {'type': 'detection'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'ransomware_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'detection'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'ransomware_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'detection'}, 'event_subtype_full': 'ransomware_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -9924,8 +9924,8 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 ```
 
 ```python
-[{'event': {'kind': 'alert', 'module': 'endgame', 'action': 'ransomware_event'}, 'endgame': {'metadata': {'type': 'prevention'}}, '@timestamp': 0},
- {'event': {'kind': 'alert', 'module': 'endgame'}, 'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'ransomware_event'}, '@timestamp': 1}]
+[{'endgame': {'metadata': {'type': 'prevention'}}, 'event': {'kind': 'alert', 'module': 'endgame', 'action': 'ransomware_event'}, '@timestamp': 0},
+ {'endgame': {'metadata': {'type': 'prevention'}, 'event_subtype_full': 'ransomware_event'}, 'event': {'kind': 'alert', 'module': 'endgame'}, '@timestamp': 1}]
 ```
 
 
@@ -9943,7 +9943,7 @@ registry where
 ```
 
 ```python
-[{'registry': {'path': 'HKLM\\SYSTEM\\XIUtkNIControlSetSvILO\\Control\\Session Manager\\AppCertDLLs\\Ezswu'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'event': {'category': ['registry']}, 'registry': {'path': 'HKLM\\SYSTEM\\XIUtkNIControlSetSvILO\\Control\\Session Manager\\AppCertDLLs\\Ezswu'}, '@timestamp': 0}]
 ```
 
 
@@ -9965,7 +9965,7 @@ registry where
 ```
 
 ```python
-[{'registry': {'path': 'HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\AppInit_Dlls'}, 'process': {'executable': 'vCf'}, 'event': {'category': ['registry']}, '@timestamp': 0}]
+[{'event': {'category': ['registry']}, 'process': {'executable': 'ZFy'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\AppInit_Dlls'}, '@timestamp': 0}]
 ```
 
 
@@ -9985,9 +9985,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'netsh.exe', 'args': ['localport=3389', 'RemoteDesktop', 'group="remote desktop"', 'action=allow', 'enable=Yes', 'enable']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'netsh.exe'}, 'args': ['localport=3389', 'RemoteDesktop', 'group="remote desktop"', 'action=allow', 'enable=Yes', 'enable']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'netsh.exe'}, 'args': ['localport=3389', 'RemoteDesktop', 'group="remote desktop"', 'action=allow', 'enable=Yes', 'enable']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'netsh.exe', 'args': ['localport=3389', 'RemoteDesktop', 'group="remote desktop"', 'action=allow', 'enable=Yes', 'enable']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'netsh.exe'}, 'args': ['localport=3389', 'RemoteDesktop', 'group="remote desktop"', 'action=allow', 'enable=Yes', 'enable']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'netsh.exe'}, 'args': ['localport=3389', 'RemoteDesktop', 'group="remote desktop"', 'action=allow', 'enable=Yes', 'enable']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -10005,14 +10005,14 @@ sequence with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'executable': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'Ioi'}, 'host': {'id': 'tkN'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'tkN'}, 'process': {'executable': 'Ioi'}, '@timestamp': 3},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'lEz'}, 'host': {'id': 'xTF'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'xTF'}, 'process': {'executable': 'lEz'}, '@timestamp': 5},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'EEX'}, 'host': {'id': 'swu'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'swu'}, 'process': {'executable': 'EEX'}, '@timestamp': 7}]
+[{'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'ZFy'}, 'host': {'id': 'XIU'}, 'process': {'pid': 4}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'XIU'}, 'process': {'executable': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'tkN'}, 'host': {'id': 'Ioi'}, 'process': {'pid': 4}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Ioi'}, 'process': {'executable': 'tkN'}, '@timestamp': 3},
+ {'event': {'type': ['change'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'xTF'}, 'host': {'id': 'lEz'}, 'process': {'pid': 4}, '@timestamp': 4},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'lEz'}, 'process': {'executable': 'xTF'}, '@timestamp': 5},
+ {'event': {'type': ['change'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'swu'}, 'host': {'id': 'EEX'}, 'process': {'pid': 4}, '@timestamp': 6},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'EEX'}, 'process': {'executable': 'swu'}, '@timestamp': 7}]
 ```
 
 
@@ -10048,7 +10048,7 @@ file where event.type == "creation" and process.name : "TeamViewer.exe" and
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'name': 'TeamViewer.exe'}, 'file': {'extension': 'vbs'}, '@timestamp': 0}]
+[{'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'vbs'}, 'process': {'name': 'TeamViewer.exe'}, '@timestamp': 0}]
 ```
 
 
@@ -10067,9 +10067,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'desktopimgdownldr.exe', 'args': ['/lockscreenurl:http*']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'desktopimgdownldr.exe'}, 'args': ['/lockscreenurl:http*']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'desktopimgdownldr.exe'}, 'args': ['/lockscreenurl:http*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'desktopimgdownldr.exe', 'args': ['/lockscreenurl:http*']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'desktopimgdownldr.exe'}, 'args': ['/lockscreenurl:http*']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'desktopimgdownldr.exe'}, 'args': ['/lockscreenurl:http*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -10088,7 +10088,7 @@ process where event.type == "start" and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'MpCmdRun.exe', 'args': ['-DownloadFile', '-url', '-path']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'MpCmdRun.exe'}, 'args': ['-DownloadFile', '-url', '-path']}, '@timestamp': 1}]
+ {'process': {'pe': {'original_file_name': 'MpCmdRun.exe'}, 'args': ['-DownloadFile', '-url', '-path']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -10109,8 +10109,8 @@ sequence by host.id, process.entity_id with maxspan=30s
 ```
 
 ```python
-[{'process': {'name': 'pwsh.exe', 'entity_id': 'SvI'}, 'network': {'protocol': 'dns'}, 'dns': {'question': {'name': 'TvC'}}, 'user': {'domain': 'fUy'}, 'event': {'category': ['network']}, 'host': {'id': 'yFj'}, '@timestamp': 0},
- {'process': {'name': 'powershell.exe', 'entity_id': 'SvI'}, 'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'dll', 'name': 'oOH'}, 'host': {'id': 'yFj'}, '@timestamp': 1}]
+[{'dns': {'question': {'name': 'ZFy'}}, 'event': {'category': ['network']}, 'host': {'id': 'XIU'}, 'network': {'protocol': 'dns'}, 'process': {'name': 'powershell_ise.exe', 'entity_id': 'yyF'}, 'user': {'domain': 'jSv'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'dll', 'name': 'oOH'}, 'host': {'id': 'XIU'}, 'process': {'name': 'powershell.exe', 'entity_id': 'yyF'}, '@timestamp': 1}]
 ```
 
 
@@ -10130,8 +10130,8 @@ sequence by host.id, process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'wscript.exe', 'entity_id': 'SvI'}, 'network': {'protocol': 'vCf', 'direction': 'outgoing', 'type': 'ipv4'}, 'destination': {'ip': '54.2.158.30'}, 'event': {'category': ['network']}, 'host': {'id': 'yFj'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'dll'}, 'host': {'id': 'yFj'}, 'process': {'entity_id': 'SvI'}, '@timestamp': 1}]
+[{'destination': {'ip': '107.31.65.130'}, 'event': {'category': ['network']}, 'host': {'id': 'XIU'}, 'network': {'protocol': 'tkN', 'direction': 'egress', 'type': 'ipv4'}, 'process': {'name': 'wscript.exe', 'entity_id': 'SvI'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'dll'}, 'host': {'id': 'XIU'}, 'process': {'entity_id': 'SvI'}, '@timestamp': 1}]
 ```
 
 
@@ -10173,8 +10173,8 @@ sequence by host.id, process.entity_id with maxspan = 1m
 ```
 
 ```python
-[{'process': {'name': 'svchost.exe', 'entity_id': 'vIL'}, 'network': {'direction': 'ingress'}, 'source': {'port': 62863, 'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, 'destination': {'port': 52641}, 'event': {'category': ['network']}, 'host': {'id': 'FjS'}, '@timestamp': 0},
- {'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\Ezswu\\Actions'}, 'event': {'category': ['registry']}, 'host': {'id': 'FjS'}, 'process': {'entity_id': 'vIL'}, '@timestamp': 1}]
+[{'destination': {'port': 64740}, 'event': {'category': ['network']}, 'host': {'id': 'vCf'}, 'network': {'direction': 'ingress'}, 'process': {'name': 'svchost.exe', 'entity_id': 'yyF'}, 'source': {'port': 55313, 'ip': '73bd:f2bd:6881:cc65:28a5:9ecc:db36:a85a'}, '@timestamp': 0},
+ {'event': {'category': ['registry']}, 'host': {'id': 'vCf'}, 'process': {'entity_id': 'yyF'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\Ezswu\\Actions'}, '@timestamp': 1}]
 ```
 
 
@@ -10194,7 +10194,7 @@ process where event.type in ("start", "process_started") and
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'nbtstat.exe', 'args': ['-n', '-s']}, '@timestamp': 0},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'nbtstat.exe', 'args': ['-n', '-s']}, '@timestamp': 1},
- {'process': {'name': 'arp.exe', 'args': ['-a']}, 'event': {'category': ['process']}, '@timestamp': 2}]
+ {'event': {'category': ['process']}, 'process': {'name': 'arp.exe', 'args': ['-a']}, '@timestamp': 2}]
 ```
 
 
@@ -10222,22 +10222,22 @@ sequence with maxspan=1s
 ```
 
 ```python
-[{'process': {'name': 'services.exe', 'entity_id': 'vIL'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 62863, 'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, 'destination': {'port': 52641}, 'event': {'category': ['network']}, 'host': {'id': 'FjS'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'vIL'}, 'name': 'OoO'}, 'host': {'id': 'FjS'}, '@timestamp': 1},
- {'process': {'name': 'services.exe', 'entity_id': 'WqN'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 57092, 'ip': '42e0:603d:9566:7ca7:8676:5e58:62bd:10dc'}, 'destination': {'port': 63558}, 'event': {'category': ['network']}, 'host': {'id': 'EXp'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'WqN'}, 'name': 'VRc', 'args': ['ymE']}, 'host': {'id': 'EXp'}, '@timestamp': 3},
- {'process': {'name': 'services.exe', 'entity_id': 'mlO'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 63609, 'ip': '8fd8:c24b:a168:4644:d2ea:bc0e:bba3:4c90'}, 'destination': {'port': 64544}, 'event': {'category': ['network']}, 'host': {'id': 'zNf'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'mlO'}, 'args': ['PZR'], 'name': 'gUv'}, 'host': {'id': 'zNf'}, '@timestamp': 5},
- {'process': {'name': 'services.exe', 'entity_id': 'Tms'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 54584, 'ip': '189.141.142.160'}, 'destination': {'port': 54544}, 'event': {'category': ['network']}, 'host': {'id': 'rFg'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'Tms'}, 'args': ['hCe']}, 'host': {'id': 'rFg'}, '@timestamp': 7},
- {'process': {'name': 'services.exe', 'entity_id': 'myw'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'port': 50563, 'ip': '9.221.168.172'}, 'destination': {'port': 60857}, 'event': {'category': ['network']}, 'host': {'id': 'oGr'}, '@timestamp': 8},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'myw'}, 'name': 'DUN'}, 'host': {'id': 'oGr'}, '@timestamp': 9},
- {'process': {'name': 'services.exe', 'entity_id': 'moE'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 53489, 'ip': '23.217.57.149'}, 'destination': {'port': 55352}, 'event': {'category': ['network']}, 'host': {'id': 'XgN'}, '@timestamp': 10},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'moE'}, 'name': 'FCE', 'args': ['Zpg']}, 'host': {'id': 'XgN'}, '@timestamp': 11},
- {'process': {'name': 'services.exe', 'entity_id': 'nDm'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'port': 55834, 'ip': '180.77.58.27'}, 'destination': {'port': 62921}, 'event': {'category': ['network']}, 'host': {'id': 'kuY'}, '@timestamp': 12},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'nDm'}, 'args': ['xXc'], 'name': 'xFE'}, 'host': {'id': 'kuY'}, '@timestamp': 13},
- {'process': {'name': 'services.exe', 'entity_id': 'WOc'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'port': 58206, 'ip': '8713:9758:f2ae:3dcd:6830:e2a:dffa:77e'}, 'destination': {'port': 50783}, 'event': {'category': ['network']}, 'host': {'id': 'zJC'}, '@timestamp': 14},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'WOc'}, 'args': ['yqv']}, 'host': {'id': 'zJC'}, '@timestamp': 15}]
+[{'destination': {'port': 64740}, 'event': {'category': ['network']}, 'host': {'id': 'vCf'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'process': {'name': 'services.exe', 'entity_id': 'yyF'}, 'source': {'port': 55313, 'ip': '73bd:f2bd:6881:cc65:28a5:9ecc:db36:a85a'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'services.exe', 'entity_id': 'yyF'}, 'name': 'ILO'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'vCf'}, '@timestamp': 1},
+ {'destination': {'port': 58173}, 'event': {'category': ['network']}, 'host': {'id': 'Ezs'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'process': {'name': 'services.exe', 'entity_id': 'xBn'}, 'source': {'port': 51970, 'ip': '506a:fac2:8499:c98f:ee87:44c2:c507:72f6'}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'services.exe', 'entity_id': 'xBn'}, 'name': 'aga', 'args': ['iFq']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'Ezs'}, '@timestamp': 3},
+ {'destination': {'port': 61064}, 'event': {'category': ['network']}, 'host': {'id': 'EEw'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'process': {'name': 'services.exe', 'entity_id': 'YMG'}, 'source': {'port': 65396, 'ip': '95f9:2fc7:1bf9:1e9e:e2fc:2265:c4e2:24be'}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'services.exe', 'entity_id': 'YMG'}, 'args': ['mlO'], 'name': 'PZR'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'EEw'}, '@timestamp': 5},
+ {'destination': {'port': 53099}, 'event': {'category': ['network']}, 'host': {'id': 'OLW'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'process': {'name': 'services.exe', 'entity_id': 'CiM'}, 'source': {'port': 53294, 'ip': '226.5.183.80'}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'services.exe', 'entity_id': 'CiM'}, 'args': ['HaT']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'OLW'}, '@timestamp': 7},
+ {'destination': {'port': 52972}, 'event': {'category': ['network']}, 'host': {'id': 'eLW'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'process': {'name': 'services.exe', 'entity_id': 'cYs'}, 'source': {'port': 50414, 'ip': '5409:2875:e291:d485:9fd5:e792:4172:5d1f'}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'services.exe', 'entity_id': 'cYs'}, 'name': 'JMV'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'eLW'}, '@timestamp': 9},
+ {'destination': {'port': 59965}, 'event': {'category': ['network']}, 'host': {'id': 'DUN'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'process': {'name': 'services.exe', 'entity_id': 'Ige'}, 'source': {'port': 64471, 'ip': '184.38.31.195'}, '@timestamp': 10},
+ {'process': {'parent': {'name': 'services.exe', 'entity_id': 'Ige'}, 'name': 'Nmo', 'args': ['EFC']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'DUN'}, '@timestamp': 11},
+ {'destination': {'port': 54240}, 'event': {'category': ['network']}, 'host': {'id': 'Zpg'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'process': {'name': 'services.exe', 'entity_id': 'kbk'}, 'source': {'port': 62246, 'ip': '64a7:72ca:90ac:cd59:1145:6e9:417a:8c2b'}, '@timestamp': 12},
+ {'process': {'parent': {'name': 'services.exe', 'entity_id': 'kbk'}, 'args': ['mxX'], 'name': 'cxF'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Zpg'}, '@timestamp': 13},
+ {'destination': {'port': 54731}, 'event': {'category': ['network']}, 'host': {'id': 'ocs'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'process': {'name': 'services.exe', 'entity_id': 'XzJ'}, 'source': {'port': 58323, 'ip': '11.182.218.120'}, '@timestamp': 14},
+ {'process': {'parent': {'name': 'services.exe', 'entity_id': 'XzJ'}, 'args': ['IYA']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'ocs'}, '@timestamp': 15}]
 ```
 
 
@@ -10254,9 +10254,9 @@ process where event.type in ("start", "process_started", "info") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'AutoItXIUtkNI.exe'}, 'name': 'oix'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'AutoItEzswu.exe'}, 'name': 'EEX'}, '@timestamp': 1},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'AutoItWqNVRcymEEwVP.exe'}, 'name': 'YMG'}, '@timestamp': 2}]
+[{'process': {'pe': {'original_file_name': 'AutoItXIUtkNI.exe'}, 'name': 'oix'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'pe': {'original_file_name': 'AutoItEzswu.exe'}, 'name': 'EEX'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'AutoItWqNVRcymEEwVP.exe'}, 'name': 'YMG'}, 'event': {'type': ['info'], 'category': ['process']}, '@timestamp': 2}]
 ```
 
 
@@ -10305,24 +10305,24 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 139, 'ip': '170.121.236.89'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 139, 'ip': '54.2.158.30'}, 'source': {'ip': '172.28.20.160'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 139, 'ip': '219.54.168.90'}, 'source': {'ip': '192.168.96.70'}, '@timestamp': 2},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 445, 'ip': '169.225.121.243'}, 'source': {'ip': '10.209.3.152'}, '@timestamp': 3},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 445, 'ip': '199.127.185.194'}, 'source': {'ip': '172.24.207.103'}, '@timestamp': 4},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 445, 'ip': '112.141.185.70'}, 'source': {'ip': '192.168.186.159'}, '@timestamp': 5},
- {'event': {'category': ['network'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.197.122.33'}, 'destination': {'ip': '149.102.124.168'}, '@timestamp': 6},
- {'event': {'category': ['network'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.18.192.161'}, 'destination': {'ip': '197.7.114.246'}, '@timestamp': 7},
- {'event': {'category': ['network'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.1.78'}, 'destination': {'ip': 'd5e4:e45:48d:758d:eac9:ff60:21ff:ce20'}, '@timestamp': 8},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 139, 'ip': '121.161.84.247'}, 'source': {'ip': '10.29.111.63'}, '@timestamp': 9},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 139, 'ip': '151.149.0.92'}, 'source': {'ip': '172.23.250.187'}, '@timestamp': 10},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 139, 'ip': '178.204.52.89'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 11},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 445, 'ip': '7ee8:2ac7:8fd8:c24b:a168:4644:d2ea:bc0f'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 12},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 445, 'ip': '60.47.190.229'}, 'source': {'ip': '172.19.127.35'}, '@timestamp': 13},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 445, 'ip': 'd693:36a4:eaa1:660b:fe6b:8957:739e:8b1b'}, 'source': {'ip': '192.168.165.29'}, '@timestamp': 14},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.209.145.8'}, 'destination': {'ip': '139.59.60.34'}, '@timestamp': 15},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.21.68.62'}, 'destination': {'ip': '189.141.142.160'}, '@timestamp': 16},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.64.185'}, 'destination': {'ip': '60.8.116.38'}, '@timestamp': 17}]
+[{'destination': {'port': 139, 'ip': '222.151.68.226'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
+ {'destination': {'port': 139, 'ip': '170.121.236.89'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.20.160'}, '@timestamp': 1},
+ {'destination': {'port': 139, 'ip': '54.2.158.30'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.96.70'}, '@timestamp': 2},
+ {'destination': {'port': 445, 'ip': '219.54.168.90'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.209.3.152'}, '@timestamp': 3},
+ {'destination': {'port': 445, 'ip': '169.225.121.243'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.24.207.103'}, '@timestamp': 4},
+ {'destination': {'port': 445, 'ip': '199.127.185.194'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.186.159'}, '@timestamp': 5},
+ {'destination': {'ip': '112.141.185.70'}, 'event': {'category': ['network'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.197.122.33'}, '@timestamp': 6},
+ {'destination': {'ip': '149.102.124.168'}, 'event': {'category': ['network'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.18.192.161'}, '@timestamp': 7},
+ {'destination': {'ip': '197.7.114.246'}, 'event': {'category': ['network'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.1.78'}, '@timestamp': 8},
+ {'destination': {'port': 139, 'ip': 'd5e4:e45:48d:758d:eac9:ff60:21ff:ce20'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.29.111.63'}, '@timestamp': 9},
+ {'destination': {'port': 139, 'ip': '121.161.84.247'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.250.187'}, '@timestamp': 10},
+ {'destination': {'port': 139, 'ip': '151.149.0.92'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 11},
+ {'destination': {'port': 445, 'ip': '178.204.52.89'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 12},
+ {'destination': {'port': 445, 'ip': '7ee8:2ac7:8fd8:c24b:a168:4644:d2ea:bc0f'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.19.127.35'}, '@timestamp': 13},
+ {'destination': {'port': 445, 'ip': '60.47.190.229'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.165.29'}, '@timestamp': 14},
+ {'destination': {'ip': 'd693:36a4:eaa1:660b:fe6b:8957:739e:8b1b'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.209.145.8'}, '@timestamp': 15},
+ {'destination': {'ip': '139.59.60.34'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.21.68.62'}, '@timestamp': 16},
+ {'destination': {'ip': '189.141.142.160'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.smb'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.64.185'}, '@timestamp': 17}]
 ```
 
 
@@ -10338,10 +10338,10 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 26}, '@timestamp': 0},
- {'event': {'category': ['network'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'destination': {'port': 26}, '@timestamp': 1},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 26}, '@timestamp': 2},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'destination': {'port': 26}, '@timestamp': 3}]
+[{'destination': {'port': 26}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, '@timestamp': 0},
+ {'destination': {'port': 26}, 'event': {'category': ['network'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, '@timestamp': 1},
+ {'destination': {'port': 26}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, '@timestamp': 2},
+ {'destination': {'port': 26}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, '@timestamp': 3}]
 ```
 
 
@@ -10373,30 +10373,30 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 25, 'ip': 'e6ea:94e4:e5ac:b58c:1b43:3a53:aa79:ec59'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 25, 'ip': '119.10.44.216'}, 'source': {'ip': '172.31.81.251'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 25, 'ip': '104.129.204.102'}, 'source': {'ip': '192.168.147.58'}, '@timestamp': 2},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 465, 'ip': '149.239.86.175'}, 'source': {'ip': '10.111.13.86'}, '@timestamp': 3},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 465, 'ip': '112.141.185.70'}, 'source': {'ip': '172.27.169.243'}, '@timestamp': 4},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 465, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'source': {'ip': '192.168.197.122'}, '@timestamp': 5},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 587, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'source': {'ip': '10.155.175.169'}, '@timestamp': 6},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 587, 'ip': '156.105.128.203'}, 'source': {'ip': '172.21.27.73'}, '@timestamp': 7},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 587, 'ip': '93.16.168.118'}, 'source': {'ip': '192.168.162.120'}, '@timestamp': 8},
- {'event': {'category': ['network'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.247.115.164'}, 'destination': {'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, '@timestamp': 9},
- {'event': {'category': ['network'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.30.255.121'}, 'destination': {'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, '@timestamp': 10},
- {'event': {'category': ['network'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.120.95'}, 'destination': {'ip': '147.172.30.18'}, '@timestamp': 11},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 25, 'ip': '200.44.53.86'}, 'source': {'ip': '10.231.61.22'}, '@timestamp': 12},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 25, 'ip': 'bd8d:8e9f:3c38:5e93:2a21:f2e3:2a70:2899'}, 'source': {'ip': '172.27.220.217'}, '@timestamp': 13},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 25, 'ip': '3.79.219.137'}, 'source': {'ip': '192.168.64.185'}, '@timestamp': 14},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 465, 'ip': 'b861:3a65:7d92:a4ae:175d:4ee4:1dd9:801e'}, 'source': {'ip': '10.77.111.86'}, '@timestamp': 15},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 465, 'ip': '46.77.189.36'}, 'source': {'ip': '172.17.96.216'}, '@timestamp': 16},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 465, 'ip': '159.213.231.147'}, 'source': {'ip': '192.168.139.227'}, '@timestamp': 17},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 587, 'ip': '926e:7af:547b:40e6:6d4a:85e0:ec27:61f0'}, 'source': {'ip': '10.118.248.208'}, '@timestamp': 18},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 587, 'ip': '169.49.132.205'}, 'source': {'ip': '172.31.220.4'}, '@timestamp': 19},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 587, 'ip': '23.217.57.149'}, 'source': {'ip': '192.168.96.227'}, '@timestamp': 20},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.59.195.236'}, 'destination': {'ip': '18bd:8fde:45bf:faed:fdf6:3054:3d28:170f'}, '@timestamp': 21},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.169.85'}, 'destination': {'ip': '255.18.123.234'}, '@timestamp': 22},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.63.15'}, 'destination': {'ip': '171.232.70.1'}, '@timestamp': 23}]
+[{'destination': {'port': 25, 'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.193.74.7'}, '@timestamp': 0},
+ {'destination': {'port': 25, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.25.51.169'}, '@timestamp': 1},
+ {'destination': {'port': 25, 'ip': '104.129.204.102'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.111.13'}, '@timestamp': 2},
+ {'destination': {'port': 465, 'ip': '149.239.86.175'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.186.159.60'}, '@timestamp': 3},
+ {'destination': {'port': 465, 'ip': '112.141.185.70'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.87.162'}, '@timestamp': 4},
+ {'destination': {'port': 465, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.155.175'}, '@timestamp': 5},
+ {'destination': {'port': 587, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.81.180.150'}, '@timestamp': 6},
+ {'destination': {'port': 587, 'ip': '156.105.128.203'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.26.39.143'}, '@timestamp': 7},
+ {'destination': {'port': 587, 'ip': '93.16.168.118'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 8},
+ {'destination': {'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'event': {'category': ['network'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 9},
+ {'destination': {'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'event': {'category': ['network'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.133.247'}, '@timestamp': 10},
+ {'destination': {'ip': '147.172.30.18'}, 'event': {'category': ['network'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.231.61'}, '@timestamp': 11},
+ {'destination': {'port': 25, 'ip': '200.44.53.86'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.189.205.159'}, '@timestamp': 12},
+ {'destination': {'port': 25, 'ip': 'bd8d:8e9f:3c38:5e93:2a21:f2e3:2a70:2899'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.20.11.158'}, '@timestamp': 13},
+ {'destination': {'port': 25, 'ip': '3.79.219.137'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.77.111'}, '@timestamp': 14},
+ {'destination': {'port': 465, 'ip': 'b861:3a65:7d92:a4ae:175d:4ee4:1dd9:801e'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.22.13.138'}, '@timestamp': 15},
+ {'destination': {'port': 465, 'ip': '46.77.189.36'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.24.190.55'}, '@timestamp': 16},
+ {'destination': {'port': 465, 'ip': '159.213.231.147'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.118.248'}, '@timestamp': 17},
+ {'destination': {'port': 587, 'ip': '926e:7af:547b:40e6:6d4a:85e0:ec27:61f0'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.253.192.72'}, '@timestamp': 18},
+ {'destination': {'port': 587, 'ip': '169.49.132.205'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.22.14.52'}, '@timestamp': 19},
+ {'destination': {'port': 587, 'ip': '23.217.57.149'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.59.195'}, '@timestamp': 20},
+ {'destination': {'ip': '18bd:8fde:45bf:faed:fdf6:3054:3d28:170f'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.122.149.87'}, '@timestamp': 21},
+ {'destination': {'ip': '255.18.123.234'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.19.240.244'}, '@timestamp': 22},
+ {'destination': {'ip': '171.232.70.1'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.smtp'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.104.106'}, '@timestamp': 23}]
 ```
 
 
@@ -10428,36 +10428,36 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1433, 'ip': 'e6ea:94e4:e5ac:b58c:1b43:3a53:aa79:ec59'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1433, 'ip': '119.10.44.216'}, 'source': {'ip': '172.31.81.251'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1433, 'ip': '104.129.204.102'}, 'source': {'ip': '192.168.147.58'}, '@timestamp': 2},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1521, 'ip': '149.239.86.175'}, 'source': {'ip': '10.111.13.86'}, '@timestamp': 3},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1521, 'ip': '112.141.185.70'}, 'source': {'ip': '172.27.169.243'}, '@timestamp': 4},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1521, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'source': {'ip': '192.168.197.122'}, '@timestamp': 5},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3306, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'source': {'ip': '10.155.175.169'}, '@timestamp': 6},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3306, 'ip': '156.105.128.203'}, 'source': {'ip': '172.21.27.73'}, '@timestamp': 7},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3306, 'ip': '93.16.168.118'}, 'source': {'ip': '192.168.162.120'}, '@timestamp': 8},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5432, 'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'source': {'ip': '10.247.115.164'}, '@timestamp': 9},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5432, 'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'source': {'ip': '172.30.255.121'}, '@timestamp': 10},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5432, 'ip': '147.172.30.18'}, 'source': {'ip': '192.168.120.95'}, '@timestamp': 11},
- {'event': {'category': ['network'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.231.61.22'}, 'destination': {'ip': '200.44.53.86'}, '@timestamp': 12},
- {'event': {'category': ['network'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.27.220.217'}, 'destination': {'ip': 'bd8d:8e9f:3c38:5e93:2a21:f2e3:2a70:2899'}, '@timestamp': 13},
- {'event': {'category': ['network'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.64.185'}, 'destination': {'ip': '3.79.219.137'}, '@timestamp': 14},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1433, 'ip': 'b861:3a65:7d92:a4ae:175d:4ee4:1dd9:801e'}, 'source': {'ip': '10.77.111.86'}, '@timestamp': 15},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1433, 'ip': '46.77.189.36'}, 'source': {'ip': '172.17.96.216'}, '@timestamp': 16},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1433, 'ip': '159.213.231.147'}, 'source': {'ip': '192.168.139.227'}, '@timestamp': 17},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1521, 'ip': '926e:7af:547b:40e6:6d4a:85e0:ec27:61f0'}, 'source': {'ip': '10.118.248.208'}, '@timestamp': 18},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1521, 'ip': '169.49.132.205'}, 'source': {'ip': '172.31.220.4'}, '@timestamp': 19},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 1521, 'ip': '23.217.57.149'}, 'source': {'ip': '192.168.96.227'}, '@timestamp': 20},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3306, 'ip': '18bd:8fde:45bf:faed:fdf6:3054:3d28:170f'}, 'source': {'ip': '10.59.195.236'}, '@timestamp': 21},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3306, 'ip': '255.18.123.234'}, 'source': {'ip': '172.23.169.85'}, '@timestamp': 22},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 3306, 'ip': '171.232.70.1'}, 'source': {'ip': '192.168.63.15'}, '@timestamp': 23},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5432, 'ip': '9446:8c3:3561:6e50:b44d:3a1a:9a8:8583'}, 'source': {'ip': '10.104.106.116'}, '@timestamp': 24},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5432, 'ip': '17.69.6.234'}, 'source': {'ip': '172.25.72.17'}, '@timestamp': 25},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5432, 'ip': 'a93:413a:bae1:671e:f1b6:7f1d:aef1:adfa'}, 'source': {'ip': '192.168.121.179'}, '@timestamp': 26},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.175.89.93'}, 'destination': {'ip': '46bd:619:2b96:b4d4:dfad:f7af:94b6:498b'}, '@timestamp': 27},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.27.70.224'}, 'destination': {'ip': '273:dc58:7d95:53eb:8713:9758:f2ae:3dce'}, '@timestamp': 28},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.143.78'}, 'destination': {'ip': '11.182.218.120'}, '@timestamp': 29}]
+[{'destination': {'port': 1433, 'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.193.74.7'}, '@timestamp': 0},
+ {'destination': {'port': 1433, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.25.51.169'}, '@timestamp': 1},
+ {'destination': {'port': 1433, 'ip': '104.129.204.102'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.111.13'}, '@timestamp': 2},
+ {'destination': {'port': 1521, 'ip': '149.239.86.175'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.186.159.60'}, '@timestamp': 3},
+ {'destination': {'port': 1521, 'ip': '112.141.185.70'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.87.162'}, '@timestamp': 4},
+ {'destination': {'port': 1521, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.155.175'}, '@timestamp': 5},
+ {'destination': {'port': 3306, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.81.180.150'}, '@timestamp': 6},
+ {'destination': {'port': 3306, 'ip': '156.105.128.203'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.26.39.143'}, '@timestamp': 7},
+ {'destination': {'port': 3306, 'ip': '93.16.168.118'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 8},
+ {'destination': {'port': 5432, 'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 9},
+ {'destination': {'port': 5432, 'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.133.247'}, '@timestamp': 10},
+ {'destination': {'port': 5432, 'ip': '147.172.30.18'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.231.61'}, '@timestamp': 11},
+ {'destination': {'ip': '200.44.53.86'}, 'event': {'category': ['network'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.189.205.159'}, '@timestamp': 12},
+ {'destination': {'ip': 'bd8d:8e9f:3c38:5e93:2a21:f2e3:2a70:2899'}, 'event': {'category': ['network'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.20.11.158'}, '@timestamp': 13},
+ {'destination': {'ip': '3.79.219.137'}, 'event': {'category': ['network'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.77.111'}, '@timestamp': 14},
+ {'destination': {'port': 1433, 'ip': 'b861:3a65:7d92:a4ae:175d:4ee4:1dd9:801e'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.22.13.138'}, '@timestamp': 15},
+ {'destination': {'port': 1433, 'ip': '46.77.189.36'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.24.190.55'}, '@timestamp': 16},
+ {'destination': {'port': 1433, 'ip': '159.213.231.147'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.118.248'}, '@timestamp': 17},
+ {'destination': {'port': 1521, 'ip': '926e:7af:547b:40e6:6d4a:85e0:ec27:61f0'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.253.192.72'}, '@timestamp': 18},
+ {'destination': {'port': 1521, 'ip': '169.49.132.205'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.22.14.52'}, '@timestamp': 19},
+ {'destination': {'port': 1521, 'ip': '23.217.57.149'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.59.195'}, '@timestamp': 20},
+ {'destination': {'port': 3306, 'ip': '18bd:8fde:45bf:faed:fdf6:3054:3d28:170f'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.122.149.87'}, '@timestamp': 21},
+ {'destination': {'port': 3306, 'ip': '255.18.123.234'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.19.240.244'}, '@timestamp': 22},
+ {'destination': {'port': 3306, 'ip': '171.232.70.1'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.104.106'}, '@timestamp': 23},
+ {'destination': {'port': 5432, 'ip': '9446:8c3:3561:6e50:b44d:3a1a:9a8:8583'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.148.129.17'}, '@timestamp': 24},
+ {'destination': {'port': 5432, 'ip': '17.69.6.234'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.155.61'}, '@timestamp': 25},
+ {'destination': {'port': 5432, 'ip': 'a93:413a:bae1:671e:f1b6:7f1d:aef1:adfa'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.175.89'}, '@timestamp': 26},
+ {'destination': {'ip': '46bd:619:2b96:b4d4:dfad:f7af:94b6:498b'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.180.110.2'}, '@timestamp': 27},
+ {'destination': {'ip': '273:dc58:7d95:53eb:8713:9758:f2ae:3dce'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.24.244.232'}, '@timestamp': 28},
+ {'destination': {'ip': '11.182.218.120'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.mysql'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.159.160'}, '@timestamp': 29}]
 ```
 
 
@@ -10489,18 +10489,18 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '10.193.74.7'}, 'source': {'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '172.25.51.169'}, 'source': {'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '192.168.111.13'}, 'source': {'ip': '104.129.204.102'}, '@timestamp': 2},
- {'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '149.239.86.175'}, 'destination': {'ip': '10.186.159.60'}, '@timestamp': 3},
- {'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '112.141.185.70'}, 'destination': {'ip': '172.28.87.162'}, '@timestamp': 4},
- {'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'destination': {'ip': '192.168.155.175'}, '@timestamp': 5},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '10.81.180.150'}, 'source': {'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, '@timestamp': 6},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '172.26.39.143'}, 'source': {'ip': '156.105.128.203'}, '@timestamp': 7},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '192.168.247.115'}, 'source': {'ip': '93.16.168.118'}, '@timestamp': 8},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'destination': {'ip': '10.239.247.149'}, '@timestamp': 9},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'destination': {'ip': '172.23.133.247'}, '@timestamp': 10},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '147.172.30.18'}, 'destination': {'ip': '192.168.231.61'}, '@timestamp': 11}]
+[{'destination': {'port': 22, 'ip': '10.214.62.131'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'e6ea:94e4:e5ac:b58c:1b43:3a53:aa79:ec59'}, '@timestamp': 0},
+ {'destination': {'port': 22, 'ip': '172.31.81.251'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '119.10.44.216'}, '@timestamp': 1},
+ {'destination': {'port': 22, 'ip': '192.168.147.58'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '104.129.204.102'}, '@timestamp': 2},
+ {'destination': {'ip': '10.111.13.86'}, 'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '149.239.86.175'}, '@timestamp': 3},
+ {'destination': {'ip': '172.27.169.243'}, 'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '112.141.185.70'}, '@timestamp': 4},
+ {'destination': {'ip': '192.168.197.122'}, 'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, '@timestamp': 5},
+ {'destination': {'port': 22, 'ip': '10.155.175.169'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, '@timestamp': 6},
+ {'destination': {'port': 22, 'ip': '172.21.27.73'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '156.105.128.203'}, '@timestamp': 7},
+ {'destination': {'port': 22, 'ip': '192.168.162.120'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '93.16.168.118'}, '@timestamp': 8},
+ {'destination': {'ip': '10.247.115.164'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, '@timestamp': 9},
+ {'destination': {'ip': '172.30.255.121'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, '@timestamp': 10},
+ {'destination': {'ip': '192.168.120.95'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '147.172.30.18'}, '@timestamp': 11}]
 ```
 
 
@@ -10532,18 +10532,18 @@ event.category:(network or network_traffic) and network.transport:tcp and (desti
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': 'e6ea:94e4:e5ac:b58c:1b43:3a53:aa79:ec59'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '119.10.44.216'}, 'source': {'ip': '172.31.81.251'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '104.129.204.102'}, 'source': {'ip': '192.168.147.58'}, '@timestamp': 2},
- {'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.111.13.86'}, 'destination': {'ip': '149.239.86.175'}, '@timestamp': 3},
- {'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.27.169.243'}, 'destination': {'ip': '112.141.185.70'}, '@timestamp': 4},
- {'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.197.122'}, 'destination': {'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, '@timestamp': 5},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'source': {'ip': '10.155.175.169'}, '@timestamp': 6},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '156.105.128.203'}, 'source': {'ip': '172.21.27.73'}, '@timestamp': 7},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 22, 'ip': '93.16.168.118'}, 'source': {'ip': '192.168.162.120'}, '@timestamp': 8},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.247.115.164'}, 'destination': {'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, '@timestamp': 9},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.30.255.121'}, 'destination': {'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, '@timestamp': 10},
- {'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.120.95'}, 'destination': {'ip': '147.172.30.18'}, '@timestamp': 11}]
+[{'destination': {'port': 22, 'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.193.74.7'}, '@timestamp': 0},
+ {'destination': {'port': 22, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.25.51.169'}, '@timestamp': 1},
+ {'destination': {'port': 22, 'ip': '104.129.204.102'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.111.13'}, '@timestamp': 2},
+ {'destination': {'ip': '149.239.86.175'}, 'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.186.159.60'}, '@timestamp': 3},
+ {'destination': {'ip': '112.141.185.70'}, 'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.87.162'}, '@timestamp': 4},
+ {'destination': {'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'event': {'category': ['network'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.155.175'}, '@timestamp': 5},
+ {'destination': {'port': 22, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.81.180.150'}, '@timestamp': 6},
+ {'destination': {'port': 22, 'ip': '156.105.128.203'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.26.39.143'}, '@timestamp': 7},
+ {'destination': {'port': 22, 'ip': '93.16.168.118'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 8},
+ {'destination': {'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 9},
+ {'destination': {'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.133.247'}, '@timestamp': 10},
+ {'destination': {'ip': '147.172.30.18'}, 'event': {'category': ['network_traffic'], 'dataset': 'zeek.ssh'}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.231.61'}, '@timestamp': 11}]
 ```
 
 
@@ -10592,8 +10592,8 @@ sequence by host.id with maxspan = 30s
 ```
 
 ```python
-[{'dll': {'name': 'taskschd.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'TvC'}, '@timestamp': 0},
- {'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\UyyFjSvILOoOHmx\\Actions'}, 'event': {'category': ['registry']}, 'host': {'id': 'TvC'}, '@timestamp': 1}]
+[{'dll': {'name': 'taskschd.dll'}, 'event': {'category': ['library']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'wscript.exe'}, '@timestamp': 0},
+ {'event': {'category': ['registry']}, 'host': {'id': 'ZFy'}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\UyyFjSvILOoOHmx\\Actions'}, '@timestamp': 1}]
 ```
 
 
@@ -10640,9 +10640,9 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'vaultcmd.exe'}, 'args': ['/list*']}, '@timestamp': 0},
+[{'process': {'pe': {'original_file_name': 'vaultcmd.exe'}, 'args': ['/list*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'vaultcmd.exe', 'args': ['/list*']}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'vaultcmd.exe'}, 'args': ['/list*']}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'vaultcmd.exe'}, 'args': ['/list*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 2},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'vaultcmd.exe', 'args': ['/list*']}, '@timestamp': 3}]
 ```
 
@@ -10662,9 +10662,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'wmic.exe', 'args': ['/namespace:\\\\root\\SecurityCenter2', 'Get']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['/namespace:\\\\root\\SecurityCenter2', 'Get']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['/namespace:\\\\root\\SecurityCenter2', 'Get']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'wmic.exe', 'args': ['/namespace:\\\\root\\SecurityCenter2', 'Get']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['/namespace:\\\\root\\SecurityCenter2', 'Get']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['/namespace:\\\\root\\SecurityCenter2', 'Get']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -10714,8 +10714,8 @@ process.name : "grep" and user.id != "0" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'grep', 'parent': {'executable': 'XIU'}, 'args': ['Little Snitch*', 'Avast*', 'Avira*', 'ESET*', 'BlockBlock*', '360Sec*', 'LuLu*', 'KnockKnock*', 'kav', 'KIS', 'RTProtectionDaemon*', 'Malware*', 'VShieldScanner*', 'WebProtection*', 'webinspectord*', 'McAfee*', 'isecespd*', 'macmnsvc*', 'masvc*', 'kesl*', 'avscan*', 'guard*', 'rtvscand*', 'symcfgd*', 'scmdaemon*', 'symantec*', 'sophos*', 'osquery*', 'elastic-endpoint*']}, 'user': {'id': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'grep', 'parent': {'executable': 'Ioi'}, 'args': ['Little Snitch*', 'Avast*', 'Avira*', 'ESET*', 'BlockBlock*', '360Sec*', 'LuLu*', 'KnockKnock*', 'kav', 'KIS', 'RTProtectionDaemon*', 'Malware*', 'VShieldScanner*', 'WebProtection*', 'webinspectord*', 'McAfee*', 'isecespd*', 'macmnsvc*', 'masvc*', 'kesl*', 'avscan*', 'guard*', 'rtvscand*', 'symcfgd*', 'scmdaemon*', 'symantec*', 'sophos*', 'osquery*', 'elastic-endpoint*']}, 'user': {'id': 'tkN'}, '@timestamp': 1}]
+[{'process': {'parent': {'executable': 'ZFy'}, 'name': 'grep', 'args': ['Little Snitch*', 'Avast*', 'Avira*', 'ESET*', 'BlockBlock*', '360Sec*', 'LuLu*', 'KnockKnock*', 'kav', 'KIS', 'RTProtectionDaemon*', 'Malware*', 'VShieldScanner*', 'WebProtection*', 'webinspectord*', 'McAfee*', 'isecespd*', 'macmnsvc*', 'masvc*', 'kesl*', 'avscan*', 'guard*', 'rtvscand*', 'symcfgd*', 'scmdaemon*', 'symantec*', 'sophos*', 'osquery*', 'elastic-endpoint*']}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'id': 'XIU'}, '@timestamp': 0},
+ {'process': {'parent': {'executable': 'tkN'}, 'name': 'grep', 'args': ['Little Snitch*', 'Avast*', 'Avira*', 'ESET*', 'BlockBlock*', '360Sec*', 'LuLu*', 'KnockKnock*', 'kav', 'KIS', 'RTProtectionDaemon*', 'Malware*', 'VShieldScanner*', 'WebProtection*', 'webinspectord*', 'McAfee*', 'isecespd*', 'macmnsvc*', 'masvc*', 'kesl*', 'avscan*', 'guard*', 'rtvscand*', 'symcfgd*', 'scmdaemon*', 'symantec*', 'sophos*', 'osquery*', 'elastic-endpoint*']}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'id': 'Ioi'}, '@timestamp': 1}]
 ```
 
 
@@ -10872,7 +10872,7 @@ event.action: "Authorization Policy Change" and event.code:4704 and winlog.event
 ```
 
 ```python
-[{'event': {'action': 'Authorization Policy Change', 'code': 4704}, 'winlog': {'event_data': {'PrivilegeList': 'SeEnableDelegationPrivilege'}}, '@timestamp': 0}]
+[{'winlog': {'event_data': {'PrivilegeList': 'SeEnableDelegationPrivilege'}}, 'event': {'action': 'Authorization Policy Change', 'code': 4704}, '@timestamp': 0}]
 ```
 
 
@@ -10894,13 +10894,13 @@ sequence by process.entity_id with maxspan = 1m
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sc.exe', 'args': ['\\\\*', 'binPath=*', 'binpath=*', 'create', 'config', 'failure', 'start'], 'entity_id': 'ZFy'}, '@timestamp': 0},
- {'process': {'name': 'sc.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '229.172.181.141'}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'sc.exe'}, 'args': ['\\\\*', 'binPath=*', 'binpath=*', 'create', 'config', 'failure', 'start'], 'entity_id': 'Uyy'}, '@timestamp': 2},
- {'process': {'name': 'sc.exe', 'entity_id': 'Uyy'}, 'destination': {'ip': '73.157.79.25'}, 'event': {'category': ['network']}, '@timestamp': 3},
+ {'destination': {'ip': '229.172.181.141'}, 'event': {'category': ['network']}, 'process': {'name': 'sc.exe', 'entity_id': 'ZFy'}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'sc.exe'}, 'args': ['\\\\*', 'binPath=*', 'binpath=*', 'create', 'config', 'failure', 'start'], 'entity_id': 'Uyy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'destination': {'ip': '73.157.79.25'}, 'event': {'category': ['network']}, 'process': {'name': 'sc.exe', 'entity_id': 'Uyy'}, '@timestamp': 3},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sc.exe', 'args': ['\\\\*', 'binPath=*', 'binpath=*', 'create', 'config', 'failure', 'start'], 'entity_id': 'SvI'}, '@timestamp': 4},
- {'process': {'name': 'sc.exe', 'entity_id': 'SvI'}, 'destination': {'ip': '70.123.63.77'}, 'event': {'category': ['network']}, '@timestamp': 5},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'sc.exe'}, 'args': ['\\\\*', 'binPath=*', 'binpath=*', 'create', 'config', 'failure', 'start'], 'entity_id': 'Ezs'}, '@timestamp': 6},
- {'process': {'name': 'sc.exe', 'entity_id': 'Ezs'}, 'destination': {'ip': '116.114.240.76'}, 'event': {'category': ['network']}, '@timestamp': 7}]
+ {'destination': {'ip': '70.123.63.77'}, 'event': {'category': ['network']}, 'process': {'name': 'sc.exe', 'entity_id': 'SvI'}, '@timestamp': 5},
+ {'process': {'pe': {'original_file_name': 'sc.exe'}, 'args': ['\\\\*', 'binPath=*', 'binpath=*', 'create', 'config', 'failure', 'start'], 'entity_id': 'Ezs'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 6},
+ {'destination': {'ip': '116.114.240.76'}, 'event': {'category': ['network']}, 'process': {'name': 'sc.exe', 'entity_id': 'Ezs'}, '@timestamp': 7}]
 ```
 
 
@@ -10924,8 +10924,8 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sc.exe', 'parent': {'name': 'wscript.exe'}, 'args': ['config', 'create', 'start', 'delete', 'stop', 'pause']}, 'user': {'id': 'vCf'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'sc.exe'}, 'parent': {'name': 'wmic.exe'}, 'args': ['config', 'create', 'start', 'delete', 'stop', 'pause']}, 'user': {'id': 'yyF'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'wscript.exe'}, 'name': 'sc.exe', 'args': ['config', 'create', 'start', 'delete', 'stop', 'pause']}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'id': 'vCf'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'wmic.exe'}, 'pe': {'original_file_name': 'sc.exe'}, 'args': ['config', 'create', 'start', 'delete', 'stop', 'pause']}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'id': 'yyF'}, '@timestamp': 1}]
 ```
 
 
@@ -10959,18 +10959,18 @@ sequence by host.id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 4052611751}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 4052611751}}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 2056249324}, 'host': {'id': 'CfU'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 2056249324}}, 'host': {'id': 'CfU'}, '@timestamp': 3},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 1235046169}, 'host': {'id': 'kNI'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 1235046169}}, 'host': {'id': 'kNI'}, '@timestamp': 5},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 3136644739}, 'host': {'id': 'SvI'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 3136644739}}, 'host': {'id': 'SvI'}, '@timestamp': 7},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 2094521982}, 'host': {'id': 'FlE'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 2094521982}}, 'host': {'id': 'FlE'}, '@timestamp': 9},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 2255904345}, 'host': {'id': 'Hmx'}, '@timestamp': 10},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 2255904345}}, 'host': {'id': 'Hmx'}, '@timestamp': 11}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'osascript', 'pid': 4052611751}, '@timestamp': 0},
+ {'process': {'parent': {'pid': 4052611751}, 'name': 'sh', 'args': ['-c']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'CfU'}, 'process': {'name': 'osascript', 'pid': 2056249324}, '@timestamp': 2},
+ {'process': {'parent': {'pid': 2056249324}, 'name': 'sh', 'args': ['-c']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'CfU'}, '@timestamp': 3},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'kNI'}, 'process': {'name': 'osascript', 'pid': 1235046169}, '@timestamp': 4},
+ {'process': {'parent': {'pid': 1235046169}, 'name': 'sh', 'args': ['-c']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'kNI'}, '@timestamp': 5},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'SvI'}, 'process': {'name': 'osascript', 'pid': 3136644739}, '@timestamp': 6},
+ {'process': {'parent': {'pid': 3136644739}, 'name': 'sh', 'args': ['-c']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'SvI'}, '@timestamp': 7},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'FlE'}, 'process': {'name': 'osascript', 'pid': 2094521982}, '@timestamp': 8},
+ {'process': {'parent': {'pid': 2094521982}, 'name': 'sh', 'args': ['-c']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'FlE'}, '@timestamp': 9},
+ {'event': {'type': ['info'], 'category': ['process']}, 'host': {'id': 'Hmx'}, 'process': {'name': 'osascript', 'pid': 2255904345}, '@timestamp': 10},
+ {'process': {'parent': {'pid': 2255904345}, 'name': 'sh', 'args': ['-c']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Hmx'}, '@timestamp': 11}]
 ```
 
 
@@ -10988,8 +10988,8 @@ process where event.type in ("start","process_started")
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'control.exe', 'parent': {'name': 'WorkFolders.exe'}, 'executable': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'control.exe', 'parent': {'name': 'WorkFolders.exe'}, 'executable': 'XIU'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'WorkFolders.exe'}, 'name': 'control.exe', 'executable': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'WorkFolders.exe'}, 'name': 'control.exe', 'executable': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11035,10 +11035,10 @@ sequence by host.id, process.entity_id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\Windows\\Tasks\\yXIUtkNIoixTFl.exe', 'entity_id': 'wuE'}, 'host': {'id': 'Ezs'}, '@timestamp': 0},
- {'event': {'type': ['EXp'], 'category': ['file']}, 'user': {'domain': 'WqN'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\iFqsyzKNyyQDpU'}, 'host': {'id': 'Ezs'}, 'process': {'entity_id': 'wuE'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\Windows\\Tasks\\UDqx.exe', 'entity_id': 'LWt'}, 'host': {'id': 'VTO'}, '@timestamp': 2},
- {'event': {'type': ['imr'], 'category': ['file']}, 'user': {'domain': 'FgT'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\s'}, 'host': {'id': 'VTO'}, 'process': {'entity_id': 'LWt'}, '@timestamp': 3}]
+[{'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\Windows\\Tasks\\fUyyFjSvILO.exe', 'entity_id': 'oOH'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['mxB'], 'category': ['file']}, 'file': {'path': 'C:\\Users\\LeOAagaiFq\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\EEwVPY'}, 'host': {'id': 'ZFy'}, 'process': {'entity_id': 'oOH'}, 'user': {'domain': 'MGz'}, '@timestamp': 1},
+ {'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\PerfLogs\\OPZRgUvWCi.exe', 'entity_id': 'MZO'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Nfm'}, '@timestamp': 2},
+ {'event': {'type': ['fHa'], 'category': ['file']}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\CeLWYcYscn'}, 'host': {'id': 'Nfm'}, 'process': {'entity_id': 'MZO'}, 'user': {'domain': 'UJM'}, '@timestamp': 3}]
 ```
 
 
@@ -11075,7 +11075,7 @@ file where event.type != "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'user': {'domain': 'XIU'}, 'file': {'path': 'C:\\Users\\kNIoixTF\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\oOHm'}, 'process': {'name': 'regsvr32.exe'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\UyyFjSvILOoOHmx'}, 'process': {'name': 'wmic.exe'}, 'user': {'domain': 'EEX'}, '@timestamp': 0}]
 ```
 
 
@@ -11156,8 +11156,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'vbc.exe', 'parent': {'name': 'wmic.exe'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'csc.exe', 'parent': {'name': 'wmic.exe'}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'wscript.exe'}, 'name': 'vbc.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'cscript.exe'}, 'name': 'vbc.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11177,8 +11177,8 @@ event.category:process and
 ```
 
 ```python
-[{'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': '[System.Reflection.Assembly]::Load'}}, '@timestamp': 0},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': '[Reflection.Assembly]::Load'}}, '@timestamp': 1}]
+[{'powershell': {'file': {'script_block_text': '[System.Reflection.Assembly]::Load'}}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'powershell': {'file': {'script_block_text': '[Reflection.Assembly]::Load'}}, 'event': {'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11212,10 +11212,10 @@ sequence by host.id with maxspan=30s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'automator'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
- {'process': {'name': 'com.apple.automator.runner'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'automator'}, 'host': {'id': 'XIU'}, '@timestamp': 2},
- {'process': {'name': 'com.apple.automator.runner'}, 'event': {'category': ['network']}, 'host': {'id': 'XIU'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'automator'}, '@timestamp': 0},
+ {'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'com.apple.automator.runner'}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'XIU'}, 'process': {'name': 'automator'}, '@timestamp': 2},
+ {'event': {'category': ['network']}, 'host': {'id': 'XIU'}, 'process': {'name': 'com.apple.automator.runner'}, '@timestamp': 3}]
 ```
 
 
@@ -11261,7 +11261,7 @@ process where event.type == "start" and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'certutil.exe', 'args': ['?decode', '?encode', '?urlcache', '?verifyctl', '?encodehex', '?decodehex', '?exportPFX']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'CertUtil.exe'}, 'args': ['?decode', '?encode', '?urlcache', '?verifyctl', '?encodehex', '?decodehex', '?exportPFX']}, '@timestamp': 1}]
+ {'process': {'pe': {'original_file_name': 'CertUtil.exe'}, 'args': ['?decode', '?encode', '?urlcache', '?verifyctl', '?encodehex', '?decodehex', '?exportPFX']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11287,8 +11287,8 @@ event.category:process and event.type:(start or process_started) and
 ```
 
 ```python
-[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'parent': {'name': 'com.adobe.ARMDC.SMJobBlessHelper'}, 'executable': 'ZFy'}, 'user': {'name': 'root'}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'parent': {'name': 'com.adobe.ARMDC.SMJobBlessHelper'}, 'executable': 'XIU'}, 'user': {'name': 'root'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'com.adobe.ARMDC.SMJobBlessHelper'}, 'executable': 'ZFy'}, 'event': {'category': ['process'], 'type': ['start']}, 'user': {'name': 'root'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'com.adobe.ARMDC.SMJobBlessHelper'}, 'executable': 'XIU'}, 'event': {'category': ['process'], 'type': ['process_started']}, 'user': {'name': 'root'}, '@timestamp': 1}]
 ```
 
 
@@ -11306,8 +11306,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'name': 'cmd.exe', 'args': ['\\\\127.0.0.1\\*', '2>&1', '1>']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'name': 'cmd.exe', 'args': ['\\\\127.0.0.1\\*', '2>&1', '1>']}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'name': 'cmd.exe', 'args': ['\\\\127.0.0.1\\*', '2>&1', '1>']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'name': 'cmd.exe', 'args': ['\\\\127.0.0.1\\*', '2>&1', '1>']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11341,8 +11341,8 @@ not (dll.code_signature.subject_name : ("Microsoft Windows", "Microsoft Corporat
 ```
 
 ```python
-[{'dll': {'name': 'wow64log.dll', 'code_signature': {'subject_name': 'FyX'}}, 'event': {'category': ['library']}, '@timestamp': 0},
- {'dll': {'name': 'wbemcomn.dll', 'code_signature': {'status': 'fUy'}}, 'event': {'category': ['library']}, '@timestamp': 1}]
+[{'dll': {'code_signature': {'subject_name': 'ZFy'}, 'name': 'diagtrack_win.dll'}, 'event': {'category': ['library']}, '@timestamp': 0},
+ {'dll': {'code_signature': {'status': 'IUt'}, 'name': 'Tsmsisrv.dll'}, 'event': {'category': ['library']}, '@timestamp': 1}]
 ```
 
 
@@ -11382,8 +11382,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'emond'}, 'name': 'touch'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'emond'}, 'name': 'pwsh'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'emond'}, 'name': 'touch'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'emond'}, 'name': 'pwsh'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11406,9 +11406,9 @@ process where event.type in ("start", "process_started", "info") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'esensor.exe', 'parent': {'executable': 'vCf'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'esensor.exe', 'parent': {'executable': 'yyF'}}, '@timestamp': 1},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'elastic-endpoint.exe', 'parent': {'executable': 'oix'}}, '@timestamp': 2}]
+[{'process': {'parent': {'executable': 'ZFy'}, 'name': 'elastic-endpoint.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'executable': 'Utk'}, 'name': 'elastic-endpoint.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'executable': 'oix'}, 'name': 'elastic-endpoint.exe'}, 'event': {'type': ['info'], 'category': ['process']}, '@timestamp': 2}]
 ```
 
 
@@ -11428,7 +11428,7 @@ process where event.type == "start" and process.executable : "C:\\*" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'C:\\XIUtkNI', 'working_directory': 'k:\\', 'parent': {'name': 'explorer.exe'}, 'name': 'rundll32.exe'}, '@timestamp': 0}]
+[{'process': {'parent': {'name': 'explorer.exe'}, 'executable': 'C:\\XIUtkNI', 'working_directory': 'k:\\', 'name': 'rundll32.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -11476,22 +11476,22 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 7},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 9},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'RegSvcs.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 10},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'msxsl.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 11},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'CONTROL.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 12},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'EXPLORER.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 13},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'Microsoft.Workflow.Compiler.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 14},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'msiexec.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, '@timestamp': 15}]
+[{'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'cscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'wscript.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'Cmd.Exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'MSHTA.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'REGSVR32.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'MSBuild.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 7},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'InstallUtil.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'RegAsm.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 9},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'RegSvcs.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 10},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'msxsl.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 11},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'CONTROL.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 12},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'EXPLORER.EXE'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 13},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'Microsoft.Workflow.Compiler.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 14},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['Schedule']}, 'pe': {'original_file_name': 'msiexec.exe'}, 'args': ['C:\\Users\\*', 'C:\\ProgramData\\*', 'C:\\Windows\\Temp\\*', 'C:\\Windows\\Tasks\\*', 'C:\\PerfLogs\\*', 'C:\\Intel\\*', 'C:\\Windows\\Debug\\*', 'C:\\HP\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 15}]
 ```
 
 
@@ -11519,22 +11519,22 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'regsvr32.exe', 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'cscript.exe'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wscript.exe'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'MSHTA.EXE'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'REGSVR32.EXE'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 7},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'wscript.exe', 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 8},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'cscript.exe'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 9},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wscript.exe'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 10},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 11},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 12},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'Cmd.Exe'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 13},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'MSHTA.EXE'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 14},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'REGSVR32.EXE'}, 'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}}, '@timestamp': 15}]
+[{'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'name': 'regsvr32.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'cscript.exe'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'wscript.exe'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'PowerShell.EXE'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'Cmd.Exe'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'MSHTA.EXE'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'REGSVR32.EXE'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 7},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'name': 'wscript.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'cscript.exe'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 9},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'wscript.exe'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 10},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'PowerShell.EXE'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 11},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'RUNDLL32.EXE'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 12},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'Cmd.Exe'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 13},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'MSHTA.EXE'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 14},
+ {'process': {'parent': {'name': 'explorer.exe', 'args': ['-Embedding']}, 'pe': {'original_file_name': 'REGSVR32.EXE'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 15}]
 ```
 
 
@@ -11551,8 +11551,8 @@ event.category:process and event.type:(start or process_started) and
 ```
 
 ```python
-[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': '.XIUtkNI', 'parent': {'executable': '/sbin/launchd'}}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': '.ixTFlEzswuEEXp', 'parent': {'executable': '/sbin/launchd'}}, '@timestamp': 1}]
+[{'process': {'parent': {'executable': '/sbin/launchd'}, 'name': '.XIUtkNI'}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 0},
+ {'process': {'parent': {'executable': '/sbin/launchd'}, 'name': '.ixTFlEzswuEEXp'}, 'event': {'category': ['process'], 'type': ['process_started']}, '@timestamp': 1}]
 ```
 
 
@@ -11571,7 +11571,7 @@ library where process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB
 ```
 
 ```python
-[{'process': {'name': 'WINWORD.EXE'}, 'event': {'action': 'load', 'category': ['library', 'library']}, 'dll': {'name': 'taskschd.dll'}, '@timestamp': 0}]
+[{'dll': {'name': 'taskschd.dll'}, 'event': {'action': 'load', 'category': ['library', 'library']}, 'process': {'name': 'WINWORD.EXE'}, '@timestamp': 0}]
 ```
 
 
@@ -11589,8 +11589,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java'}, 'name': 'zsh'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'java'}, 'name': 'wget'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'java'}, 'name': 'zsh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'java'}, 'name': 'wget'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11614,8 +11614,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'mspub.exe'}, 'name': 'xwizard.exe'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'msaccess.exe'}, 'name': 'mshta.exe'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'mspub.exe'}, 'name': 'xwizard.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'msaccess.exe'}, 'name': 'mshta.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11640,8 +11640,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'outlook.exe'}, 'name': 'reg.exe'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'outlook.exe'}, 'name': 'nltest.exe'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'outlook.exe'}, 'name': 'reg.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'outlook.exe'}, 'name': 'nltest.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11697,8 +11697,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'FoxitReader.exe'}, 'name': 'nbtstat.exe'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'AcroRd32.exe'}, 'name': 'mshta.exe'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'FoxitReader.exe'}, 'name': 'nbtstat.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'AcroRd32.exe'}, 'name': 'mshta.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11717,7 +11717,7 @@ event.category:process and
 ```
 
 ```python
-[{'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'TVqQAAMAAAAEAAAA'}}, '@timestamp': 0}]
+[{'powershell': {'file': {'script_block_text': 'TVqQAAMAAAAEAAAA'}}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -11735,7 +11735,7 @@ file where event.type : "deletion" and
 ```
 
 ```python
-[{'event': {'type': ['deletion'], 'category': ['file']}, 'process': {'name': 'ZFy'}, 'file': {'path': 'y:\\Windows\\System32\\spool\\drivers\\x64\\3\\kNIoixTF.dll'}, '@timestamp': 0}]
+[{'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'path': 'A:\\Windows\\System32\\spool\\drivers\\x64\\3\\IUtkNIoix.dll'}, 'process': {'name': 'TFl'}, '@timestamp': 0}]
 ```
 
 
@@ -11777,7 +11777,7 @@ file where event.type != "deletion" and process.name : "spoolsv.exe" and
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'process': {'name': 'spoolsv.exe'}, 'file': {'extension': 'dll', 'path': 'Utk'}, '@timestamp': 0}]
+[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'dll', 'path': 'Utk'}, 'process': {'name': 'spoolsv.exe'}, '@timestamp': 0}]
 ```
 
 
@@ -11802,8 +11802,8 @@ sequence by host.id with maxspan=1m
 ```
 
 ```python
-[{'event': {'code': '1', 'category': ['process']}, 'process': {'parent': {'name': 'winword.exe', 'entity_id': 'Uyy'}, 'entity_id': 'FjS'}, 'host': {'id': 'vCf'}, '@timestamp': 0},
- {'event': {'code': '10', 'category': ['process']}, 'winlog': {'event_data': {'CallTrace': 'ILOoOHmxUNKNOWNEEXpWqNVR', 'TargetProcessGUID': 'FjS'}}, 'host': {'id': 'vCf'}, 'process': {'entity_id': 'Uyy'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'winword.exe', 'entity_id': 'vCf'}, 'entity_id': 'FjS'}, 'event': {'code': '1', 'category': ['process']}, 'host': {'id': 'Uyy'}, '@timestamp': 0},
+ {'winlog': {'event_data': {'CallTrace': 'ILOoOHmxUNKNOWNEEXpWqNVR', 'TargetProcessGUID': 'FjS'}}, 'event': {'code': '10', 'category': ['process']}, 'host': {'id': 'Uyy'}, 'process': {'entity_id': 'vCf'}, '@timestamp': 1}]
 ```
 
 
@@ -11820,9 +11820,9 @@ process where event.type in ("start", "process_started", "info") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'psexesvc.exe'}, 'name': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'psexesvc.exe'}, 'name': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'psexesvc.exe'}, 'name': 'tkN'}, '@timestamp': 2}]
+[{'process': {'pe': {'original_file_name': 'psexesvc.exe'}, 'name': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'pe': {'original_file_name': 'psexesvc.exe'}, 'name': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'psexesvc.exe'}, 'name': 'tkN'}, 'event': {'type': ['info'], 'category': ['process']}, '@timestamp': 2}]
 ```
 
 
@@ -11840,8 +11840,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'conhost.exe'}, 'executable': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'conhost.exe'}, 'executable': 'XIU'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'conhost.exe'}, 'executable': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'conhost.exe'}, 'executable': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11871,7 +11871,7 @@ library where dll.name : "mstscax.dll" and
 ```
 
 ```python
-[{'dll': {'name': 'mstscax.dll'}, 'process': {'executable': '\\\\XIUtkNI'}, 'event': {'category': ['library']}, '@timestamp': 0}]
+[{'dll': {'name': 'mstscax.dll'}, 'event': {'category': ['library']}, 'process': {'executable': '\\\\XIUtkNI'}, '@timestamp': 0}]
 ```
 
 
@@ -11890,8 +11890,8 @@ sequence by host.id, winlog.event_data.SubjectLogonId with maxspan=1m
 ```
 
 ```python
-[{'event': {'action': 'logged-in-special', 'category': ['iam']}, 'winlog': {'event_data': {'PrivilegeList': 'SeBackupPrivilege', 'SubjectLogonId': 'XIU'}}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
- {'event': {'action': 'Detailed File Share'}, 'winlog': {'event_data': {'RelativeTargetName': 'winreg', 'SubjectLogonId': 'XIU'}}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
+[{'winlog': {'event_data': {'PrivilegeList': 'SeBackupPrivilege', 'SubjectLogonId': 'ZFy'}}, 'event': {'action': 'logged-in-special', 'category': ['iam']}, 'host': {'id': 'XIU'}, '@timestamp': 0},
+ {'winlog': {'event_data': {'RelativeTargetName': 'winreg', 'SubjectLogonId': 'ZFy'}}, 'event': {'action': 'Detailed File Share'}, 'host': {'id': 'XIU'}, '@timestamp': 1}]
 ```
 
 
@@ -11929,10 +11929,10 @@ sequence by process.entity_id with maxspan=2m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'subject_name': 'Microsoft Corporation', 'trusted': True}, 'executable': 'ZFy', 'entity_id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['library']}, 'dll': {'name': 'scrobj.dll'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'subject_name': 'Microsoft Windows', 'trusted': True}, 'executable': 'tkN', 'entity_id': 'Ioi'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['library']}, 'dll': {'name': 'scrobj.dll'}, 'process': {'entity_id': 'Ioi'}, '@timestamp': 3}]
+[{'process': {'code_signature': {'subject_name': 'Microsoft Corporation', 'trusted': True}, 'executable': 'ZFy', 'entity_id': 'XIU'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'dll': {'name': 'scrobj.dll'}, 'event': {'type': ['start'], 'category': ['library']}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1},
+ {'process': {'code_signature': {'subject_name': 'Microsoft Windows', 'trusted': True}, 'executable': 'tkN', 'entity_id': 'Ioi'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'dll': {'name': 'scrobj.dll'}, 'event': {'type': ['start'], 'category': ['library']}, 'process': {'entity_id': 'Ioi'}, '@timestamp': 3}]
 ```
 
 
@@ -11958,8 +11958,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'SolarWinds.BusinessLayerHostx64.exe'}, 'name': 'vCf'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'SolarWinds.BusinessLayerHostx64.exe'}, 'name': 'yyF'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'SolarWinds.BusinessLayerHostx64.exe'}, 'name': 'vCf'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'SolarWinds.BusinessLayerHostx64.exe'}, 'name': 'yyF'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -11978,7 +11978,7 @@ library where process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB
 ```
 
 ```python
-[{'process': {'name': 'WINWORD.EXE'}, 'event': {'action': 'load', 'category': ['library', 'library']}, 'dll': {'name': 'wmiutils.dll'}, '@timestamp': 0}]
+[{'dll': {'name': 'wmiutils.dll'}, 'event': {'action': 'load', 'category': ['library', 'library']}, 'process': {'name': 'WINWORD.EXE'}, '@timestamp': 0}]
 ```
 
 
@@ -12008,8 +12008,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'WerFault.exe'}, 'name': 'ZFy', 'args': ['XIU']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'WerFault.exe'}, 'name': 'tkN', 'args': ['Ioi']}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'WerFault.exe'}, 'name': 'ZFy', 'args': ['XIU']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'WerFault.exe'}, 'name': 'tkN', 'args': ['Ioi']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -12026,9 +12026,9 @@ process where event.type in ("start", "process_started", "info") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'Zoom.exe'}, 'name': 'pwsh.exe'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'Zoom.exe'}, 'name': 'pwsh.exe'}, '@timestamp': 1},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'parent': {'name': 'Zoom.exe'}, 'name': 'cmd.exe'}, '@timestamp': 2}]
+[{'process': {'parent': {'name': 'Zoom.exe'}, 'name': 'pwsh.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'Zoom.exe'}, 'name': 'pwsh.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'Zoom.exe'}, 'name': 'cmd.exe'}, 'event': {'type': ['info'], 'category': ['process']}, '@timestamp': 2}]
 ```
 
 
@@ -12078,8 +12078,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'Microsoft Word'}, 'name': 'sh', 'args': ['vCf']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'Microsoft PowerPoint'}, 'name': 'sh', 'args': ['kNI']}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'Microsoft Word'}, 'name': 'sh', 'args': ['vCf']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'Microsoft PowerPoint'}, 'name': 'sh', 'args': ['kNI']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -12103,8 +12103,8 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe'}, 'name': 'cmd.exe', 'pe': {'original_file_name': 'ZFy'}}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe'}, 'name': 'cmd.exe', 'args': ['XIU']}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'svchost.exe'}, 'pe': {'original_file_name': 'ZFy'}, 'name': 'cmd.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'svchost.exe'}, 'name': 'cmd.exe', 'args': ['XIU']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -12153,8 +12153,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe'}, 'name': 'pwsh.exe', 'args': ['vCf']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe'}, 'name': 'pwsh.exe', 'args': ['yyF']}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'services.exe'}, 'name': 'pwsh.exe', 'args': ['vCf']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'services.exe'}, 'name': 'pwsh.exe', 'args': ['yyF']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -12224,12 +12224,12 @@ event.category:(network or network_traffic) and network.transport:tcp and destin
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8000, 'ip': 'e6ea:94e4:e5ac:b58c:1b43:3a53:aa79:ec59'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8000, 'ip': '119.10.44.216'}, 'source': {'ip': '172.31.81.251'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8000, 'ip': '104.129.204.102'}, 'source': {'ip': '192.168.147.58'}, '@timestamp': 2},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8000, 'ip': '149.239.86.175'}, 'source': {'ip': '10.111.13.86'}, '@timestamp': 3},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8000, 'ip': '112.141.185.70'}, 'source': {'ip': '172.27.169.243'}, '@timestamp': 4},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 8000, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'source': {'ip': '192.168.197.122'}, '@timestamp': 5}]
+[{'destination': {'port': 8000, 'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.193.74.7'}, '@timestamp': 0},
+ {'destination': {'port': 8000, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.25.51.169'}, '@timestamp': 1},
+ {'destination': {'port': 8000, 'ip': '104.129.204.102'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.111.13'}, '@timestamp': 2},
+ {'destination': {'port': 8000, 'ip': '149.239.86.175'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.186.159.60'}, '@timestamp': 3},
+ {'destination': {'port': 8000, 'ip': '112.141.185.70'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.87.162'}, '@timestamp': 4},
+ {'destination': {'port': 8000, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.155.175'}, '@timestamp': 5}]
 ```
 
 
@@ -12277,8 +12277,8 @@ event.category:(network or network_traffic) and network.transport:tcp and destin
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 23}, '@timestamp': 0},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 23}, '@timestamp': 1}]
+[{'destination': {'port': 23}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, '@timestamp': 0},
+ {'destination': {'port': 23}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, '@timestamp': 1}]
 ```
 
 
@@ -12371,18 +12371,18 @@ event.category:(network or network_traffic) and network.transport:tcp and destin
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9001, 'ip': 'e6ea:94e4:e5ac:b58c:1b43:3a53:aa79:ec59'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9001, 'ip': '119.10.44.216'}, 'source': {'ip': '172.31.81.251'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9001, 'ip': '104.129.204.102'}, 'source': {'ip': '192.168.147.58'}, '@timestamp': 2},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9030, 'ip': '149.239.86.175'}, 'source': {'ip': '10.111.13.86'}, '@timestamp': 3},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9030, 'ip': '112.141.185.70'}, 'source': {'ip': '172.27.169.243'}, '@timestamp': 4},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9030, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'source': {'ip': '192.168.197.122'}, '@timestamp': 5},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9001, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'source': {'ip': '10.155.175.169'}, '@timestamp': 6},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9001, 'ip': '156.105.128.203'}, 'source': {'ip': '172.21.27.73'}, '@timestamp': 7},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9001, 'ip': '93.16.168.118'}, 'source': {'ip': '192.168.162.120'}, '@timestamp': 8},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9030, 'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'source': {'ip': '10.247.115.164'}, '@timestamp': 9},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9030, 'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'source': {'ip': '172.30.255.121'}, '@timestamp': 10},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 9030, 'ip': '147.172.30.18'}, 'source': {'ip': '192.168.120.95'}, '@timestamp': 11}]
+[{'destination': {'port': 9001, 'ip': 'aa79:ec58:8d14:2981:f18d:f2a6:6b1f:4182'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.193.74.7'}, '@timestamp': 0},
+ {'destination': {'port': 9001, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.25.51.169'}, '@timestamp': 1},
+ {'destination': {'port': 9001, 'ip': '104.129.204.102'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.111.13'}, '@timestamp': 2},
+ {'destination': {'port': 9030, 'ip': '149.239.86.175'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.186.159.60'}, '@timestamp': 3},
+ {'destination': {'port': 9030, 'ip': '112.141.185.70'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.28.87.162'}, '@timestamp': 4},
+ {'destination': {'port': 9030, 'ip': 'b781:36ad:968a:1fd9:42e0:603d:9566:7ca8'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.155.175'}, '@timestamp': 5},
+ {'destination': {'port': 9001, 'ip': '21ff:ce1f:c206:4389:a7:5646:506a:fac3'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.81.180.150'}, '@timestamp': 6},
+ {'destination': {'port': 9001, 'ip': '156.105.128.203'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.26.39.143'}, '@timestamp': 7},
+ {'destination': {'port': 9001, 'ip': '93.16.168.118'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.247.115'}, '@timestamp': 8},
+ {'destination': {'port': 9030, 'ip': 'cde8:687a:c169:7ee6:e8d4:8f4f:b2cc:3459'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.239.247.149'}, '@timestamp': 9},
+ {'destination': {'port': 9030, 'ip': 'e2fc:2265:c4e2:24bd:4b82:92c6:7ee8:2ac8'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.23.133.247'}, '@timestamp': 10},
+ {'destination': {'port': 9030, 'ip': '147.172.30.18'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.231.61'}, '@timestamp': 11}]
 ```
 
 
@@ -12422,8 +12422,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'C:\\XIUtkNI\\AppData\\SvILO\\Temp\\IDCEzswu.tmp\\nLeOAagaiF.exe', 'parent': {'name': 'ieinstal.exe', 'args': ['-Embedding']}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'C:\\syzK\\AppData\\PYMGzNfmlOPZR\\Temp\\IDCOL.tmp\\WCiMZOfHaTDgzRJ.exe', 'parent': {'name': 'ieinstal.exe', 'args': ['-Embedding']}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'ieinstal.exe', 'args': ['-Embedding']}, 'executable': 'C:\\XIUtkNI\\AppData\\SvILO\\Temp\\IDCEzswu.tmp\\nLeOAagaiF.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'ieinstal.exe', 'args': ['-Embedding']}, 'executable': 'C:\\syzK\\AppData\\PYMGzNfmlOPZR\\Temp\\IDCOL.tmp\\WCiMZOfHaTDgzRJ.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -12443,7 +12443,7 @@ file where event.type : "change" and process.name : "dllhost.exe" and
 ```
 
 ```python
-[{'event': {'type': ['change'], 'category': ['file']}, 'process': {'name': 'dllhost.exe'}, 'file': {'name': 'duser.dll', 'path': 'TvC'}, '@timestamp': 0}]
+[{'event': {'type': ['change'], 'category': ['file']}, 'file': {'name': 'duser.dll', 'path': 'TvC'}, 'process': {'name': 'dllhost.exe'}, '@timestamp': 0}]
 ```
 
 
@@ -12480,8 +12480,8 @@ process where event.type in ("start", "process_started") and process.name : "Cli
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'Clipup.exe', 'executable': 'ZFy', 'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{BD54C901-076B-434E-B6C7-17C531F4AB41}']}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'Clipup.exe', 'executable': 'XIU', 'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{BD54C901-076B-434E-B6C7-17C531F4AB41}']}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{BD54C901-076B-434E-B6C7-17C531F4AB41}']}, 'name': 'Clipup.exe', 'executable': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{BD54C901-076B-434E-B6C7-17C531F4AB41}']}, 'name': 'Clipup.exe', 'executable': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -12520,10 +12520,10 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{3E5FC7F9-9A51-4367-9063-A120244FBEC7}']}, 'pe': {'original_file_name': 'ZFy'}}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{D2E7041B-2927-42FB-8E9F-7CE93B6DC937}']}, 'pe': {'original_file_name': 'XIU'}}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{3E5FC7F9-9A51-4367-9063-A120244FBEC7}']}, 'pe': {'original_file_name': 'tkN'}}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{D2E7041B-2927-42FB-8E9F-7CE93B6DC937}']}, 'pe': {'original_file_name': 'Ioi'}}, '@timestamp': 3}]
+[{'process': {'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{3E5FC7F9-9A51-4367-9063-A120244FBEC7}']}, 'pe': {'original_file_name': 'ZFy'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{D2E7041B-2927-42FB-8E9F-7CE93B6DC937}']}, 'pe': {'original_file_name': 'XIU'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{3E5FC7F9-9A51-4367-9063-A120244FBEC7}']}, 'pe': {'original_file_name': 'tkN'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'dllhost.exe', 'args': ['/Processid:{D2E7041B-2927-42FB-8E9F-7CE93B6DC937}']}, 'pe': {'original_file_name': 'Ioi'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -12543,8 +12543,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'mmc.exe', 'args': ['WF.msc']}, 'name': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'mmc.exe', 'args': ['WF.msc']}, 'name': 'XIU'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'mmc.exe', 'args': ['WF.msc']}, 'name': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'mmc.exe', 'args': ['WF.msc']}, 'name': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -12576,7 +12576,7 @@ process where event.type == "start" and process.parent.name == "ScreenSaverEngin
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'ScreenSaverEngine'}}, '@timestamp': 0}]
+[{'process': {'parent': {'name': 'ScreenSaverEngine'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -12594,8 +12594,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'pid': 4}, 'executable': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'pid': 4}, 'executable': 'XIU'}, '@timestamp': 1}]
+[{'process': {'parent': {'pid': 4}, 'executable': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'pid': 4}, 'executable': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -12612,7 +12612,7 @@ process where event.type == "start" and process.parent.name : "dns.exe" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'dns.exe'}, 'name': 'ZFy'}, '@timestamp': 0}]
+[{'process': {'parent': {'name': 'dns.exe'}, 'name': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -12635,21 +12635,21 @@ sequence with maxspan=1h
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'ZFy'}}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'ZFy'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'XIU'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'XIU'}}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args_count': 1, 'entity_id': 'tkN'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'tkN'}}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args_count': 1, 'entity_id': 'Ioi'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'Ioi'}}, '@timestamp': 7},
+ {'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'XIU'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args_count': 1, 'entity_id': 'tkN'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'tkN'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args_count': 1, 'entity_id': 'Ioi'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'Ioi'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 7},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'xTF'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'xTF'}}, '@timestamp': 9},
+ {'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'xTF'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 9},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'lEz'}, '@timestamp': 10},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'lEz'}}, '@timestamp': 11},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args_count': 1, 'entity_id': 'swu'}, '@timestamp': 12},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'swu'}}, '@timestamp': 13},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args_count': 1, 'entity_id': 'EEX'}, '@timestamp': 14},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'EEX'}}, '@timestamp': 15}]
+ {'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'lEz'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 11},
+ {'process': {'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args_count': 1, 'entity_id': 'swu'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 12},
+ {'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'swu'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 13},
+ {'process': {'pe': {'original_file_name': 'RUNDLL32.EXE'}, 'args_count': 1, 'entity_id': 'EEX'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 14},
+ {'process': {'parent': {'name': 'rundll32.exe', 'entity_id': 'EEX'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 15}]
 ```
 
 
@@ -12742,9 +12742,9 @@ file where process.name : "dns.exe" and event.type in ("creation", "deletion", "
 ```
 
 ```python
-[{'process': {'name': 'dns.exe'}, 'event': {'type': ['creation'], 'category': ['file']}, 'file': {'name': 'ZFy'}, '@timestamp': 0},
- {'process': {'name': 'dns.exe'}, 'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'name': 'XIU'}, '@timestamp': 1},
- {'process': {'name': 'dns.exe'}, 'event': {'type': ['change'], 'category': ['file']}, 'file': {'name': 'tkN'}, '@timestamp': 2}]
+[{'event': {'type': ['creation'], 'category': ['file']}, 'file': {'name': 'ZFy'}, 'process': {'name': 'dns.exe'}, '@timestamp': 0},
+ {'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'name': 'XIU'}, 'process': {'name': 'dns.exe'}, '@timestamp': 1},
+ {'event': {'type': ['change'], 'category': ['file']}, 'file': {'name': 'tkN'}, 'process': {'name': 'dns.exe'}, '@timestamp': 2}]
 ```
 
 
@@ -12805,9 +12805,9 @@ sequence by process.entity_id with maxspan=5m
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'xwizard.exe', 'entity_id': 'TvC'}, '@timestamp': 0},
- {'process': {'name': 'cdb.exe', 'entity_id': 'TvC'}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'event': {'category': ['network']}, 'process': {'name': 'cdb.exe', 'entity_id': 'TvC'}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'msdt.exe', 'entity_id': 'yyF'}, '@timestamp': 2},
- {'process': {'name': 'csi.exe', 'entity_id': 'yyF'}, 'event': {'category': ['network']}, '@timestamp': 3}]
+ {'event': {'category': ['network']}, 'process': {'name': 'csi.exe', 'entity_id': 'yyF'}, '@timestamp': 3}]
 ```
 
 
@@ -12830,10 +12830,10 @@ sequence by host.id, process.entity_id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dllhost.exe', 'args_count': 1, 'entity_id': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
- {'process': {'name': 'dllhost.exe', 'entity_id': 'XIU'}, 'destination': {'ip': '122.143.223.236'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'dllhost.exe', 'args_count': 1, 'entity_id': 'oix'}, 'host': {'id': 'kNI'}, '@timestamp': 2},
- {'process': {'name': 'dllhost.exe', 'entity_id': 'oix'}, 'destination': {'ip': '467b:3f4c:3786:ab02:c5ea:f06e:9a3d:9c73'}, 'event': {'category': ['network']}, 'host': {'id': 'kNI'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'dllhost.exe', 'args_count': 1, 'entity_id': 'XIU'}, '@timestamp': 0},
+ {'destination': {'ip': '122.143.223.236'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'dllhost.exe', 'entity_id': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'kNI'}, 'process': {'name': 'dllhost.exe', 'args_count': 1, 'entity_id': 'oix'}, '@timestamp': 2},
+ {'destination': {'ip': '467b:3f4c:3786:ab02:c5ea:f06e:9a3d:9c73'}, 'event': {'category': ['network']}, 'host': {'id': 'kNI'}, 'process': {'name': 'dllhost.exe', 'entity_id': 'oix'}, '@timestamp': 3}]
 ```
 
 
@@ -12856,10 +12856,10 @@ sequence by host.id, process.entity_id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
- {'process': {'name': 'rundll32.exe', 'entity_id': 'XIU'}, 'destination': {'ip': '122.143.223.236'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'oix'}, 'host': {'id': 'kNI'}, '@timestamp': 2},
- {'process': {'name': 'rundll32.exe', 'entity_id': 'oix'}, 'destination': {'ip': '467b:3f4c:3786:ab02:c5ea:f06e:9a3d:9c73'}, 'event': {'category': ['network']}, 'host': {'id': 'kNI'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'XIU'}, '@timestamp': 0},
+ {'destination': {'ip': '122.143.223.236'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'rundll32.exe', 'entity_id': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'kNI'}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'oix'}, '@timestamp': 2},
+ {'destination': {'ip': '467b:3f4c:3786:ab02:c5ea:f06e:9a3d:9c73'}, 'event': {'category': ['network']}, 'host': {'id': 'kNI'}, 'process': {'name': 'rundll32.exe', 'entity_id': 'oix'}, '@timestamp': 3}]
 ```
 
 
@@ -12900,8 +12900,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'sppsvc.exe'}}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'cmd.exe', 'parent': {'name': 'regsvr32.exe'}}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'sppsvc.exe'}, 'name': 'cmd.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'regsvr32.exe'}, 'name': 'cmd.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -12946,54 +12946,54 @@ process.parent.name != null and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'ZFy'}, 'name': 'autochk.exe'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'XIU'}, 'name': 'fontdrvhost.exe'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'yyF'}, 'name': 'RuntimeBroker.exe'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'oix'}, 'name': 'SearchIndexer.exe'}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'TFl'}, 'name': 'SearchProtocolHost.exe'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'Ezs'}, 'name': 'dllhost.exe'}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wuE'}, 'name': 'smss.exe'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'EXp'}, 'name': 'csrss.exe'}, '@timestamp': 7},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'WqN'}, 'name': 'wininit.exe'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'VRc'}, 'name': 'winlogon.exe'}, '@timestamp': 9},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'ymE'}, 'name': 'lsass.exe'}, '@timestamp': 10},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wVP'}, 'name': 'LogonUI.exe'}, '@timestamp': 11},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'YMG'}, 'name': 'services.exe'}, '@timestamp': 12},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'zNf'}, 'name': 'svchost.exe'}, '@timestamp': 13},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'mlO'}, 'name': 'spoolsv.exe'}, '@timestamp': 14},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'PZR'}, 'name': 'taskhost.exe'}, '@timestamp': 15},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'gUv'}, 'name': 'taskhostw.exe'}, '@timestamp': 16},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'WCi'}, 'name': 'userinit.exe'}, '@timestamp': 17},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'MZO'}, 'name': 'winrshost.exe'}, '@timestamp': 18},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'taskhost.exe'}, 'name': 'msh'}, '@timestamp': 19},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'autochk.exe'}, 'name': 'CeL'}, '@timestamp': 20},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'smss.exe'}, 'name': 'WYc'}, '@timestamp': 21},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wermgr.exe'}, 'name': 'Ysc'}, '@timestamp': 22},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'conhost.exe'}, 'name': 'nUJ'}, '@timestamp': 23},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'MVr'}, 'name': 'autochk.exe'}, '@timestamp': 24},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'Htz'}, 'name': 'dwm.exe'}, '@timestamp': 25},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'jey'}, 'name': 'consent.exe'}, '@timestamp': 26},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'Nmo'}, 'name': 'SearchIndexer.exe'}, '@timestamp': 27},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'EFC'}, 'name': 'SearchProtocolHost.exe'}, '@timestamp': 28},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'EZp'}, 'name': 'dllhost.exe'}, '@timestamp': 29},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'gIk'}, 'name': 'smss.exe'}, '@timestamp': 30},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'bku'}, 'name': 'csrss.exe'}, '@timestamp': 31},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'YnD'}, 'name': 'wininit.exe'}, '@timestamp': 32},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'mxX'}, 'name': 'winlogon.exe'}, '@timestamp': 33},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'cxF'}, 'name': 'LsaIso.exe'}, '@timestamp': 34},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'ocs'}, 'name': 'LogonUI.exe'}, '@timestamp': 35},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'vBa'}, 'name': 'services.exe'}, '@timestamp': 36},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'yAo'}, 'name': 'svchost.exe'}, '@timestamp': 37},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'lIY'}, 'name': 'spoolsv.exe'}, '@timestamp': 38},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'ARL'}, 'name': 'taskhost.exe'}, '@timestamp': 39},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'bRz'}, 'name': 'taskhostw.exe'}, '@timestamp': 40},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'WYs'}, 'name': 'userinit.exe'}, '@timestamp': 41},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'rfy'}, 'name': 'winrshost.exe'}, '@timestamp': 42},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'csrss.exe'}, 'name': 'OYU'}, '@timestamp': 43},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'autochk.exe'}, 'name': 'agT'}, '@timestamp': 44},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'smss.exe'}, 'name': 'rNY'}, '@timestamp': 45},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wermgr.exe'}, 'name': 'jLw'}, '@timestamp': 46},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'conhost.exe'}, 'name': 'OTv'}, '@timestamp': 47}]
+[{'process': {'parent': {'name': 'ZFy'}, 'name': 'autochk.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'XIU'}, 'name': 'fontdrvhost.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'parent': {'name': 'yyF'}, 'name': 'RuntimeBroker.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'oix'}, 'name': 'SearchIndexer.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'TFl'}, 'name': 'SearchProtocolHost.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'Ezs'}, 'name': 'dllhost.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'wuE'}, 'name': 'smss.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'EXp'}, 'name': 'csrss.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 7},
+ {'process': {'parent': {'name': 'WqN'}, 'name': 'wininit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'VRc'}, 'name': 'winlogon.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 9},
+ {'process': {'parent': {'name': 'ymE'}, 'name': 'lsass.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 10},
+ {'process': {'parent': {'name': 'wVP'}, 'name': 'LogonUI.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 11},
+ {'process': {'parent': {'name': 'YMG'}, 'name': 'services.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 12},
+ {'process': {'parent': {'name': 'zNf'}, 'name': 'svchost.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 13},
+ {'process': {'parent': {'name': 'mlO'}, 'name': 'spoolsv.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 14},
+ {'process': {'parent': {'name': 'PZR'}, 'name': 'taskhost.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 15},
+ {'process': {'parent': {'name': 'gUv'}, 'name': 'taskhostw.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 16},
+ {'process': {'parent': {'name': 'WCi'}, 'name': 'userinit.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 17},
+ {'process': {'parent': {'name': 'MZO'}, 'name': 'winrshost.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 18},
+ {'process': {'parent': {'name': 'taskhost.exe'}, 'name': 'msh'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 19},
+ {'process': {'parent': {'name': 'autochk.exe'}, 'name': 'CeL'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 20},
+ {'process': {'parent': {'name': 'smss.exe'}, 'name': 'WYc'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 21},
+ {'process': {'parent': {'name': 'wermgr.exe'}, 'name': 'Ysc'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 22},
+ {'process': {'parent': {'name': 'conhost.exe'}, 'name': 'nUJ'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 23},
+ {'process': {'parent': {'name': 'MVr'}, 'name': 'autochk.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 24},
+ {'process': {'parent': {'name': 'Htz'}, 'name': 'dwm.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 25},
+ {'process': {'parent': {'name': 'jey'}, 'name': 'consent.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 26},
+ {'process': {'parent': {'name': 'Nmo'}, 'name': 'SearchIndexer.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 27},
+ {'process': {'parent': {'name': 'EFC'}, 'name': 'SearchProtocolHost.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 28},
+ {'process': {'parent': {'name': 'EZp'}, 'name': 'dllhost.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 29},
+ {'process': {'parent': {'name': 'gIk'}, 'name': 'smss.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 30},
+ {'process': {'parent': {'name': 'bku'}, 'name': 'csrss.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 31},
+ {'process': {'parent': {'name': 'YnD'}, 'name': 'wininit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 32},
+ {'process': {'parent': {'name': 'mxX'}, 'name': 'winlogon.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 33},
+ {'process': {'parent': {'name': 'cxF'}, 'name': 'LsaIso.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 34},
+ {'process': {'parent': {'name': 'ocs'}, 'name': 'LogonUI.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 35},
+ {'process': {'parent': {'name': 'vBa'}, 'name': 'services.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 36},
+ {'process': {'parent': {'name': 'yAo'}, 'name': 'svchost.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 37},
+ {'process': {'parent': {'name': 'lIY'}, 'name': 'spoolsv.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 38},
+ {'process': {'parent': {'name': 'ARL'}, 'name': 'taskhost.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 39},
+ {'process': {'parent': {'name': 'bRz'}, 'name': 'taskhostw.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 40},
+ {'process': {'parent': {'name': 'WYs'}, 'name': 'userinit.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 41},
+ {'process': {'parent': {'name': 'rfy'}, 'name': 'winrshost.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 42},
+ {'process': {'parent': {'name': 'csrss.exe'}, 'name': 'OYU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 43},
+ {'process': {'parent': {'name': 'autochk.exe'}, 'name': 'agT'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 44},
+ {'process': {'parent': {'name': 'smss.exe'}, 'name': 'rNY'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 45},
+ {'process': {'parent': {'name': 'wermgr.exe'}, 'name': 'jLw'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 46},
+ {'process': {'parent': {'name': 'conhost.exe'}, 'name': 'OTv'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 47}]
 ```
 
 
@@ -13068,8 +13068,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'odbcconf.exe', 'entity_id': 'TvC'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'bginfo.exe', 'entity_id': 'TvC'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'odbcconf.exe', 'entity_id': 'TvC'}, '@timestamp': 0},
+ {'event': {'category': ['network']}, 'process': {'name': 'bginfo.exe', 'entity_id': 'TvC'}, '@timestamp': 1}]
 ```
 
 
@@ -13099,8 +13099,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['WdiSystemHost', 'LicenseManager', 'StorSvc', 'CDPSvc', 'cdbhsvc', 'BthAvctpSvc', 'SstpSvc', 'WdiServiceHost', 'imgsvc', 'TrkWks', 'WpnService', 'IKEEXT', 'PolicyAgent', 'CryptSvc', 'netprofm', 'ProfSvc', 'StateRepository', 'camsvc', 'LanmanWorkstation', 'NlaSvc', 'EventLog', 'hidserv', 'DisplayEnhancementService', 'ShellHWDetection', 'AppHostSvc', 'fhsvc', 'CscService', 'PushToInstall']}, 'name': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'args': ['WdiSystemHost', 'LicenseManager', 'StorSvc', 'CDPSvc', 'cdbhsvc', 'BthAvctpSvc', 'SstpSvc', 'WdiServiceHost', 'imgsvc', 'TrkWks', 'WpnService', 'IKEEXT', 'PolicyAgent', 'CryptSvc', 'netprofm', 'ProfSvc', 'StateRepository', 'camsvc', 'LanmanWorkstation', 'NlaSvc', 'EventLog', 'hidserv', 'DisplayEnhancementService', 'ShellHWDetection', 'AppHostSvc', 'fhsvc', 'CscService', 'PushToInstall']}, 'name': 'XIU'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'svchost.exe', 'args': ['WdiSystemHost', 'LicenseManager', 'StorSvc', 'CDPSvc', 'cdbhsvc', 'BthAvctpSvc', 'SstpSvc', 'WdiServiceHost', 'imgsvc', 'TrkWks', 'WpnService', 'IKEEXT', 'PolicyAgent', 'CryptSvc', 'netprofm', 'ProfSvc', 'StateRepository', 'camsvc', 'LanmanWorkstation', 'NlaSvc', 'EventLog', 'hidserv', 'DisplayEnhancementService', 'ShellHWDetection', 'AppHostSvc', 'fhsvc', 'CscService', 'PushToInstall']}, 'name': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'svchost.exe', 'args': ['WdiSystemHost', 'LicenseManager', 'StorSvc', 'CDPSvc', 'cdbhsvc', 'BthAvctpSvc', 'SstpSvc', 'WdiServiceHost', 'imgsvc', 'TrkWks', 'WpnService', 'IKEEXT', 'PolicyAgent', 'CryptSvc', 'netprofm', 'ProfSvc', 'StateRepository', 'camsvc', 'LanmanWorkstation', 'NlaSvc', 'EventLog', 'hidserv', 'DisplayEnhancementService', 'ShellHWDetection', 'AppHostSvc', 'fhsvc', 'CscService', 'PushToInstall']}, 'name': 'XIU'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -13119,8 +13119,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'net1.exe', 'parent': {'name': 'vCf'}, 'args': ['user', '/ad', '/add']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'net1.exe', 'parent': {'name': 'yyF'}, 'args': ['user', '/ad', '/add']}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'ZFy'}, 'name': 'net.exe', 'args': ['user', '/ad', '/add']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'Utk'}, 'name': 'net.exe', 'args': ['user', '/ad', '/add']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -13136,8 +13136,8 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Add owner to a
 ```
 
 ```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Add owner to application'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Add owner to application'}}, '@timestamp': 1}]
+[{'azure': {'auditlogs': {'operation_name': 'Add owner to application'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'auditlogs': {'operation_name': 'Add owner to application'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -13153,8 +13153,8 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Add owner to s
 ```
 
 ```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Add owner to service principal'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Add owner to service principal'}}, '@timestamp': 1}]
+[{'azure': {'auditlogs': {'operation_name': 'Add owner to service principal'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, '@timestamp': 0},
+ {'azure': {'auditlogs': {'operation_name': 'Add owner to service principal'}}, 'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, '@timestamp': 1}]
 ```
 
 
@@ -13212,7 +13212,7 @@ and winlog.event_data.AttributeLDAPDisplayName:"servicePrincipalName"
 ```
 
 ```python
-[{'event': {'action': 'Directory Service Changes', 'code': 5136}, 'winlog': {'event_data': {'ObjectClass': 'user', 'AttributeLDAPDisplayName': 'servicePrincipalName'}}, '@timestamp': 0}]
+[{'winlog': {'event_data': {'ObjectClass': 'user', 'AttributeLDAPDisplayName': 'servicePrincipalName'}}, 'event': {'action': 'Directory Service Changes', 'code': 5136}, '@timestamp': 0}]
 ```
 
 
@@ -13261,12 +13261,12 @@ event.category:(network or network_traffic) and network.transport:tcp and destin
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5809, 'ip': '10.193.74.7'}, 'source': {'ip': '107.31.65.130'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5807, 'ip': '172.25.51.169'}, 'source': {'ip': '119.10.44.216'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5802, 'ip': '192.168.140.246'}, 'source': {'ip': '115.189.242.190'}, '@timestamp': 2},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5809, 'ip': '10.232.229.224'}, 'source': {'ip': '3e09:df7f:5d4f:9e31:a728:d9ab:7cd7:de7e'}, '@timestamp': 3},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5806, 'ip': '172.18.192.161'}, 'source': {'ip': '149.102.124.168'}, '@timestamp': 4},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5804, 'ip': '192.168.9.26'}, 'source': {'ip': 'a7:5646:506a:fac2:8499:c98f:ee87:44c3'}, '@timestamp': 5}]
+[{'destination': {'port': 5809, 'ip': '10.214.62.131'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '170.121.236.89'}, '@timestamp': 0},
+ {'destination': {'port': 5801, 'ip': '172.31.81.251'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '119.10.44.216'}, '@timestamp': 1},
+ {'destination': {'port': 5809, 'ip': '192.168.147.58'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '104.129.204.102'}, '@timestamp': 2},
+ {'destination': {'port': 5807, 'ip': '10.140.246.126'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '199.127.185.194'}, '@timestamp': 3},
+ {'destination': {'port': 5807, 'ip': '172.23.193.59'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '116.114.240.76'}, '@timestamp': 4},
+ {'destination': {'port': 5806, 'ip': '192.168.44.10'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '197.7.114.246'}, '@timestamp': 5}]
 ```
 
 
@@ -13315,12 +13315,12 @@ event.category:(network or network_traffic) and network.transport:tcp and destin
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5809, 'ip': '170.121.236.89'}, 'source': {'ip': '10.214.62.131'}, '@timestamp': 0},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5801, 'ip': '119.10.44.216'}, 'source': {'ip': '172.31.81.251'}, '@timestamp': 1},
- {'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5809, 'ip': '104.129.204.102'}, 'source': {'ip': '192.168.147.58'}, '@timestamp': 2},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5807, 'ip': '199.127.185.194'}, 'source': {'ip': '10.140.246.126'}, '@timestamp': 3},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5807, 'ip': '116.114.240.76'}, 'source': {'ip': '172.23.193.59'}, '@timestamp': 4},
- {'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'destination': {'port': 5806, 'ip': '197.7.114.246'}, 'source': {'ip': '192.168.44.10'}, '@timestamp': 5}]
+[{'destination': {'port': 5809, 'ip': '107.31.65.130'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.193.74.7'}, '@timestamp': 0},
+ {'destination': {'port': 5807, 'ip': '119.10.44.216'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.25.51.169'}, '@timestamp': 1},
+ {'destination': {'port': 5802, 'ip': '115.189.242.190'}, 'event': {'category': ['network']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.140.246'}, '@timestamp': 2},
+ {'destination': {'port': 5809, 'ip': '3e09:df7f:5d4f:9e31:a728:d9ab:7cd7:de7e'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '10.232.229.224'}, '@timestamp': 3},
+ {'destination': {'port': 5806, 'ip': '149.102.124.168'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '172.18.192.161'}, '@timestamp': 4},
+ {'destination': {'port': 5804, 'ip': 'a7:5646:506a:fac2:8499:c98f:ee87:44c3'}, 'event': {'category': ['network_traffic']}, 'network': {'transport': 'tcp'}, 'source': {'ip': '192.168.9.26'}, '@timestamp': 5}]
 ```
 
 
@@ -13370,8 +13370,8 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'grep', 'args': ['parallels*', 'vmware*', 'virtualbox*', 'Manufacturer*'], 'parent': {'executable': 'XIU'}}, 'user': {'id': 'ZFy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'egrep', 'args': ['parallels*', 'vmware*', 'virtualbox*', 'Manufacturer*'], 'parent': {'executable': 'Ioi'}}, 'user': {'id': 'tkN'}, '@timestamp': 1}]
+[{'process': {'parent': {'executable': 'ZFy'}, 'name': 'grep', 'args': ['parallels*', 'vmware*', 'virtualbox*', 'Manufacturer*']}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'id': 'XIU'}, '@timestamp': 0},
+ {'process': {'parent': {'executable': 'tkN'}, 'name': 'egrep', 'args': ['parallels*', 'vmware*', 'virtualbox*', 'Manufacturer*']}, 'event': {'type': ['start'], 'category': ['process']}, 'user': {'id': 'Ioi'}, '@timestamp': 1}]
 ```
 
 
@@ -13391,12 +13391,12 @@ process where event.type in ("start", "process_started")
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'vssadmin.exe', 'args': ['shadows*', 'delete']}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'vssadmin.exe', 'args': ['shadows*', 'resize']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'VSSADMIN.EXE'}, 'args': ['shadows*', 'delete']}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'VSSADMIN.EXE'}, 'args': ['shadows*', 'resize']}, '@timestamp': 3},
+ {'process': {'pe': {'original_file_name': 'VSSADMIN.EXE'}, 'args': ['shadows*', 'delete']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'VSSADMIN.EXE'}, 'args': ['shadows*', 'resize']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'vssadmin.exe', 'args': ['shadows*', 'delete']}, '@timestamp': 4},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'vssadmin.exe', 'args': ['shadows*', 'resize']}, '@timestamp': 5},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'VSSADMIN.EXE'}, 'args': ['shadows*', 'delete']}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'VSSADMIN.EXE'}, 'args': ['shadows*', 'resize']}, '@timestamp': 7}]
+ {'process': {'pe': {'original_file_name': 'VSSADMIN.EXE'}, 'args': ['shadows*', 'delete']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'pe': {'original_file_name': 'VSSADMIN.EXE'}, 'args': ['shadows*', 'resize']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 7}]
 ```
 
 
@@ -13436,9 +13436,9 @@ process where event.type in ("start", "process_started") and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'WMIC.exe', 'args': ['delete', 'shadowcopy']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['delete', 'shadowcopy']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['delete', 'shadowcopy']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'WMIC.exe', 'args': ['delete', 'shadowcopy']}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['delete', 'shadowcopy']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'wmic.exe'}, 'args': ['delete', 'shadowcopy']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -13470,10 +13470,10 @@ sequence by host.id with maxspan = 2s
 ```
 
 ```python
-[{'process': {'name': 'svchost.exe'}, 'network': {'direction': 'ingress'}, 'source': {'ip': '1b43:3a53:aa79:ec58:8d14:2981:f18d:f2a7', 'port': 61522}, 'destination': {'port': 64839}, 'event': {'category': ['network']}, 'host': {'id': 'kNI'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'args': ['oix']}, 'host': {'id': 'kNI'}, '@timestamp': 1},
- {'process': {'name': 'svchost.exe'}, 'network': {'direction': 'incoming'}, 'source': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af', 'port': 61095}, 'destination': {'port': 57092}, 'event': {'category': ['network']}, 'host': {'id': 'wuE'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'args': ['EXp']}, 'host': {'id': 'wuE'}, '@timestamp': 3}]
+[{'destination': {'port': 64740}, 'event': {'category': ['network']}, 'host': {'id': 'vCf'}, 'network': {'direction': 'ingress'}, 'process': {'name': 'svchost.exe'}, 'source': {'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e', 'port': 55313}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'args': ['oix']}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'vCf'}, '@timestamp': 1},
+ {'destination': {'port': 56259}, 'event': {'category': ['network']}, 'host': {'id': 'oOH'}, 'network': {'direction': 'incoming'}, 'process': {'name': 'svchost.exe'}, 'source': {'ip': '9566:7ca7:8676:5e58:62bd:10db:7472:f04c', 'port': 57712}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'args': ['EXp']}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oOH'}, '@timestamp': 3}]
 ```
 
 
@@ -13503,25 +13503,25 @@ sequence with maxspan=5s
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'svchost.exe', 'entity_id': 'ZFy'}, 'user': {'domain': 'NT AUTHORITY', 'name': 'LOCAL SERVICE'}, '@timestamp': 0},
- {'network': {'protocol': 'dns'}, 'process': {'name': 'svchost.exe', 'entity_id': 'ZFy'}, 'dns': {'question': {'name': 'wpad'}}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'process': {'name': 'svchost.exe', 'entity_id': 'ZFy'}, 'network': {'direction': 'egress'}, 'destination': {'port': 80}, 'event': {'category': ['network']}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['library']}, 'process': {'name': 'svchost.exe', 'entity_id': 'ZFy'}, 'dll': {'name': 'jscript.dll'}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'entity_id': 'ZFy'}}, '@timestamp': 4},
+ {'dns': {'question': {'name': 'wpad'}}, 'event': {'category': ['network']}, 'network': {'protocol': 'dns'}, 'process': {'name': 'svchost.exe', 'entity_id': 'ZFy'}, '@timestamp': 1},
+ {'destination': {'port': 80}, 'event': {'category': ['network']}, 'network': {'direction': 'egress'}, 'process': {'name': 'svchost.exe', 'entity_id': 'ZFy'}, '@timestamp': 2},
+ {'dll': {'name': 'jscript.dll'}, 'event': {'type': ['start'], 'category': ['library']}, 'process': {'name': 'svchost.exe', 'entity_id': 'ZFy'}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'svchost.exe', 'entity_id': 'ZFy'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'svchost.exe', 'entity_id': 'Utk'}, 'user': {'domain': 'NT AUTHORITY', 'name': 'LOCAL SERVICE'}, '@timestamp': 5},
- {'network': {'protocol': 'dns'}, 'process': {'name': 'svchost.exe', 'entity_id': 'Utk'}, 'dns': {'question': {'name': 'wpad'}}, 'event': {'category': ['network']}, '@timestamp': 6},
- {'process': {'name': 'svchost.exe', 'entity_id': 'Utk'}, 'network': {'direction': 'egress'}, 'destination': {'port': 80}, 'event': {'category': ['network']}, '@timestamp': 7},
- {'event': {'type': ['start'], 'category': ['library']}, 'process': {'name': 'svchost.exe', 'entity_id': 'Utk'}, 'dll': {'name': 'jscript.dll'}, '@timestamp': 8},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'entity_id': 'Utk'}}, '@timestamp': 9},
+ {'dns': {'question': {'name': 'wpad'}}, 'event': {'category': ['network']}, 'network': {'protocol': 'dns'}, 'process': {'name': 'svchost.exe', 'entity_id': 'Utk'}, '@timestamp': 6},
+ {'destination': {'port': 80}, 'event': {'category': ['network']}, 'network': {'direction': 'egress'}, 'process': {'name': 'svchost.exe', 'entity_id': 'Utk'}, '@timestamp': 7},
+ {'dll': {'name': 'jscript.dll'}, 'event': {'type': ['start'], 'category': ['library']}, 'process': {'name': 'svchost.exe', 'entity_id': 'Utk'}, '@timestamp': 8},
+ {'process': {'parent': {'name': 'svchost.exe', 'entity_id': 'Utk'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 9},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'svchost.exe', 'entity_id': 'oix'}, 'user': {'domain': 'NT AUTHORITY', 'name': 'LOCAL SERVICE'}, '@timestamp': 10},
- {'network': {'protocol': 'dns'}, 'process': {'name': 'svchost.exe', 'entity_id': 'oix'}, 'dns': {'question': {'name': 'wpad'}}, 'event': {'category': ['network']}, '@timestamp': 11},
- {'process': {'name': 'svchost.exe', 'entity_id': 'oix'}, 'network': {'direction': 'egress'}, 'destination': {'port': 80}, 'event': {'category': ['network']}, '@timestamp': 12},
- {'event': {'type': ['start'], 'category': ['library']}, 'process': {'name': 'svchost.exe', 'entity_id': 'oix'}, 'dll': {'name': 'jscript.dll'}, '@timestamp': 13},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'entity_id': 'oix'}}, '@timestamp': 14},
+ {'dns': {'question': {'name': 'wpad'}}, 'event': {'category': ['network']}, 'network': {'protocol': 'dns'}, 'process': {'name': 'svchost.exe', 'entity_id': 'oix'}, '@timestamp': 11},
+ {'destination': {'port': 80}, 'event': {'category': ['network']}, 'network': {'direction': 'egress'}, 'process': {'name': 'svchost.exe', 'entity_id': 'oix'}, '@timestamp': 12},
+ {'dll': {'name': 'jscript.dll'}, 'event': {'type': ['start'], 'category': ['library']}, 'process': {'name': 'svchost.exe', 'entity_id': 'oix'}, '@timestamp': 13},
+ {'process': {'parent': {'name': 'svchost.exe', 'entity_id': 'oix'}}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 14},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'svchost.exe', 'entity_id': 'oOH'}, 'user': {'domain': 'NT AUTHORITY', 'name': 'LOCAL SERVICE'}, '@timestamp': 15},
- {'network': {'protocol': 'dns'}, 'process': {'name': 'svchost.exe', 'entity_id': 'oOH'}, 'dns': {'question': {'name': 'wpad'}}, 'event': {'category': ['network']}, '@timestamp': 16},
- {'process': {'name': 'svchost.exe', 'entity_id': 'oOH'}, 'network': {'direction': 'egress'}, 'destination': {'port': 80}, 'event': {'category': ['network']}, '@timestamp': 17},
- {'event': {'type': ['start'], 'category': ['library']}, 'process': {'name': 'svchost.exe', 'entity_id': 'oOH'}, 'dll': {'name': 'jscript.dll'}, '@timestamp': 18},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'svchost.exe', 'entity_id': 'oOH'}}, '@timestamp': 19}]
+ {'dns': {'question': {'name': 'wpad'}}, 'event': {'category': ['network']}, 'network': {'protocol': 'dns'}, 'process': {'name': 'svchost.exe', 'entity_id': 'oOH'}, '@timestamp': 16},
+ {'destination': {'port': 80}, 'event': {'category': ['network']}, 'network': {'direction': 'egress'}, 'process': {'name': 'svchost.exe', 'entity_id': 'oOH'}, '@timestamp': 17},
+ {'dll': {'name': 'jscript.dll'}, 'event': {'type': ['start'], 'category': ['library']}, 'process': {'name': 'svchost.exe', 'entity_id': 'oOH'}, '@timestamp': 18},
+ {'process': {'parent': {'name': 'svchost.exe', 'entity_id': 'oOH'}}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 19}]
 ```
 
 
@@ -13537,7 +13537,7 @@ http.response.status_code:403 and http.request.method:post
 ```
 
 ```python
-[{'http': {'response': {'status_code': 403}, 'request': {'method': 'post'}}, '@timestamp': 0}]
+[{'http': {'request': {'method': 'post'}, 'response': {'status_code': 403}}, '@timestamp': 0}]
 ```
 
 
@@ -13589,9 +13589,9 @@ event.category : process and event.type : start and
 ```
 
 ```python
-[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'networksetup', 'args': ['-setwebproxy'], 'parent': {'executable': 'ZFy'}}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'networksetup', 'args': ['-setsecurewebproxy'], 'parent': {'executable': 'XIU'}}, '@timestamp': 1},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'networksetup', 'args': ['-setautoproxyurl'], 'parent': {'executable': 'tkN'}}, '@timestamp': 2}]
+[{'process': {'parent': {'executable': 'ZFy'}, 'name': 'networksetup', 'args': ['-setwebproxy']}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 0},
+ {'process': {'parent': {'executable': 'XIU'}, 'name': 'networksetup', 'args': ['-setsecurewebproxy']}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 1},
+ {'process': {'parent': {'executable': 'tkN'}, 'name': 'networksetup', 'args': ['-setautoproxyurl']}, 'event': {'category': ['process'], 'type': ['start']}, '@timestamp': 2}]
 ```
 
 
@@ -13630,7 +13630,7 @@ process where event.type == "start" and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'tomcat.exe'}, 'name': 'wscript.exe'}, '@timestamp': 0}]
+[{'process': {'parent': {'name': 'tomcat.exe'}, 'name': 'wscript.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -13667,9 +13667,9 @@ process where event.type == "start" and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'pwsh.exe', 'args': ['*Add-MpPreference*', '*Set-MpPreference*', '*-Exclusion*']}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'powershell.exe'}, 'args': ['*Add-MpPreference*', '*Set-MpPreference*', '*-Exclusion*']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'pwsh.dll'}, 'args': ['*Add-MpPreference*', '*Set-MpPreference*', '*-Exclusion*']}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'powershell_ise.exe'}, 'args': ['*Add-MpPreference*', '*Set-MpPreference*', '*-Exclusion*']}, '@timestamp': 3}]
+ {'process': {'pe': {'original_file_name': 'powershell.exe'}, 'args': ['*Add-MpPreference*', '*Set-MpPreference*', '*-Exclusion*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 1},
+ {'process': {'pe': {'original_file_name': 'pwsh.dll'}, 'args': ['*Add-MpPreference*', '*Set-MpPreference*', '*-Exclusion*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'powershell_ise.exe'}, 'args': ['*Add-MpPreference*', '*Set-MpPreference*', '*-Exclusion*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -13707,7 +13707,7 @@ process where event.action == "start" and
 
 ```python
 [{'event': {'action': 'start', 'category': ['process']}, 'process': {'name': 'pwsh.exe', 'args': ['*Set-NetFirewallProfile*', '*-Enabled*', '*False*', '*-All*', '*Public*', '*Domain*', '*Private*']}, '@timestamp': 0},
- {'event': {'action': 'start', 'category': ['process']}, 'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['*Set-NetFirewallProfile*', '*-Enabled*', '*False*', '*-All*', '*Public*', '*Domain*', '*Private*']}, '@timestamp': 1}]
+ {'process': {'pe': {'original_file_name': 'PowerShell.EXE'}, 'args': ['*Set-NetFirewallProfile*', '*-Enabled*', '*False*', '*-All*', '*Public*', '*Domain*', '*Private*']}, 'event': {'action': 'start', 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -13738,20 +13738,20 @@ process where event.type in ("start", "process_started") and
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'net.exe', 'args': ['view']}, '@timestamp': 0},
  {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'net.exe', 'args': ['time', '\\\\*']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['view']}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['time', '\\\\*']}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'net1.exe', 'parent': {'name': 'ZFy'}, 'args': ['view']}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'net1.exe', 'parent': {'name': 'XIU'}, 'args': ['time', '\\\\*']}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net1.exe'}, 'parent': {'name': 'tkN'}, 'args': ['view']}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net1.exe'}, 'parent': {'name': 'Ioi'}, 'args': ['time', '\\\\*']}, '@timestamp': 7},
+ {'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['view']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
+ {'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['time', '\\\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 3},
+ {'process': {'parent': {'name': 'ZFy'}, 'name': 'net1.exe', 'args': ['view']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'XIU'}, 'name': 'net1.exe', 'args': ['time', '\\\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 5},
+ {'process': {'parent': {'name': 'tkN'}, 'pe': {'original_file_name': 'net1.exe'}, 'args': ['view']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'Ioi'}, 'pe': {'original_file_name': 'net1.exe'}, 'args': ['time', '\\\\*']}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 7},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'net.exe', 'args': ['view']}, '@timestamp': 8},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'net.exe', 'args': ['time', '\\\\*']}, '@timestamp': 9},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['view']}, '@timestamp': 10},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['time', '\\\\*']}, '@timestamp': 11},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'net1.exe', 'parent': {'name': 'xTF'}, 'args': ['view']}, '@timestamp': 12},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'net1.exe', 'parent': {'name': 'lEz'}, 'args': ['time', '\\\\*']}, '@timestamp': 13},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net1.exe'}, 'parent': {'name': 'swu'}, 'args': ['view']}, '@timestamp': 14},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'net1.exe'}, 'parent': {'name': 'EEX'}, 'args': ['time', '\\\\*']}, '@timestamp': 15}]
+ {'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['view']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 10},
+ {'process': {'pe': {'original_file_name': 'net.exe'}, 'args': ['time', '\\\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 11},
+ {'process': {'parent': {'name': 'xTF'}, 'name': 'net1.exe', 'args': ['view']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 12},
+ {'process': {'parent': {'name': 'lEz'}, 'name': 'net1.exe', 'args': ['time', '\\\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 13},
+ {'process': {'parent': {'name': 'swu'}, 'pe': {'original_file_name': 'net1.exe'}, 'args': ['view']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 14},
+ {'process': {'parent': {'name': 'EEX'}, 'pe': {'original_file_name': 'net1.exe'}, 'args': ['time', '\\\\*']}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 15}]
 ```
 
 
@@ -13770,7 +13770,7 @@ file where event.type == "creation" and
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['file']}, 'file': {'Ext': {'header_bytes': '72656766XIUtkNI'}, 'size': 7897998920714667080}, 'process': {'pid': 4}, 'user': {'id': 's-1-5-21xTFlEzs'}, '@timestamp': 0}]
+[{'file': {'Ext': {'header_bytes': '72656766XIUtkNI'}, 'size': 7897998920714667080}, 'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'user': {'id': 's-1-5-21xTFlEzs'}, '@timestamp': 0}]
 ```
 
 
@@ -13787,8 +13787,8 @@ process where event.type in ("start", "process_started") and
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wscript.exe'}, 'name': 'powershell.exe'}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wscript.exe'}, 'name': 'powershell.exe'}, '@timestamp': 1}]
+[{'process': {'parent': {'name': 'wscript.exe'}, 'name': 'powershell.exe'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'wscript.exe'}, 'name': 'powershell.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -13830,14 +13830,14 @@ sequence by host.id with maxspan = 5s
 ```
 
 ```python
-[{'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'vCf'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'Microsoft.Workflow.Compiler.exe'}}, 'user': {'domain': 'Uyy'}, 'host': {'id': 'vCf'}, '@timestamp': 1},
- {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'SvI'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'C:\\Users\\swuEEXpWqNV.exe'}, 'user': {'domain': 'LOo'}, 'host': {'id': 'SvI'}, '@timestamp': 3},
- {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'cscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'cym'}, '@timestamp': 4},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'wscript.exe'}}, 'user': {'domain': 'EEw'}, 'host': {'id': 'cym'}, '@timestamp': 5},
- {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'MGz'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'C:\\ProgramData\\OPZRgUvWCi.exe'}, 'user': {'domain': 'Nfm'}, 'host': {'id': 'MGz'}, '@timestamp': 7}]
+[{'dll': {'name': 'wmiutils.dll'}, 'event': {'category': ['library']}, 'host': {'id': 'ZFy'}, 'process': {'name': 'cscript.exe'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'cscript.exe'}}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'user': {'domain': 'yyF'}, '@timestamp': 1},
+ {'dll': {'name': 'wmiutils.dll'}, 'event': {'category': ['library']}, 'host': {'id': 'jSv'}, 'process': {'name': 'cscript.exe'}, '@timestamp': 2},
+ {'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'C:\\Users\\OHmxBnLeOA.exe'}, 'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'jSv'}, 'user': {'domain': 'aga'}, '@timestamp': 3},
+ {'dll': {'name': 'wmiutils.dll'}, 'event': {'category': ['library']}, 'host': {'id': 'iFq'}, 'process': {'name': 'wscript.exe'}, '@timestamp': 4},
+ {'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'msxsl.exe'}}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'iFq'}, 'user': {'domain': 'EwV'}, '@timestamp': 5},
+ {'dll': {'name': 'wmiutils.dll'}, 'event': {'category': ['library']}, 'host': {'id': 'PYM'}, 'process': {'name': 'wscript.exe'}, '@timestamp': 6},
+ {'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'C:\\Users\\UEUDqxVTOLWti.exe'}, 'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'PYM'}, 'user': {'domain': 'mrF'}, '@timestamp': 7}]
 ```
 
 
@@ -13853,8 +13853,8 @@ event.action:"service-installed"  and (winlog.event_data.ClientProcessId:"0" or 
 ```
 
 ```python
-[{'event': {'action': 'service-installed'}, 'winlog': {'event_data': {'ClientProcessId': '0'}}, '@timestamp': 0},
- {'event': {'action': 'service-installed'}, 'winlog': {'event_data': {'ParentProcessId': '0'}}, '@timestamp': 1}]
+[{'winlog': {'event_data': {'ClientProcessId': '0'}}, 'event': {'action': 'service-installed'}, '@timestamp': 0},
+ {'winlog': {'event_data': {'ParentProcessId': '0'}}, 'event': {'action': 'service-installed'}, '@timestamp': 1}]
 ```
 
 
@@ -13894,8 +13894,8 @@ sequence by process.entity_id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'os': {'family': 'macos'}}, 'process': {'parent': {'executable': '/usr/sbin/installer'}, 'entity_id': 'ZFy'}, '@timestamp': 0},
+[{'host': {'os': {'family': 'macos'}}, 'process': {'parent': {'executable': '/usr/sbin/installer'}, 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
  {'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'host': {'os': {'family': 'macos'}}, 'process': {'parent': {'executable': '/System/Library/CoreServices/Installer.app/Contents/MacOS/Installer'}, 'entity_id': 'fUy'}, '@timestamp': 2},
+ {'host': {'os': {'family': 'macos'}}, 'process': {'parent': {'executable': '/System/Library/CoreServices/Installer.app/Contents/MacOS/Installer'}, 'entity_id': 'fUy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 2},
  {'destination': {'ip': '196.67.182.123'}, 'event': {'category': ['network']}, 'process': {'entity_id': 'fUy'}, '@timestamp': 3}]
 ```
