@@ -20,7 +20,8 @@
 import unittest
 
 import tests.utils as tu
-from geneve.constraints import Branch, Constraints, LongLimits
+from geneve.constraints import Branch, Constraints
+from geneve.solver.long import LongLimits
 
 constraints_long = [
     ([], {"value": -447795966606097183, "min": LongLimits.MIN, "max": LongLimits.MAX}),
@@ -961,84 +962,108 @@ constraints_exceptions = [
 
 class TestConstraints(tu.SeededTestCase, unittest.TestCase):
     def test_long(self):
-        solver = Constraints.solve_long_constraints
+        from geneve.solver.long import solve_long_field as solver
 
         for i, (constraints, test_value) in enumerate(constraints_long):
             with self.subTest(constraints, i=i):
                 c = Constraints()
-                self.assertEqual(test_value, solver(c, "test_var", None, constraints))
+                self.assertEqual(test_value, solver("test_var", None, constraints, c.environment))
 
         for i, (constraints, msg) in enumerate(constraints_long_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     c = Constraints()
-                    self.assertEqual(None, solver(c, "test_var", None, constraints))
+                    self.assertEqual(None, solver("test_var", None, constraints, c.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_long_cardinality):
             with self.subTest(constraints, i=i):
                 c = Constraints()
-                self.assertEqual(test_values, [solver(c, "test_var", None, constraints) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", None, constraints, c.environment) for _ in test_values])
 
     def test_geo_point(self):
-        solver = Constraints.solve_geo_point_constraints
+        from geneve.solver.geo_point import solve_geo_point_field as solver
 
         for i, (constraints, test_value) in enumerate(constraints_geo_point):
             with self.subTest(constraints, i=i):
                 c = Constraints()
-                self.assertEqual(test_value, solver(c, "test_var", None, constraints))
+                self.assertEqual(test_value, solver("test_var", None, constraints, c.environment))
 
         for i, (constraints, msg) in enumerate(constraints_geo_point_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     c = Constraints()
-                    self.assertEqual(None, solver(c, "test_var", None, constraints))
+                    self.assertEqual(None, solver("test_var", None, constraints, c.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_geo_point_cardinality):
             with self.subTest(constraints, i=i):
                 c = Constraints()
-                self.assertEqual(test_values, [solver(c, "test_var", None, constraints) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", None, constraints, c.environment) for _ in test_values])
 
     def test_ip(self):
-        solver = Constraints.solve_ip_constraints
+        from geneve.solver.ip import solve_ip_field as solver
 
         for i, (constraints, test_value) in enumerate(constraints_ip):
             with self.subTest(constraints, i=i):
                 c = Constraints()
-                self.assertEqual(test_value, solver(c, "test_var", None, constraints))
+                self.assertEqual(test_value, solver("test_var", None, constraints, c.environment))
 
         for i, (constraints, msg) in enumerate(constraints_ip_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     c = Constraints()
-                    self.assertEqual(None, solver(c, "test_var", None, constraints))
+                    self.assertEqual(None, solver("test_var", None, constraints, c.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_ip_cardinality):
             with self.subTest(constraints, i=i):
                 c = Constraints()
-                self.assertEqual(test_values, [solver(c, "test_var", None, constraints) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", None, constraints, c.environment) for _ in test_values])
 
     def test_keyword(self):
-        solver = Constraints.solve_keyword_constraints
+        from geneve.solver.keyword import solve_keyword_field as solver
 
         for i, (constraints, test_value) in enumerate(constraints_keyword):
             with self.subTest(constraints, i=i):
                 c = Constraints()
-                self.assertEqual(test_value, solver(c, "test_var", None, constraints))
+                self.assertEqual(test_value, solver("test_var", None, constraints, c.environment))
 
         for i, (constraints, msg) in enumerate(constraints_keyword_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     c = Constraints()
-                    self.assertEqual(None, solver(c, "test_var", None, constraints))
+                    self.assertEqual(None, solver("test_var", None, constraints, c.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_keyword_cardinality):
             with self.subTest(constraints, i=i):
                 c = Constraints()
-                self.assertEqual(test_values, [solver(c, "test_var", None, constraints) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", None, constraints, c.environment) for _ in test_values])
+
+    def test_group(self):
+        from geneve.solver import solver
+
+        @solver("source.geo.")
+        @solver("destination.geo.")
+        def solve_geo(group, fields, schema, env):
+            yield f"{group}.lat", 0.0
+            yield f"{group}.lon", 0.0
+
+        schema = {}
+        c = Constraints()
+        c.append_constraint("source.geo.")
+        c.append_constraint("destination.geo.")
+
+        self.assertEqual(
+            [
+                ("destination.geo.lat", 0.0),
+                ("destination.geo.lon", 0.0),
+                ("source.geo.lat", 0.0),
+                ("source.geo.lon", 0.0),
+            ],
+            sorted(c.solve(schema)),
+        )
 
 
 class TestBranches(tu.SeededTestCase, unittest.TestCase):
