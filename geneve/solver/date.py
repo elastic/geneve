@@ -15,29 +15,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
-[metadata]
-name = geneve
-version = attr: geneve.version
-description = Generate data from languages and models
-long_description = file: CHANGES.md
-long_description_content_type = text/markdown
-url = https://github.com/elastic/geneve
-license = Apache 2.0
-license_file = LICENSE.txt
+"""Constraints solver for date fields."""
 
-[options]
-packages =
-    geneve
-    geneve.kql
-    geneve.solver
-    geneve.utils
-install_requires =
-    elasticsearch>=8.2.0
-    eql>=0.9.12
-    pytoml
-    requests
-    ruamel.yaml
-python_requires = >=3.8.0
+import time
 
-[options.package_data]
-* = *.g
+from ..constraints import ConflictError
+from . import solver
+
+
+@solver("date", "==")
+def solve_date_field(field, value, constraints, left_attempts, environment):
+    for k, v, *_ in constraints:
+        if k == "==":
+            if value is None or value == v:
+                value = v
+            else:
+                raise ConflictError(f"is already {value}, cannot set to {v}", field, k)
+
+    if left_attempts and value is None:
+        value = int(time.time() * 1000)
+        left_attempts -= 1
+    return {"value": value, "left_attempts": left_attempts}
