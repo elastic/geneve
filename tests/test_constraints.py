@@ -1065,6 +1065,30 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
             sorted(c.solve(schema)),
         )
 
+    def test_geo(self):
+        import geneve.solver.geo
+
+        schema = {}
+        c = Constraints()
+        c.append_constraint("source.geo.")
+        c.append_constraint("destination.geo.")
+
+        self.assertEqual(
+            [
+                ("destination.geo.city_name", "Jinotepe"),
+                ("destination.geo.country_iso_code", "NI"),
+                ("destination.geo.location.lat", 11.84962),
+                ("destination.geo.location.lon", -86.19903),
+                ("destination.geo.timezone", "America/Managua"),
+                ("source.geo.city_name", "Amreli"),
+                ("source.geo.country_iso_code", "IN"),
+                ("source.geo.location.lat", 21.59983),
+                ("source.geo.location.lon", 71.21169),
+                ("source.geo.timezone", "Asia/Kolkata"),
+            ],
+            sorted(c.solve(schema)),
+        )
+
 
 class TestBranches(tu.SeededTestCase, unittest.TestCase):
     def test_fields(self):

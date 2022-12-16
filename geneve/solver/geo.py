@@ -15,30 +15,25 @@
 # specific language governing permissions and limitations
 # under the License.
 
-[metadata]
-name = geneve
-version = attr: geneve.version
-description = Generate data from languages and models
-long_description = file: CHANGES.md
-long_description_content_type = text/markdown
-url = https://github.com/elastic/geneve
-license = Apache 2.0
-license_file = LICENSE.txt
+"""Geo group constraints solver."""
 
-[options]
-packages =
-    geneve
-    geneve.kql
-    geneve.solver
-    geneve.utils
-install_requires =
-    elasticsearch>=8.2.0
-    eql>=0.9.12
-    faker
-    pytoml
-    requests
-    ruamel.yaml
-python_requires = >=3.8.0
+import random
 
-[options.package_data]
-* = *.g
+from faker import Faker
+
+from geneve.solver import solver
+
+# https://faker.readthedocs.io/en/master/index.html#seeding-the-generator
+faker = Faker()
+faker.seed_instance(random.random())
+
+
+@solver("source.geo.")
+@solver("destination.geo.")
+def resolve_geo_group(group, fields, schema, env):
+    lol = faker.location_on_land()
+    yield f"{group}.location.lat", float(lol[0])
+    yield f"{group}.location.lon", float(lol[1])
+    yield f"{group}.city_name", lol[2]
+    yield f"{group}.country_iso_code", lol[3]
+    yield f"{group}.timezone", lol[4]
