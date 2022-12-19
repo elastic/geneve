@@ -160,4 +160,13 @@ class solver:  # noqa: N801
         solve_group(doc, group, fields, schema, environment)
 
 
-from . import boolean, date, geo_point, ip, keyword, long
+def load_solvers():
+    from importlib import import_module
+    from pathlib import Path
+
+    for pattern in ("type_*.py", "group_*.py"):
+        for path in Path(__file__).parent.glob(pattern):
+            import_module("." + path.stem, __package__)
+
+
+load_solvers()
