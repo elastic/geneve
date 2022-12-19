@@ -28,6 +28,7 @@ faker.generator.random = random
 _max_attempts = 100000
 
 ecs_constraints = {
+    "as.number": [(">=", 0), ("<", 2**16)],
     "bytes": [(">=", 0), ("<", 2**32)],
     "pid": [(">", 0), ("<", 2**32)],
     "port": [(">", 0), ("<", 2**16)],
@@ -35,11 +36,14 @@ ecs_constraints = {
 
 
 def get_ecs_constraints(field):
-    if field in ecs_constraints:
-        return ecs_constraints[field]
-    field = field.split(".")[-1]
-    if field in ecs_constraints:
-        return ecs_constraints[field]
+    while field:
+        try:
+            return ecs_constraints[field]
+        except KeyError:
+            dot = field.find(".")
+            if dot == -1:
+                break
+            field = field[dot + 1 :]
     return []
 
 

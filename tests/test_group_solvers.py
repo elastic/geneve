@@ -71,3 +71,22 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
             },
             c.solve(schema),
         )
+
+    def test_as(self):
+        from geneve.solver import group_as
+
+        schema = {
+            "source.as.number": {"type": "long"},
+            "destination.as.number": {"type": "long"},
+        }
+        c = Constraints()
+        c.append_constraint("source.as.")
+        c.append_constraint("destination.as.")
+
+        self.assertEqual(
+            {
+                "source": {"as": {"number": 2299, "organization": {"name": "Cooper Ltd"}}},
+                "destination": {"as": {"number": 44454, "organization": {"name": "Reeves Inc"}}},
+            },
+            c.solve(schema),
+        )
