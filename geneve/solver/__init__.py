@@ -134,9 +134,10 @@ class solver:  # noqa: N801
         return func
 
     @classmethod
-    def solve_field(cls, doc, field, constraints, schema, environment):
+    def solve_field(cls, doc, group, field, constraints, schema, environment):
         if constraints is None:
             return None
+        field = f"{group}.{field}" if group else field
         field_schema = schema.get(field, {})
         field_type = field_schema.get("type", "keyword")
         try:
@@ -150,9 +151,9 @@ class solver:  # noqa: N801
         emit_field(doc, field, solver(field, value, constraints, environment)["value"])
 
     @classmethod
-    def solve_nogroup(cls, doc, _, fields, schema, environment):
+    def solve_nogroup(cls, doc, group, fields, schema, environment):
         for field, constraints in fields.items():
-            cls.solve_field(doc, field, constraints, schema, environment)
+            cls.solve_field(doc, group, field, constraints, schema, environment)
 
     @classmethod
     def solve(cls, doc, group, fields, schema, environment):
