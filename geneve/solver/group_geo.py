@@ -24,6 +24,7 @@ from geneve.solver import emit_group, solver
 faker = Faker()
 
 
+@solver("host.geo.")
 @solver("source.geo.")
 @solver("destination.geo.")
 def resolve_geo_group(doc, group, fields, schema, env):
