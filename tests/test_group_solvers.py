@@ -71,3 +71,20 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
             },
             d.solve(schema),
         )
+
+    def test_as(self):
+        schema = {
+            "source.as.number": {"type": "long"},
+            "destination.as.number": {"type": "long"},
+        }
+        d = Document()
+        d.append_constraint("source.as.")
+        d.append_constraint("destination.as.")
+
+        self.assertEqual(
+            {
+                "source": {"as": {"number": 44454, "organization": {"name": "Reeves Inc"}}},
+                "destination": {"as": {"number": 2299, "organization": {"name": "Cooper Ltd"}}},
+            },
+            d.solve(schema),
+        )
