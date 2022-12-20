@@ -1041,57 +1041,6 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
                 c = Constraints()
                 self.assertEqual(test_values, [solver("test_var", None, constraints, c.environment) for _ in test_values])
 
-    def test_group(self):
-        from geneve.solver import emit_group, solver
-
-        @solver("source.geo.")
-        @solver("destination.geo.")
-        def solve_geo(doc, group, fields, schema, env):
-            emit_group(doc, group, {"lat": 0.0, "lon": 0.0})
-
-        schema = {}
-        c = Constraints()
-        c.append_constraint("source.geo.")
-        c.append_constraint("destination.geo.")
-
-        self.assertEqual(
-            {
-                "destination": {"geo": {"lat": 0.0, "lon": 0.0}},
-                "source": {"geo": {"lat": 0.0, "lon": 0.0}},
-            },
-            c.solve(schema),
-        )
-
-    def test_geo(self):
-        from geneve.solver import group_geo
-
-        schema = {}
-        c = Constraints()
-        c.append_constraint("source.geo.")
-        c.append_constraint("destination.geo.")
-
-        self.assertEqual(
-            {
-                "source": {
-                    "geo": {
-                        "city_name": "Changzhi",
-                        "country_iso_code": "CN",
-                        "location": {"lat": 35.20889, "lon": 111.73861},
-                        "timezone": "Asia/Shanghai",
-                    }
-                },
-                "destination": {
-                    "geo": {
-                        "city_name": "Thomazeau",
-                        "country_iso_code": "HT",
-                        "location": {"lat": 18.65297, "lon": -72.09391},
-                        "timezone": "America/Port-au-Prince",
-                    }
-                },
-            },
-            c.solve(schema),
-        )
-
 
 class TestBranches(tu.SeededTestCase, unittest.TestCase):
     def test_fields(self):
