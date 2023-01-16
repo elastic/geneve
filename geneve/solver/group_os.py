@@ -15,31 +15,30 @@
 # specific language governing permissions and limitations
 # under the License.
 
-[metadata]
-name = geneve
-version = attr: geneve.version
-description = Generate data from languages and models
-long_description = file: CHANGES.md
-long_description_content_type = text/markdown
-url = https://github.com/elastic/geneve
-license = Apache 2.0
-license_file = LICENSE.txt
+"""OS group constraints solver."""
 
-[options]
-packages =
-    geneve
-    geneve.kql
-    geneve.solver
-    geneve.utils
-install_requires =
-    elasticsearch>=8.2.0
-    eql>=0.9.12
-    faker
-    faker-datasets
-    pytoml
-    requests
-    ruamel.yaml
-python_requires = >=3.8.0
+from functools import partial
+from pathlib import Path
 
-[options.package_data]
-* = *.g
+from faker import Faker
+from faker_datasets import Provider, add_dataset
+
+from geneve.solver import emit_group, solver
+
+
+@add_dataset("os", Path(__file__).parent / "datasets" / "os.json", picker="os")
+class OSProvider(Provider):
+    pass
+
+
+fake = Faker()
+fake.add_provider(OSProvider)
+
+
+@solver("host.os.")
+@solver("observer.os.")
+@solver("user_agent.os.")
+def resolve_os_group(doc, group, fields, schema, env):
+    match = partial(solver.match_fields, fields=fields, schema=schema)
+    os = fake.os(match=match)
+    emit_group(doc, group, {k: v for k, v in os.items() if k in fields})

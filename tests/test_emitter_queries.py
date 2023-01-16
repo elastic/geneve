@@ -195,6 +195,10 @@ mono_branch_mono_doc = {
     """: [
         [{"event": {"category": ["network"]}, "host": {"ip": ["822e::c0f6:4909"]}}],
     ],
+    """process where host.os.type : "linux" and host.os.name != null and host.os.version != null
+    """: [
+        [{"event": {"category": ["process"]}, "host": {"os": {"name": "Ubuntu", "type": "linux", "version": "18.04 LTS (Bionic Beaver)"}}}],
+    ],
 }
 
 multi_branch_mono_doc = {
