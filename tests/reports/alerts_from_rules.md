@@ -13894,8 +13894,8 @@ sequence by process.entity_id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'os': {'family': 'macos'}}, 'process': {'parent': {'executable': '/usr/sbin/installer'}, 'entity_id': 'ZFy'}, '@timestamp': 0},
- {'destination': {'ip': '170.121.236.89'}, 'event': {'category': ['network']}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'host': {'os': {'family': 'macos'}}, 'process': {'parent': {'executable': '/System/Library/CoreServices/Installer.app/Contents/MacOS/Installer'}, 'entity_id': 'fUy'}, '@timestamp': 2},
- {'destination': {'ip': '196.67.182.123'}, 'event': {'category': ['network']}, 'process': {'entity_id': 'fUy'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'host': {'os': {'platform': 'darwin', 'family': 'macos', 'type': 'macos', 'name': 'macOS', 'version': 'Big Sur 11', 'codename': 'bigsur', 'kernel': '20.1.0 xnu-7195.41.8~9'}}, 'process': {'parent': {'executable': '/usr/sbin/installer'}, 'entity_id': 'Utk'}, '@timestamp': 0},
+ {'destination': {'ip': '499d:4f18:3023:5fa9:a92d:c839:9a9f:e89b'}, 'event': {'category': ['network']}, 'process': {'entity_id': 'Utk'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'os': {'platform': 'darwin', 'family': 'macos', 'type': 'macos', 'name': 'macOS', 'version': 'Monterey 12', 'codename': 'monterey', 'kernel': '21.0.1 xnu-8019.30.61~4'}}, 'process': {'parent': {'executable': '/System/Library/CoreServices/Installer.app/Contents/MacOS/Installer'}, 'entity_id': 'vIL'}, '@timestamp': 2},
+ {'destination': {'ip': 'c77f:b9c1:95ef:56ae:467b:3f4c:3786:ab03'}, 'event': {'category': ['network']}, 'process': {'entity_id': 'vIL'}, '@timestamp': 3}]
 ```

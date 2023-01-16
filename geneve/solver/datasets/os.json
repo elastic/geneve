@@ -1,0 +1,18 @@
+[
+	{"platform": "darwin", "family": "macos", "type": "macos", "name": "macOS", "version": "Catalina 10.15", "codename": "catalina", "kernel": "19.0.0"},
+	{"platform": "darwin", "family": "macos", "type": "macos", "name": "macOS", "version": "Big Sur 11", "codename": "bigsur", "kernel": "20.1.0 xnu-7195.41.8~9"},
+	{"platform": "darwin", "family": "macos", "type": "macos", "name": "macOS", "version": "Monterey 12", "codename": "monterey", "kernel": "21.0.1 xnu-8019.30.61~4"},
+	{"platform": "darwin", "family": "macos", "type": "macos", "name": "macOS", "version": "Ventura 13", "codename": "ventura", "kernel": "22.1.0 xnu-8792.41.9~2"},
+
+	{"platform": "debian", "family": "debian", "type": "linux", "name": "Debian GNU/Linux", "version": "10 (buster)", "codename": "buster", "kernel": "4.19.0-21-cloud-amd64"},
+	{"platform": "debian", "family": "debian", "type": "linux", "name": "Debian GNU/Linux", "version": "11 (bullseye)", "codename": "bullseye", "kernel": "5.10.0-20-cloud-amd64"},
+
+	{"platform": "ubuntu", "family": "debian", "type": "linux", "name": "Ubuntu", "version": "18.04 LTS (Bionic Beaver)", "codename": "bionic", "kernel": "4.15.0-20.21"},
+	{"platform": "ubuntu", "family": "debian", "type": "linux", "name": "Ubuntu", "version": "20.04 LTS (Focal Fossa)", "codename": "focal", "kernel": "5.4.0-26.30"},
+	{"platform": "ubuntu", "family": "debian", "type": "linux", "name": "Ubuntu", "version": "22.04 LTS (Jammy Jellyfish)", "codename": "jammy", "kernel": "5.15.0-25.25"},
+
+	{"platform": "windows", "family": "windows", "type": "windows", "name": "Windows 10 22H2", "version": "10.0", "kernel": "10.0.19045.2486"},
+	{"platform": "windows", "family": "windows", "type": "windows", "name": "Windows 11 22H2", "version": "10.0", "kernel": "10.0.22621.1105"},
+	{"platform": "windows", "family": "windows", "type": "windows", "name": "Windows Server 2019", "version": "10.0", "kernel": "10.0.17763.107"},
+	{"platform": "windows", "family": "windows", "type": "windows", "name": "Windows Server 2022", "version": "10.0", "kernel": "10.0.20348.169"}
+]

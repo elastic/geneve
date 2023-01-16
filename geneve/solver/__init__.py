@@ -164,6 +164,20 @@ class solver:  # noqa: N801
         solve_group = cls.solvers.get(group + ".", cls.solve_nogroup)
         solve_group(doc, group, fields, schema, environment)
 
+    @classmethod
+    def match_fields(cls, candidate, fields, schema):
+        for field, constraints in fields.items():
+            if constraints is None:
+                if field in candidate:
+                    return False
+                continue
+            constraints = constraints + [("==", candidate[field])]
+            try:
+                cls.solve_field({}, None, field, constraints, schema, {})
+            except ConflictError:
+                return False
+        return True
+
 
 def load_solvers():
     from importlib import import_module
