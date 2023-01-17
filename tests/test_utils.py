@@ -151,12 +151,12 @@ class TestHierarchicalDict(unittest.TestCase):
 
         self.assertEqual(
             [
-                ("process.tty.char_device", {"major": None, "minor": None}),
-                ("process.thread", {"id": None, "name": None}),
-                ("process.tty", {}),
-                ("source.geo", {}),
                 ("ecs", {"version": None}),
                 ("process", {"name": None}),
+                ("process.thread", {"id": None, "name": None}),
+                ("process.tty.char_device", {"major": None, "minor": None}),
+                ("process.tty", {}),
+                ("source.geo", {}),
                 ("source", {}),
                 ("", {"@timestamp": None}),
             ],
@@ -166,11 +166,11 @@ class TestHierarchicalDict(unittest.TestCase):
         del d["source.geo."]
         self.assertEqual(
             [
-                ("process.tty.char_device", {"major": None, "minor": None}),
-                ("process.thread", {"id": None, "name": None}),
-                ("process.tty", {}),
                 ("ecs", {"version": None}),
                 ("process", {"name": None}),
+                ("process.thread", {"id": None, "name": None}),
+                ("process.tty.char_device", {"major": None, "minor": None}),
+                ("process.tty", {}),
                 ("", {"@timestamp": None}),
             ],
             list(d.groups()),
@@ -179,11 +179,11 @@ class TestHierarchicalDict(unittest.TestCase):
         del d["process.tty.char_device.major"]
         self.assertEqual(
             [
-                ("process.tty.char_device", {"minor": None}),
-                ("process.thread", {"id": None, "name": None}),
-                ("process.tty", {}),
                 ("ecs", {"version": None}),
                 ("process", {"name": None}),
+                ("process.thread", {"id": None, "name": None}),
+                ("process.tty.char_device", {"minor": None}),
+                ("process.tty", {}),
                 ("", {"@timestamp": None}),
             ],
             list(d.groups()),
@@ -192,10 +192,10 @@ class TestHierarchicalDict(unittest.TestCase):
         del d["process.thread"]
         self.assertEqual(
             [
-                ("process.tty.char_device", {"minor": None}),
-                ("process.tty", {}),
                 ("ecs", {"version": None}),
                 ("process", {"name": None}),
+                ("process.tty.char_device", {"minor": None}),
+                ("process.tty", {}),
                 ("", {"@timestamp": None}),
             ],
             list(d.groups()),
@@ -205,10 +205,10 @@ class TestHierarchicalDict(unittest.TestCase):
         self.assertEqual(
             list(d.groups()),
             [
-                ("process.tty.char_device", {"minor": None}),
-                ("process.tty", {}),
                 ("ecs", {"version": None}),
                 ("process", {"name": None}),
+                ("process.tty.char_device", {"minor": None}),
+                ("process.tty", {}),
                 ("", {}),
             ],
         )
