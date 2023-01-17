@@ -100,9 +100,10 @@ class Constraints:
     def solve(self, schema):
         from .solver import solver
 
+        doc = {}
         for group, fields in self.__constraints.groups():
-            for field, value in solver.solve(group, fields, schema, self.environment):
-                yield field, value
+            solver.solve(doc, group, fields, schema, self.environment)
+        return doc
 
 
 class Branch(List[Constraints]):

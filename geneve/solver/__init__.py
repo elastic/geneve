@@ -21,6 +21,7 @@ import random
 from functools import wraps
 
 from ..constraints import ConflictError
+from ..utils import deep_merge
 
 _max_attempts = 100000
 
@@ -50,6 +51,25 @@ def delete_use_once(list):
         return len(item) > 2 and item[2] and item[2].get("use_once", False)
 
     delete_by_cond(list, is_use_once)
+
+
+def emit_field(doc, field, value):
+    if value is not None:
+        for part in reversed(field.split(".")):
+            value = {part: value}
+        deep_merge(doc, value)
+
+
+def emit_group(doc, group, values):
+    group_parts = group.split(".")
+    group_parts.reverse()
+    for field, value in values.items():
+        if value is not None:
+            for part in reversed(field.split(".")):
+                value = {part: value}
+            for part in group_parts:
+                value = {part: value}
+            deep_merge(doc, value)
 
 
 class solver:  # noqa: N801
@@ -112,7 +132,7 @@ class solver:  # noqa: N801
         return func
 
     @classmethod
-    def solve_field(cls, field, constraints, schema, environment):
+    def solve_field(cls, doc, field, constraints, schema, environment):
         if constraints is None:
             return None
         field_schema = schema.get(field, {})
@@ -125,18 +145,17 @@ class solver:  # noqa: N801
             value = []
         else:
             value = None
-        return solver(field, value, constraints, environment)["value"]
+        emit_field(doc, field, solver(field, value, constraints, environment)["value"])
 
     @classmethod
-    def solve_nogroup(cls, _, fields, schema, environment):
+    def solve_nogroup(cls, doc, _, fields, schema, environment):
         for field, constraints in fields.items():
-            yield field, cls.solve_field(field, constraints, schema, environment)
+            cls.solve_field(doc, field, constraints, schema, environment)
 
     @classmethod
-    def solve(cls, group, fields, schema, environment):
+    def solve(cls, doc, group, fields, schema, environment):
         solve_group = cls.solvers.get(group + ".", cls.solve_nogroup)
-        for field, value in solve_group(group, fields, schema, environment):
-            yield field, value
+        solve_group(doc, group, fields, schema, environment)
 
 
 from . import boolean, date, geo_point, ip, keyword, long
