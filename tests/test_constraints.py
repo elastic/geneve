@@ -1042,13 +1042,12 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
                 self.assertEqual(test_values, [solver("test_var", None, constraints, c.environment) for _ in test_values])
 
     def test_group(self):
-        from geneve.solver import solver
+        from geneve.solver import emit_group, solver
 
         @solver("source.geo.")
         @solver("destination.geo.")
-        def solve_geo(group, fields, schema, env):
-            yield f"{group}.lat", 0.0
-            yield f"{group}.lon", 0.0
+        def solve_geo(doc, group, fields, schema, env):
+            emit_group(doc, group, {"lat": 0.0, "lon": 0.0})
 
         schema = {}
         c = Constraints()
@@ -1056,13 +1055,11 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         c.append_constraint("destination.geo.")
 
         self.assertEqual(
-            [
-                ("destination.geo.lat", 0.0),
-                ("destination.geo.lon", 0.0),
-                ("source.geo.lat", 0.0),
-                ("source.geo.lon", 0.0),
-            ],
-            sorted(c.solve(schema)),
+            {
+                "destination": {"geo": {"lat": 0.0, "lon": 0.0}},
+                "source": {"geo": {"lat": 0.0, "lon": 0.0}},
+            },
+            c.solve(schema),
         )
 
     def test_geo(self):
@@ -1074,19 +1071,31 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         c.append_constraint("destination.geo.")
 
         self.assertEqual(
-            [
-                ("destination.geo.city_name", "Jinotepe"),
-                ("destination.geo.country_iso_code", "NI"),
-                ("destination.geo.location.lat", 11.84962),
-                ("destination.geo.location.lon", -86.19903),
-                ("destination.geo.timezone", "America/Managua"),
-                ("source.geo.city_name", "Amreli"),
-                ("source.geo.country_iso_code", "IN"),
-                ("source.geo.location.lat", 21.59983),
-                ("source.geo.location.lon", 71.21169),
-                ("source.geo.timezone", "Asia/Kolkata"),
-            ],
-            sorted(c.solve(schema)),
+            {
+                "destination": {
+                    "geo": {
+                        "city_name": "Jinotepe",
+                        "country_iso_code": "NI",
+                        "location": {
+                            "lat": 11.84962,
+                            "lon": -86.19903,
+                        },
+                        "timezone": "America/Managua",
+                    },
+                },
+                "source": {
+                    "geo": {
+                        "city_name": "Amreli",
+                        "country_iso_code": "IN",
+                        "location": {
+                            "lat": 21.59983,
+                            "lon": 71.21169,
+                        },
+                        "timezone": "Asia/Kolkata",
+                    },
+                },
+            },
+            c.solve(schema),
         )
 
 
@@ -1120,25 +1129,25 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
 
         self.assertEqual(
             [
-                [("process.name", "LbS.exe")],
-                [("process.name", "lwfFIAXQgMefK.dll"), ("process.parent.name", "LbS.exe")],
-                [("process.name", "OWrl.com"), ("process.parent.name", "lwfFIAXQgMefK.dll")],
+                {"process": {"name": "LbS.exe"}},
+                {"process": {"name": "lwfFIAXQgMefK.dll", "parent": {"name": "LbS.exe"}}},
+                {"process": {"name": "OWrl.com", "parent": {"name": "lwfFIAXQgMefK.dll"}}},
             ],
-            [sorted(x) for x in branch.solve(schema)],
+            list(branch.solve(schema)),
         )
         self.assertEqual(
             [
-                [("process.name", "lywc.exe")],
-                [("process.name", "lIkqw.dll"), ("process.parent.name", "lywc.exe")],
-                [("process.name", "uxRWqYK.com"), ("process.parent.name", "lIkqw.dll")],
+                {"process": {"name": "lywc.exe"}},
+                {"process": {"name": "lIkqw.dll", "parent": {"name": "lywc.exe"}}},
+                {"process": {"name": "uxRWqYK.com", "parent": {"name": "lIkqw.dll"}}},
             ],
-            [sorted(x) for x in branch.solve(schema)],
+            list(branch.solve(schema)),
         )
         self.assertEqual(
             [
-                [("process.name", "gkUaUecroMCaT.exe")],
-                [("process.name", "KpKXkSopnAtGxR.scr"), ("process.parent.name", "gkUaUecroMCaT.exe")],
-                [("process.name", "lwpDtGLBRIh.com"), ("process.parent.name", "KpKXkSopnAtGxR.scr")],
+                {"process": {"name": "gkUaUecroMCaT.exe"}},
+                {"process": {"name": "KpKXkSopnAtGxR.scr", "parent": {"name": "gkUaUecroMCaT.exe"}}},
+                {"process": {"name": "lwpDtGLBRIh.com", "parent": {"name": "KpKXkSopnAtGxR.scr"}}},
             ],
-            [sorted(x) for x in branch.solve(schema)],
+            list(branch.solve(schema)),
         )

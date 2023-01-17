@@ -21,7 +21,7 @@ import random
 
 from faker import Faker
 
-from geneve.solver import solver
+from geneve.solver import emit_group, solver
 
 # https://faker.readthedocs.io/en/master/index.html#seeding-the-generator
 faker = Faker()
@@ -30,10 +30,13 @@ faker.seed_instance(random.random())
 
 @solver("source.geo.")
 @solver("destination.geo.")
-def resolve_geo_group(group, fields, schema, env):
+def resolve_geo_group(doc, group, fields, schema, env):
     lol = faker.location_on_land()
-    yield f"{group}.location.lat", float(lol[0])
-    yield f"{group}.location.lon", float(lol[1])
-    yield f"{group}.city_name", lol[2]
-    yield f"{group}.country_iso_code", lol[3]
-    yield f"{group}.timezone", lol[4]
+    geo = {
+        "location.lat": float(lol[0]),
+        "location.lon": float(lol[1]),
+        "city_name": lol[2],
+        "country_iso_code": lol[3],
+        "timezone": lol[4],
+    }
+    emit_group(doc, group, geo)

@@ -24,6 +24,7 @@ from itertools import chain
 
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
 from .events_emitter_eql import get_ast_stats  # noqa: F401
+from .solver import emit_field
 from .utils import deep_merge
 
 __all__ = ("SourceEvents",)
@@ -99,21 +100,11 @@ def emit_mappings(fields, schema):
     return mappings
 
 
-def emit_field(field, value):
-    for part in reversed(field.split(".")):
-        value = {part: value}
-    return value
-
-
 def events_from_branch(branch, schema, timestamp, meta):
     events = []
-    for solution in branch.solve(schema):
-        doc = {}
-        for field, value in solution:
-            if value is not None:
-                deep_merge(doc, emit_field(field, value))
+    for doc in branch.solve(schema):
         if timestamp:
-            deep_merge(doc, emit_field("@timestamp", timestamp[0].isoformat(timespec="milliseconds")))
+            emit_field(doc, "@timestamp", timestamp[0].isoformat(timespec="milliseconds"))
             timestamp[0] += timedelta(milliseconds=1)
         events.append(Event(meta, doc))
     return events
