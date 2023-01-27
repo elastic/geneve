@@ -17,12 +17,14 @@
 
 """Constraints solver helper class."""
 
-import random
 from functools import wraps
 
-from ..constraints import ConflictError
-from ..utils import deep_merge
+import faker
 
+from ..constraints import ConflictError
+from ..utils import deep_merge, random
+
+faker.generator.random = random
 _max_attempts = 100000
 
 ecs_constraints = {

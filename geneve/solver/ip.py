@@ -18,9 +18,9 @@
 """Constraints solver for ip fields."""
 
 import ipaddress
-import random
 
 from ..constraints import ConflictError
+from ..utils import random
 from . import solver
 
 

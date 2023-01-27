@@ -18,9 +18,10 @@
 """Helper for the presentation."""
 
 import os
-import random
 
 presentation_dir = os.path.split(__file__)[0]
 os.chdir(os.path.abspath(os.path.join(presentation_dir, "..", "..")))
+
+from geneve.utils import random
 
 random.seed("presentation")

@@ -17,11 +17,11 @@
 
 """Constraints solver for keyword fields."""
 
-import random
 import string
 from fnmatch import fnmatch
 
 from ..constraints import ConflictError
+from ..utils import random
 from . import solver
 
 

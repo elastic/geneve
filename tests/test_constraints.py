@@ -1072,27 +1072,21 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
 
         self.assertEqual(
             {
-                "destination": {
-                    "geo": {
-                        "city_name": "Jinotepe",
-                        "country_iso_code": "NI",
-                        "location": {
-                            "lat": 11.84962,
-                            "lon": -86.19903,
-                        },
-                        "timezone": "America/Managua",
-                    },
-                },
                 "source": {
                     "geo": {
-                        "city_name": "Amreli",
-                        "country_iso_code": "IN",
-                        "location": {
-                            "lat": 21.59983,
-                            "lon": 71.21169,
-                        },
-                        "timezone": "Asia/Kolkata",
-                    },
+                        "city_name": "Changzhi",
+                        "country_iso_code": "CN",
+                        "location": {"lat": 35.20889, "lon": 111.73861},
+                        "timezone": "Asia/Shanghai",
+                    }
+                },
+                "destination": {
+                    "geo": {
+                        "city_name": "Thomazeau",
+                        "country_iso_code": "HT",
+                        "location": {"lat": 18.65297, "lon": -72.09391},
+                        "timezone": "America/Port-au-Prince",
+                    }
                 },
             },
             c.solve(schema),
