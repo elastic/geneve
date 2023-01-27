@@ -17,15 +17,11 @@
 
 """Geo group constraints solver."""
 
-import random
-
 from faker import Faker
 
 from geneve.solver import emit_group, solver
 
-# https://faker.readthedocs.io/en/master/index.html#seeding-the-generator
 faker = Faker()
-faker.seed_instance(random.random())
 
 
 @solver("source.geo.")

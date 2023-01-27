@@ -19,9 +19,12 @@
 
 from functools import wraps
 
+import faker
+
 from ..constraints import ConflictError
 from ..utils import deep_merge, random
 
+faker.generator.random = random
 _max_attempts = 100000
 
 ecs_constraints = {
