@@ -97,7 +97,5 @@ class hdict:
 
     def groups(self):
         for group in self.__groups:
-            if group:
-                yield group, {f"{group}.{k}": v for k, v in self[group].items() if k and not isinstance(v, dict)}
-            else:
-                yield "", {k: v for k, v in self.__top_level.items() if k and not isinstance(v, dict)}
+            group_dict = self[group] if group else self.__top_level
+            yield group, {k: v for k, v in group_dict.items() if k and not isinstance(v, dict)}
