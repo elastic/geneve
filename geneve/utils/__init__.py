@@ -22,9 +22,12 @@ import shutil
 from contextlib import contextmanager
 from glob import glob
 from pathlib import Path
+from random import Random
 from tempfile import mkdtemp
 from types import SimpleNamespace
 from urllib.parse import urlparse
+
+random = Random()
 
 
 @contextmanager

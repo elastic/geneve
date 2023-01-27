@@ -22,7 +22,6 @@ import hashlib
 import itertools
 import json
 import os
-import random
 import subprocess
 import sys
 import textwrap
@@ -34,7 +33,7 @@ from functools import partial
 from pathlib import Path
 
 from geneve.events_emitter import SourceEvents
-from geneve.utils import load_rules, load_schema
+from geneve.utils import load_rules, load_schema, random
 
 from . import jupyter
 

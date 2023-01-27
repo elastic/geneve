@@ -17,10 +17,10 @@
 
 """Constraints solver for long fields."""
 
-import random
 from collections import namedtuple
 
 from ..constraints import ConflictError
+from ..utils import random
 from . import solver
 
 NumberLimits = namedtuple("NumberLimits", ["MIN", "MAX"])

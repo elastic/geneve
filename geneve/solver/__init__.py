@@ -17,11 +17,10 @@
 
 """Constraints solver helper class."""
 
-import random
 from functools import wraps
 
 from ..constraints import ConflictError
-from ..utils import deep_merge
+from ..utils import deep_merge, random
 
 _max_attempts = 100000
 
