@@ -27,6 +27,8 @@ which is an implicit goal of the tool.
 This last is a quite harder nut to crack than the original goal and is
 currently under development.
 
+If you want to try it, read [Getting started](docs/getting_started.md).
+
 # Status
 
 ## Data modeling
