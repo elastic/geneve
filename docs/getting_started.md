@@ -78,8 +78,8 @@ In the data model you describe the data that shall be generated.  It can
 be as simple as a list of fields that need to be present or more complex
 for defining also the relations among them.
 
-How to write a data model is separate subject, here we focus on how to
-configure one on the server. You use the `api/source` endpoint.
+How to write a data model is separate subject (see [Data model](data_model.md)),
+here we focus on how to configure one on the server. You use the `api/source` endpoint.
 
 ```shell
 $ curl -s -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/source/mydata" --data-binary @- <<EOF
