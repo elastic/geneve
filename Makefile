@@ -53,6 +53,9 @@ up:
 down:
 	docker compose down
 
+jupyter:
+	jupyter-notebook
+
 gnv: main.go $(call rwildcard,cmd,*.go)
 	$(embed_python)
 	go build -race -o $@ .
