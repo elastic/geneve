@@ -1,7 +1,7 @@
 # Data model
 
 The Geneve data model describes what data Geneve is expected to generate,
-it guides and constraints the data generation process so that the output
+it guides and constrains the data generation process so that the output
 satisfies your criteria.
 
 Think in this way: data generation is a random process, at its root it

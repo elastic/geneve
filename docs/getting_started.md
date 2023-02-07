@@ -4,14 +4,14 @@
 
 The data generation process uses this analogy: generated data flows from source to sink.
 
-To generate data is then necessary to define:
+To generate data it is then necessary to define:
 
 * `source`: what data is generated, eg. data model
 * `sink`: where data is sent to, eg. ES index
 * `flow`: how data is transmitted, eg. how fast or how much?
 * `schema`: fields definition, eg. ECS 8.2.0
 
-Each of the above is handled by its own REST API endpoint. An arbitray
+Each of the above is handled by its own REST API endpoint. An arbitrary
 number of sources, sinks, flows and schemas can be defined on the same
 server.
 

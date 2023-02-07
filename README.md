@@ -46,7 +46,7 @@ step is to use the rules preloaded in the Kibana under test
 
 Kind of issues observed in this area:
 
-1. skipped rules due to unimplemented rule type (ie. threashold) or query
+1. skipped rules due to unimplemented rule type (ie. threshold) or query
    language (ie. lucene).
 	 <ins>73 rules</ins>.
 2. generation errors due to unimplemented query language features or
