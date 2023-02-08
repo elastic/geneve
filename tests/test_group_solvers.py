@@ -54,18 +54,18 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
             {
                 "source": {
                     "geo": {
-                        "city_name": "Changzhi",
-                        "country_iso_code": "CN",
-                        "location": {"lat": 35.20889, "lon": 111.73861},
-                        "timezone": "Asia/Shanghai",
-                    }
-                },
-                "destination": {
-                    "geo": {
                         "city_name": "Thomazeau",
                         "country_iso_code": "HT",
                         "location": {"lat": 18.65297, "lon": -72.09391},
                         "timezone": "America/Port-au-Prince",
+                    }
+                },
+                "destination": {
+                    "geo": {
+                        "city_name": "Changzhi",
+                        "country_iso_code": "CN",
+                        "location": {"lat": 35.20889, "lon": 111.73861},
+                        "timezone": "Asia/Shanghai",
                     }
                 },
             },

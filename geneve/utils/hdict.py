@@ -85,15 +85,17 @@ class hdict:
         return depth_first_items(self.__top_level)
 
     def __update_groups(self):
-        groups = set()
+        groups = []
         tail = []
         for field in self:
             parts = field.split(".")[:-1]
             while parts:
-                groups.add(".".join(parts))
+                x = ".".join(parts)
+                if x not in groups:
+                    groups.append(x)
                 parts = parts[:-1]
             tail = tail or [""]
-        self.__groups = sorted(sorted(groups), key=lambda x: x.count("."), reverse=True) + tail
+        self.__groups = groups + tail
 
     def groups(self):
         for group in self.__groups:
