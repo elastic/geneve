@@ -1,0 +1,10 @@
+[
+	{"name": "ssh", "executable": "/usr/bin/ssh", "os": {"type": ["linux", "macos"]}},
+	{"name": "sudo", "executable": "/usr/bin/sudo", "os": {"type": ["linux", "macos"]}},
+	{"name": "cmd.exe", "executable": "C:\\Windows\\System32\\cmd.exe", "os": {"type": ["windows"]}},
+	{"name": "rundll32.exe", "executable": "C:\\Windows\\System32\\rundll32.exe", "os": {"type": ["windows"]}},
+	{"name": "regedit.exe", "executable": "C:\\Windows\\regedit.exe", "os": {"type": ["windows"]}},
+	{"name": "excel.exe", "executable": "C:\\Program Files\\Microsoft Office\\Office\\excel.exe", "os": {"type": ["windows"]}},
+	{"name": "winword.exe", "executable": "C:\\Program Files\\Microsoft Office\\Office\\winword.exe", "os": {"type": ["windows"]}},
+	{"name": "powershell.exe", "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "os": {"type": ["windows"]}}
+]

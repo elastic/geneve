@@ -1064,33 +1064,49 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
         c3 = Constraints()
         branch = Branch([c1, c2, c3])
 
-        c1.append_constraint("process.name", "wildcard", ("*.exe", "*.bat"))
-        c2.append_constraint("process.name", "wildcard", ("*.dll", "*.scr"))
-        c3.append_constraint("process.name", "wildcard", ("*.com"))
+        c1.append_constraint("process.name", "wildcard", ("excel.exe", "winword.exe"))
+        c2.append_constraint("process.name", "wildcard", ("cmd.exe", "powershell.exe"))
+        c3.append_constraint("process.name", "wildcard", ("regedit.exe", "rundll32.exe"))
         c1.append_constraint("process.name", "join_value", ("process.parent.name", c2))
         c2.append_constraint("process.name", "join_value", ("process.parent.name", c3))
 
         self.assertEqual(
             [
-                {"process": {"name": "LbS.exe"}},
-                {"process": {"name": "lwfFIAXQgMefK.dll", "parent": {"name": "LbS.exe"}}},
-                {"process": {"name": "OWrl.com", "parent": {"name": "lwfFIAXQgMefK.dll"}}},
+                {"process": {"name": "winword.exe"}},
+                {"process": {"name": "cmd.exe", "parent": {"name": "winword.exe"}}},
+                {"process": {"name": "regedit.exe", "parent": {"name": "cmd.exe"}}},
             ],
             list(branch.solve(schema)),
         )
         self.assertEqual(
             [
-                {"process": {"name": "lywc.exe"}},
-                {"process": {"name": "lIkqw.dll", "parent": {"name": "lywc.exe"}}},
-                {"process": {"name": "uxRWqYK.com", "parent": {"name": "lIkqw.dll"}}},
+                {"process": {"name": "winword.exe"}},
+                {"process": {"name": "cmd.exe", "parent": {"name": "winword.exe"}}},
+                {"process": {"name": "regedit.exe", "parent": {"name": "cmd.exe"}}},
             ],
             list(branch.solve(schema)),
         )
         self.assertEqual(
             [
-                {"process": {"name": "gkUaUecroMCaT.exe"}},
-                {"process": {"name": "KpKXkSopnAtGxR.scr", "parent": {"name": "gkUaUecroMCaT.exe"}}},
-                {"process": {"name": "lwpDtGLBRIh.com", "parent": {"name": "KpKXkSopnAtGxR.scr"}}},
+                {"process": {"name": "winword.exe"}},
+                {"process": {"name": "cmd.exe", "parent": {"name": "winword.exe"}}},
+                {"process": {"name": "regedit.exe", "parent": {"name": "cmd.exe"}}},
+            ],
+            list(branch.solve(schema)),
+        )
+        self.assertEqual(
+            [
+                {"process": {"name": "winword.exe"}},
+                {"process": {"name": "cmd.exe", "parent": {"name": "winword.exe"}}},
+                {"process": {"name": "regedit.exe", "parent": {"name": "cmd.exe"}}},
+            ],
+            list(branch.solve(schema)),
+        )
+        self.assertEqual(
+            [
+                {"process": {"name": "winword.exe"}},
+                {"process": {"name": "cmd.exe", "parent": {"name": "winword.exe"}}},
+                {"process": {"name": "regedit.exe", "parent": {"name": "cmd.exe"}}},
             ],
             list(branch.solve(schema)),
         )

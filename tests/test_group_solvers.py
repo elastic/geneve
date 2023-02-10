@@ -114,3 +114,15 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
             },
             c.solve(schema),
         )
+
+    def test_process(self):
+        from geneve.solver import group_process
+
+        schema = {}
+        c = Constraints()
+        c.append_constraint("process.")
+
+        self.assertEqual(
+            {},
+            c.solve(schema),
+        )
