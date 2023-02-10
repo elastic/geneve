@@ -39,6 +39,6 @@ fake.add_provider(OSProvider)
 @solver("observer.os.")
 @solver("user_agent.os.")
 def resolve_os_group(doc, group, fields, schema, env):
-    match = partial(solver.match_fields, fields=fields, schema=schema)
+    match = partial(solver.match_fields, group=group, fields=fields, schema=schema)
     os = fake.os(match=match)
-    emit_group(doc, group, {k: v for k, v in os.items() if k in fields})
+    emit_group(doc, group, fields, {k: v for k, v in os.items() if k in fields})

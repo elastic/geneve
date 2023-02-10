@@ -36,4 +36,4 @@ def resolve_geo_group(doc, group, fields, schema, env):
         "country_iso_code": lol[3],
         "timezone": lol[4],
     }
-    emit_group(doc, group, geo)
+    emit_group(doc, group, fields, geo)

@@ -28,9 +28,9 @@ faker = Faker()
 def resolve_host_group(doc, group, fields, schema, env):
     for field, constraints in fields.items():
         if field == "mac":
-            emit_field(doc, f"{group}.mac", faker.mac_address())
+            emit_field(doc, f"{group}.mac", constraints, faker.mac_address())
             continue
         if field == "name":
-            emit_field(doc, f"{group}.name", faker.hostname())
+            emit_field(doc, f"{group}.name", constraints, faker.hostname())
             continue
         solver.solve_field(doc, group, field, constraints, schema, env)

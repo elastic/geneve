@@ -46,10 +46,10 @@ fake.add_provider(CommandProvider)
 @solver("process.session_leader.parent.")
 @solver("process.session_leader.parent.session_leader.")
 def resolve_process_group(doc, group, fields, schema, env):
-    match = partial(solver.match_fields, fields=fields, schema=schema)
+    match = partial(solver.match_fields, group=group, fields=fields, schema=schema)
     try:
         command = fake.command(match=match)
     except ValueError:
         print(f"fields: {fields}")
         raise
-    emit_group(doc, group, {k: v for k, v in command.items() if k in fields})
+    emit_group(doc, group, fields, {k: v for k, v in command.items() if k in fields})

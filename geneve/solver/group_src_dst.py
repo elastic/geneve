@@ -29,9 +29,9 @@ faker = Faker()
 def resolve_src_dst(doc, group, fields, schema, env):
     for field, constraints in fields.items():
         if field == "mac":
-            emit_field(doc, group, "mac", faker.mac_address())
+            emit_field(doc, f"{group}.mac", constraints, faker.mac_address())
             continue
         if field == "domain":
-            emit_field(doc, group, "domain", faker.domain_name())
+            emit_field(doc, f"{group}.domain", constraints, faker.domain_name())
             continue
         solver.solve_field(doc, group, field, constraints, schema, env)

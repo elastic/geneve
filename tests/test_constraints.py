@@ -1078,6 +1078,7 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
             ],
             list(branch.solve(schema)),
         )
+
         self.assertEqual(
             [
                 {"process": {"name": "winword.exe"}},
@@ -1086,6 +1087,7 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
             ],
             list(branch.solve(schema)),
         )
+
         self.assertEqual(
             [
                 {"process": {"name": "winword.exe"}},
@@ -1094,18 +1096,20 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
             ],
             list(branch.solve(schema)),
         )
+
         self.assertEqual(
             [
-                {"process": {"name": "winword.exe"}},
-                {"process": {"name": "cmd.exe", "parent": {"name": "winword.exe"}}},
-                {"process": {"name": "regedit.exe", "parent": {"name": "cmd.exe"}}},
+                {"process": {"name": "excel.exe"}},
+                {"process": {"name": "cmd.exe", "parent": {"name": "excel.exe"}}},
+                {"process": {"name": "rundll32.exe", "parent": {"name": "cmd.exe"}}},
             ],
             list(branch.solve(schema)),
         )
+
         self.assertEqual(
             [
-                {"process": {"name": "winword.exe"}},
-                {"process": {"name": "cmd.exe", "parent": {"name": "winword.exe"}}},
+                {"process": {"name": "excel.exe"}},
+                {"process": {"name": "cmd.exe", "parent": {"name": "excel.exe"}}},
                 {"process": {"name": "regedit.exe", "parent": {"name": "cmd.exe"}}},
             ],
             list(branch.solve(schema)),

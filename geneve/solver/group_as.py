@@ -32,4 +32,4 @@ faker = Faker()
 @solver("threat.indicator.as.")
 def resolve_as_group(doc, group, fields, schema, env):
     solver.solve_field(doc, group, "number", [], schema, env),
-    emit_group(doc, group, {"organization.name": faker.company()})
+    emit_group(doc, group, fields, {"organization.name": faker.company()})
