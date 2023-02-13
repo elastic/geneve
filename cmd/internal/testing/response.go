@@ -55,7 +55,7 @@ func (r Response) ExpectBody(t testing.TB, body string) {
 		panic(err)
 	}
 	if string(resp_body) != body {
-		t.Errorf("Body is %#v (expected: %#v)", string(resp_body), body)
+		t.Errorf("Body is\n%s(expected: %#v)", string(resp_body), body)
 	}
 }
 
