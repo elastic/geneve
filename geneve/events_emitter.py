@@ -103,7 +103,8 @@ def events_from_branch(branch, schema, timestamp, meta):
     events = []
     for doc in branch.solve(schema):
         if timestamp:
-            emit_field(doc, "@timestamp", timestamp[0].isoformat(timespec="milliseconds"))
+            constraints = []
+            emit_field(doc, "@timestamp", constraints, timestamp[0].isoformat(timespec="milliseconds"))
             timestamp[0] += timedelta(milliseconds=1)
         events.append(Event(meta, doc))
     return events

@@ -55,18 +55,34 @@ def delete_use_once(list):
     delete_by_cond(list, is_use_once)
 
 
-def emit_field(doc, field, value):
+def propagate_join_values(constraints, value):
+    for k, v, *_ in constraints:
+        if k == "join_value":
+            field, constraint = v
+            constraint.append_constraint(field, "==", value, {"use_once": True})
+    delete_use_once(constraints)
+
+
+def emit_field(doc, field, constraints, value):
     if value is not None:
+        propagate_join_values(constraints, value)
         for part in reversed(field.split(".")):
             value = {part: value}
         deep_merge(doc, value)
 
 
-def emit_group(doc, group, values):
+def emit_group_field(doc, group, field, constraints, value):
+    field = f"{group}.{field}" if group else field
+    emit_field(doc, field, constraints, value)
+
+
+def emit_group(doc, group, fields, values):
     group_parts = group.split(".")
     group_parts.reverse()
     for field, value in values.items():
         if value is not None:
+            if field in fields:
+                propagate_join_values(fields[field], value)
             for part in reversed(field.split(".")):
                 value = {part: value}
             for part in group_parts:
@@ -84,7 +100,6 @@ class solver:  # noqa: N801
     def wrap_field_solver(self, func):
         @wraps(func)
         def _solver(field, value, constraints, environment):
-            join_values = []
             max_attempts = None
             cardinality = 0
             history = []
@@ -92,8 +107,6 @@ class solver:  # noqa: N801
             for k, v, *_ in augmented_constraints:
                 if k not in self.valid_constraints:
                     raise NotImplementedError(f"Unsupported {self.name} constraint: {k}")
-                if k == "join_value":
-                    join_values.append(v)
                 if k == "max_attempts":
                     v = int(v)
                     if v < 0:
@@ -120,9 +133,6 @@ class solver:  # noqa: N801
                     history.append(value)
             else:
                 value = random.choice(history[:cardinality])
-            for field, constraint in join_values:
-                constraint.append_constraint(field, "==", value["value"], {"use_once": True})
-            delete_use_once(constraints)
             return value
 
         return _solver
@@ -134,9 +144,7 @@ class solver:  # noqa: N801
         return func
 
     @classmethod
-    def solve_field(cls, doc, group, field, constraints, schema, environment):
-        if constraints is None:
-            return None
+    def solve_field(cls, group, field, constraints, schema, environment):
         field = f"{group}.{field}" if group else field
         field_schema = schema.get(field, {})
         field_type = field_schema.get("type", "keyword")
@@ -148,12 +156,14 @@ class solver:  # noqa: N801
             value = []
         else:
             value = None
-        emit_field(doc, field, solver(field, value, constraints, environment)["value"])
+        return solver(field, value, constraints, environment)["value"]
 
     @classmethod
     def solve_nogroup(cls, doc, group, fields, schema, environment):
         for field, constraints in fields.items():
-            cls.solve_field(doc, group, field, constraints, schema, environment)
+            if constraints is not None:
+                value = cls.solve_field(group, field, constraints, schema, environment)
+                emit_group_field(doc, group, field, constraints, value)
 
     @classmethod
     def solve(cls, doc, group, fields, schema, environment):

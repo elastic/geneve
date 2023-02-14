@@ -29,7 +29,7 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
         @solver("source.geo.")
         @solver("destination.geo.")
         def solve_geo(doc, group, fields, schema, env):
-            emit_group(doc, group, {"lat": 0.0, "lon": 0.0})
+            emit_group(doc, group, fields, {"lat": 0.0, "lon": 0.0})
 
         schema = {}
         c = Constraints()
