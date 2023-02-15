@@ -87,7 +87,7 @@ def solve_keyword_field(field, value, constraints, left_attempts, environment):
                 raise ConflictError(f"{v} is not a subset of {allowed_chars}", field, k)
         elif k == "==":
             if type(value) == list:
-                value.append(v)
+                value.extend(v if type(v) == list else [v])
             elif value is None or value == v:
                 value = v
             else:
