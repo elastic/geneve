@@ -23,6 +23,7 @@ dependencies = [
   "elasticsearch>=8.2.0",
   "eql>=0.9.12",
   "faker",
+  "faker-datasets",
   "pytoml",
   "requests",
   "ruamel.yaml"
