@@ -1159,7 +1159,7 @@ sequence by host.id with maxspan=5m
 
 ```python
 [{'event': {'action': 'logged-in', 'outcome': 'success', 'category': ['authentication']}, 'winlog': {'logon': {'type': 'Network'}, 'event_data': {'TargetLogonId': 'ZFy'}}, 'source': {'ip': '229.172.181.141'}, 'host': {'id': 'Uyy'}, '@timestamp': 0},
- {'event': {'action': 'reset-password', 'category': ['iam']}, 'winlog': {'event_data': {'SubjectLogonId': 'ZFy'}}, 'host': {'id': 'Uyy'}, '@timestamp': 1}]
+ {'event': {'action': 'reset-password', 'category': ['iam']}, 'host': {'id': 'Uyy'}, 'winlog': {'event_data': {'SubjectLogonId': 'ZFy'}}, '@timestamp': 1}]
 ```
 
 
@@ -3704,9 +3704,9 @@ sequence with maxspan=2h
 
 ```python
 [{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'XIU'}, 'process': {'name': 'eqnedt32.exe'}, 'host': {'id': 'yyF'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'XIU'}, 'host': {'id': 'yyF'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'yyF'}, 'process': {'executable': 'XIU'}, '@timestamp': 1},
  {'event': {'type': ['jSv'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'ILO'}, 'process': {'name': 'POWERPNT.EXE'}, 'host': {'id': 'Ezs'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'ILO'}, 'host': {'id': 'Ezs'}, '@timestamp': 3}]
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Ezs'}, 'process': {'executable': 'ILO'}, '@timestamp': 3}]
 ```
 
 
@@ -3736,9 +3736,9 @@ sequence with maxspan=2h
 
 ```python
 [{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'XIU', 'path': 'tkN'}, 'process': {'name': 'FoxitPhantomPDF.exe'}, 'host': {'id': 'oix'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'tkN'}, 'host': {'id': 'oix'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'oix'}, 'process': {'executable': 'tkN'}, '@timestamp': 1},
  {'event': {'type': ['TFl'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'Ezs', 'path': 'wuE'}, 'process': {'name': 'AcroRd32.exe'}, 'host': {'id': 'pWq'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'wuE'}, 'host': {'id': 'pWq'}, '@timestamp': 3}]
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'pWq'}, 'process': {'executable': 'wuE'}, '@timestamp': 3}]
 ```
 
 
@@ -9007,7 +9007,7 @@ sequence with maxspan=5s
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'executable': 'ZFy', 'entity_id': 'XIU'}, 'executable': 'tkN'}, 'host': {'id': 'Ioi'}, '@timestamp': 0},
- {'event': {'type': ['change'], 'action': 'overwrite', 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'tkN'}, 'process': {'entity_id': 'XIU'}, 'host': {'id': 'Ioi'}, '@timestamp': 1}]
+ {'event': {'type': ['change'], 'action': 'overwrite', 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'tkN'}, 'host': {'id': 'Ioi'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1}]
 ```
 
 
@@ -10006,13 +10006,13 @@ sequence with maxspan=1m
 
 ```python
 [{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'XIU'}, 'process': {'executable': 'ZFy'}, '@timestamp': 1},
  {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'tkN'}, 'host': {'id': 'Ioi'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'tkN'}, 'host': {'id': 'Ioi'}, '@timestamp': 3},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'Ioi'}, 'process': {'executable': 'tkN'}, '@timestamp': 3},
  {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'xTF'}, 'host': {'id': 'lEz'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'xTF'}, 'host': {'id': 'lEz'}, '@timestamp': 5},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'lEz'}, 'process': {'executable': 'xTF'}, '@timestamp': 5},
  {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'swu'}, 'host': {'id': 'EEX'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'swu'}, 'host': {'id': 'EEX'}, '@timestamp': 7}]
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'EEX'}, 'process': {'executable': 'swu'}, '@timestamp': 7}]
 ```
 
 
@@ -10131,7 +10131,7 @@ sequence by host.id, process.entity_id
 
 ```python
 [{'process': {'name': 'wscript.exe', 'entity_id': 'vCf'}, 'network': {'protocol': 'Uyy', 'direction': 'egress', 'type': 'ipv4'}, 'destination': {'ip': '219.54.168.90'}, 'event': {'category': ['network']}, 'host': {'id': 'ixT'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'dll'}, 'process': {'entity_id': 'vCf'}, 'host': {'id': 'ixT'}, '@timestamp': 1}]
+ {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'dll'}, 'host': {'id': 'ixT'}, 'process': {'entity_id': 'vCf'}, '@timestamp': 1}]
 ```
 
 
@@ -10174,7 +10174,7 @@ sequence by host.id, process.entity_id with maxspan = 1m
 
 ```python
 [{'process': {'name': 'svchost.exe', 'entity_id': 'ZFy'}, 'network': {'direction': 'incoming'}, 'source': {'port': 61522, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'destination': {'port': 55313}, 'event': {'category': ['network']}, 'host': {'id': 'oix'}, '@timestamp': 0},
- {'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\Ezswu\\Actions'}, 'event': {'category': ['registry']}, 'process': {'entity_id': 'ZFy'}, 'host': {'id': 'oix'}, '@timestamp': 1}]
+ {'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\Ezswu\\Actions'}, 'event': {'category': ['registry']}, 'host': {'id': 'oix'}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -11036,9 +11036,9 @@ sequence by host.id, process.entity_id with maxspan=5s
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\Windows\\Tasks\\yXIUtkNIoixTFl.exe', 'entity_id': 'Ezs'}, 'host': {'id': 'wuE'}, '@timestamp': 0},
- {'event': {'type': ['EXp'], 'category': ['file']}, 'user': {'domain': 'WqN'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\iFqsyzKNyyQDpU'}, 'process': {'entity_id': 'Ezs'}, 'host': {'id': 'wuE'}, '@timestamp': 1},
+ {'event': {'type': ['EXp'], 'category': ['file']}, 'user': {'domain': 'WqN'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\iFqsyzKNyyQDpU'}, 'host': {'id': 'wuE'}, 'process': {'entity_id': 'Ezs'}, '@timestamp': 1},
  {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\Windows\\Tasks\\UDqx.exe', 'entity_id': 'VTO'}, 'host': {'id': 'LWt'}, '@timestamp': 2},
- {'event': {'type': ['imr'], 'category': ['file']}, 'user': {'domain': 'FgT'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\s'}, 'process': {'entity_id': 'VTO'}, 'host': {'id': 'LWt'}, '@timestamp': 3}]
+ {'event': {'type': ['imr'], 'category': ['file']}, 'user': {'domain': 'FgT'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\s'}, 'host': {'id': 'LWt'}, 'process': {'entity_id': 'VTO'}, '@timestamp': 3}]
 ```
 
 
@@ -11803,7 +11803,7 @@ sequence by host.id with maxspan=1m
 
 ```python
 [{'event': {'code': '1', 'category': ['process']}, 'process': {'parent': {'name': 'winword.exe', 'entity_id': 'vCf'}, 'entity_id': 'Uyy'}, 'host': {'id': 'FjS'}, '@timestamp': 0},
- {'event': {'code': '10', 'category': ['process']}, 'winlog': {'event_data': {'CallTrace': 'ILOoOHmxUNKNOWNEEXpWqNVR', 'TargetProcessGUID': 'Uyy'}}, 'process': {'entity_id': 'vCf'}, 'host': {'id': 'FjS'}, '@timestamp': 1}]
+ {'event': {'code': '10', 'category': ['process']}, 'winlog': {'event_data': {'CallTrace': 'ILOoOHmxUNKNOWNEEXpWqNVR', 'TargetProcessGUID': 'Uyy'}}, 'host': {'id': 'FjS'}, 'process': {'entity_id': 'vCf'}, '@timestamp': 1}]
 ```
 
 

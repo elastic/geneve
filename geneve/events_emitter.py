@@ -143,6 +143,7 @@ class SourceEvents:
     def add_ast(self, ast, *, meta=None):
         root = collect_constraints_eql(ast)
         root.meta = meta
+        root.consolidate()
         self.try_emit(root)
         self.__roots.append(root)
         return root

@@ -74,6 +74,17 @@ class Document:
     def fields(self):
         return set(self.__constraints)
 
+    def entities(self):
+        return self.__entities.values()
+
+    def find_entity(self, field_or_group):
+        if field_or_group.endswith("."):
+            return self.__entities[field_or_group[:-1]]
+        pos = field_or_group.rfind(".")
+        if pos == -1:
+            return self.__entities[""]
+        return self.__entities[field_or_group[:pos]]
+
     def __iadd__(self, other):
         for field, constraints in other.__constraints.items():
             self.extend_constraints(field, constraints)
@@ -97,12 +108,15 @@ class Document:
             doc.extend_constraints(field, constraints)
         return doc
 
-    def solve(self, schema):
+    def consolidate(self):
         from .solver import solver
 
+        self.__entities = {group: solver.new_entity(group, fields) for group, fields in self.__constraints.groups()}
+
+    def solve(self, schema):
         doc = {}
-        for group, fields in self.__constraints.groups():
-            solver.solve(doc, group, fields, schema, self.environment)
+        for entity in self.entities():
+            entity.solve(doc, schema, self.environment)
         return doc
 
 
@@ -117,6 +131,10 @@ class Branch(List[Document]):
 
     def fields(self):
         return set(chain(*(constraints.fields() for constraints in self)))
+
+    def consolidate(self):
+        for constraints in self:
+            constraints.consolidate()
 
     def solve(self, schema):
         return (constraints.solve(schema) for constraints in self)
@@ -138,6 +156,10 @@ class Root(List[Branch]):
 
     def constraints(self):
         return chain(*self)
+
+    def consolidate(self):
+        for branch in self:
+            branch.consolidate()
 
     @classmethod
     def chain(cls, roots):
