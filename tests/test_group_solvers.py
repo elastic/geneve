@@ -49,6 +49,7 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
         d = Document()
         d.append_constraint("test.geo.")
         d.append_constraint("test2.geo.")
+        d.consolidate()
 
         self.assertEqual(
             {
@@ -63,6 +64,7 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
         d = Document()
         d.append_constraint("source.geo.")
         d.append_constraint("destination.geo.")
+        d.consolidate()
 
         self.assertEqual(
             {
@@ -94,6 +96,7 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
         d = Document()
         d.append_constraint("source.as.")
         d.append_constraint("destination.as.")
+        d.consolidate()
 
         self.assertEqual(
             {

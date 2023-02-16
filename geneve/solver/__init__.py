@@ -95,11 +95,12 @@ class solver:  # noqa: N801
             cardinality = 0
             history = []
             augmented_constraints = constraints + get_ecs_constraints(field)
-            for k, v, *_ in augmented_constraints:
+            for k, v, *flags in augmented_constraints:
                 if k not in self.valid_constraints:
                     raise NotImplementedError(f"Unsupported {self.name[1:]} constraint: {k}")
                 if k == "join_value":
-                    join_values.append(v)
+                    if not flags or not flags[0].get("relation_only", False):
+                        join_values.append(v)
                 if k == "max_attempts":
                     v = int(v)
                     if v < 0:
@@ -168,6 +169,19 @@ class solver:  # noqa: N801
     def solve(cls, doc, group, fields, schema, environment):
         solve_group = cls.solvers.get(group + ".", cls.solve_nogroup)
         solve_group(doc, group, fields, schema, environment)
+
+    @classmethod
+    def new_entity(cls, group, fields):
+        return Entity(group, fields)
+
+
+class Entity:
+    def __init__(self, group, fields):
+        self.group = group
+        self.fields = fields
+
+    def solve(self, doc, schema, environment):
+        solver.solve(doc, self.group, self.fields, schema, environment)
 
 
 def load_solvers():

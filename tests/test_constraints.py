@@ -1041,6 +1041,38 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
                 d = Document()
                 self.assertEqual(test_values, [solver("test_var", None, constraints, d.environment) for _ in test_values])
 
+    def test_entity(self):
+        d = Document()
+
+        for field in [
+            "@timestamp",
+            "ecs.version",
+            "process.name",
+            "process.thread.id",
+            "process.thread.name",
+            "process.tty.char_device.major",
+            "process.tty.char_device.minor",
+            "source.geo.",
+        ]:
+            d.append_constraint(field)
+
+        d.consolidate()
+        entities = list(d.entities())
+
+        self.assertEqual(
+            [
+                "ecs",
+                "process",
+                "process.thread",
+                "process.tty.char_device",
+                "process.tty",
+                "source.geo",
+                "source",
+                "",
+            ],
+            [e.group for e in entities],
+        )
+
 
 class TestBranches(tu.SeededTestCase, unittest.TestCase):
     def test_fields(self):
@@ -1067,8 +1099,11 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
         d1.append_constraint("process.name", "wildcard", ("*.exe", "*.bat"))
         d2.append_constraint("process.name", "wildcard", ("*.dll", "*.scr"))
         d3.append_constraint("process.name", "wildcard", ("*.com"))
+        d2.append_constraint("process.parent.name")
+        d3.append_constraint("process.parent.name")
         d1.append_constraint("process.name", "join_value", ("process.parent.name", d2))
         d2.append_constraint("process.name", "join_value", ("process.parent.name", d3))
+        branch.consolidate()
 
         self.assertEqual(
             [

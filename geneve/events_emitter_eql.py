@@ -173,6 +173,9 @@ def cc_join_branch(seq: List[Tuple[Document, List[str]]]) -> Branch:
         for field, doc in join_col:
             field0 = field0 or field
             docs[0].append_constraint(field0, "join_value", (field, doc))
+            if (field, doc) != (field0, docs[0]):
+                docs[0].append_constraint(field0, "join_value", (field, doc), {"relation_only": True})
+                doc.append_constraint(field, "join_value", (field0, docs[0]), {"relation_only": True})
     return Branch(docs)
 
 
