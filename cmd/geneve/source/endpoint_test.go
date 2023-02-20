@@ -110,7 +110,27 @@ func TestSourceEndpoint(t *testing.T) {
 	// get docs mappings
 	resp = r.Get("/api/source/test/_mappings")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusOK, "{\"properties\": {\"@timestamp\": {\"type\": \"keyword\"}, \"event\": {\"properties\": {\"category\": {\"type\": \"keyword\"}}}, \"process\": {\"properties\": {\"name\": {\"type\": \"keyword\"}}}}}\n")
+	resp.ExpectJson(t, http.StatusOK, &map[string]any{
+		"properties": map[string]any{
+			"@timestamp": map[string]any{
+				"type": "keyword",
+			},
+			"event": map[string]any{
+				"properties": map[string]any{
+					"category": map[string]any{
+						"type": "keyword",
+					},
+				},
+			},
+			"process": map[string]any{
+				"properties": map[string]any{
+					"name": map[string]any{
+						"type": "keyword",
+					},
+				},
+			},
+		},
+	}, true)
 
 	// docs source with non-existent schema
 	resp = r.Put("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.name == \"*.exe\"")
@@ -160,5 +180,25 @@ func TestSourceEndpointWithSchema(t *testing.T) {
 	// get docs mappings
 	resp = r.Get("/api/source/test/_mappings")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusOK, "{\"properties\": {\"@timestamp\": {\"type\": \"keyword\"}, \"event\": {\"properties\": {\"category\": {\"type\": \"keyword\"}}}, \"process\": {\"properties\": {\"pid\": {\"type\": \"long\"}}}}}\n")
+	resp.ExpectJson(t, http.StatusOK, &map[string]any{
+		"properties": map[string]any{
+			"@timestamp": map[string]any{
+				"type": "keyword",
+			},
+			"event": map[string]any{
+				"properties": map[string]any{
+					"category": map[string]any{
+						"type": "keyword",
+					},
+				},
+			},
+			"process": map[string]any{
+				"properties": map[string]any{
+					"pid": map[string]any{
+						"type": "long",
+					},
+				},
+			},
+		},
+	}, true)
 }

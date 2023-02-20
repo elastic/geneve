@@ -64,7 +64,7 @@ func (source Source) Mappings() (mappings string, e error) {
 		}
 		defer o_mappings.DecRef()
 
-		o_mappings_json, err := source.se.JsonDumps(o_mappings, true)
+		o_mappings_json, err := source.se.JsonDumps(o_mappings, false)
 		if err != nil {
 			e = err
 			return

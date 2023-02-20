@@ -18,6 +18,7 @@
 package testing
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 	"reflect"
@@ -81,6 +82,35 @@ func (r Response) ExpectLines(t testing.TB, statusCode int, lines []string) {
 
 	r.ExpectStatusCode(t, statusCode)
 	r.ExpectBodyLines(t, lines)
+}
+
+func (r Response) ExpectJson(t testing.TB, statusCode int, expected any, knownFields bool) {
+	t.Helper()
+
+	r.ExpectStatusCode(t, statusCode)
+	r.ExpectContentType(t, "application/json")
+
+	data := reflect.New(reflect.ValueOf(expected).Elem().Type()).Interface()
+	dec := json.NewDecoder(r.Body)
+	if knownFields {
+		dec.DisallowUnknownFields()
+	}
+	err := dec.Decode(data)
+	if err != nil {
+		panic(err)
+	}
+
+	if !reflect.DeepEqual(data, expected) {
+		a, err := prettyJson(data)
+		if err != nil {
+			panic(err)
+		}
+		b, err := prettyJson(expected)
+		if err != nil {
+			panic(err)
+		}
+		t.Errorf("\nData is\n%s\n\nExpected is\n%s", a, b)
+	}
 }
 
 func (r Response) ExpectYaml(t testing.TB, statusCode int, expected any, knownFields bool) {
