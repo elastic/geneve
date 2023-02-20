@@ -17,20 +17,23 @@
 
 package python
 
-func GetVersion() (string, error) {
-	o_sysconfig, err := PyImport_Import("sysconfig")
+import "gitlab.com/pygolo/py"
+
+func GetVersion(Py py.Py) (string, error) {
+	o_sysconfig, err := Py.Import_Import("sysconfig")
+	defer Py.DecRef(o_sysconfig)
 	if err != nil {
 		return "", err
 	}
-	defer o_sysconfig.DecRef()
 
-	o_version, err := o_sysconfig.CallMethod("get_config_var", "py_version")
+	o_version, err := Py.Object_CallMethod(o_sysconfig, "get_config_var", "py_version")
+	defer Py.DecRef(o_version)
 	if err != nil {
 		return "", err
 	}
-	defer o_version.DecRef()
 
-	s_version, err := o_version.Str()
+	var s_version string
+	err = Py.Go_FromObject(o_version, &s_version)
 	if err != nil {
 		return "", err
 	}
@@ -38,36 +41,19 @@ func GetVersion() (string, error) {
 	return s_version, nil
 }
 
-func GetPaths() (paths map[string]string, err error) {
-	o_sysconfig, err := PyImport_Import("sysconfig")
-	if err != nil {
-		return nil, err
-	}
-	defer o_sysconfig.DecRef()
-
-	o_paths, err := o_sysconfig.CallMethod("get_paths")
-	if err != nil {
-		return nil, err
-	}
-	defer o_paths.DecRef()
-
-	o_items, err := PyMapping_Items(o_paths)
-	if err != nil {
-		return nil, err
-	}
-	defer o_items.DecRef()
-
-	a_items, err := toSlice[any](o_items)
+func GetPaths(Py py.Py) (paths map[string]string, err error) {
+	o_sysconfig, err := Py.Import_Import("sysconfig")
+	defer Py.DecRef(o_sysconfig)
 	if err != nil {
 		return nil, err
 	}
 
-	paths = make(map[string]string)
-	for _, a_item := range a_items {
-		name, _ := a_item.([]any)[0].(string)
-		value, _ := a_item.([]any)[1].(string)
-		paths[name] = value
+	o_paths, err := Py.Object_CallMethod(o_sysconfig, "get_paths")
+	defer Py.DecRef(o_paths)
+	if err != nil {
+		return nil, err
 	}
 
+	err = Py.Go_FromObject(o_paths, &paths)
 	return
 }

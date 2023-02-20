@@ -26,6 +26,7 @@ import (
 	"github.com/elastic/geneve/cmd/geneve"
 	"github.com/elastic/geneve/cmd/internal/python"
 	"github.com/spf13/cobra"
+	"gitlab.com/pygolo/py"
 )
 
 func exitIfError(err error) {
@@ -39,28 +40,32 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Show various version related info",
 	Run: func(cmd *cobra.Command, args []string) {
-		python.Py_Initialize()
+		Py := py.Py{}
+		Py.Initialize()
 
 		fmt.Printf("Geneve:\n  version: %s\n\n", geneve.Version)
 		fmt.Println("Geneve Python module:")
 
 		compatible := false
 
-		o_geneve, err := geneve.ImportModule()
+		o_geneve, err := geneve.ImportModule(Py)
+		defer Py.DecRef(o_geneve)
 		if err != nil {
 			fmt.Printf("  %s\n", err.Error())
 		} else {
-			defer o_geneve.DecRef()
-
-			o_geneve_version, err := o_geneve.GetAttrString("version")
+			o_geneve_version, err := Py.Object_GetAttr(o_geneve, "version")
+			defer Py.DecRef(o_geneve_version)
 			exitIfError(err)
-			s_geneve_version, err := o_geneve_version.Str()
+			var s_geneve_version string
+			err = Py.Go_FromObject(o_geneve_version, &s_geneve_version)
 			exitIfError(err)
 			fmt.Printf("  version: %s\n", s_geneve_version)
 
-			o_geneve_path, err := o_geneve.GetAttrString("__file__")
+			o_geneve_path, err := Py.Object_GetAttr(o_geneve, "__file__")
+			defer Py.DecRef(o_geneve_path)
 			exitIfError(err)
-			s_geneve_path, err := o_geneve_path.Str()
+			var s_geneve_path string
+			err = Py.Go_FromObject(o_geneve_path, &s_geneve_path)
 			exitIfError(err)
 			fmt.Printf("  path: %s\n", filepath.Dir(s_geneve_path))
 
@@ -69,14 +74,14 @@ var versionCmd = &cobra.Command{
 
 		fmt.Println("\nEmbedded Python interpreter:")
 
-		version, err := python.GetVersion()
+		version, err := python.GetVersion(Py)
 		exitIfError(err)
 		fmt.Printf("  version: %s\n", version)
 
-		paths, err := python.GetPaths()
+		paths, err := python.GetPaths(Py)
 		exitIfError(err)
 
-		path_names := []string{}
+		path_names := make([]string, 0, len(paths))
 		for name := range paths {
 			path_names = append(path_names, name)
 		}

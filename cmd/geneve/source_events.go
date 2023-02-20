@@ -22,78 +22,80 @@ import (
 
 	"github.com/elastic/geneve/cmd/geneve/schema"
 	"github.com/elastic/geneve/cmd/internal/python"
+	"gitlab.com/pygolo/py"
 	"golang.org/x/mod/semver"
 )
 
 var Version = "0.2.0"
 
 type SourceEvents struct {
-	o            *python.PyObject
-	o_json_dumps *python.PyObject
+	o            py.Object
+	o_json_dumps py.Object
+	py           py.Py
 }
 
-func NewSourceEvents(schema schema.Schema) (*SourceEvents, error) {
-	o_json, err := python.PyImport_Import("json")
-	if err != nil {
-		return nil, err
-	}
-	defer o_json.DecRef()
-
-	o_json_dumps, err := o_json.GetAttrString("dumps")
+func NewSourceEvents(Py py.Py, schema schema.Schema) (*SourceEvents, error) {
+	o_json, err := Py.Import_Import("json")
+	defer Py.DecRef(o_json)
 	if err != nil {
 		return nil, err
 	}
 
-	o_geneve, err := ImportModule()
+	o_json_dumps, err := Py.Object_GetAttr(o_json, "dumps")
+	defer Py.DecRef(o_json_dumps)
 	if err != nil {
 		return nil, err
 	}
-	defer o_geneve.DecRef()
 
-	o, err := o_geneve.CallMethod("SourceEvents", schema)
+	o_geneve, err := ImportModule(Py)
+	defer Py.DecRef(o_geneve)
 	if err != nil {
 		return nil, err
 	}
-	return &SourceEvents{o, o_json_dumps}, nil
+
+	o, err := Py.Object_CallMethod(o_geneve, "SourceEvents", schema)
+	if err != nil {
+		return nil, err
+	}
+	return &SourceEvents{o, Py.NewRef(o_json_dumps), Py}, nil
 }
 
 func (se *SourceEvents) DecRef() {
-	se.o.DecRef()
-	se.o_json_dumps.DecRef()
+	se.py.DecRef(se.o)
+	se.py.DecRef(se.o_json_dumps)
 }
 
-func (se *SourceEvents) AddQuery(query string) (*python.PyObject, error) {
-	return se.o.CallMethod("add_query", query)
+func (se *SourceEvents) AddQuery(query string) (py.Object, error) {
+	return se.py.Object_CallMethod(se.o, "add_query", query)
 }
 
-func (se *SourceEvents) AddRule(rule Rule, meta any) (*python.PyObject, error) {
-	o_add_rule, err := se.o.GetAttrString("add_rule")
+func (se *SourceEvents) AddRule(rule Rule, meta any) (py.Object, error) {
+	o_add_rule, err := se.py.Object_GetAttr(se.o, "add_rule")
+	defer se.py.DecRef(o_add_rule)
 	if err != nil {
-		return nil, err
+		return py.Object{}, err
 	}
-	defer o_add_rule.DecRef()
 	if meta == nil {
-		python.Py_None.IncRef()
-		meta = python.Py_None
+		meta = se.py.NewRef(py.None)
 	}
-	return o_add_rule.Call([]any{rule}, map[any]any{"meta": meta})
+	return se.py.Object_Call(o_add_rule, py.Args{rule}, py.KwArgs{"meta": meta})
 }
 
-func (se *SourceEvents) Mappings() (*python.PyObject, error) {
-	return se.o.CallMethod("mappings")
+func (se *SourceEvents) Mappings() (py.Object, error) {
+	return se.py.Object_CallMethod(se.o, "mappings")
 }
 
-func (se *SourceEvents) Emit(count int) (*python.PyObject, error) {
-	o_emit, err := se.o.GetAttrString("emit")
+func (se *SourceEvents) Emit(count int) (py.Object, error) {
+	o_emit, err := se.py.Object_GetAttr(se.o, "emit")
+	defer se.py.DecRef(o_emit)
 	if err != nil {
-		return nil, err
+		return py.Object{}, err
 	}
-	defer o_emit.DecRef()
-	return o_emit.Call([]any{}, map[any]any{"count": count})
+	return se.py.Object_Call(o_emit, py.Args{}, py.KwArgs{"count": count})
 }
 
-func (se *SourceEvents) JsonDumps(o_doc *python.PyObject, sortKeys bool) (*python.PyObject, error) {
-	return se.o_json_dumps.Call([]any{o_doc}, map[any]any{"sort_keys": true})
+func (se *SourceEvents) JsonDumps(o_doc py.Object, sortKeys bool) (py.Object, error) {
+	return se.py.Object_Call(se.o_json_dumps, py.Args{o_doc}, py.KwArgs{"sort_keys": true})
 }
 
 type Rule struct {
@@ -107,92 +109,119 @@ type Rule struct {
 	Index    []string `json:",omitempy"`
 }
 
-func (r Rule) ToPython() (*python.PyObject, error) {
-	o_collections, err := python.PyImport_Import("collections")
-	if err != nil {
-		return nil, err
-	}
-	defer o_collections.DecRef()
+func ruleToObject(Py py.Py, a interface{}) (o py.Object, e error) {
+	rule := a.(Rule)
 
-	o_rule_type, err := o_collections.CallMethod("namedtuple", "Rule", []any{"query", "type", "language"})
+	o_collections, err := Py.Import_Import("collections")
+	defer Py.DecRef(o_collections)
 	if err != nil {
-		return nil, err
+		e = err
+		return
 	}
-	defer o_rule_type.DecRef()
 
-	return o_rule_type.CallFunction(r.Query, r.Type, r.Language)
+	o_rule_type, err := Py.Object_CallMethod(o_collections, "namedtuple", "Rule", []string{
+		"query",
+		"type",
+		"language",
+	})
+	defer Py.DecRef(o_rule_type)
+	if err != nil {
+		e = err
+		return
+	}
+
+	return Py.Object_CallFunction(o_rule_type, rule.Query, rule.Type, rule.Language)
 }
 
-func ImportModule() (*python.PyObject, error) {
-	o_sys, err := python.PyImport_Import("sys")
+func ImportModule(Py py.Py) (py.Object, error) {
+	o_sys, err := Py.Import_Import("sys")
+	defer Py.DecRef(o_sys)
 	if err != nil {
-		return nil, err
-	}
-	defer o_sys.DecRef()
-
-	o_sys_path, err := o_sys.GetAttrString("path")
-	if err != nil {
-		return nil, err
-	}
-	defer o_sys_path.DecRef()
-
-	o_dot := python.PyUnicode_FromString(".")
-	defer o_dot.DecRef()
-
-	o_first, err := python.PyList_GetItem(o_sys_path, 0)
-	if err != nil {
-		return nil, err
+		return py.Object{}, err
 	}
 
-	if python.PyUnicode_Compare(o_first, o_dot) != 0 {
-		err = python.PyList_Insert(o_sys_path, 0, o_dot)
+	o_sys_path, err := Py.Object_GetAttr(o_sys, "path")
+	defer Py.DecRef(o_sys_path)
+	if err != nil {
+		return py.Object{}, err
+	}
+
+	o_first, err := Py.List_GetItem(o_sys_path, 0)
+	if err != nil {
+		return py.Object{}, err
+	}
+
+	var first string
+	err = Py.Go_FromObject(o_first, &first)
+	if err != nil {
+		return py.Object{}, err
+	}
+
+	if first != "." {
+		err := Py.List_Insert(o_sys_path, 0, ".")
 		if err != nil {
-			return nil, err
+			return py.Object{}, err
 		}
 	}
 
-	o_geneve, err := python.PyImport_Import("geneve")
+	o_geneve, err := Py.Import_Import("geneve")
+	defer Py.DecRef(o_geneve)
 	if err != nil {
-		return nil, err
+		return py.Object{}, err
 	}
-	defer o_geneve.DecRef()
 
-	o_geneve_version, err := o_geneve.GetAttrString("version")
+	o_geneve_version, err := Py.Object_GetAttr(o_geneve, "version")
+	defer Py.DecRef(o_geneve_version)
 	if err != nil {
-		return nil, err
+		return py.Object{}, err
 	}
-	defer o_geneve_version.DecRef()
 
-	module_version, err := o_geneve_version.Str()
+	var module_version string
+	err = Py.Go_FromObject(o_geneve_version, &module_version)
 	if err != nil {
-		return nil, err
+		return py.Object{}, err
 	}
 
 	module_version = "v" + module_version
 	if !semver.IsValid(module_version) {
-		return nil, fmt.Errorf("Module version is not valid: %s", module_version)
+		return py.Object{}, fmt.Errorf("Module version is not valid: %s", module_version)
 	}
 	module_mm := semver.MajorMinor(module_version)
 
 	app_version := "v" + Version
 	if !semver.IsValid(app_version) {
-		return nil, fmt.Errorf("Application version is not valid: %s", app_version)
+		return py.Object{}, fmt.Errorf("Application version is not valid: %s", app_version)
 	}
 	app_mm := semver.MajorMinor(app_version)
 
 	if module_mm != app_mm {
-		return nil, fmt.Errorf("version mismatch: %s is not a %s.x", module_version, app_mm)
+		return py.Object{}, fmt.Errorf("version mismatch: %s is not a %s.x", module_version, app_mm)
 	}
 
-	o_geneve.IncRef()
-	return o_geneve, nil
+	return Py.NewRef(o_geneve), nil
 }
 
-func ModuleCheck() error {
-	o_geneve, err := ImportModule()
-	if err != nil {
-		return err
+func ModuleCheck() (e error) {
+	done := make(chan any)
+	python.Monitor <- func(Py py.Py) {
+		defer close(done)
+
+		o_geneve, err := ImportModule(Py)
+		defer Py.DecRef(o_geneve)
+		if err != nil {
+			e = err
+		}
 	}
-	o_geneve.DecRef()
-	return nil
+	<-done
+	return
+}
+
+func init() {
+	c := py.ConvConf{
+		TypeOf:   Rule{},
+		ToObject: ruleToObject,
+	}
+	if err := c.Register(); err != nil {
+		panic(err)
+	}
 }

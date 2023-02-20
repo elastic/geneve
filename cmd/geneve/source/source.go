@@ -19,6 +19,7 @@ package source
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -26,6 +27,7 @@ import (
 	"github.com/elastic/geneve/cmd/geneve"
 	"github.com/elastic/geneve/cmd/geneve/schema"
 	"github.com/elastic/geneve/cmd/internal/python"
+	"gitlab.com/pygolo/py"
 )
 
 type Source struct {
@@ -40,10 +42,10 @@ type Document struct {
 
 func NewSource(schema schema.Schema) (source Source, e error) {
 	done := make(chan any)
-	python.Monitor <- func() {
+	python.Monitor <- func(Py py.Py) {
 		defer close(done)
 
-		se, err := geneve.NewSourceEvents(schema)
+		se, err := geneve.NewSourceEvents(Py, schema)
 		if err != nil {
 			e = err
 			return
@@ -56,16 +58,16 @@ func NewSource(schema schema.Schema) (source Source, e error) {
 
 func (source *Source) AddQueries(queries []string) (num int, e error) {
 	done := make(chan any)
-	python.Monitor <- func() {
+	python.Monitor <- func(Py py.Py) {
 		defer close(done)
 
 		for _, query := range queries {
 			o_root, err := source.se.AddQuery(query)
+			defer Py.DecRef(o_root)
 			if err != nil {
 				e = err
 				return
 			}
-			o_root.DecRef()
 			num += 1
 		}
 	}
@@ -82,7 +84,7 @@ func (source *Source) AddRules(rule_params []RuleParams) (num int, e error) {
 		}
 
 		done := make(chan any)
-		python.Monitor <- func() {
+		python.Monitor <- func(Py py.Py) {
 			defer close(done)
 
 			for _, rule := range rules {
@@ -104,17 +106,18 @@ func (source *Source) AddRules(rule_params []RuleParams) (num int, e error) {
 					continue
 				}
 				o_root, err := source.se.AddRule(rule, len(source.rules))
+				defer Py.DecRef(o_root)
 				if err != nil {
-					if err, ok := err.(*python.Error); ok {
-						if err.Type == "NotImplementedError" || err.Value == "Root without branches" {
-							logger.Printf("Ignoring rule: %s: %s", rule.RuleId, err.Value)
+					var py_err py.Error
+					if errors.As(err, &py_err) {
+						if py_err.Type == "NotImplementedError" || py_err.Value == "Root without branches" {
+							logger.Printf("Ignoring rule: %s: %s", rule.RuleId, py_err.Value)
 							continue
 						}
 					}
 					e = err
 					return
 				}
-				o_root.DecRef()
 				source.rules = append(source.rules, rule)
 				num += 1
 			}
@@ -126,24 +129,24 @@ func (source *Source) AddRules(rule_params []RuleParams) (num int, e error) {
 
 func (source *Source) Mappings() (mappings string, e error) {
 	done := make(chan any)
-	python.Monitor <- func() {
+	python.Monitor <- func(Py py.Py) {
 		defer close(done)
 
 		o_mappings, err := source.se.Mappings()
+		defer Py.DecRef(o_mappings)
 		if err != nil {
 			e = err
 			return
 		}
-		defer o_mappings.DecRef()
 
 		o_mappings_json, err := source.se.JsonDumps(o_mappings, false)
+		defer Py.DecRef(o_mappings_json)
 		if err != nil {
 			e = err
 			return
 		}
-		defer o_mappings_json.DecRef()
 
-		mappings, e = o_mappings_json.Str()
+		e = Py.Go_FromObject(o_mappings_json, &mappings)
 	}
 	<-done
 	return
@@ -151,55 +154,57 @@ func (source *Source) Mappings() (mappings string, e error) {
 
 func (source *Source) Emit(count int) (docs []Document, e error) {
 	done := make(chan any)
-	python.Monitor <- func() {
+	python.Monitor <- func(Py py.Py) {
 		defer close(done)
 
 		o_docs, err := source.se.Emit(count)
+		defer Py.DecRef(o_docs)
 		if err != nil {
 			e = err
 			return
 		}
-		defer o_docs.DecRef()
 
-		docs = make([]Document, 0, python.PyList_Size(o_docs))
+		docs = make([]Document, 0, Py.Object_Length(o_docs))
 		for i := 0; i < cap(docs); i++ {
-			o_event, err := python.PySequence_GetItem(o_docs, i)
+			o_event, err := Py.Sequence_GetItem(o_docs, i)
+			defer Py.DecRef(o_event)
 			if err != nil {
 				e = err
 				return
 			}
-			defer o_event.DecRef()
-			o_doc, err := o_event.GetAttrString("doc")
+			o_doc, err := Py.Object_GetAttr(o_event, "doc")
+			defer Py.DecRef(o_doc)
 			if err != nil {
 				e = err
 				return
 			}
-			defer o_doc.DecRef()
-			o_meta, err := o_event.GetAttrString("meta")
+			o_meta, err := Py.Object_GetAttr(o_event, "meta")
+			defer Py.DecRef(o_meta)
 			if err != nil {
 				e = err
 				return
 			}
-			defer o_meta.DecRef()
 			o_doc_json, err := source.se.JsonDumps(o_doc, false)
+			defer Py.DecRef(o_doc_json)
 			if err != nil {
 				e = err
 				return
 			}
-			defer o_doc_json.DecRef()
-			s_doc, err := o_doc_json.Str()
+			var s_doc string
+			err = Py.Go_FromObject(o_doc_json, &s_doc)
 			if err != nil {
 				e = err
 				return
 			}
 			var rule *geneve.Rule
-			if o_meta != python.Py_None {
-				index, err := python.PythonToAny(o_meta)
+			if o_meta != py.None {
+				var index int
+				err = Py.Go_FromObject(o_meta, &index)
 				if err != nil {
 					e = err
 					return
 				}
-				rule = &source.rules[index.(int64)]
+				rule = &source.rules[index]
 			}
 			docs = append(docs, Document{Data: s_doc, Rule: rule})
 		}
@@ -210,7 +215,7 @@ func (source *Source) Emit(count int) (docs []Document, e error) {
 
 func (source *Source) Close() {
 	done := make(chan any)
-	python.Monitor <- func() {
+	python.Monitor <- func(Py py.Py) {
 		defer close(done)
 		source.se.DecRef()
 		source.rules = nil

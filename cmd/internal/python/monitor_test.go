@@ -19,6 +19,8 @@ package python
 
 import (
 	"testing"
+
+	"gitlab.com/pygolo/py"
 )
 
 func init() {
@@ -28,7 +30,7 @@ func init() {
 func TestTextRequest(t *testing.T) {
 	ready := make(chan string)
 	exp_text := "test message"
-	Monitor <- func() {
+	Monitor <- func(Py py.Py) {
 		defer close(ready)
 		ready <- exp_text
 	}
