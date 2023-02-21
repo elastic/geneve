@@ -78,6 +78,8 @@ class solver:  # noqa: N801
     solvers = {}
 
     def __init__(self, name, *args):
+        if name in self.solvers:
+            raise ValueError(f"duplicate solver: {name}")
         self.name = name
         self.valid_constraints = ("join_value", "max_attempts", "cardinality") + args
 

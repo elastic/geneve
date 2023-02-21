@@ -26,20 +26,20 @@ from geneve.solver import emit_group, solver
 
 class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
     def test_group(self):
-        @solver("source.geo.")
-        @solver("destination.geo.")
+        @solver("test.geo.")
+        @solver("test2.geo.")
         def solve_geo(doc, group, fields, schema, env):
             emit_group(doc, group, {"lat": 0.0, "lon": 0.0})
 
         schema = {}
         d = Document()
-        d.append_constraint("source.geo.")
-        d.append_constraint("destination.geo.")
+        d.append_constraint("test.geo.")
+        d.append_constraint("test2.geo.")
 
         self.assertEqual(
             {
-                "source": {"geo": {"lat": 0.0, "lon": 0.0}},
-                "destination": {"geo": {"lat": 0.0, "lon": 0.0}},
+                "test": {"geo": {"lat": 0.0, "lon": 0.0}},
+                "test2": {"geo": {"lat": 0.0, "lon": 0.0}},
             },
             d.solve(schema),
         )
