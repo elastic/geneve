@@ -161,18 +161,8 @@ class solver:  # noqa: N801
         return value
 
     @classmethod
-    def solve_nogroup(cls, doc, group, fields, schema, environment):
-        for field, constraints in fields.items():
-            cls.solve_field(doc, group, field, constraints, schema, environment)
-
-    @classmethod
-    def solve(cls, doc, group, fields, schema, environment):
-        solve_group = cls.solvers.get(group + ".", cls.solve_nogroup)
-        solve_group(doc, group, fields, schema, environment)
-
-    @classmethod
     def new_entity(cls, group, fields):
-        return Entity(group, fields)
+        return cls.solvers.get(group + ".", Entity)(group, fields)
 
 
 class Entity:
@@ -181,7 +171,8 @@ class Entity:
         self.fields = fields
 
     def solve(self, doc, schema, environment):
-        solver.solve(doc, self.group, self.fields, schema, environment)
+        for field, constraints in self.fields.items():
+            solver.solve_field(doc, self.group, field, constraints, schema, environment)
 
 
 def load_solvers():

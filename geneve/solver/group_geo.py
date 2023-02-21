@@ -19,20 +19,21 @@
 
 from faker import Faker
 
-from geneve.solver import emit_group, solver
+from geneve.solver import Entity, emit_group, solver
 
 faker = Faker()
 
 
 @solver("source.geo.")
 @solver("destination.geo.")
-def resolve_geo_group(doc, group, fields, schema, env):
-    lol = faker.location_on_land()
-    geo = {
-        "location.lat": float(lol[0]),
-        "location.lon": float(lol[1]),
-        "city_name": lol[2],
-        "country_iso_code": lol[3],
-        "timezone": lol[4],
-    }
-    emit_group(doc, group, geo)
+class GeoEntity(Entity):
+    def solve(self, doc, schema, env):
+        lol = faker.location_on_land()
+        geo = {
+            "location.lat": float(lol[0]),
+            "location.lon": float(lol[1]),
+            "city_name": lol[2],
+            "country_iso_code": lol[3],
+            "timezone": lol[4],
+        }
+        emit_group(doc, self.group, geo)

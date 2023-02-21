@@ -21,29 +21,32 @@ import unittest
 
 import tests.utils as tu
 from geneve.constraints import Document
-from geneve.solver import emit_group, solver
+from geneve.solver import Entity, emit_group, solver
 
 
 class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
     def test_double_registration(self):
         @solver("test.")
-        def solve_test(doc, group, fields, schema, env):
-            pass
+        class TestEntity(Entity):
+            def solve(self, doc, schema, env):
+                pass
 
         msg = "duplicate solver: test."
         with self.assertRaises(ValueError, msg=msg) as cm:
 
             @solver("test.")
-            def solve_test2(doc, group, fields, schema, env):
-                pass
+            class TestEntity2(Entity):
+                def solve(self, doc, schema, env):
+                    pass
 
         self.assertEqual(msg, str(cm.exception))
 
     def test_group(self):
         @solver("test.geo.")
         @solver("test2.geo.")
-        def solve_geo(doc, group, fields, schema, env):
-            emit_group(doc, group, {"lat": 0.0, "lon": 0.0})
+        class TestGeoEntity(Entity):
+            def solve(self, doc, schema, env):
+                emit_group(doc, self.group, {"lat": 0.0, "lon": 0.0})
 
         schema = {}
         d = Document()
