@@ -21,7 +21,7 @@ import ipaddress
 
 from ..constraints import ConflictError
 from ..utils import random
-from . import solver
+from . import Field, solver
 
 
 def match_nets(values, nets):
@@ -30,86 +30,100 @@ def match_nets(values, nets):
     return any(v in net for v in values for net in nets)
 
 
-@solver("&ip", "==", "!=", "in", "not in")
-def solve_ip_field(field, value, constraints, left_attempts, environment):
-    include_nets = set()
-    exclude_nets = set()
-    exclude_addrs = set()
+@solver("&ip")
+class IPField(Field):
+    valid_constraints = ["==", "!=", "in", "not in"]
 
-    for k, v, *_ in constraints:
-        if k == "==":
-            v = str(v)
-            try:
-                v = ipaddress.ip_address(v)
-            except ValueError:
-                pass
-            else:
-                if type(value) == list:
-                    value.extend(v if type(v) == list else [v])
-                elif value is None or value == v:
-                    value = v
+    def __init__(self, field, constraints, schema, group):
+        super().__init__(field, constraints, schema, group)
+
+        self.include_nets = set()
+        self.exclude_nets = set()
+        self.exclude_addrs = set()
+
+        for k, v, *_ in constraints:
+            if k == "==":
+                v = str(v)
+                try:
+                    v = ipaddress.ip_address(v)
+                except ValueError:
+                    pass
                 else:
-                    raise ConflictError(f"is already {value}, cannot set to {v}", field, k)
-                continue
-            try:
-                include_nets.add(ipaddress.ip_network(v))
-            except ValueError:
-                raise ValueError(f"Not an IP address or network: {v}")
-        elif k == "!=":
-            v = str(v)
-            try:
-                exclude_addrs.add(ipaddress.ip_address(v))
-                continue
-            except ValueError:
-                pass
-            try:
-                exclude_nets.add(ipaddress.ip_network(v))
-            except ValueError:
-                raise ValueError(f"Not an IP address or network: {v}")
-        elif k == "in":
-            values = [v] if type(v) == str else v
-            for v in values:
+                    if self.is_array:
+                        self.value.extend(v if type(v) == list else [v])
+                    elif self.value is None or self.value == v:
+                        self.value = v
+                    else:
+                        raise ConflictError(f"is already {self.value}, cannot set to {v}", field, k)
+                    continue
                 try:
-                    include_nets.add(ipaddress.ip_network(str(v)))
+                    self.include_nets.add(ipaddress.ip_network(v))
                 except ValueError:
-                    raise ValueError(f"Not an IP network: {str(v)}")
-        elif k == "not in":
-            values = [v] if type(v) == str else v
-            for v in values:
+                    raise ValueError(f"Not an IP address or network: {v}")
+            elif k == "!=":
+                v = str(v)
                 try:
-                    exclude_nets.add(ipaddress.ip_network(str(v)))
+                    self.exclude_addrs.add(ipaddress.ip_address(v))
+                    continue
                 except ValueError:
-                    raise ValueError(f"Not an IP network: {str(v)}")
+                    pass
+                try:
+                    self.exclude_nets.add(ipaddress.ip_network(v))
+                except ValueError:
+                    raise ValueError(f"Not an IP address or network: {v}")
+            elif k == "in":
+                values = [v] if type(v) == str else v
+                for v in values:
+                    try:
+                        self.include_nets.add(ipaddress.ip_network(str(v)))
+                    except ValueError:
+                        raise ValueError(f"Not an IP network: {str(v)}")
+            elif k == "not in":
+                values = [v] if type(v) == str else v
+                for v in values:
+                    try:
+                        self.exclude_nets.add(ipaddress.ip_network(str(v)))
+                    except ValueError:
+                        raise ValueError(f"Not an IP network: {str(v)}")
 
-    if include_nets & exclude_nets:
-        intersecting_nets = ", ".join(str(net) for net in sorted(include_nets & exclude_nets))
-        raise ConflictError(f"net(s) both included and excluded: {intersecting_nets}", field)
-    if value is not None and exclude_addrs and set(value if type(value) == list else [value]) & exclude_addrs:
-        if len(exclude_addrs) == 1:
-            raise ConflictError(f"cannot be {exclude_addrs.pop()}", field)
-        else:
-            exclude_addrs = ", ".join(str(v) for v in sorted(exclude_addrs))
-            raise ConflictError(f"cannot be any of ({exclude_addrs})", field)
-    if value is not None and exclude_nets and match_nets(value, exclude_nets):
-        if len(exclude_nets) == 1:
-            raise ConflictError(f"cannot be in net {exclude_nets.pop()}", field)
-        else:
-            exclude_nets = ", ".join(str(v) for v in sorted(exclude_nets))
-            raise ConflictError(f"cannot be in any of nets ({exclude_nets})", field)
-    ip_versions = sorted(ip.version for ip in include_nets | exclude_nets | exclude_addrs) or [4]
-    include_nets = sorted(include_nets, key=lambda x: (x.version, x))
-    while left_attempts and (
-        value in (None, [])
-        or set(value if type(value) == list else [value]) & exclude_addrs  # noqa: W503
-        or match_nets(value, exclude_nets)
-    ):  # noqa: W503
-        if include_nets:
-            net = random.choice(include_nets)
-            v = net[random.randrange(net.num_addresses)]
-        else:
-            bits = 128 if random.choice(ip_versions) == 6 else 32
-            v = ipaddress.ip_address(random.randrange(1, 2**bits))
-        value = [v] if type(value) == list else v
-        left_attempts -= 1
-    value = [v.compressed for v in value] if type(value) == list else value.compressed
-    return {"value": value, "left_attempts": left_attempts}
+        if self.include_nets & self.exclude_nets:
+            intersecting_nets = ", ".join(str(net) for net in sorted(self.include_nets & self.exclude_nets))
+            raise ConflictError(f"net(s) both included and excluded: {intersecting_nets}", field)
+        if (
+            self.value is not None
+            and self.exclude_addrs
+            and set(self.value if type(self.value) == list else [self.value]) & self.exclude_addrs
+        ):
+            if len(self.exclude_addrs) == 1:
+                raise ConflictError(f"cannot be {self.exclude_addrs.pop()}", field)
+            else:
+                self.exclude_addrs = ", ".join(str(v) for v in sorted(self.exclude_addrs))
+                raise ConflictError(f"cannot be any of ({self.exclude_addrs})", field)
+        if self.value is not None and self.exclude_nets and match_nets(self.value, self.exclude_nets):
+            if len(self.exclude_nets) == 1:
+                raise ConflictError(f"cannot be in net {self.exclude_nets.pop()}", field)
+            else:
+                self.exclude_nets = ", ".join(str(v) for v in sorted(self.exclude_nets))
+                raise ConflictError(f"cannot be in any of nets ({self.exclude_nets})", field)
+        self.ip_versions = sorted(ip.version for ip in self.include_nets | self.exclude_nets | self.exclude_addrs) or [4]
+        self.include_nets = sorted(self.include_nets, key=lambda x: (x.version, x))
+
+    def solve(self, left_attempts, environment):
+        value = self.value
+        history_addrs = {ipaddress.ip_address(v["value"]) for v in self.get_history(environment)}
+        exclude_addrs = self.exclude_addrs | history_addrs
+        while left_attempts and (
+            value in (None, [])
+            or set(value if self.is_array else [value]) & exclude_addrs  # noqa: W503
+            or match_nets(value, self.exclude_nets)
+        ):  # noqa: W503
+            if self.include_nets:
+                net = random.choice(self.include_nets)
+                v = net[random.randrange(net.num_addresses)]
+            else:
+                bits = 128 if random.choice(self.ip_versions) == 6 else 32
+                v = ipaddress.ip_address(random.randrange(1, 2**bits))
+            value = [v] if self.is_array else v
+            left_attempts -= 1
+        value = [v.compressed for v in value] if self.is_array else value.compressed
+        return {"value": value, "left_attempts": left_attempts}

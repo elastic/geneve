@@ -21,7 +21,7 @@ from collections import namedtuple
 
 from ..constraints import ConflictError
 from ..utils import random
-from . import solver
+from . import Field, solver
 
 NumberLimits = namedtuple("NumberLimits", ["MIN", "MAX"])
 
@@ -29,54 +29,70 @@ NumberLimits = namedtuple("NumberLimits", ["MIN", "MAX"])
 LongLimits = NumberLimits(-(2**63), 2**63 - 1)
 
 
-@solver("&long", "==", "!=", ">=", "<=", ">", "<")
-def solve_long_field(field, value, constraints, left_attempts, environment):
-    min_value = LongLimits.MIN
-    max_value = LongLimits.MAX
-    exclude_values = set()
+@solver("&long")
+class LongField(Field):
+    valid_constraints = ["==", "!=", ">=", "<=", ">", "<"]
+    ecs_constraints = {
+        "as.number": [(">=", 0), ("<", 2**16)],
+        "bytes": [(">=", 0), ("<", 2**32)],
+        "pid": [(">", 0), ("<", 2**32)],
+        "port": [(">", 0), ("<", 2**16)],
+    }
 
-    for k, v, *_ in constraints:
-        if k == ">=":
-            v = int(v)
-            if min_value < v:
-                min_value = v
-        elif k == "<=":
-            v = int(v)
-            if max_value > v:
-                max_value = v
-        elif k == ">":
-            v = int(v)
-            if min_value < v + 1:
-                min_value = v + 1
-        elif k == "<":
-            v = int(v)
-            if max_value > v - 1:
-                max_value = v - 1
-    for k, v, *_ in constraints:
-        if k == "==":
-            v = int(v)
-            if value is None or value == v:
-                value = v
+    def __init__(self, field, constraints, schema, group):
+        super().__init__(field, constraints, schema, group)
+
+        self.min_value = LongLimits.MIN
+        self.max_value = LongLimits.MAX
+        self.exclude_values = set()
+
+        for k, v, *_ in constraints:
+            if k == ">=":
+                v = int(v)
+                if self.min_value < v:
+                    self.min_value = v
+            elif k == "<=":
+                v = int(v)
+                if self.max_value > v:
+                    self.max_value = v
+            elif k == ">":
+                v = int(v)
+                if self.min_value < v + 1:
+                    self.min_value = v + 1
+            elif k == "<":
+                v = int(v)
+                if self.max_value > v - 1:
+                    self.max_value = v - 1
+        for k, v, *_ in constraints:
+            if k == "==":
+                v = int(v)
+                if self.value is None or self.value == v:
+                    self.value = v
+                else:
+                    raise ConflictError(f"is already {self.value}, cannot set to {v}", field, k)
+            elif k == "!=":
+                self.exclude_values.add(int(v))
+
+        while self.min_value in self.exclude_values:
+            self.min_value += 1
+        while self.max_value in self.exclude_values:
+            self.max_value -= 1
+        if self.min_value > self.max_value:
+            raise ConflictError(f"empty solution space, {self.min_value} <= x <= {self.max_value}", field)
+        self.exclude_values = {v for v in self.exclude_values if v >= self.min_value and v <= self.max_value}
+        if self.value is not None and self.value in self.exclude_values:
+            if len(self.exclude_values) == 1:
+                raise ConflictError(f"cannot be {self.exclude_values.pop()}", field)
             else:
-                raise ConflictError(f"is already {value}, cannot set to {v}", field, k)
-        elif k == "!=":
-            exclude_values.add(int(v))
+                raise ConflictError(f"cannot be any of ({', '.join(str(v) for v in sorted(self.exclude_values))})", field)
+        if self.value is not None and (self.value < self.min_value or self.value > self.max_value):
+            raise ConflictError(f"out of boundary, {self.min_value} <= {self.value} <= {self.max_value}", field)
 
-    while min_value in exclude_values:
-        min_value += 1
-    while max_value in exclude_values:
-        max_value -= 1
-    if min_value > max_value:
-        raise ConflictError(f"empty solution space, {min_value} <= x <= {max_value}", field)
-    exclude_values = {v for v in exclude_values if v >= min_value and v <= max_value}
-    if value is not None and value in exclude_values:
-        if len(exclude_values) == 1:
-            raise ConflictError(f"cannot be {exclude_values.pop()}", field)
-        else:
-            raise ConflictError(f"cannot be any of ({', '.join(str(v) for v in sorted(exclude_values))})", field)
-    if value is not None and (value < min_value or value > max_value):
-        raise ConflictError(f"out of boundary, {min_value} <= {value} <= {max_value}", field)
-    while left_attempts and (value is None or value in exclude_values):
-        value = random.randint(min_value, max_value)
-        left_attempts -= 1
-    return {"value": value, "min": min_value, "max": max_value, "left_attempts": left_attempts}
+    def solve(self, left_attempts, environment):
+        value = self.value
+        history_values = {v["value"] for v in self.get_history(environment)}
+        exclude_values = self.exclude_values | history_values
+        while left_attempts and (value is None or value in exclude_values):
+            value = random.randint(self.min_value, self.max_value)
+            left_attempts -= 1
+        return {"value": value, "min": self.min_value, "max": self.max_value, "left_attempts": left_attempts}

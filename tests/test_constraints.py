@@ -962,84 +962,84 @@ constraints_exceptions = [
 
 class TestConstraints(tu.SeededTestCase, unittest.TestCase):
     def test_long(self):
-        from geneve.solver.type_long import solve_long_field as solver
+        from geneve.solver.type_long import LongField as solver
 
         for i, (constraints, test_value) in enumerate(constraints_long):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_value, solver("test_var", None, constraints, d.environment))
+                self.assertEqual(test_value, solver("test_var", constraints, None, None)(d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_long_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     d = Document()
-                    self.assertEqual(None, solver("test_var", None, constraints, d.environment))
+                    self.assertEqual(None, solver("test_var", constraints, None, None)(d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_long_cardinality):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_values, [solver("test_var", None, constraints, d.environment) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(d.environment) for _ in test_values])
 
     def test_geo_point(self):
-        from geneve.solver.type_geo_point import solve_geo_point_field as solver
+        from geneve.solver.type_geo_point import GeoPointField as solver
 
         for i, (constraints, test_value) in enumerate(constraints_geo_point):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_value, solver("test_var", None, constraints, d.environment))
+                self.assertEqual(test_value, solver("test_var", constraints, None, None)(d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_geo_point_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     d = Document()
-                    self.assertEqual(None, solver("test_var", None, constraints, d.environment))
+                    self.assertEqual(None, solver("test_var", constraints, None, None)(d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_geo_point_cardinality):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_values, [solver("test_var", None, constraints, d.environment) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(d.environment) for _ in test_values])
 
     def test_ip(self):
-        from geneve.solver.type_ip import solve_ip_field as solver
+        from geneve.solver.type_ip import IPField as solver
 
         for i, (constraints, test_value) in enumerate(constraints_ip):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_value, solver("test_var", None, constraints, d.environment))
+                self.assertEqual(test_value, solver("test_var", constraints, None, None)(d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_ip_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     d = Document()
-                    self.assertEqual(None, solver("test_var", None, constraints, d.environment))
+                    self.assertEqual(None, solver("test_var", constraints, None, None)(d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_ip_cardinality):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_values, [solver("test_var", None, constraints, d.environment) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(d.environment) for _ in test_values])
 
     def test_keyword(self):
-        from geneve.solver.type_keyword import solve_keyword_field as solver
+        from geneve.solver.type_keyword import KeywordField as solver
 
         for i, (constraints, test_value) in enumerate(constraints_keyword):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_value, solver("test_var", None, constraints, d.environment))
+                self.assertEqual(test_value, solver("test_var", constraints, None, None)(d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_keyword_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     d = Document()
-                    self.assertEqual(None, solver("test_var", None, constraints, d.environment))
+                    self.assertEqual(None, solver("test_var", constraints, None, None)(d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_keyword_cardinality):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_values, [solver("test_var", None, constraints, d.environment) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(d.environment) for _ in test_values])
 
     def test_entity(self):
         d = Document()
