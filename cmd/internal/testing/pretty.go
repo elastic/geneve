@@ -18,7 +18,10 @@
 package testing
 
 import (
+	"bytes"
 	"encoding/json"
+
+	"gopkg.in/yaml.v3"
 )
 
 func prettyJson(data any) (string, error) {
@@ -27,4 +30,16 @@ func prettyJson(data any) (string, error) {
 		return "", err
 	}
 	return string(pretty), nil
+}
+
+func prettyYaml(data any) (string, error) {
+	var buf bytes.Buffer
+	enc := yaml.NewEncoder(&buf)
+	defer enc.Close()
+	enc.SetIndent(2)
+	err := enc.Encode(data)
+	if err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }

@@ -128,6 +128,14 @@ func (r Response) ExpectYaml(t testing.TB, statusCode int, expected any, knownFi
 	}
 
 	if !reflect.DeepEqual(data, expected) {
-		t.Errorf("Data is %#v (expected: %#v)", data, expected)
+		a, err := prettyYaml(data)
+		if err != nil {
+			panic(err)
+		}
+		b, err := prettyYaml(expected)
+		if err != nil {
+			panic(err)
+		}
+		t.Errorf("\nData is\n%s\nExpected is\n%s", a, b)
 	}
 }
