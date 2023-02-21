@@ -29,7 +29,7 @@ NumberLimits = namedtuple("NumberLimits", ["MIN", "MAX"])
 LongLimits = NumberLimits(-(2**63), 2**63 - 1)
 
 
-@solver("long", "==", "!=", ">=", "<=", ">", "<")
+@solver("&long", "==", "!=", ">=", "<=", ">", "<")
 def solve_long_field(field, value, constraints, left_attempts, environment):
     min_value = LongLimits.MIN
     max_value = LongLimits.MAX

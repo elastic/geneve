@@ -23,7 +23,7 @@ from ..constraints import ConflictError
 from . import solver
 
 
-@solver("date", "==")
+@solver("&date", "==")
 def solve_date_field(field, value, constraints, left_attempts, environment):
     for k, v, *_ in constraints:
         if k == "==":
