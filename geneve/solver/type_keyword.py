@@ -49,7 +49,7 @@ def match_wildcards(values, wildcards):
     return any(fnmatch(v, wc) for v in values for wc in wildcards)
 
 
-@solver("keyword", "==", "!=", "wildcard", "not wildcard", "min_length", "allowed_chars")
+@solver("&keyword", "==", "!=", "wildcard", "not wildcard", "min_length", "allowed_chars")
 def solve_keyword_field(field, value, constraints, left_attempts, environment):
     allowed_chars = string.ascii_letters
     include_wildcards = set()

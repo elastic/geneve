@@ -20,7 +20,7 @@
 from . import solver
 
 
-@solver("geo_point")
+@solver("&geo_point")
 def solve_geo_point_field(field, value, constraints, left_attempts, environment):
     if left_attempts and value is None:
         value = [0, 0]

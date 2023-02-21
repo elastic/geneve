@@ -30,7 +30,7 @@ def match_nets(values, nets):
     return any(v in net for v in values for net in nets)
 
 
-@solver("ip", "==", "!=", "in", "not in")
+@solver("&ip", "==", "!=", "in", "not in")
 def solve_ip_field(field, value, constraints, left_attempts, environment):
     include_nets = set()
     exclude_nets = set()

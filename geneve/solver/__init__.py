@@ -97,7 +97,7 @@ class solver:  # noqa: N801
             augmented_constraints = constraints + get_ecs_constraints(field)
             for k, v, *_ in augmented_constraints:
                 if k not in self.valid_constraints:
-                    raise NotImplementedError(f"Unsupported {self.name} constraint: {k}")
+                    raise NotImplementedError(f"Unsupported {self.name[1:]} constraint: {k}")
                 if k == "join_value":
                     join_values.append(v)
                 if k == "max_attempts":
@@ -147,7 +147,7 @@ class solver:  # noqa: N801
         field_schema = schema.get(field, {})
         field_type = field_schema.get("type", "keyword")
         try:
-            solver = cls.solvers[field_type]
+            solver = cls.solvers[f"&{field_type}"]
         except KeyError:
             raise NotImplementedError(f"Constraints solver not implemented: {field_type}")
         if "array" in field_schema.get("normalize", []):

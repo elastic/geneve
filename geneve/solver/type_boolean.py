@@ -22,7 +22,7 @@ from ..utils import random
 from . import solver
 
 
-@solver("boolean", "==", "!=")
+@solver("&boolean", "==", "!=")
 def solve_boolean_field(field, value, constraints, left_attempts, environment):
     for k, v, *_ in constraints:
         if k == "==":
