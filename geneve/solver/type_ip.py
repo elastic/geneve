@@ -111,5 +111,5 @@ def solve_ip_field(field, value, constraints, left_attempts, environment):
             v = ipaddress.ip_address(random.randrange(1, 2**bits))
         value = [v] if type(value) == list else v
         left_attempts -= 1
-    value = [v.compressed for v in value] if type(value) == list else v.compressed
+    value = [v.compressed for v in value] if type(value) == list else value.compressed
     return {"value": value, "left_attempts": left_attempts}
