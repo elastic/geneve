@@ -22,7 +22,7 @@ from typing import Any, List, NoReturn, Tuple, Union
 
 import eql
 
-from .constraints import Branch, Constraints, Root
+from .constraints import Branch, Document, Root
 from .utils import TreeTraverser
 
 __all__ = ()
@@ -54,8 +54,8 @@ def _nope(operation: Any, negate: bool) -> Any:
 
 @traverser(eql.ast.Field)
 def cc_field(node: eql.ast.Field, value: str, negate: bool) -> Root:
-    c = Constraints(node.render(), _nope("==", negate), value)
-    return Root([Branch([c])])
+    doc = Document(node.render(), _nope("==", negate), value)
+    return Root([Branch([doc])])
 
 
 @traverser(eql.ast.Boolean)
@@ -110,10 +110,10 @@ def cc_in_set(node: eql.ast.InSet, negate: bool) -> Root:
     branches = []
     if negate:
         field = node.expression.render()
-        c = Constraints()
+        doc = Document()
         for term in node.container:
-            c.append_constraint(field, "!=", term.value)
-        branches.append(Branch([c]))
+            doc.append_constraint(field, "!=", term.value)
+        branches.append(Branch([doc]))
     else:
         for term in node.container:
             branches.extend(cc_field(node.expression, term.value, negate))
@@ -124,8 +124,8 @@ def cc_in_set(node: eql.ast.InSet, negate: bool) -> Root:
 def cc_comparison(node: eql.ast.Comparison, negate: bool) -> Root:
     if type(node.left) != eql.ast.Field:
         raise NotImplementedError(f"Unsupported LHS type: {type(node.left)}")
-    c = Constraints(node.left.render(), _nope(node.comparator, negate), node.right.value)
-    return Root([Branch([c])])
+    doc = Document(node.left.render(), _nope(node.comparator, negate), node.right.value)
+    return Root([Branch([doc])])
 
 
 @traverser(eql.ast.EventQuery)
@@ -150,7 +150,7 @@ def cc_piped_query(node: eql.ast.PipedQuery, negate: bool) -> Root:
     return collect_constraints(node.first, negate)
 
 
-def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool) -> List[Tuple[Constraints, List[str]]]:
+def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool) -> List[Tuple[Document, List[str]]]:
     if negate:
         raise NotImplementedError(f"Negation of {type(node)} is not supported")
     if any(type(value) != eql.ast.Field for value in node.join_values):
@@ -158,22 +158,22 @@ def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool) -> List[Tuple[Constra
     if node.fork:
         raise NotImplementedError(f"Unsupported fork: {node.fork}")
     join_fields = [field.render() for field in node.join_values]
-    return [[(c, join_fields) for c in branch] for branch in collect_constraints(node.query, negate)]
+    return [[(doc, join_fields) for doc in branch] for branch in collect_constraints(node.query, negate)]
 
 
-def cc_join_branch(seq: List[Tuple[Constraints, List[str]]]) -> Branch:
-    constraints = []
+def cc_join_branch(seq: List[Tuple[Document, List[str]]]) -> Branch:
+    docs = []
     join_rows = []
-    for c, join_fields in seq:
-        c = c.clone()
-        constraints.append(c)
-        join_rows.append([(field, c) for field in join_fields])
+    for doc, join_fields in seq:
+        doc = doc.clone()
+        docs.append(doc)
+        join_rows.append([(field, doc) for field in join_fields])
     for join_col in zip(*join_rows):
         field0 = None
-        for field, c in join_col:
+        for field, doc in join_col:
             field0 = field0 or field
-            constraints[0].append_constraint(field0, "join_value", (field, c))
-    return Branch(constraints)
+            docs[0].append_constraint(field0, "join_value", (field, doc))
+    return Branch(docs)
 
 
 @traverser(eql.ast.Sequence)
@@ -182,7 +182,7 @@ def cc_sequence(node: eql.ast.Sequence, negate: bool) -> Root:
         raise NotImplementedError(f"Negation of {type(node)} is not supported")
     queries = [cc_subquery_by(query, negate) for query in node.queries]
     if node.close:
-        queries.append([[(c, []) for c in branch] for branch in collect_constraints(node.close, negate)])
+        queries.append([[(doc, []) for doc in branch] for branch in collect_constraints(node.close, negate)])
     return Root([cc_join_branch(chain(*branches)) for branches in chain(product(*queries))])
 
 
@@ -208,8 +208,8 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool) -> Root:
 def cc_function(node: eql.ast.FunctionCall, negate: bool, constraint_name: str) -> Root:
     field = node.arguments[0].render()
     constraint_name = constraint_name if not negate else f"not {constraint_name}"
-    c = Constraints(field, constraint_name, tuple(arg.value for arg in node.arguments[1:]))
-    return Root([Branch([c])])
+    doc = Document(field, constraint_name, tuple(arg.value for arg in node.arguments[1:]))
+    return Root([Branch([doc])])
 
 
 @traverser(eql.ast.BaseNode)
