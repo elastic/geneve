@@ -20,7 +20,7 @@
 import unittest
 
 import tests.utils as tu
-from geneve.constraints import Branch, Constraints
+from geneve.constraints import Branch, Document
 from geneve.solver.type_long import LongLimits
 
 constraints_long = [
@@ -966,109 +966,109 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
 
         for i, (constraints, test_value) in enumerate(constraints_long):
             with self.subTest(constraints, i=i):
-                c = Constraints()
-                self.assertEqual(test_value, solver("test_var", None, constraints, c.environment))
+                d = Document()
+                self.assertEqual(test_value, solver("test_var", None, constraints, d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_long_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
-                    c = Constraints()
-                    self.assertEqual(None, solver("test_var", None, constraints, c.environment))
+                    d = Document()
+                    self.assertEqual(None, solver("test_var", None, constraints, d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_long_cardinality):
             with self.subTest(constraints, i=i):
-                c = Constraints()
-                self.assertEqual(test_values, [solver("test_var", None, constraints, c.environment) for _ in test_values])
+                d = Document()
+                self.assertEqual(test_values, [solver("test_var", None, constraints, d.environment) for _ in test_values])
 
     def test_geo_point(self):
         from geneve.solver.type_geo_point import solve_geo_point_field as solver
 
         for i, (constraints, test_value) in enumerate(constraints_geo_point):
             with self.subTest(constraints, i=i):
-                c = Constraints()
-                self.assertEqual(test_value, solver("test_var", None, constraints, c.environment))
+                d = Document()
+                self.assertEqual(test_value, solver("test_var", None, constraints, d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_geo_point_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
-                    c = Constraints()
-                    self.assertEqual(None, solver("test_var", None, constraints, c.environment))
+                    d = Document()
+                    self.assertEqual(None, solver("test_var", None, constraints, d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_geo_point_cardinality):
             with self.subTest(constraints, i=i):
-                c = Constraints()
-                self.assertEqual(test_values, [solver("test_var", None, constraints, c.environment) for _ in test_values])
+                d = Document()
+                self.assertEqual(test_values, [solver("test_var", None, constraints, d.environment) for _ in test_values])
 
     def test_ip(self):
         from geneve.solver.type_ip import solve_ip_field as solver
 
         for i, (constraints, test_value) in enumerate(constraints_ip):
             with self.subTest(constraints, i=i):
-                c = Constraints()
-                self.assertEqual(test_value, solver("test_var", None, constraints, c.environment))
+                d = Document()
+                self.assertEqual(test_value, solver("test_var", None, constraints, d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_ip_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
-                    c = Constraints()
-                    self.assertEqual(None, solver("test_var", None, constraints, c.environment))
+                    d = Document()
+                    self.assertEqual(None, solver("test_var", None, constraints, d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_ip_cardinality):
             with self.subTest(constraints, i=i):
-                c = Constraints()
-                self.assertEqual(test_values, [solver("test_var", None, constraints, c.environment) for _ in test_values])
+                d = Document()
+                self.assertEqual(test_values, [solver("test_var", None, constraints, d.environment) for _ in test_values])
 
     def test_keyword(self):
         from geneve.solver.type_keyword import solve_keyword_field as solver
 
         for i, (constraints, test_value) in enumerate(constraints_keyword):
             with self.subTest(constraints, i=i):
-                c = Constraints()
-                self.assertEqual(test_value, solver("test_var", None, constraints, c.environment))
+                d = Document()
+                self.assertEqual(test_value, solver("test_var", None, constraints, d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_keyword_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
-                    c = Constraints()
-                    self.assertEqual(None, solver("test_var", None, constraints, c.environment))
+                    d = Document()
+                    self.assertEqual(None, solver("test_var", None, constraints, d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_keyword_cardinality):
             with self.subTest(constraints, i=i):
-                c = Constraints()
-                self.assertEqual(test_values, [solver("test_var", None, constraints, c.environment) for _ in test_values])
+                d = Document()
+                self.assertEqual(test_values, [solver("test_var", None, constraints, d.environment) for _ in test_values])
 
 
 class TestBranches(tu.SeededTestCase, unittest.TestCase):
     def test_fields(self):
         for a, fields in branch_fields:
-            a = Branch([Constraints.from_dict(x) for x in a])
+            a = Branch([Document.from_dict(x) for x in a])
             with self.subTest(f"{a}"):
                 self.assertEqual(fields, a.fields())
 
     def test_product(self):
         for a, b, c in branch_products:
-            a = Branch([Constraints.from_dict(x) for x in a])
-            b = Branch([Constraints.from_dict(x) for x in b])
-            c = Branch([Constraints.from_dict(x) for x in c])
+            a = Branch([Document.from_dict(x) for x in a])
+            b = Branch([Document.from_dict(x) for x in b])
+            c = Branch([Document.from_dict(x) for x in c])
             with self.subTest(f"{a} * {b}"):
                 self.assertEqual(a * b, c)
 
     def test_join_fields(self):
         schema = {}
-        c1 = Constraints()
-        c2 = Constraints()
-        c3 = Constraints()
-        branch = Branch([c1, c2, c3])
+        d1 = Document()
+        d2 = Document()
+        d3 = Document()
+        branch = Branch([d1, d2, d3])
 
-        c1.append_constraint("process.name", "wildcard", ("*.exe", "*.bat"))
-        c2.append_constraint("process.name", "wildcard", ("*.dll", "*.scr"))
-        c3.append_constraint("process.name", "wildcard", ("*.com"))
-        c1.append_constraint("process.name", "join_value", ("process.parent.name", c2))
-        c2.append_constraint("process.name", "join_value", ("process.parent.name", c3))
+        d1.append_constraint("process.name", "wildcard", ("*.exe", "*.bat"))
+        d2.append_constraint("process.name", "wildcard", ("*.dll", "*.scr"))
+        d3.append_constraint("process.name", "wildcard", ("*.com"))
+        d1.append_constraint("process.name", "join_value", ("process.parent.name", d2))
+        d2.append_constraint("process.name", "join_value", ("process.parent.name", d3))
 
         self.assertEqual(
             [

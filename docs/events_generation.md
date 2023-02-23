@@ -72,8 +72,8 @@ For instance (from [geneve/events\_emitter\_eql.py](../geneve/events_emitter_eql
 ```python
 @traverser(eql.ast.Field)
 def cc_field(node: eql.ast.Field, value: str, negate: bool) -> Root:
-    c = Constraints(node.render(), _nope("==", negate), value)
-    return Root([Branch([c])])
+    doc = Document(node.render(), _nope("==", negate), value)
+    return Root([Branch([doc])])
 ```
 
 Constraints are essentially a list of tuples associated to each field. In the case of the sequence query above,

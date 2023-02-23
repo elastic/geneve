@@ -20,7 +20,7 @@
 import unittest
 
 import tests.utils as tu
-from geneve.constraints import Constraints
+from geneve.constraints import Document
 from geneve.solver import emit_group, solver
 
 
@@ -32,23 +32,23 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
             emit_group(doc, group, {"lat": 0.0, "lon": 0.0})
 
         schema = {}
-        c = Constraints()
-        c.append_constraint("source.geo.")
-        c.append_constraint("destination.geo.")
+        d = Document()
+        d.append_constraint("source.geo.")
+        d.append_constraint("destination.geo.")
 
         self.assertEqual(
             {
                 "source": {"geo": {"lat": 0.0, "lon": 0.0}},
                 "destination": {"geo": {"lat": 0.0, "lon": 0.0}},
             },
-            c.solve(schema),
+            d.solve(schema),
         )
 
     def test_geo(self):
         schema = {}
-        c = Constraints()
-        c.append_constraint("source.geo.")
-        c.append_constraint("destination.geo.")
+        d = Document()
+        d.append_constraint("source.geo.")
+        d.append_constraint("destination.geo.")
 
         self.assertEqual(
             {
@@ -69,5 +69,5 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
                     }
                 },
             },
-            c.solve(schema),
+            d.solve(schema),
         )

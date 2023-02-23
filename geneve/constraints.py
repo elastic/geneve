@@ -32,7 +32,7 @@ class ConflictError(ValueError):
         super(ConflictError, self).__init__(f"Unsolvable constraints{name}: {field} ({msg})")
 
 
-class Constraints:
+class Document:
     def __init__(self, field=None, name=None, value=None):
         self.environment = {}
         self.__constraints = hdict()
@@ -40,10 +40,10 @@ class Constraints:
             self.append_constraint(field, name, value)
 
     def clone(self):
-        c = Constraints()
-        c.__constraints = copy.deepcopy(self.__constraints)
-        c.environment = self.environment
-        return c
+        doc = Document()
+        doc.__constraints = copy.deepcopy(self.__constraints)
+        doc.environment = self.environment
+        return doc
 
     def append_constraint(self, field, name=None, value=None, flags=None):
         if field not in self.__constraints:
@@ -80,9 +80,9 @@ class Constraints:
         return self
 
     def __add__(self, other):
-        c = self.clone()
-        c += other
-        return c
+        doc = self.clone()
+        doc += other
+        return doc
 
     def __eq__(self, other):
         return self.__constraints == other.__constraints
@@ -92,10 +92,10 @@ class Constraints:
 
     @staticmethod
     def from_dict(other):
-        c = Constraints()
+        doc = Document()
         for field, constraints in other.items():
-            c.extend_constraints(field, constraints)
-        return c
+            doc.extend_constraints(field, constraints)
+        return doc
 
     def solve(self, schema):
         from .solver import solver
@@ -106,7 +106,7 @@ class Constraints:
         return doc
 
 
-class Branch(List[Constraints]):
+class Branch(List[Document]):
     def __iter__(self):
         if not self:
             raise ValueError("Branch without constraints")
@@ -122,7 +122,7 @@ class Branch(List[Constraints]):
         return (constraints.solve(schema) for constraints in self)
 
 
-Branch.Identity = Branch([Constraints()])
+Branch.Identity = Branch([Document()])
 
 
 class Root(List[Branch]):
