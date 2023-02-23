@@ -967,19 +967,19 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_long):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_value, solver("test_var", constraints, None, None)(d.environment))
+                self.assertEqual(test_value, solver("test_var", constraints, None, None)(None, d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_long_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     d = Document()
-                    self.assertEqual(None, solver("test_var", constraints, None, None)(d.environment))
+                    self.assertEqual(None, solver("test_var", constraints, None, None)(None, d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_long_cardinality):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(d.environment) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(None, d.environment) for _ in test_values])
 
     def test_geo_point(self):
         from geneve.solver.type_geo_point import GeoPointField as solver
@@ -987,19 +987,19 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_geo_point):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_value, solver("test_var", constraints, None, None)(d.environment))
+                self.assertEqual(test_value, solver("test_var", constraints, None, None)(None, d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_geo_point_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     d = Document()
-                    self.assertEqual(None, solver("test_var", constraints, None, None)(d.environment))
+                    self.assertEqual(None, solver("test_var", constraints, None, None)(None, d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_geo_point_cardinality):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(d.environment) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(None, d.environment) for _ in test_values])
 
     def test_ip(self):
         from geneve.solver.type_ip import IPField as solver
@@ -1007,19 +1007,19 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_ip):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_value, solver("test_var", constraints, None, None)(d.environment))
+                self.assertEqual(test_value, solver("test_var", constraints, None, None)(None, d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_ip_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     d = Document()
-                    self.assertEqual(None, solver("test_var", constraints, None, None)(d.environment))
+                    self.assertEqual(None, solver("test_var", constraints, None, None)(None, d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_ip_cardinality):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(d.environment) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(None, d.environment) for _ in test_values])
 
     def test_keyword(self):
         from geneve.solver.type_keyword import KeywordField as solver
@@ -1027,19 +1027,19 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_keyword):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_value, solver("test_var", constraints, None, None)(d.environment))
+                self.assertEqual(test_value, solver("test_var", constraints, None, None)(None, d.environment))
 
         for i, (constraints, msg) in enumerate(constraints_keyword_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     d = Document()
-                    self.assertEqual(None, solver("test_var", constraints, None, None)(d.environment))
+                    self.assertEqual(None, solver("test_var", constraints, None, None)(None, d.environment))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_keyword_cardinality):
             with self.subTest(constraints, i=i):
                 d = Document()
-                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(d.environment) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(None, d.environment) for _ in test_values])
 
     def test_entity(self):
         d = Document()
@@ -1093,39 +1093,35 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
         schema = {}
         d1 = Document()
         d2 = Document()
-        d3 = Document()
-        branch = Branch([d1, d2, d3])
 
         d1.append_constraint("process.name", "wildcard", ("*.exe", "*.bat"))
         d2.append_constraint("process.name", "wildcard", ("*.dll", "*.scr"))
-        d3.append_constraint("process.name", "wildcard", ("*.com"))
-        d2.append_constraint("process.parent.name")
-        d3.append_constraint("process.parent.name")
-        d1.append_constraint("process.name", "join_value", ("process.parent.name", d2))
-        d2.append_constraint("process.name", "join_value", ("process.parent.name", d3))
+
+        jd = Document()
+        d1 = jd.join_fields(d1, ["process.name"])
+        d2 = jd.join_fields(d2, ["process.parent.name"])
+
+        branch = Branch([d1, d2])
         branch.consolidate()
 
         self.assertEqual(
             [
                 {"process": {"name": "LbS.exe"}},
                 {"process": {"name": "lwfFIAXQgMefK.dll", "parent": {"name": "LbS.exe"}}},
-                {"process": {"name": "OWrl.com", "parent": {"name": "lwfFIAXQgMefK.dll"}}},
             ],
             list(branch.solve(schema)),
         )
         self.assertEqual(
             [
-                {"process": {"name": "lywc.exe"}},
-                {"process": {"name": "lIkqw.dll", "parent": {"name": "lywc.exe"}}},
-                {"process": {"name": "uxRWqYK.com", "parent": {"name": "lIkqw.dll"}}},
+                {"process": {"name": "OWrl.bat"}},
+                {"process": {"name": "lywc.scr", "parent": {"name": "OWrl.bat"}}},
             ],
             list(branch.solve(schema)),
         )
         self.assertEqual(
             [
-                {"process": {"name": "gkUaUecroMCaT.exe"}},
-                {"process": {"name": "KpKXkSopnAtGxR.scr", "parent": {"name": "gkUaUecroMCaT.exe"}}},
-                {"process": {"name": "lwpDtGLBRIh.com", "parent": {"name": "KpKXkSopnAtGxR.scr"}}},
+                {"process": {"name": "lIkqw.bat"}},
+                {"process": {"name": "uxRWqYK.dll", "parent": {"name": "lIkqw.bat"}}},
             ],
             list(branch.solve(schema)),
         )

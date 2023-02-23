@@ -422,11 +422,11 @@ exceptions = {
     """sequence by process.name
         [process where process.name : "cmd.exe"]
         [process where process.name : "powershell.exe"]
-    """: "Unsolvable constraints ==: process.name (is already 'powershell.exe', cannot set to 'cmd.exe')",
+    """: "Unsolvable constraints wildcard: process.name (is already 'cmd.exe', cannot set to 'powershell.exe')",
     """sequence
         [process where process.name : "cmd.exe"] by process.name
         [process where process.parent.name : "powershell.exe"] by process.parent.name
-    """: "Unsolvable constraints ==: process.parent.name (is already 'powershell.exe', cannot set to 'cmd.exe')",
+    """: "Unsolvable constraints wildcard: process.name (is already 'cmd.exe', cannot set to 'powershell.exe')",
     """sequence by process.name
         [process where process.name == null]
         [process where process.name : "powershell.exe"]

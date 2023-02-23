@@ -27,7 +27,7 @@ faker = Faker()
 @solver("source.geo.")
 @solver("destination.geo.")
 class GeoEntity(Entity):
-    def solve(self, doc, schema, env):
+    def solve(self, doc, join_doc, schema, env):
         lol = faker.location_on_land()
         geo = {
             "location.lat": float(lol[0]),

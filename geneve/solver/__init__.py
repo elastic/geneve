@@ -71,7 +71,7 @@ class solver:  # noqa: N801
         return func
 
     @classmethod
-    def solve_field(cls, doc, group, field, constraints, schema, environment):
+    def solve_field(cls, doc, join_doc, group, field, constraints, schema, environment):
         if constraints is None:
             return None
         field = f"{group}.{field}" if group else field
@@ -83,7 +83,7 @@ class solver:  # noqa: N801
         except KeyError:
             raise NotImplementedError(f"Constraints solver not implemented: {field_type}")
         constraints = constraints + get_ecs_constraints(field_solver, field)
-        value = field_solver(field, constraints, field_is_array, group)(environment)["value"]
+        value = field_solver(field, constraints, field_is_array, group)(join_doc, environment)["value"]
         if doc is not None:
             emit_field(doc, field, value)
         return value
@@ -98,9 +98,9 @@ class Entity:
         self.group = group
         self.fields = fields
 
-    def solve(self, doc, schema, environment):
+    def solve(self, doc, join_doc, schema, environment):
         for field, constraints in self.fields.items():
-            solver.solve_field(doc, self.group, field, constraints, schema, environment)
+            solver.solve_field(doc, join_doc, self.group, field, constraints, schema, environment)
 
 
 class Field:
@@ -112,6 +112,7 @@ class Field:
         self.field = f"{group}.{field}" if group else field
         self.value = [] if is_array else None
         self.is_array = is_array
+        self.join_field_parts = None
         self.max_attempts = None
         self.cardinality = 0
 
@@ -121,7 +122,7 @@ class Field:
             if k not in valid_constraints:
                 raise NotImplementedError(f"Unsupported {self.type} '{field}' constraint: {k}")
             if k == "join_value":
-                pass  # FIXME
+                self.join_field_parts = v[1].split(".")
             if k == "max_attempts":
                 v = int(v)
                 if v < 0:
@@ -143,8 +144,17 @@ class Field:
             return []
         return environment.setdefault("fields_history", {}).setdefault(self.field, [])
 
-    def __call__(self, environment):
+    def __call__(self, join_doc, environment):
         history = self.get_history(environment)
+
+        if self.join_field_parts:
+            value = join_doc
+            for part in self.join_field_parts:
+                value = value[part]
+            value = {"value": value}
+            if self.cardinality:
+                history.append(value)
+            return value
 
         if not self.cardinality or len(history) < self.cardinality:
             value = self.solve(self.max_attempts + 1, environment)

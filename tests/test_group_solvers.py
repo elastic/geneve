@@ -28,7 +28,7 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
     def test_double_registration(self):
         @solver("test.")
         class TestEntity(Entity):
-            def solve(self, doc, schema, env):
+            def solve(self, doc, join_doc, schema, env):
                 pass
 
         msg = "duplicate solver: test."
@@ -36,7 +36,7 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
 
             @solver("test.")
             class TestEntity2(Entity):
-                def solve(self, doc, schema, env):
+                def solve(self, doc, join_doc, schema, env):
                     pass
 
         self.assertEqual(msg, str(cm.exception))
@@ -45,7 +45,7 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
         @solver("test.geo.")
         @solver("test2.geo.")
         class TestGeoEntity(Entity):
-            def solve(self, doc, schema, env):
+            def solve(self, doc, join_doc, schema, env):
                 emit_group(doc, self.group, {"lat": 0.0, "lon": 0.0})
 
         schema = {}
@@ -53,13 +53,14 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
         d.append_constraint("test.geo.")
         d.append_constraint("test2.geo.")
         d.consolidate()
+        join_doc = {}
 
         self.assertEqual(
             {
                 "test": {"geo": {"lat": 0.0, "lon": 0.0}},
                 "test2": {"geo": {"lat": 0.0, "lon": 0.0}},
             },
-            d.solve(schema),
+            d.solve(join_doc, schema),
         )
 
     def test_geo(self):
@@ -68,6 +69,7 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
         d.append_constraint("source.geo.")
         d.append_constraint("destination.geo.")
         d.consolidate()
+        join_doc = {}
 
         self.assertEqual(
             {
@@ -88,7 +90,7 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
                     }
                 },
             },
-            d.solve(schema),
+            d.solve(join_doc, schema),
         )
 
     def test_as(self):
@@ -100,11 +102,12 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
         d.append_constraint("source.as.")
         d.append_constraint("destination.as.")
         d.consolidate()
+        join_doc = {}
 
         self.assertEqual(
             {
                 "source": {"as": {"number": 44454, "organization": {"name": "Reeves Inc"}}},
                 "destination": {"as": {"number": 2299, "organization": {"name": "Cooper Ltd"}}},
             },
-            d.solve(schema),
+            d.solve(join_doc, schema),
         )
