@@ -85,6 +85,21 @@ class Document:
             return self.__entities[""]
         return self.__entities[field_or_group[:pos]]
 
+    def join_fields(self, join_doc, join_fields):
+        doc = self.clone()
+        for i, field in enumerate(join_fields):
+            join_field = f"join_field{i}"
+            join_doc.extend_constraints(join_field, doc.__constraints[field])
+            doc.__constraints[field] = [("join_field", (join_doc, join_field))]
+        return doc
+
+    def find_join_doc(self)
+        for field, constraints in self.__constraints:
+            for k, v, *_ in constraints:
+                if k == "join_field":
+                    join_doc, _ = v
+                    return join_doc
+
     def __iadd__(self, other):
         for field, constraints in other.__constraints.items():
             self.extend_constraints(field, constraints)
@@ -111,9 +126,14 @@ class Document:
     def consolidate(self):
         from .solver import solver
 
+        join_doc = self.find_join_doc()
+        self.__join_entity = solver.new_entity(None, join_doc.__constraints) if join_doc else None
         self.__entities = {group: solver.new_entity(group, fields) for group, fields in self.__constraints.groups()}
 
     def solve(self, schema):
+        join_doc = {}
+        if self.__join_entity:
+            self.__join_entity.solver(join_doc, schema, self.environment
         doc = {}
         for entity in self.entities():
             entity.solve(doc, schema, self.environment)

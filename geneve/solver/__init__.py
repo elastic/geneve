@@ -43,18 +43,6 @@ def get_ecs_constraints(field):
     return []
 
 
-def delete_by_cond(list, cond):
-    for i in reversed([i for i, x in enumerate(list) if cond(x)]):
-        del list[i]
-
-
-def delete_use_once(list):
-    def is_use_once(item):
-        return len(item) > 2 and item[2] and item[2].get("use_once", False)
-
-    delete_by_cond(list, is_use_once)
-
-
 def emit_field(doc, field, value):
     if value is not None:
         for part in reversed(field.split(".")):
@@ -81,22 +69,21 @@ class solver:  # noqa: N801
         if name in self.solvers:
             raise ValueError(f"duplicate solver: {name}")
         self.name = name
-        self.valid_constraints = ("join_value", "max_attempts", "cardinality") + args
+        self.valid_constraints = ("join_field", "max_attempts", "cardinality") + args
 
     def wrap_field_solver(self, func):
         @wraps(func)
         def _solver(field, value, constraints, environment):
-            join_values = []
             max_attempts = None
             cardinality = 0
             history = []
             augmented_constraints = constraints + get_ecs_constraints(field)
-            for k, v, *flags in augmented_constraints:
+            for k, v, *_ in augmented_constraints:
                 if k not in self.valid_constraints:
                     raise NotImplementedError(f"Unsupported {self.name[1:]} constraint: {k}")
-                if k == "join_value":
-                    if not flags or not flags[0].get("relation_only", False):
-                        join_values.append(v)
+                if k == "join_field":
+                    join_doc, join_field = v
+                    # do something here
                 if k == "max_attempts":
                     v = int(v)
                     if v < 0:
@@ -123,9 +110,6 @@ class solver:  # noqa: N801
                     history.append(value)
             else:
                 value = random.choice(history[:cardinality])
-            for field, constraint in join_values:
-                constraint.append_constraint(field, "==", value["value"], {"use_once": True})
-            delete_use_once(constraints)
             return value
 
         return _solver
