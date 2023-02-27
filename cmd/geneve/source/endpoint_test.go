@@ -18,9 +18,11 @@
 package source
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 
+	"github.com/elastic/geneve/cmd/geneve"
 	"github.com/elastic/geneve/cmd/internal/control"
 	"github.com/elastic/geneve/cmd/internal/testing"
 )
@@ -32,6 +34,55 @@ func init() {
 	if err := control.StartServer(5694); err != nil {
 		panic(err)
 	}
+
+	// start a dummy Kibana server
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/detection_engine/rules/_find", func(w http.ResponseWriter, req *http.Request) {
+		results := struct{ Data []geneve.Rule }{}
+
+		if req.URL.Query().Get("filter") == `alert.attributes.name:"Test rule"` {
+			results.Data = append(results.Data, geneve.Rule{
+				Name:     "Test rule",
+				RuleId:   "test",
+				Query:    `process where process.name == "*.exe"`,
+				Type:     "query",
+				Language: "eql",
+			})
+		}
+
+		enc := json.NewEncoder(w)
+		err := enc.Encode(results)
+		if err != nil {
+			panic(err)
+		}
+	})
+	mux.HandleFunc("/api/detection_engine/rules", func(w http.ResponseWriter, req *http.Request) {
+		if req.URL.Query().Get("rule_id") != "test" {
+			result := struct{ Message string }{"rule not found"}
+			w.WriteHeader(http.StatusNotFound)
+			enc := json.NewEncoder(w)
+			err := enc.Encode(result)
+			if err != nil {
+				panic(err)
+			}
+			return
+		}
+
+		rule := geneve.Rule{
+			Name:     "Test rule",
+			RuleId:   "test",
+			Query:    `process where process.name == "*.exe"`,
+			Type:     "query",
+			Language: "eql",
+		}
+
+		enc := json.NewEncoder(w)
+		err := enc.Encode(rule)
+		if err != nil {
+			panic(err)
+		}
+	})
+	go http.ListenAndServe("localhost:5697", mux)
 }
 
 func TestSourceEndpoint(t *testing.T) {
@@ -77,20 +128,68 @@ func TestSourceEndpoint(t *testing.T) {
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusBadRequest, "line 1: field unknown not found in type source.Params\n")
 
-	// one docs source
+	// one docs source with query
 	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
-	// rewrite docs source
+	// rewrite docs source with query
 	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.com\"")
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
-	// another docs source
+	// another docs source with query
 	resp = r.Put("/api/source/test2", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
+
+	// rewrite docs source with rule id
+	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
+		RuleParams{
+			RuleId: "test",
+			Kibana: KibanaParams{
+				URL: "http://localhost:5697",
+			},
+		},
+	}})
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
+
+	// get docs source
+	resp = r.Get("/api/source/test2")
+	defer resp.Body.Close()
+	resp.ExpectYaml(t, http.StatusOK, &Params{Rules: []RuleParams{
+		RuleParams{
+			RuleId: "test",
+			Kibana: KibanaParams{
+				URL: "http://localhost:5697",
+			},
+		},
+	}}, true)
+
+	// rewrite docs source with rule name
+	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
+		RuleParams{
+			Name: "Test rule",
+			Kibana: KibanaParams{
+				URL: "http://localhost:5697",
+			},
+		},
+	}})
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
+
+	// get docs source
+	resp = r.Get("/api/source/test2")
+	defer resp.Body.Close()
+	resp.ExpectYaml(t, http.StatusOK, &Params{Rules: []RuleParams{
+		RuleParams{
+			Name: "Test rule",
+			Kibana: KibanaParams{
+				URL: "http://localhost:5697",
+			},
+		},
+	}}, true)
 
 	// delete the second docs source
 	resp = r.Delete("/api/source/test2")

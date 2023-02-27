@@ -66,6 +66,10 @@ func (se *SourceEvents) AddQuery(query string) (*python.PyObject, error) {
 	return se.o.CallMethod("add_query", query)
 }
 
+func (se *SourceEvents) AddRule(rule Rule) (*python.PyObject, error) {
+	return se.o.CallMethod("add_rule", rule)
+}
+
 func (se *SourceEvents) Mappings() (*python.PyObject, error) {
 	return se.o.CallMethod("mappings")
 }
@@ -81,6 +85,30 @@ func (se *SourceEvents) Emit(count int) (*python.PyObject, error) {
 
 func (se *SourceEvents) JsonDumps(o_doc *python.PyObject, sortKeys bool) (*python.PyObject, error) {
 	return se.o_json_dumps.Call([]any{o_doc}, map[any]any{"sort_keys": true})
+}
+
+type Rule struct {
+	Name     string `json:",omitempy"`
+	RuleId   string `json:"rule_id,omitempy"`
+	Query    string `json:",omitempy"`
+	Type     string `json:",omitempy"`
+	Language string `json:",omitempy"`
+}
+
+func (r Rule) ToPython() (*python.PyObject, error) {
+	o_collections, err := python.PyImport_Import("collections")
+	if err != nil {
+		return nil, err
+	}
+	defer o_collections.DecRef()
+
+	o_rule_type, err := o_collections.CallMethod("namedtuple", "Rule", []any{"query", "type", "language"})
+	if err != nil {
+		return nil, err
+	}
+	defer o_rule_type.DecRef()
+
+	return o_rule_type.CallFunction(r.Query, r.Type, r.Language)
 }
 
 func ImportModule() (*python.PyObject, error) {
