@@ -79,9 +79,11 @@ func (source Source) AddRules(rule_params []RuleParams) (e error) {
 			for _, rule := range rules {
 				o_root, err := source.se.AddRule(rule)
 				if err != nil {
-					if err, ok := err.(*python.Error); ok && err.Type == "NotImplementedError" {
-						logger.Printf("Ignoring rule: %s: %s", rule.RuleId, err.Value)
-						continue
+					if err, ok := err.(*python.Error); ok {
+						if err.Type == "NotImplementedError" || err.Value == "Root without branches" {
+							logger.Printf("Ignoring rule: %s: %s", rule.RuleId, err.Value)
+							continue
+						}
 					}
 					e = err
 					return
