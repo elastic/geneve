@@ -55,7 +55,11 @@ func TestSource(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	for _, test := range tests {
-		docs, err := NewSource(testSchema, []string{test})
+		docs, err := NewSource(testSchema)
+		if err != nil {
+			panic(err)
+		}
+		err = docs.AddQueries([]string{test})
 		if err != nil {
 			panic(err)
 		}
@@ -81,7 +85,11 @@ func TestSource(t *testing.T) {
 
 // benchmark invoking Emit N times for one document
 func BenchmarkNEmit(b *testing.B) {
-	docs, err := NewSource(testSchema, []string{`process where process.name == "*.exe"`})
+	docs, err := NewSource(testSchema)
+	if err != nil {
+		panic(err)
+	}
+	err = docs.AddQueries([]string{`process where process.name == "*.exe"`})
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +105,11 @@ func BenchmarkNEmit(b *testing.B) {
 
 // benchmark invoking Emit once for N documents
 func BenchmarkEmitN(b *testing.B) {
-	docs, err := NewSource(testSchema, []string{`process where process.name == "*.exe"`})
+	docs, err := NewSource(testSchema)
+	if err != nil {
+		panic(err)
+	}
+	err = docs.AddQueries([]string{`process where process.name == "*.exe"`})
 	if err != nil {
 		panic(err)
 	}

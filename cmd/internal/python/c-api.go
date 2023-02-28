@@ -69,6 +69,16 @@ func (o *PyObject) ToPython() (*PyObject, error) {
 	return o, nil
 }
 
+type Error struct {
+	Type    string
+	Value   string
+	Message string
+}
+
+func (e *Error) Error() string {
+	return e.Message
+}
+
 func pythonError() error {
 	var p_type, p_value, p_tb *C.PyObject
 
@@ -106,6 +116,18 @@ func pythonError() error {
 	}
 	defer o_lines.DecRef()
 
+	o_type_name, err := o_type.GetAttrString("__name__")
+	if err != nil {
+		panic(err)
+	}
+	s_type_name, err := o_type_name.Str()
+	if err != nil {
+		panic(err)
+	}
+	s_value, err := o_value.Str()
+	if err != nil {
+		panic(err)
+	}
 	a_lines, err := PythonToAny(o_lines)
 	if err != nil {
 		panic(err)
@@ -116,7 +138,7 @@ func pythonError() error {
 	for _, a_line := range a_lines.([]any) {
 		fmt.Fprintf(msg, a_line.(string))
 	}
-	return fmt.Errorf(msg.String())
+	return &Error{Type: s_type_name, Value: s_value, Message: msg.String()}
 }
 
 func pyObjectOrError(o *C.PyObject) (*PyObject, error) {

@@ -23,6 +23,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/elastic/geneve/cmd/geneve/sink"
+	"github.com/elastic/geneve/cmd/geneve/source"
 	"github.com/elastic/geneve/cmd/internal/control"
 	"github.com/elastic/geneve/cmd/internal/python"
 	"github.com/elastic/geneve/cmd/internal/testing"
@@ -109,27 +111,27 @@ func TestFlow(t *testing.T) {
 	var resp testing.Response
 
 	// create one flow
-	resp = r.Put("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
+	resp = r.PutYaml("/api/flow/test", Params{Source: SourceParams{Name: "test"}, Sink: SinkParams{Name: "test"}})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusBadRequest, "Source not found: test\n")
 
 	// create a source
-	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = r.PutYaml("/api/source/test", source.Params{Queries: []string{`process where process.name == "*.exe"`}})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// create one flow
-	resp = r.Put("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
+	resp = r.PutYaml("/api/flow/test", Params{Source: SourceParams{Name: "test"}, Sink: SinkParams{Name: "test"}})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusBadRequest, "Sink not found: test\n")
 
 	// create a sink
-	resp = r.Put("/api/sink/test", "application/yaml", "url: http://localhost:9296/echo")
+	resp = r.PutYaml("/api/sink/test", sink.Params{URL: "http://localhost:9296/echo"})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// create one flow
-	resp = r.Put("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test")
+	resp = r.PutYaml("/api/flow/test", Params{Source: SourceParams{Name: "test"}, Sink: SinkParams{Name: "test"}})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
@@ -189,17 +191,17 @@ func TestCountedFlow(t *testing.T) {
 	var resp testing.Response
 
 	// create a source
-	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = r.PutYaml("/api/source/test", source.Params{Queries: []string{`process where process.name == "*.exe"`}})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// create a sink
-	resp = r.Put("/api/sink/test", "application/yaml", "url: http://localhost:9296/echo")
+	resp = r.PutYaml("/api/sink/test", sink.Params{URL: "http://localhost:9296/echo"})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// create one flow
-	resp = r.Put("/api/flow/test", "application/yaml", "source:\n  name: test\nsink:\n  name: test\ncount: 10")
+	resp = r.PutYaml("/api/flow/test", Params{Source: SourceParams{Name: "test"}, Sink: SinkParams{Name: "test"}, Count: 10})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 

@@ -77,7 +77,7 @@ func TestSink(t *testing.T) {
 	resp.Expect(t, http.StatusNotFound, "Sink not found: test\n")
 
 	// create one sink
-	resp = r.Put("/api/sink/test", "application/yaml", "url: http://localhost:1234")
+	resp = r.PutYaml("/api/sink/test", Params{URL: "http://localhost:1234"})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 

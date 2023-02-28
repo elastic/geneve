@@ -18,6 +18,10 @@
 package source
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
 	"github.com/elastic/geneve/cmd/geneve"
 	"github.com/elastic/geneve/cmd/geneve/schema"
 	"github.com/elastic/geneve/cmd/internal/python"
@@ -27,7 +31,7 @@ type Source struct {
 	se *geneve.SourceEvents
 }
 
-func NewSource(schema schema.Schema, queries []string) (source Source, e error) {
+func NewSource(schema schema.Schema) (source Source, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
@@ -37,18 +41,56 @@ func NewSource(schema schema.Schema, queries []string) (source Source, e error) 
 			e = err
 			return
 		}
+		source.se = se
+	}
+	<-done
+	return
+}
+
+func (source Source) AddQueries(queries []string) (e error) {
+	done := make(chan any)
+	python.Monitor <- func() {
+		defer close(done)
+
 		for _, query := range queries {
-			o_root, err := se.AddQuery(query)
+			o_root, err := source.se.AddQuery(query)
 			if err != nil {
 				e = err
-				se.DecRef()
 				return
 			}
 			o_root.DecRef()
 		}
-		source.se = se
 	}
 	<-done
+	return
+}
+
+func (source Source) AddRules(rule_params []RuleParams) (e error) {
+	for _, rule_params := range rule_params {
+		rules, err := getRulesFromParams(rule_params)
+		if err != nil {
+			return err
+		}
+
+		done := make(chan any)
+		python.Monitor <- func() {
+			defer close(done)
+
+			for _, rule := range rules {
+				o_root, err := source.se.AddRule(rule)
+				if err != nil {
+					if err, ok := err.(*python.Error); ok && err.Type == "NotImplementedError" {
+						logger.Printf("Ignoring rule: %s: %s", rule.RuleId, err.Value)
+						continue
+					}
+					e = err
+					return
+				}
+				o_root.DecRef()
+			}
+		}
+		<-done
+	}
 	return
 }
 
@@ -128,4 +170,101 @@ func (source Source) Close() {
 		source.se.DecRef()
 	}
 	<-done
+}
+
+func getRulesById(url, rule_id string) (rules []geneve.Rule, e error) {
+	req, err := http.NewRequest("GET", url+"/api/detection_engine/rules", nil)
+	if err != nil {
+		e = err
+		return
+	}
+
+	q := req.URL.Query()
+	q.Add("rule_id", rule_id)
+	req.URL.RawQuery = q.Encode()
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		e = err
+		return
+	}
+	defer resp.Body.Close()
+	dec := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		var r struct{ Message string }
+		err := dec.Decode(&r)
+		if err == nil {
+			e = fmt.Errorf("failed to fetch rule: %s", r.Message)
+		} else {
+			e = fmt.Errorf("failed to fetch rule: %s", err)
+		}
+		return
+	}
+
+	var rule geneve.Rule
+	err = dec.Decode(&rule)
+	if err != nil {
+		e = err
+		return
+	}
+	return []geneve.Rule{rule}, nil
+}
+
+func getRulesByName(url, name string) (rules []geneve.Rule, e error) {
+	req, err := http.NewRequest("GET", url+"/api/detection_engine/rules/_find", nil)
+	if err != nil {
+		e = err
+		return
+	}
+
+	q := req.URL.Query()
+	q.Add("filter", fmt.Sprintf("alert.attributes.name:%q", name))
+	req.URL.RawQuery = q.Encode()
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		e = err
+		return
+	}
+	defer resp.Body.Close()
+	dec := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		var r struct{ Message string }
+		err := dec.Decode(&r)
+		if err == nil {
+			e = fmt.Errorf("failed to fetch rule: %s", r.Message)
+		} else {
+			e = fmt.Errorf("failed to fetch rule: %s", err)
+		}
+		return
+	}
+
+	var results struct{ Data []geneve.Rule }
+	err = dec.Decode(&results)
+	if err != nil {
+		e = err
+		return
+	}
+	if len(results.Data) == 0 {
+		e = fmt.Errorf("failed to fetch rule: name: %q not found", name)
+		return
+	}
+	return results.Data, nil
+}
+
+func getRulesFromParams(rule_params RuleParams) (rules []geneve.Rule, e error) {
+	if rule_params.Kibana.URL == "" {
+		e = fmt.Errorf("kibana.url is not specified")
+	} else if rule_params.RuleId != "" {
+		rules, e = getRulesById(rule_params.Kibana.URL, rule_params.RuleId)
+	} else if rule_params.Name != "" {
+		rules, e = getRulesByName(rule_params.Kibana.URL, rule_params.Name)
+	} else {
+		e = fmt.Errorf("either name or rule_id must be specified")
+	}
+	return
 }

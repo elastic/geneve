@@ -18,8 +18,12 @@
 package testing
 
 import (
+	"bytes"
+	"io"
 	"net/http"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 var client = &http.Client{}
@@ -40,8 +44,8 @@ func (r Request) Get(endpoint string) Response {
 	return Response{resp}
 }
 
-func (r Request) bodyRequest(method, endpoint, content_type, body string) Response {
-	req, err := http.NewRequest(method, r.URL+endpoint, strings.NewReader(body))
+func (r Request) bodyRequest(method, endpoint, content_type string, body io.Reader) Response {
+	req, err := http.NewRequest(method, r.URL+endpoint, body)
 	if err != nil {
 		panic(err)
 	}
@@ -56,11 +60,22 @@ func (r Request) bodyRequest(method, endpoint, content_type, body string) Respon
 }
 
 func (r Request) Put(endpoint, content_type, body string) Response {
-	return r.bodyRequest("PUT", endpoint, content_type, body)
+	return r.bodyRequest("PUT", endpoint, content_type, strings.NewReader(body))
+}
+
+func (r Request) PutYaml(endpoint string, data any) Response {
+	var buf bytes.Buffer
+	enc := yaml.NewEncoder(&buf)
+	defer enc.Close()
+	err := enc.Encode(data)
+	if err != nil {
+		panic(err)
+	}
+	return r.bodyRequest("PUT", endpoint, "application/yaml", &buf)
 }
 
 func (r Request) Post(endpoint, content_type, body string) Response {
-	return r.bodyRequest("POST", endpoint, content_type, body)
+	return r.bodyRequest("POST", endpoint, content_type, strings.NewReader(body))
 }
 
 func (r Request) Delete(endpoint string) Response {

@@ -27,13 +27,17 @@ import (
 	"github.com/elastic/geneve/cmd/internal/utils"
 )
 
+type SourceParams struct {
+	Name string
+}
+
+type SinkParams struct {
+	Name string
+}
+
 type Params struct {
-	Source struct {
-		Name string `yaml:"name"`
-	} `yaml:"source"`
-	Sink struct {
-		Name string `yaml:"name"`
-	} `yaml:"sink"`
+	Source      SourceParams
+	Sink        SinkParams
 	Concurrency int `yaml:"concurrency,omitempty"`
 	Count       int `yaml:"count,omitempty"`
 }

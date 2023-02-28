@@ -33,9 +33,20 @@ import (
 
 var logger = log.New(log.Writer(), "datagen ", log.LstdFlags|log.Lmsgprefix)
 
+type KibanaParams struct {
+	URL string
+}
+
+type RuleParams struct {
+	Name   string       `yaml:",omitempty"`
+	RuleId string       `yaml:"rule_id,omitempty"`
+	Kibana KibanaParams `yaml:",omitempty"`
+}
+
 type Params struct {
-	Schema  string   `yaml:",omitempty"`
-	Queries []string `yaml:",omitempty"`
+	Schema  string       `yaml:",omitempty"`
+	Queries []string     `yaml:",omitempty"`
+	Rules   []RuleParams `yaml:",omitempty"`
 }
 
 type entry struct {
@@ -223,7 +234,19 @@ func putSource(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	source, err := NewSource(s, params.Queries)
+	source, err := NewSource(s)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = source.AddQueries(params.Queries)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = source.AddRules(params.Rules)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
