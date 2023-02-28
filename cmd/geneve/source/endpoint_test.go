@@ -129,17 +129,17 @@ func TestSourceEndpoint(t *testing.T) {
 	resp.Expect(t, http.StatusBadRequest, "line 1: field unknown not found in type source.Params\n")
 
 	// one docs source with query
-	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = r.PutYaml("/api/source/test", Params{Queries: []string{`process where process.name == "*.exe"`}})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// rewrite docs source with query
-	resp = r.Put("/api/source/test", "application/yaml", "queries:\n  - process where process.name == \"*.com\"")
+	resp = r.PutYaml("/api/source/test", Params{Queries: []string{`process where process.name == "*.com"`}})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// another docs source with query
-	resp = r.Put("/api/source/test2", "application/yaml", "queries:\n  - process where process.name == \"*.exe\"")
+	resp = r.PutYaml("/api/source/test2", Params{Queries: []string{`process where process.name == "*.exe"`}})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
@@ -204,7 +204,7 @@ func TestSourceEndpoint(t *testing.T) {
 	// get docs source
 	resp = r.Get("/api/source/test")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusOK, "queries:\n    - process where process.name == \"*.com\"\n")
+	resp.ExpectYaml(t, http.StatusOK, &Params{Queries: []string{`process where process.name == "*.com"`}}, true)
 
 	// get docs mappings
 	resp = r.Get("/api/source/test/_mappings")
@@ -232,7 +232,7 @@ func TestSourceEndpoint(t *testing.T) {
 	}, true)
 
 	// docs source with non-existent schema
-	resp = r.Put("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.name == \"*.exe\"")
+	resp = r.PutYaml("/api/source/test", Params{Schema: "test", Queries: []string{`process where process.name == "*.exe"`}})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusBadRequest, "Schema not found: test\n")
 
@@ -272,7 +272,7 @@ func TestSourceEndpointWithSchema(t *testing.T) {
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// create docs source with schema
-	resp = r.Put("/api/source/test", "application/yaml", "schema: test\nqueries:\n  - process where process.pid > 0")
+	resp = r.PutYaml("/api/source/test", Params{Schema: "test", Queries: []string{"process where process.pid > 0"}})
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
