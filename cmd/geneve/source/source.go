@@ -47,7 +47,7 @@ func NewSource(schema schema.Schema) (source Source, e error) {
 	return
 }
 
-func (source Source) AddQueries(queries []string) (e error) {
+func (source Source) AddQueries(queries []string) (num int, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
@@ -59,17 +59,19 @@ func (source Source) AddQueries(queries []string) (e error) {
 				return
 			}
 			o_root.DecRef()
+			num += 1
 		}
 	}
 	<-done
 	return
 }
 
-func (source Source) AddRules(rule_params []RuleParams) (e error) {
+func (source Source) AddRules(rule_params []RuleParams) (num int, e error) {
 	for _, rule_params := range rule_params {
 		rules, err := getRulesFromParams(rule_params)
 		if err != nil {
-			return err
+			e = err
+			return
 		}
 
 		done := make(chan any)
@@ -89,6 +91,7 @@ func (source Source) AddRules(rule_params []RuleParams) (e error) {
 					return
 				}
 				o_root.DecRef()
+				num += 1
 			}
 		}
 		<-done

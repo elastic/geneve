@@ -59,7 +59,7 @@ func TestSource(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		err = docs.AddQueries([]string{test})
+		_, err = docs.AddQueries([]string{test})
 		if err != nil {
 			panic(err)
 		}
@@ -89,7 +89,7 @@ func BenchmarkNEmit(b *testing.B) {
 	if err != nil {
 		panic(err)
 	}
-	err = docs.AddQueries([]string{`process where process.name == "*.exe"`})
+	_, err = docs.AddQueries([]string{`process where process.name == "*.exe"`})
 	if err != nil {
 		panic(err)
 	}
@@ -109,7 +109,7 @@ func BenchmarkEmitN(b *testing.B) {
 	if err != nil {
 		panic(err)
 	}
-	err = docs.AddQueries([]string{`process where process.name == "*.exe"`})
+	_, err = docs.AddQueries([]string{`process where process.name == "*.exe"`})
 	if err != nil {
 		panic(err)
 	}
