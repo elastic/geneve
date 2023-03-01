@@ -19,12 +19,12 @@ package schema
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/elastic/geneve/cmd/internal/control"
+	"github.com/elastic/geneve/cmd/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -61,34 +61,6 @@ func getSchema(w http.ResponseWriter, req *http.Request) {
 	enc.Close()
 }
 
-func getSchemaFromRequest(w http.ResponseWriter, req *http.Request) (schema Schema, err error) {
-	content_type, ok := req.Header["Content-Type"]
-	if !ok {
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		err = fmt.Errorf("Missing Content-Type header")
-		return
-	}
-
-	switch content_type[0] {
-	case "application/yaml":
-		dec := yaml.NewDecoder(req.Body)
-		dec.KnownFields(false)
-		err = dec.Decode(&schema)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			if err == io.EOF {
-				err = fmt.Errorf("No schema was provided")
-			}
-		}
-
-	default:
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		err = fmt.Errorf("Unsupported Content-Type: %s", content_type[0])
-	}
-
-	return
-}
-
 func putSchema(w http.ResponseWriter, req *http.Request) {
 	parts := strings.Split(req.URL.Path, "/")
 	if len(parts) < 4 || parts[3] == "" {
@@ -97,9 +69,10 @@ func putSchema(w http.ResponseWriter, req *http.Request) {
 	}
 	name := parts[3]
 
-	s, err := getSchemaFromRequest(w, req)
+	var s Schema
+	err := utils.DecodeRequestBody(w, req, &s, false)
 	if err != nil {
-		fmt.Fprintln(w, err.Error())
+		logger.Printf("%s %s %s", req.Method, req.URL, err)
 		return
 	}
 

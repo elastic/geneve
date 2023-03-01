@@ -84,7 +84,7 @@ func TestInvalidFlow(t *testing.T) {
 	// empty body
 	resp = r.Put("/api/flow/test", "application/yaml", "")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusBadRequest, "No parameters were provided\n")
+	resp.Expect(t, http.StatusBadRequest, "No request body was provided\n")
 
 	// unknown parameter
 	resp = r.Put("/api/flow/test", "application/yaml", "unknown: 0")
