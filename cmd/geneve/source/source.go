@@ -226,6 +226,7 @@ func getRulesByName(url, name string) (rules []geneve.Rule, e error) {
 
 	q := req.URL.Query()
 	q.Add("filter", fmt.Sprintf("alert.attributes.name:%q", name))
+	q.Add("per_page", "1500")
 	req.URL.RawQuery = q.Encode()
 
 	client := &http.Client{}
@@ -248,7 +249,10 @@ func getRulesByName(url, name string) (rules []geneve.Rule, e error) {
 		return
 	}
 
-	var results struct{ Data []geneve.Rule }
+	var results struct {
+		Data  []geneve.Rule
+		Total int
+	}
 	err = dec.Decode(&results)
 	if err != nil {
 		e = err
@@ -256,6 +260,10 @@ func getRulesByName(url, name string) (rules []geneve.Rule, e error) {
 	}
 	if len(results.Data) == 0 {
 		e = fmt.Errorf("failed to fetch rule: name: %q not found", name)
+		return
+	}
+	if len(results.Data) != results.Total {
+		e = fmt.Errorf("failed to fetch all the rules: only %d of %d", len(results.Data), results.Total)
 		return
 	}
 	return results.Data, nil

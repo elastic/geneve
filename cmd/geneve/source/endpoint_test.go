@@ -38,7 +38,10 @@ func init() {
 	// start a dummy Kibana server
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/detection_engine/rules/_find", func(w http.ResponseWriter, req *http.Request) {
-		results := struct{ Data []geneve.Rule }{}
+		results := struct {
+			Data  []geneve.Rule
+			Total int
+		}{}
 
 		if req.URL.Query().Get("filter") == `alert.attributes.name:"Test rule"` {
 			results.Data = append(results.Data, geneve.Rule{
@@ -50,6 +53,7 @@ func init() {
 			})
 		}
 
+		results.Total = len(results.Data)
 		enc := json.NewEncoder(w)
 		err := enc.Encode(results)
 		if err != nil {
