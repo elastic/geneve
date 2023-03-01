@@ -31,6 +31,11 @@ type Source struct {
 	se *geneve.SourceEvents
 }
 
+type Document struct {
+	Data  string
+	Index string
+}
+
 func NewSource(schema schema.Schema) (source Source, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
@@ -83,7 +88,11 @@ func (source Source) AddRules(rule_params []RuleParams) (num int, e error) {
 					logger.Printf("Ignoring rule: %s: Rule is disabled", rule.RuleId)
 					continue
 				}
-				o_root, err := source.se.AddRule(rule)
+				var Index any
+				if len(rule.Index) > 0 {
+					Index = rule.Index[0]
+				}
+				o_root, err := source.se.AddRule(rule, Index)
 				if err != nil {
 					if err, ok := err.(*python.Error); ok {
 						if err.Type == "NotImplementedError" || err.Value == "Root without branches" {
@@ -128,7 +137,7 @@ func (source Source) Mappings() (mappings string, e error) {
 	return
 }
 
-func (source Source) Emit(count int) (docs []string, e error) {
+func (source Source) Emit(count int) (docs []Document, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
@@ -140,32 +149,46 @@ func (source Source) Emit(count int) (docs []string, e error) {
 		}
 		defer o_docs.DecRef()
 
-		docs = make([]string, 0, python.PyList_Size(o_docs))
+		docs = make([]Document, 0, python.PyList_Size(o_docs))
 		for i := 0; i < cap(docs); i++ {
 			o_event, err := python.PySequence_GetItem(o_docs, i)
 			if err != nil {
 				e = err
 				return
 			}
+			defer o_event.DecRef()
 			o_doc, err := o_event.GetAttrString("doc")
-			o_event.DecRef()
 			if err != nil {
 				e = err
 				return
 			}
+			defer o_doc.DecRef()
+			o_meta, err := o_event.GetAttrString("meta")
+			if err != nil {
+				e = err
+				return
+			}
+			defer o_meta.DecRef()
 			o_doc_json, err := source.se.JsonDumps(o_doc, false)
-			o_doc.DecRef()
 			if err != nil {
 				e = err
 				return
 			}
+			defer o_doc_json.DecRef()
 			s_doc, err := o_doc_json.Str()
-			o_doc_json.DecRef()
 			if err != nil {
 				e = err
 				return
 			}
-			docs = append(docs, s_doc)
+			index := ""
+			if o_meta != python.Py_None {
+				index, err = o_meta.Str()
+				if err != nil {
+					e = err
+					return
+				}
+			}
+			docs = append(docs, Document{Data: s_doc, Index: index})
 		}
 	}
 	<-done
@@ -181,7 +204,7 @@ func (source Source) Close() {
 	<-done
 }
 
-func getRulesById(url, rule_id string) (rules []geneve.Rule, e error) {
+func getRulesById(url string, rule_id string) (rules []geneve.Rule, e error) {
 	req, err := http.NewRequest("GET", url+"/api/detection_engine/rules", nil)
 	if err != nil {
 		e = err
@@ -221,7 +244,7 @@ func getRulesById(url, rule_id string) (rules []geneve.Rule, e error) {
 	return []geneve.Rule{rule}, nil
 }
 
-func getRulesByName(url, name string) (rules []geneve.Rule, e error) {
+func getRulesByName(url string, name string) (rules []geneve.Rule, e error) {
 	req, err := http.NewRequest("GET", url+"/api/detection_engine/rules/_find", nil)
 	if err != nil {
 		e = err
@@ -229,7 +252,7 @@ func getRulesByName(url, name string) (rules []geneve.Rule, e error) {
 	}
 
 	q := req.URL.Query()
-	q.Add("filter", fmt.Sprintf("alert.attributes.name:%q", name))
+	q.Add("filter", fmt.Sprintf("alert.attributes.name:(%q)", name))
 	q.Add("per_page", "1500")
 	req.URL.RawQuery = q.Encode()
 
@@ -263,7 +286,7 @@ func getRulesByName(url, name string) (rules []geneve.Rule, e error) {
 		return
 	}
 	if len(results.Data) == 0 {
-		e = fmt.Errorf("failed to fetch rule: name: %q not found", name)
+		e = fmt.Errorf("failed to fetch rule: name not found: %q", name)
 		return
 	}
 	if len(results.Data) != results.Total {

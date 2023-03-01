@@ -156,7 +156,7 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 				if i+j > 0 {
 					fmt.Fprintf(w, ",")
 				}
-				if _, err := io.WriteString(w, doc); err != nil {
+				if _, err := io.WriteString(w, doc.Data); err != nil {
 					logger.Printf("Could not write document: %s", err)
 					return
 				}

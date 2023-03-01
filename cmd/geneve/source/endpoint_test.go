@@ -43,7 +43,7 @@ func init() {
 			Total int
 		}{}
 
-		if req.URL.Query().Get("filter") == `alert.attributes.name:"Test rule"` {
+		if req.URL.Query().Get("filter") == `alert.attributes.name:("Test rule")` {
 			results.Data = append(results.Data, geneve.Rule{
 				Name:     "Test rule",
 				RuleId:   "test",

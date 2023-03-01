@@ -66,8 +66,17 @@ func (se *SourceEvents) AddQuery(query string) (*python.PyObject, error) {
 	return se.o.CallMethod("add_query", query)
 }
 
-func (se *SourceEvents) AddRule(rule Rule) (*python.PyObject, error) {
-	return se.o.CallMethod("add_rule", rule)
+func (se *SourceEvents) AddRule(rule Rule, meta any) (*python.PyObject, error) {
+	o_add_rule, err := se.o.GetAttrString("add_rule")
+	if err != nil {
+		return nil, err
+	}
+	defer o_add_rule.DecRef()
+	if meta == nil {
+		python.Py_None.IncRef()
+		meta = python.Py_None
+	}
+	return o_add_rule.Call([]any{rule}, map[any]any{"meta": meta})
 }
 
 func (se *SourceEvents) Mappings() (*python.PyObject, error) {
@@ -88,12 +97,13 @@ func (se *SourceEvents) JsonDumps(o_doc *python.PyObject, sortKeys bool) (*pytho
 }
 
 type Rule struct {
-	Name     string `json:",omitempy"`
-	RuleId   string `json:"rule_id,omitempy"`
-	Query    string `json:",omitempy"`
-	Type     string `json:",omitempy"`
-	Language string `json:",omitempy"`
-	Enabled  bool   `json:",omitempy"`
+	Name     string   `json:",omitempy"`
+	RuleId   string   `json:"rule_id,omitempy"`
+	Query    string   `json:",omitempy"`
+	Type     string   `json:",omitempy"`
+	Language string   `json:",omitempy"`
+	Enabled  bool     `json:",omitempy"`
+	Index    []string `json:",omitempy"`
 }
 
 func (r Rule) ToPython() (*python.PyObject, error) {

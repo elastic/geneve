@@ -76,7 +76,12 @@ func putSink(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	Put(name, &Sink{client: &http.Client{}, Params: params})
+	sink, err := NewSink(params)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	Put(name, &sink)
 
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintln(w, "Created successfully")

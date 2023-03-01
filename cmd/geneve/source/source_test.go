@@ -73,7 +73,7 @@ func TestSource(t *testing.T) {
 					panic(err)
 				}
 				for _, doc := range docs {
-					if len(doc) == 0 {
+					if len(doc.Data) == 0 {
 						t.Errorf("doc length is 0")
 					}
 				}

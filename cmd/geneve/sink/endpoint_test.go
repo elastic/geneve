@@ -79,6 +79,17 @@ func TestSink(t *testing.T) {
 	// create one sink
 	r.PutGetExpectYaml(t, "/api/sink/test", Params{URL: "http://localhost:1234"}, true)
 
+	// create one sink
+	r.PutGetExpectYaml(t, "/api/sink/test", Params{
+		URL: "http://localhost:1234",
+		ES: ESParams{
+			Index:           "index",
+			Pipeline:        "geoip-info",
+			ForceIndex:      true,
+			RuleIndexSuffix: "geneve",
+		},
+	}, true)
+
 	// unknown endpoint
 	resp = r.Get("/api/sink/test/_unknown")
 	defer resp.Body.Close()
