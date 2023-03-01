@@ -50,6 +50,7 @@ func init() {
 				Query:    `process where process.name == "*.exe"`,
 				Type:     "query",
 				Language: "eql",
+				Enabled:  true,
 			})
 		}
 
@@ -78,6 +79,7 @@ func init() {
 			Query:    `process where process.name == "*.exe"`,
 			Type:     "query",
 			Language: "eql",
+			Enabled:  true,
 		}
 
 		enc := json.NewEncoder(w)

@@ -93,6 +93,7 @@ type Rule struct {
 	Query    string `json:",omitempy"`
 	Type     string `json:",omitempy"`
 	Language string `json:",omitempy"`
+	Enabled  bool   `json:",omitempy"`
 }
 
 func (r Rule) ToPython() (*python.PyObject, error) {

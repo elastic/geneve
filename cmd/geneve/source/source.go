@@ -79,6 +79,10 @@ func (source Source) AddRules(rule_params []RuleParams) (num int, e error) {
 			defer close(done)
 
 			for _, rule := range rules {
+				if !rule.Enabled {
+					logger.Printf("Ignoring rule: %s: Rule is disabled", rule.RuleId)
+					continue
+				}
 				o_root, err := source.se.AddRule(rule)
 				if err != nil {
 					if err, ok := err.(*python.Error); ok {
