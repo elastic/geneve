@@ -71,3 +71,46 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
             },
             d.solve(schema),
         )
+
+    def test_as(self):
+        from geneve.solver import group_as
+
+        schema = {
+            "source.as.number": {"type": "long"},
+            "destination.as.number": {"type": "long"},
+        }
+        c = Constraints()
+        c.append_constraint("source.as.")
+        c.append_constraint("destination.as.")
+
+        self.assertEqual(
+            {
+                "source": {"as": {"number": 44454, "organization": {"name": "Reeves Inc"}}},
+                "destination": {"as": {"number": 2299, "organization": {"name": "Cooper Ltd"}}},
+            },
+            c.solve(schema),
+        )
+
+    def test_os(self):
+        from geneve.solver import group_os
+
+        schema = {}
+        c = Constraints()
+        c.append_constraint("host.os.")
+
+        self.assertEqual(
+            {
+                "host": {
+                    "os": {
+                        "codename": "bullseye",
+                        "family": "debian",
+                        "kernel": "5.10.0-20-cloud-amd64",
+                        "name": "Debian GNU/Linux",
+                        "platform": "debian",
+                        "type": "linux",
+                        "version": "11 (bullseye)",
+                    }
+                }
+            },
+            c.solve(schema),
+        )

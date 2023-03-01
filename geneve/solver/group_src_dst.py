@@ -15,25 +15,23 @@
 # specific language governing permissions and limitations
 # under the License.
 
-"""Geo group constraints solver."""
+"""Source/Destination group constraints solver."""
 
 from faker import Faker
 
-from geneve.solver import emit_group, solver
+from geneve.solver import emit_field, emit_group, solver
 
 faker = Faker()
 
 
-@solver("host.geo.")
-@solver("source.geo.")
-@solver("destination.geo.")
-def resolve_geo_group(doc, group, fields, schema, env):
-    lol = faker.location_on_land()
-    geo = {
-        "location.lat": float(lol[0]),
-        "location.lon": float(lol[1]),
-        "city_name": lol[2],
-        "country_iso_code": lol[3],
-        "timezone": lol[4],
-    }
-    emit_group(doc, group, geo)
+@solver("source.")
+@solver("destination.")
+def resolve_src_dst(doc, group, fields, schema, env):
+    for field, constraints in fields.items():
+        if field == "mac":
+            emit_field(doc, group, "mac", faker.mac_address())
+            continue
+        if field == "domain":
+            emit_field(doc, group, "domain", faker.domain_name())
+            continue
+        solver.solve_field(doc, group, field, constraints, schema, env)

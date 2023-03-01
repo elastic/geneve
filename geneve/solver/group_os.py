@@ -15,25 +15,30 @@
 # specific language governing permissions and limitations
 # under the License.
 
-"""Geo group constraints solver."""
+"""OS group constraints solver."""
+
+from functools import partial
+from pathlib import Path
 
 from faker import Faker
+from faker_datasets import Provider, add_dataset
 
 from geneve.solver import emit_group, solver
 
-faker = Faker()
+
+@add_dataset("os", Path(__file__).parent / "datasets" / "os.json", picker="os")
+class OSProvider(Provider):
+    pass
 
 
-@solver("host.geo.")
-@solver("source.geo.")
-@solver("destination.geo.")
-def resolve_geo_group(doc, group, fields, schema, env):
-    lol = faker.location_on_land()
-    geo = {
-        "location.lat": float(lol[0]),
-        "location.lon": float(lol[1]),
-        "city_name": lol[2],
-        "country_iso_code": lol[3],
-        "timezone": lol[4],
-    }
-    emit_group(doc, group, geo)
+fake = Faker()
+fake.add_provider(OSProvider)
+
+
+@solver("host.os.")
+@solver("observer.os.")
+@solver("user_agent.os.")
+def resolve_os_group(doc, group, fields, schema, env):
+    match = partial(solver.match_fields, fields=fields, schema=schema)
+    os = fake.os(match=match)
+    emit_group(doc, group, os)
