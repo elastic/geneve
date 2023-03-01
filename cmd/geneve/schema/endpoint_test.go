@@ -64,7 +64,7 @@ func TestSchemaEndpoint(t *testing.T) {
 	// empty body
 	resp = r.Put("/api/schema/test", "application/yaml", "")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusBadRequest, "No schema was provided\n")
+	resp.Expect(t, http.StatusBadRequest, "No request body was provided\n")
 
 	// check non-existent schema
 	resp = r.Get("/api/schema/test")

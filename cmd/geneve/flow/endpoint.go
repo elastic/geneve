@@ -19,7 +19,6 @@ package flow
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -27,6 +26,7 @@ import (
 	"github.com/elastic/geneve/cmd/geneve/sink"
 	"github.com/elastic/geneve/cmd/geneve/source"
 	"github.com/elastic/geneve/cmd/internal/control"
+	"github.com/elastic/geneve/cmd/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -63,36 +63,6 @@ func getFlow(w http.ResponseWriter, req *http.Request) {
 	enc.Close()
 }
 
-func getParamsFromRequest(w http.ResponseWriter, req *http.Request) (params Params, err error) {
-	content_type, ok := req.Header["Content-Type"]
-	if !ok {
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		err = fmt.Errorf("Missing Content-Type header")
-		return
-	}
-
-	switch content_type[0] {
-	case "application/yaml":
-		dec := yaml.NewDecoder(req.Body)
-		dec.KnownFields(true)
-		err = dec.Decode(&params)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			if err == io.EOF {
-				err = fmt.Errorf("No parameters were provided")
-			} else if e, ok := err.(*yaml.TypeError); ok {
-				err = fmt.Errorf(e.Errors[0])
-			}
-		}
-
-	default:
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		err = fmt.Errorf("Unsupported Content-Type: %s", content_type[0])
-	}
-
-	return
-}
-
 func putFlow(w http.ResponseWriter, req *http.Request) {
 	parts := strings.Split(req.URL.Path, "/")
 	if len(parts) < 4 || parts[3] == "" {
@@ -101,9 +71,10 @@ func putFlow(w http.ResponseWriter, req *http.Request) {
 	}
 	name := parts[3]
 
-	params, err := getParamsFromRequest(w, req)
+	var params Params
+	err := utils.DecodeRequestBody(w, req, &params, true)
 	if err != nil {
-		fmt.Fprintln(w, err.Error())
+		logger.Printf("%s %s %s", req.Method, req.URL, err)
 		return
 	}
 
