@@ -72,14 +72,11 @@ func TestSchemaEndpoint(t *testing.T) {
 	resp.Expect(t, http.StatusNotFound, "Schema not found: test\n")
 
 	// create one schema
-	resp = r.Put("/api/schema/test", "application/yaml", "source.ip:\n  type: ip")
-	defer resp.Body.Close()
-	resp.Expect(t, http.StatusCreated, "Created successfully\n")
-
-	// get one schema
-	resp = r.Get("/api/schema/test")
-	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, map[string]map[string]string{"source.ip": {"type": "ip"}}, false)
+	r.PutGetExpectYaml(t, "/api/schema/test", map[string]any{
+		"source.ip": map[string]any{
+			"type": "ip",
+		},
+	}, false)
 
 	// unknown endpoint
 	resp = r.Get("/api/schema/test/_unknown")

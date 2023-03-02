@@ -144,21 +144,7 @@ func TestSourceEndpoint(t *testing.T) {
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
 	// rewrite docs source with rule id
-	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
-		RuleParams{
-			RuleId: "test",
-			Kibana: KibanaParams{
-				URL: "http://localhost:5697",
-			},
-		},
-	}})
-	defer resp.Body.Close()
-	resp.Expect(t, http.StatusCreated, "Created successfully\n")
-
-	// get docs source
-	resp = r.Get("/api/source/test2")
-	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, Params{Rules: []RuleParams{
+	r.PutGetExpectYaml(t, "/api/source/test2", Params{Rules: []RuleParams{
 		RuleParams{
 			RuleId: "test",
 			Kibana: KibanaParams{
@@ -168,21 +154,7 @@ func TestSourceEndpoint(t *testing.T) {
 	}}, true)
 
 	// rewrite docs source with rule name
-	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
-		RuleParams{
-			Name: "Test rule",
-			Kibana: KibanaParams{
-				URL: "http://localhost:5697",
-			},
-		},
-	}})
-	defer resp.Body.Close()
-	resp.Expect(t, http.StatusCreated, "Created successfully\n")
-
-	// get docs source
-	resp = r.Get("/api/source/test2")
-	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, Params{Rules: []RuleParams{
+	r.PutGetExpectYaml(t, "/api/source/test2", Params{Rules: []RuleParams{
 		RuleParams{
 			Name: "Test rule",
 			Kibana: KibanaParams{
