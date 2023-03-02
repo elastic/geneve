@@ -41,6 +41,7 @@ type KibanaParams struct {
 type RuleParams struct {
 	Name   string       `yaml:",omitempty"`
 	RuleId string       `yaml:"rule_id,omitempty"`
+	Tags   string       `yaml:",omitempty"`
 	Kibana KibanaParams `yaml:",omitempty"`
 }
 

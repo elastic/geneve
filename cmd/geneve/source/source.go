@@ -296,11 +296,65 @@ func getRulesByName(url string, name string) (rules []geneve.Rule, e error) {
 	return results.Data, nil
 }
 
+func getRulesByTags(url string, tags string) (rules []geneve.Rule, e error) {
+	req, err := http.NewRequest("GET", url+"/api/detection_engine/rules/_find", nil)
+	if err != nil {
+		e = err
+		return
+	}
+
+	q := req.URL.Query()
+	q.Add("filter", fmt.Sprintf("alert.attributes.tags:(%s)", tags))
+	q.Add("per_page", "1500")
+	req.URL.RawQuery = q.Encode()
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		e = err
+		return
+	}
+	defer resp.Body.Close()
+	dec := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		var r struct{ Message string }
+		err := dec.Decode(&r)
+		if err == nil {
+			e = fmt.Errorf("failed to fetch rule: %s", r.Message)
+		} else {
+			e = fmt.Errorf("failed to fetch rule: %s", err)
+		}
+		return
+	}
+
+	var results struct {
+		Data  []geneve.Rule
+		Total int
+	}
+	err = dec.Decode(&results)
+	if err != nil {
+		e = err
+		return
+	}
+	if len(results.Data) == 0 {
+		e = fmt.Errorf("failed to fetch rule: tags not found: %s", tags)
+		return
+	}
+	if len(results.Data) != results.Total {
+		e = fmt.Errorf("failed to fetch all the rules: only %d of %d", len(results.Data), results.Total)
+		return
+	}
+	return results.Data, nil
+}
+
 func getRulesFromParams(rule_params RuleParams) (rules []geneve.Rule, e error) {
 	if rule_params.Kibana.URL == "" {
 		e = fmt.Errorf("kibana.url is not specified")
 	} else if rule_params.RuleId != "" {
 		rules, e = getRulesById(rule_params.Kibana.URL, rule_params.RuleId)
+	} else if rule_params.Tags != "" {
+		rules, e = getRulesByTags(rule_params.Kibana.URL, rule_params.Tags)
 	} else if rule_params.Name != "" {
 		rules, e = getRulesByName(rule_params.Kibana.URL, rule_params.Name)
 	} else {

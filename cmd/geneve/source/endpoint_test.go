@@ -35,6 +35,15 @@ func init() {
 		panic(err)
 	}
 
+	rule := geneve.Rule{
+		Name:     "Test rule",
+		RuleId:   "test",
+		Query:    `process where process.name == "*.exe"`,
+		Type:     "query",
+		Language: "eql",
+		Enabled:  true,
+	}
+
 	// start a dummy Kibana server
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/detection_engine/rules/_find", func(w http.ResponseWriter, req *http.Request) {
@@ -44,14 +53,10 @@ func init() {
 		}{}
 
 		if req.URL.Query().Get("filter") == `alert.attributes.name:("Test rule")` {
-			results.Data = append(results.Data, geneve.Rule{
-				Name:     "Test rule",
-				RuleId:   "test",
-				Query:    `process where process.name == "*.exe"`,
-				Type:     "query",
-				Language: "eql",
-				Enabled:  true,
-			})
+			results.Data = append(results.Data, rule)
+		}
+		if req.URL.Query().Get("filter") == `alert.attributes.tags:(Test)` {
+			results.Data = append(results.Data, rule)
 		}
 
 		results.Total = len(results.Data)
@@ -71,15 +76,6 @@ func init() {
 				panic(err)
 			}
 			return
-		}
-
-		rule := geneve.Rule{
-			Name:     "Test rule",
-			RuleId:   "test",
-			Query:    `process where process.name == "*.exe"`,
-			Type:     "query",
-			Language: "eql",
-			Enabled:  true,
 		}
 
 		enc := json.NewEncoder(w)
@@ -149,6 +145,42 @@ func TestSourceEndpoint(t *testing.T) {
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
+	// non-existent rule id
+	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
+		RuleParams{
+			RuleId: "no test",
+			Kibana: KibanaParams{
+				URL: "http://localhost:5697",
+			},
+		},
+	}})
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusBadRequest, "failed to fetch rule: rule not found\n")
+
+	// non-existent rule name
+	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
+		RuleParams{
+			Name: "no test",
+			Kibana: KibanaParams{
+				URL: "http://localhost:5697",
+			},
+		},
+	}})
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusBadRequest, "failed to fetch rule: name not found: \"no test\"\n")
+
+	// non-existent rule tags
+	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
+		RuleParams{
+			Tags: "no test",
+			Kibana: KibanaParams{
+				URL: "http://localhost:5697",
+			},
+		},
+	}})
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusBadRequest, "failed to fetch rule: tags not found: no test\n")
+
 	// rewrite docs source with rule id
 	r.PutGetExpectYaml(t, "/api/source/test2", Params{Rules: []RuleParams{
 		RuleParams{
@@ -163,6 +195,16 @@ func TestSourceEndpoint(t *testing.T) {
 	r.PutGetExpectYaml(t, "/api/source/test2", Params{Rules: []RuleParams{
 		RuleParams{
 			Name: "Test rule",
+			Kibana: KibanaParams{
+				URL: "http://localhost:5697",
+			},
+		},
+	}}, true)
+
+	// rewrite docs source with rule tags
+	r.PutGetExpectYaml(t, "/api/source/test2", Params{Rules: []RuleParams{
+		RuleParams{
+			Tags: "Test",
 			Kibana: KibanaParams{
 				URL: "http://localhost:5697",
 			},
