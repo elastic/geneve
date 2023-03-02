@@ -22,6 +22,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"testing"
 
 	"gopkg.in/yaml.v3"
 )
@@ -88,4 +89,14 @@ func (r Request) Delete(endpoint string) Response {
 		panic(err)
 	}
 	return Response{resp}
+}
+
+func (r Request) PutGetExpectYaml(t testing.TB, endpoint string, data any, knownFields bool) {
+	resp := r.PutYaml(endpoint, data)
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusCreated, "Created successfully\n")
+
+	resp = r.Get(endpoint)
+	defer resp.Body.Close()
+	resp.ExpectYaml(t, http.StatusOK, data, knownFields)
 }

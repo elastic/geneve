@@ -41,6 +41,7 @@ type KibanaParams struct {
 type RuleParams struct {
 	Name   string       `yaml:",omitempty"`
 	RuleId string       `yaml:"rule_id,omitempty"`
+	Tags   string       `yaml:",omitempty"`
 	Kibana KibanaParams `yaml:",omitempty"`
 }
 
@@ -156,7 +157,7 @@ func getSource(w http.ResponseWriter, req *http.Request) {
 				if i+j > 0 {
 					fmt.Fprintf(w, ",")
 				}
-				if _, err := io.WriteString(w, doc); err != nil {
+				if _, err := io.WriteString(w, doc.Data); err != nil {
 					logger.Printf("Could not write document: %s", err)
 					return
 				}
@@ -212,15 +213,30 @@ func putSource(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = source.AddQueries(params.Queries)
+	num_queries, err := source.AddQueries(params.Queries)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	if num_queries == 1 {
+		logger.Printf("Loaded 1 query")
+	} else {
+		logger.Printf("Loaded %d queries", num_queries)
+	}
 
-	err = source.AddRules(params.Rules)
+	num_rules, err := source.AddRules(params.Rules)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if num_rules == 1 {
+		logger.Printf("Loaded 1 rule")
+	} else {
+		logger.Printf("Loaded %d rules", num_rules)
+	}
+
+	if num_queries+num_rules == 0 {
+		http.Error(w, "Failed to add any query or rule", http.StatusBadRequest)
 		return
 	}
 

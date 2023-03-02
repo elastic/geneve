@@ -21,24 +21,62 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
+
+	"github.com/elastic/geneve/cmd/geneve/source"
 )
 
+type ESParams struct {
+	Index           string `yaml:",omitempty"`
+	Pipeline        string `yaml:",omitempty"`
+	ForceIndex      bool   `yaml:"force_index,omitempty"`
+	RuleIndexSuffix string `yaml:"rule_index_suffix,omitempty"`
+}
+
 type Params struct {
-	URL string `yaml:"url"`
+	URL string
+	ES  ESParams `yaml:",omitempty"`
 }
 
 type Sink struct {
 	Params Params
 	client *http.Client
+	url    *url.URL
 }
 
-func (s *Sink) Receive(body string) error {
-	req, err := http.NewRequest("POST", s.Params.URL, strings.NewReader(body))
+func NewSink(params Params) (Sink, error) {
+	url, err := url.Parse(params.URL)
+	if err != nil {
+		return Sink{}, err
+	}
+	return Sink{client: &http.Client{}, url: url, Params: params}, nil
+}
+
+func (s *Sink) Receive(doc source.Document) error {
+	url := s.url
+
+	if doc.Index != "" && !s.Params.ES.ForceIndex {
+		suffix := "geneve"
+		if s.Params.ES.RuleIndexSuffix != "" {
+			suffix = s.Params.ES.RuleIndexSuffix
+		}
+		u := *url
+		u.Path = fmt.Sprintf("%s/_doc", strings.Replace(doc.Index, "*", suffix, 1))
+	}
+
+	req, err := http.NewRequest("POST", url.String(), strings.NewReader(doc.Data))
 	if err != nil {
 		return err
 	}
+
+	if s.Params.ES.Pipeline != "" {
+		q := req.URL.Query()
+		q.Add("pipeline", s.Params.ES.Pipeline)
+		req.URL.RawQuery = q.Encode()
+	}
+
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := s.client.Do(req)
 	if err != nil {

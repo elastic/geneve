@@ -144,7 +144,7 @@ func TestFlow(t *testing.T) {
 	}{}
 	data.Params.Source.Name = "test"
 	data.Params.Sink.Name = "test"
-	resp.ExpectYaml(t, http.StatusOK, &data, true)
+	resp.ExpectYaml(t, http.StatusOK, data, true)
 
 	// unknown endpoint
 	resp = r.Get("/api/flow/test/_unknown")
@@ -215,7 +215,7 @@ func TestCountedFlow(t *testing.T) {
 	data.Params.Source.Name = "test"
 	data.Params.Sink.Name = "test"
 	data.Params.Count = 10
-	resp.ExpectYaml(t, http.StatusOK, &data, true)
+	resp.ExpectYaml(t, http.StatusOK, data, true)
 
 	// start flow
 	resp = r.Post("/api/flow/test/_start", "", "")
@@ -237,7 +237,7 @@ func TestCountedFlow(t *testing.T) {
 		defer resp.Body.Close()
 
 		try := &testing.Try{T: t, CanFail: tries > 1}
-		resp.ExpectYaml(try, http.StatusOK, &state, false)
+		resp.ExpectYaml(try, http.StatusOK, state, false)
 		if try.Failed() {
 			time.Sleep(250 * time.Millisecond)
 			continue

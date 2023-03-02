@@ -145,6 +145,9 @@ func pyObjectOrError(o *C.PyObject) (*PyObject, error) {
 	if o == nil {
 		return nil, pythonError()
 	}
+	if o == C.Py_None {
+		return Py_None, nil
+	}
 	return &PyObject{o}, nil
 }
 

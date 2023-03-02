@@ -35,21 +35,31 @@ func init() {
 		panic(err)
 	}
 
+	rule := geneve.Rule{
+		Name:     "Test rule",
+		RuleId:   "test",
+		Query:    `process where process.name == "*.exe"`,
+		Type:     "query",
+		Language: "eql",
+		Enabled:  true,
+	}
+
 	// start a dummy Kibana server
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/detection_engine/rules/_find", func(w http.ResponseWriter, req *http.Request) {
-		results := struct{ Data []geneve.Rule }{}
+		results := struct {
+			Data  []geneve.Rule
+			Total int
+		}{}
 
-		if req.URL.Query().Get("filter") == `alert.attributes.name:"Test rule"` {
-			results.Data = append(results.Data, geneve.Rule{
-				Name:     "Test rule",
-				RuleId:   "test",
-				Query:    `process where process.name == "*.exe"`,
-				Type:     "query",
-				Language: "eql",
-			})
+		if req.URL.Query().Get("filter") == `alert.attributes.name:("Test rule")` {
+			results.Data = append(results.Data, rule)
+		}
+		if req.URL.Query().Get("filter") == `alert.attributes.tags:(Test)` {
+			results.Data = append(results.Data, rule)
 		}
 
+		results.Total = len(results.Data)
 		enc := json.NewEncoder(w)
 		err := enc.Encode(results)
 		if err != nil {
@@ -66,14 +76,6 @@ func init() {
 				panic(err)
 			}
 			return
-		}
-
-		rule := geneve.Rule{
-			Name:     "Test rule",
-			RuleId:   "test",
-			Query:    `process where process.name == "*.exe"`,
-			Type:     "query",
-			Language: "eql",
 		}
 
 		enc := json.NewEncoder(w)
@@ -143,22 +145,44 @@ func TestSourceEndpoint(t *testing.T) {
 	defer resp.Body.Close()
 	resp.Expect(t, http.StatusCreated, "Created successfully\n")
 
-	// rewrite docs source with rule id
+	// non-existent rule id
 	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
 		RuleParams{
-			RuleId: "test",
+			RuleId: "no test",
 			Kibana: KibanaParams{
 				URL: "http://localhost:5697",
 			},
 		},
 	}})
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusCreated, "Created successfully\n")
+	resp.Expect(t, http.StatusBadRequest, "failed to fetch rule: rule not found\n")
 
-	// get docs source
-	resp = r.Get("/api/source/test2")
+	// non-existent rule name
+	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
+		RuleParams{
+			Name: "no test",
+			Kibana: KibanaParams{
+				URL: "http://localhost:5697",
+			},
+		},
+	}})
 	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, &Params{Rules: []RuleParams{
+	resp.Expect(t, http.StatusBadRequest, "failed to fetch rule: name not found: \"no test\"\n")
+
+	// non-existent rule tags
+	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
+		RuleParams{
+			Tags: "no test",
+			Kibana: KibanaParams{
+				URL: "http://localhost:5697",
+			},
+		},
+	}})
+	defer resp.Body.Close()
+	resp.Expect(t, http.StatusBadRequest, "failed to fetch rule: tags not found: no test\n")
+
+	// rewrite docs source with rule id
+	r.PutGetExpectYaml(t, "/api/source/test2", Params{Rules: []RuleParams{
 		RuleParams{
 			RuleId: "test",
 			Kibana: KibanaParams{
@@ -168,23 +192,19 @@ func TestSourceEndpoint(t *testing.T) {
 	}}, true)
 
 	// rewrite docs source with rule name
-	resp = r.PutYaml("/api/source/test2", Params{Rules: []RuleParams{
+	r.PutGetExpectYaml(t, "/api/source/test2", Params{Rules: []RuleParams{
 		RuleParams{
 			Name: "Test rule",
 			Kibana: KibanaParams{
 				URL: "http://localhost:5697",
 			},
 		},
-	}})
-	defer resp.Body.Close()
-	resp.Expect(t, http.StatusCreated, "Created successfully\n")
+	}}, true)
 
-	// get docs source
-	resp = r.Get("/api/source/test2")
-	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, &Params{Rules: []RuleParams{
+	// rewrite docs source with rule tags
+	r.PutGetExpectYaml(t, "/api/source/test2", Params{Rules: []RuleParams{
 		RuleParams{
-			Name: "Test rule",
+			Tags: "Test",
 			Kibana: KibanaParams{
 				URL: "http://localhost:5697",
 			},
@@ -204,7 +224,7 @@ func TestSourceEndpoint(t *testing.T) {
 	// get docs source
 	resp = r.Get("/api/source/test")
 	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, &Params{Queries: []string{`process where process.name == "*.com"`}}, true)
+	resp.ExpectYaml(t, http.StatusOK, Params{Queries: []string{`process where process.name == "*.com"`}}, true)
 
 	// get docs mappings
 	resp = r.Get("/api/source/test/_mappings")
@@ -239,7 +259,7 @@ func TestSourceEndpoint(t *testing.T) {
 	// check unaltered docs source
 	resp = r.Get("/api/source/test")
 	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, &Params{Queries: []string{`process where process.name == "*.com"`}}, true)
+	resp.ExpectYaml(t, http.StatusOK, Params{Queries: []string{`process where process.name == "*.com"`}}, true)
 
 	// generate some document
 	resp = r.Get("/api/source/test/_generate")
