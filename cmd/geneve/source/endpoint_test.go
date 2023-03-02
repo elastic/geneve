@@ -158,7 +158,7 @@ func TestSourceEndpoint(t *testing.T) {
 	// get docs source
 	resp = r.Get("/api/source/test2")
 	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, &Params{Rules: []RuleParams{
+	resp.ExpectYaml(t, http.StatusOK, Params{Rules: []RuleParams{
 		RuleParams{
 			RuleId: "test",
 			Kibana: KibanaParams{
@@ -182,7 +182,7 @@ func TestSourceEndpoint(t *testing.T) {
 	// get docs source
 	resp = r.Get("/api/source/test2")
 	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, &Params{Rules: []RuleParams{
+	resp.ExpectYaml(t, http.StatusOK, Params{Rules: []RuleParams{
 		RuleParams{
 			Name: "Test rule",
 			Kibana: KibanaParams{
@@ -204,7 +204,7 @@ func TestSourceEndpoint(t *testing.T) {
 	// get docs source
 	resp = r.Get("/api/source/test")
 	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, &Params{Queries: []string{`process where process.name == "*.com"`}}, true)
+	resp.ExpectYaml(t, http.StatusOK, Params{Queries: []string{`process where process.name == "*.com"`}}, true)
 
 	// get docs mappings
 	resp = r.Get("/api/source/test/_mappings")
@@ -239,7 +239,7 @@ func TestSourceEndpoint(t *testing.T) {
 	// check unaltered docs source
 	resp = r.Get("/api/source/test")
 	defer resp.Body.Close()
-	resp.ExpectYaml(t, http.StatusOK, &Params{Queries: []string{`process where process.name == "*.com"`}}, true)
+	resp.ExpectYaml(t, http.StatusOK, Params{Queries: []string{`process where process.name == "*.com"`}}, true)
 
 	// generate some document
 	resp = r.Get("/api/source/test/_generate")

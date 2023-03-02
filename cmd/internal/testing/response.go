@@ -119,16 +119,16 @@ func (r Response) ExpectYaml(t testing.TB, statusCode int, expected any, knownFi
 	r.ExpectStatusCode(t, statusCode)
 	r.ExpectContentType(t, "application/yaml")
 
-	data := reflect.New(reflect.ValueOf(expected).Elem().Type()).Interface()
+	data := reflect.New(reflect.TypeOf(expected))
 	dec := yaml.NewDecoder(r.Body)
 	dec.KnownFields(knownFields)
-	err := dec.Decode(data)
+	err := dec.Decode(data.Interface())
 	if err != nil {
 		panic(err)
 	}
 
-	if !reflect.DeepEqual(data, expected) {
-		a, err := prettyYaml(data)
+	if !reflect.DeepEqual(reflect.Indirect(data).Interface(), expected) {
+		a, err := prettyYaml(data.Interface())
 		if err != nil {
 			panic(err)
 		}
