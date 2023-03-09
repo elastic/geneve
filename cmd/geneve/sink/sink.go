@@ -64,6 +64,7 @@ func (s *Sink) Receive(doc source.Document) error {
 		}
 		u := *url
 		u.Path = fmt.Sprintf("%s/_doc", strings.Replace(doc.Index, "*", suffix, 1))
+		url = &u
 	}
 
 	req, err := http.NewRequest("POST", url.String(), strings.NewReader(doc.Data))
