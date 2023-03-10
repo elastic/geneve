@@ -43,16 +43,6 @@ if $VERBOSE; then
   set -x
 fi
 
-# Clean all the resources so that multiple invocations of this script do not affect each other
-(
-  curl -s -XDELETE $GENEVE/api/flow/$FLOW
-  curl -s -XDELETE $GENEVE/api/sink/$SINK
-  curl -s -XDELETE $GENEVE/api/source/$SOURCE
-
-  curl -s -XDELETE $TEST_ELASTICSEARCH_URL/$SINK
-  curl -s -XDELETE $TEST_ELASTICSEARCH_URL/_ingest/pipeline/geoip-info
-) >/dev/null
-
 CURL="curl -s --show-error"
 
 # Helper to diagnose errors as soon as they occour
@@ -68,6 +58,18 @@ fail_on_error()
     echo "$OUT"
   fi
 }
+
+$CURL "$GENEVE/api/status" 2>&1 | fail_on_error
+
+# Clean all the resources so that multiple invocations of this script do not affect each other
+(
+  $CURL -XDELETE $GENEVE/api/flow/$FLOW
+  $CURL -XDELETE $GENEVE/api/sink/$SINK
+  $CURL -XDELETE $GENEVE/api/source/$SOURCE
+
+  $CURL -XDELETE $TEST_ELASTICSEARCH_URL/$SINK
+  $CURL -XDELETE $TEST_ELASTICSEARCH_URL/_ingest/pipeline/geoip-info
+) >/dev/null
 
 # Create the Geneve _sink_, where the generated data is directed to
 $CURL -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/sink/$SINK" --data-binary @- <<EOF | fail_on_error
