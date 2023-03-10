@@ -53,6 +53,8 @@ fi
   curl -s -XDELETE $TEST_ELASTICSEARCH_URL/_ingest/pipeline/geoip-info
 ) >/dev/null
 
+CURL="curl -s --show-error"
+
 # Helper to diagnose errors as soon as they occour
 fail_on_error()
 {
@@ -68,15 +70,15 @@ fail_on_error()
 }
 
 # Create the Geneve _sink_, where the generated data is directed to
-curl -s -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/sink/$SINK" --data-binary @- <<EOF | fail_on_error
+$CURL -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/sink/$SINK" --data-binary @- <<EOF | fail_on_error
 url: $TEST_ELASTICSEARCH_URL/$SINK/_doc?pipeline=geoip-info
 EOF
 
 # Load the ECS schema into Geneve
-curl -s -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/schema/ecs" --data-binary "@$SCHEMA_YAML" | fail_on_error
+$CURL -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/schema/ecs" --data-binary "@$SCHEMA_YAML" | fail_on_error
 
 # Create the Geneve _source_, where the data is generated
-curl -s -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/source/$SOURCE" --data-binary @- <<EOF | fail_on_error
+$CURL -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/source/$SOURCE" --data-binary @- <<EOF | fail_on_error
 schema: ecs
 rules:
   - tags: macOS or Linux
@@ -86,7 +88,7 @@ EOF
 
 # Create the destination ES index, use the mappings as per above _source_ configuration
 # You can adjust settings according to your needs
-curl -s -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/$SINK" --data @- <<EOF | fail_on_error
+$CURL -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/$SINK" --data @- <<EOF | fail_on_error
 {
   "settings": {
     "number_of_shards": 1,
@@ -97,7 +99,7 @@ curl -s -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/$SINK
 EOF
 
 # Create the Kibana data view so that you can analyze the generated data
-curl -s -XPOST -H "Content-Type: application/json" -H "kbn-xsrf: true" "$TEST_KIBANA_URL/api/data_views/data_view" --data @- <<EOF | fail_on_error
+$CURL -XPOST -H "Content-Type: application/json" -H "kbn-xsrf: true" "$TEST_KIBANA_URL/api/data_views/data_view" --data @- <<EOF | fail_on_error
 {
   "data_view": {
      "title": "$SINK"
@@ -107,7 +109,7 @@ curl -s -XPOST -H "Content-Type: application/json" -H "kbn-xsrf: true" "$TEST_KI
 EOF
 
 # Create the Geo-IP pipeline, to enrich the generated data with meaningful Geo info
-curl -s -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/_ingest/pipeline/geoip-info" --data @- <<EOF | fail_on_error
+$CURL -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/_ingest/pipeline/geoip-info" --data @- <<EOF | fail_on_error
 {
   "description": "Add geoip info",
   "processors": [
@@ -151,7 +153,7 @@ curl -s -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/_inge
 EOF
 
 # Disable Geo processor updates download so to make later re-enabling effective
-curl -s -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/_cluster/settings" --data @- <<EOF | fail_on_error
+$CURL -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/_cluster/settings" --data @- <<EOF | fail_on_error
 {
   "transient": {
     "ingest": {
@@ -166,7 +168,7 @@ curl -s -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/_clus
 EOF
 
 # Re-enable Geo processor updates download, force the download
-curl -s -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/_cluster/settings" --data @- <<EOF | fail_on_error
+$CURL -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/_cluster/settings" --data @- <<EOF | fail_on_error
 {
   "transient": {
     "ingest": {
@@ -181,7 +183,7 @@ curl -s -XPUT -H "Content-Type: application/json" "$TEST_ELASTICSEARCH_URL/_clus
 EOF
 
 # Create the Geneve _flow_, configure how much data shall go from _source_ to _sink_
-curl -s -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/flow/$FLOW" --data-binary @- <<EOF | fail_on_error
+$CURL -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/flow/$FLOW" --data-binary @- <<EOF | fail_on_error
 source:
   name: $SOURCE
 sink:
@@ -190,10 +192,10 @@ count: $EVENTS_COUNT
 EOF
 
 # Eventually start the _flow_, generate data
-curl -s -XPOST "$GENEVE/api/flow/$FLOW/_start" | fail_on_error
+$CURL -XPOST "$GENEVE/api/flow/$FLOW/_start" | fail_on_error
 
 # Stop the _flow_ if ^C is pressed
-trap "echo ''; curl -s -XPOST \"$GENEVE/api/flow/$FLOW/_stop\"" SIGINT
+trap "echo ''; $CURL -XPOST \"$GENEVE/api/flow/$FLOW/_stop\"" SIGINT
 
 # Follow the generation progress until completion or ^C is pressed
 set +x
