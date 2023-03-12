@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/elastic/geneve/cmd/geneve"
 	"github.com/elastic/geneve/cmd/geneve/schema"
@@ -89,8 +90,15 @@ func (source Source) AddRules(rule_params []RuleParams) (num int, e error) {
 					continue
 				}
 				var Index any
-				if len(rule.Index) > 0 {
-					Index = rule.Index[0]
+				for _, index := range rule.Index {
+					if strings.Count(index, "*") == 1 {
+						Index = index
+						break
+					}
+				}
+				if Index == nil && len(rule.Index) > 0 {
+					logger.Printf("Ignoring rule: %s: Too complicated index patterns: %v", rule.RuleId, rule.Index)
+					continue
 				}
 				o_root, err := source.se.AddRule(rule, Index)
 				if err != nil {
