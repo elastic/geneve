@@ -6,6 +6,10 @@ TEST_ELASTICSEARCH_URL=${TEST_ELASTICSEARCH_URL:-http://elastic:changeme@localho
 TEST_KIBANA_URL=${TEST_KIBANA_URL:-http://elastic:changeme@localhost:5601}
 GENEVE=${GENEVE:-http://localhost:9256}
 
+# RULES_ID=a9cb3641-ff4b-4cdc-a063-b4b8d02a67c7
+RULES_TAGS=AWS
+# RULES_NAME="IPSEC NAT Traversal Port Activity"
+
 # Location of the ECS yml definition
 SCHEMA_YAML="etc/ecs-8.2.0/generated/ecs/ecs_flat.yml"
 
@@ -83,9 +87,24 @@ $CURL -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/schema/ecs" --data-
 $CURL -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/source/$SOURCE" --data-binary @- <<EOF | fail_on_error
 schema: ecs
 rules:
-  - tags: macOS or Linux
+$([ -n "$RULES_ID" ] && cat <<EOS
+  - rule_id: $RULES_ID
     kibana:
       url: $TEST_KIBANA_URL
+EOS
+)
+$([ -n "$RULES_TAGS" ] && cat <<EOS
+  - tags: $RULES_TAGS
+    kibana:
+      url: $TEST_KIBANA_URL
+EOS
+)
+$([ -n "$RULES_NAME" ] && cat <<EOS
+  - name: $RULES_NAME
+    kibana:
+      url: $TEST_KIBANA_URL
+EOS
+)
 EOF
 
 # Create the destination ES index, use the mappings as per above _source_ configuration
