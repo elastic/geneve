@@ -244,7 +244,10 @@ source:
   name: $SOURCE
 sink:
   name: $SINK
+$([ -n "$EVENTS_COUNT" ] && cat - <<EOS
 count: $EVENTS_COUNT
+EOS
+)
 EOF
 
 # Eventually start the _flow_, generate data
