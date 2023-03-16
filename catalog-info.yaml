@@ -1,0 +1,18 @@
+# Declare a Backstage Component that represents the Geneve service.
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: geneve
+  description: Generate source events using languages and schemas
+  annotations:
+    backstage.io/source-location: url:https://github.com/elastic/geneve
+    github.com/project-slug: elastic/geneve
+    github.com/team-slug: elastic/security-engineering-productivity
+  tags:
+    - go
+    - python
+spec:
+  type: service
+  owner: User:cavokz
+  lifecycle: experimental
