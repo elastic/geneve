@@ -16,6 +16,7 @@ runtime.txt
 setup.cfg
 
 scripts/generate-alerts.sh
+scripts/generate-network-events.sh
 
 tests/deployment.json
 tests/data/config_elastic-package.yaml

@@ -6,20 +6,16 @@ TEST_ELASTICSEARCH_URL=${TEST_ELASTICSEARCH_URL:-http://elastic:changeme@localho
 TEST_KIBANA_URL=${TEST_KIBANA_URL:-http://elastic:changeme@localhost:5601}
 GENEVE=${GENEVE:-http://localhost:9256}
 
-# RULES_ID=a9cb3641-ff4b-4cdc-a063-b4b8d02a67c7
-RULES_TAGS=AWS
-# RULES_NAME="IPSEC NAT Traversal Port Activity"
-
 # Location of the ECS yml definition
 SCHEMA_YAML="etc/ecs-8.2.0/generated/ecs/ecs_flat.yml"
 
 # Name of the Geneve _source_, _sink_ and _flow_ resources used for the generation
 SOURCE=geneve
-SINK=geneve
+SINK=packetbeat-geneve
 FLOW=geneve
 
 # Number of events to be generated
-EVENTS_COUNT=1000
+EVENTS_COUNT=1500
 
 # Cardinality of some fields
 #HOST_NAME_CARDINALITY=10
@@ -87,24 +83,63 @@ $CURL -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/schema/ecs" --data-
 $CURL -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/source/$SOURCE" --data-binary @- <<EOF | fail_on_error
 schema: ecs
 rules:
-$([ -n "$RULES_ID" ] && cat <<EOS
-  - rule_id: $RULES_ID
-    kibana:
-      url: $TEST_KIBANA_URL
-EOS
-)
-$([ -n "$RULES_TAGS" ] && cat <<EOS
-  - tags: $RULES_TAGS
-    kibana:
-      url: $TEST_KIBANA_URL
-EOS
-)
-$([ -n "$RULES_NAME" ] && cat <<EOS
-  - name: $RULES_NAME
-    kibana:
-      url: $TEST_KIBANA_URL
-EOS
-)
+queries:
+  - 'network where
+
+      "@timestamp" != null and
+
+      destination.as.number != null and
+      destination.bytes != null and
+      destination.domain != null and
+      destination.geo.city_name != null and
+      destination.geo.continent_name != null and
+      destination.geo.country_iso_code != null and
+      destination.geo.country_name != null and
+      destination.geo.location != null and
+      destination.geo.region_iso_code != null and
+      destination.geo.region_name != null and
+      destination.ip != null and
+      destination.mac != null and
+
+        ecs.version == "8.2" and
+
+      event.category != null and
+      event.kind != null and
+      event.type != null and
+
+        host.architecture in ("x86_64", "aarch64", "riscv") and
+      host.geo.city_name != null and
+      host.geo.continent_name != null and
+      host.geo.country_iso_code != null and
+      host.geo.country_name != null and
+      host.geo.location != null and
+      host.geo.region_iso_code != null and
+      host.geo.region_name != null and
+      host.id != null and
+      host.ip != null and
+      host.name != null and
+      host.mac != null and
+      host.os.tyoe != null and
+
+      network.community_id != null and
+
+      source.as.number != null and
+      source.bytes != null and
+      source.domain != null and
+      source.geo.city_name != null and
+      source.geo.continent_name != null and
+      source.geo.country_iso_code != null and
+      source.geo.country_name != null and
+      source.geo.location != null and
+      source.geo.region_iso_code != null and
+      source.geo.region_name != null and
+      source.ip != null and
+      source.mac != null and
+
+        _cardinality(destination.ip, ${DST_IP_CARDINALITY:-0}) and
+        _cardinality(host.name, ${HOST_NAME_CARDINALITY:-0}) and
+        _cardinality(source.ip, ${SRC_IP_CARDINALITY:-0})
+    '
 EOF
 
 # Create the destination ES index, use the mappings as per above _source_ configuration
@@ -123,7 +158,7 @@ EOF
 $CURL -XPOST -H "Content-Type: application/json" -H "kbn-xsrf: true" "$TEST_KIBANA_URL/api/data_views/data_view" --data @- <<EOF | fail_on_error
 {
   "data_view": {
-     "title": "$SINK"
+     "title": "packetbeat-*"
   },
   "override": true
 }
