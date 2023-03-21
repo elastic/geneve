@@ -78,6 +78,8 @@ $CURL "$GENEVE/api/status" 2>&1 | fail_on_error
 # Create the Geneve _sink_, where the generated data is directed to
 $CURL -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/sink/$SINK" --data-binary @- <<EOF | fail_on_error
 url: $TEST_ELASTICSEARCH_URL/$SINK/_doc?pipeline=geoip-info
+kibana:
+  url: $TEST_KIBANA_URL
 EOF
 
 # Load the ECS schema into Geneve

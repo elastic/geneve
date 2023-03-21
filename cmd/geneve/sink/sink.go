@@ -28,39 +28,62 @@ import (
 	"github.com/elastic/geneve/cmd/geneve/source"
 )
 
-type ESParams struct {
+type ElasticsearchParams struct {
 	Index           string `yaml:",omitempty"`
 	Pipeline        string `yaml:",omitempty"`
 	ForceIndex      bool   `yaml:"force_index,omitempty"`
 	RuleIndexSuffix string `yaml:"rule_index_suffix,omitempty"`
 }
 
-type Params struct {
+type KibanaParams struct {
 	URL string
-	ES  ESParams `yaml:",omitempty"`
+}
+
+type Params struct {
+	URL           string
+	Elasticsearch ElasticsearchParams `yaml:",omitempty"`
+	Kibana        KibanaParams        `yaml:",omitempty"`
 }
 
 type Sink struct {
 	Params Params
 	client *http.Client
 	url    *url.URL
+	kbnURL *url.URL
 }
 
-func NewSink(params Params) (Sink, error) {
-	url, err := url.Parse(params.URL)
+func NewSink(params Params) (*Sink, error) {
+	var esURL, kbnURL *url.URL
+	var err error
+
+	esURL, err = url.Parse(params.URL)
 	if err != nil {
-		return Sink{}, err
+		return nil, err
 	}
-	return Sink{client: &http.Client{}, url: url, Params: params}, nil
+	if params.Kibana.URL != "" {
+		kbnURL, err = url.Parse(params.Kibana.URL)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	sink := &Sink{
+		client: &http.Client{},
+		url:    esURL,
+		kbnURL: kbnURL,
+		Params: params,
+	}
+
+	return sink, nil
 }
 
 func (s *Sink) Receive(doc source.Document) error {
 	url := s.url
 
-	if doc.Rule != nil && !s.Params.ES.ForceIndex {
+	if doc.Rule != nil && !s.Params.Elasticsearch.ForceIndex {
 		suffix := "geneve"
-		if s.Params.ES.RuleIndexSuffix != "" {
-			suffix = s.Params.ES.RuleIndexSuffix
+		if s.Params.Elasticsearch.RuleIndexSuffix != "" {
+			suffix = s.Params.Elasticsearch.RuleIndexSuffix
 		}
 		u := *url
 		u.Path = fmt.Sprintf("%s/_doc", strings.Replace(doc.Rule.Index[0], "*", suffix, 1))
@@ -72,9 +95,9 @@ func (s *Sink) Receive(doc source.Document) error {
 		return err
 	}
 
-	if s.Params.ES.Pipeline != "" {
+	if s.Params.Elasticsearch.Pipeline != "" {
 		q := req.URL.Query()
-		q.Add("pipeline", s.Params.ES.Pipeline)
+		q.Add("pipeline", s.Params.Elasticsearch.Pipeline)
 		req.URL.RawQuery = q.Encode()
 	}
 
