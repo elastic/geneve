@@ -57,13 +57,13 @@ func NewSink(params Params) (Sink, error) {
 func (s *Sink) Receive(doc source.Document) error {
 	url := s.url
 
-	if doc.Index != "" && !s.Params.ES.ForceIndex {
+	if doc.Rule != nil && !s.Params.ES.ForceIndex {
 		suffix := "geneve"
 		if s.Params.ES.RuleIndexSuffix != "" {
 			suffix = s.Params.ES.RuleIndexSuffix
 		}
 		u := *url
-		u.Path = fmt.Sprintf("%s/_doc", strings.Replace(doc.Index, "*", suffix, 1))
+		u.Path = fmt.Sprintf("%s/_doc", strings.Replace(doc.Rule.Index[0], "*", suffix, 1))
 		url = &u
 	}
 
