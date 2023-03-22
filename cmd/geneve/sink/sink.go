@@ -20,11 +20,14 @@ package sink
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
+	"github.com/elastic/geneve/cmd/geneve"
 	"github.com/elastic/geneve/cmd/geneve/source"
 )
 
@@ -46,10 +49,13 @@ type Params struct {
 }
 
 type Sink struct {
-	Params Params
-	client *http.Client
-	url    *url.URL
-	kbnURL *url.URL
+	Params        Params
+	client        *http.Client
+	url           *url.URL
+	kbnURL        *url.URL
+	ruleQueue     chan<- *geneve.Rule
+	ruleQueueDone <-chan struct{}
+	ruleRunSoonNA bool
 }
 
 func NewSink(params Params) (*Sink, error) {
@@ -72,6 +78,14 @@ func NewSink(params Params) (*Sink, error) {
 		url:    esURL,
 		kbnURL: kbnURL,
 		Params: params,
+	}
+
+	if kbnURL != nil {
+		queue := make(chan *geneve.Rule)
+		done := make(chan struct{})
+		sink.ruleQueue = queue
+		sink.ruleQueueDone = done
+		go sink.ruleScheduler(queue, done, time.Second)
 	}
 
 	return sink, nil
@@ -114,7 +128,145 @@ func (s *Sink) Receive(doc source.Document) error {
 		}
 		return fmt.Errorf(string(resp_body))
 	}
+	if s.ruleQueue != nil {
+		s.ruleQueue <- doc.Rule
+	}
 	return nil
+}
+
+func (s *Sink) ruleScheduler(queue <-chan *geneve.Rule, done chan<- struct{}, interval time.Duration) {
+	wg := sync.WaitGroup{}
+	defer close(done)
+	defer wg.Wait()
+
+	mu := sync.Mutex{}
+	received := []string{}
+	pending := map[string]bool{}
+	defer func() {
+		mu.Lock()
+		received = nil
+		pending = nil
+		mu.Unlock()
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		triggered := make(map[string]time.Time)
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		for received != nil {
+			var id string
+
+			for _, id = range received {
+				if ts, ok := triggered[id]; !ok || time.Since(ts) > 15*time.Second {
+					triggered[id] = time.Now()
+					received = received[1:]
+					pending[id] = false
+				}
+				break
+			}
+			mu.Unlock()
+
+			if id != "" {
+				if !s.ruleRunSoonNA {
+					if err := s.runRuleSoon(id); err != nil {
+						logger.Printf("Error running rule soon: id: %s: %s", id, err)
+					}
+				}
+				// ruleRunSoonNA is set by runRuleSoon()
+				if s.ruleRunSoonNA {
+					if err := s.flipRuleEnable(id); err != nil {
+						logger.Printf("Error flipping rule disable/enable: id: %s: %s", id, err)
+					}
+				}
+			}
+			time.Sleep(interval)
+			mu.Lock()
+		}
+	}()
+
+	for rule := range queue {
+		mu.Lock()
+		if !pending[rule.Id] {
+			received = append(received, rule.Id)
+			pending[rule.Id] = true
+		}
+		mu.Unlock()
+	}
+}
+
+func (s *Sink) runRuleSoon(ruleId string) error {
+	kbnURL := *s.kbnURL
+	kbnURL.Path = "/internal/alerting/rule/" + ruleId + "/_run_soon"
+	req, err := http.NewRequest("POST", kbnURL.String(), nil)
+	if err != nil {
+		return fmt.Errorf("req: %s", err)
+	}
+
+	req.Header.Set("kbn-xsrf", ruleId)
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("client: %s", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		s.ruleRunSoonNA = true
+		logger.Printf("_run_soon is not available, going to flip enable/disable")
+	} else if resp.StatusCode != http.StatusNoContent {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("reading resp: %s", err)
+		}
+		return fmt.Errorf("resp: %s", string(body))
+	}
+	return nil
+}
+
+func (s *Sink) flipRuleEnable(ruleId string) error {
+	if err := s.setRuleEnabled(ruleId, false); err != nil {
+		return err
+	}
+	if err := s.setRuleEnabled(ruleId, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Sink) setRuleEnabled(ruleId string, enabled bool) error {
+	kbnURL := *s.kbnURL
+	kbnURL.Path = "/api/detection_engine/rules"
+	body := fmt.Sprintf(`{"id": "%s", "enabled": %t}`, ruleId, enabled)
+	req, err := http.NewRequest("PATCH", kbnURL.String(), strings.NewReader(body))
+	if err != nil {
+		return fmt.Errorf("req: %s", err)
+	}
+
+	req.Header.Set("kbn-xsrf", ruleId)
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("client: %s", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("reading resp: %s", err)
+		}
+		return fmt.Errorf("resp: %s", string(body))
+	}
+	return nil
+}
+
+func (s *Sink) Close() {
+	if s.ruleQueue != nil {
+		close(s.ruleQueue)
+		<-s.ruleQueueDone
+	}
 }
 
 var sinks = struct {
@@ -139,12 +291,12 @@ func Put(name string, sink *Sink) {
 
 func Del(name string) bool {
 	sinks.Lock()
-	defer sinks.Unlock()
-
-	if _, ok := sinks.mapping[name]; !ok {
-		return false
-	}
-
+	sink, ok := sinks.mapping[name]
 	delete(sinks.mapping, name)
-	return true
+	sinks.Unlock()
+
+	if ok {
+		sink.Close()
+	}
+	return ok
 }
