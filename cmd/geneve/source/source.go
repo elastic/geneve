@@ -29,12 +29,13 @@ import (
 )
 
 type Source struct {
-	se *geneve.SourceEvents
+	se    *geneve.SourceEvents
+	rules []geneve.Rule
 }
 
 type Document struct {
-	Data  string
-	Index string
+	Data string
+	Rule *geneve.Rule
 }
 
 func NewSource(schema schema.Schema) (source Source, e error) {
@@ -53,7 +54,7 @@ func NewSource(schema schema.Schema) (source Source, e error) {
 	return
 }
 
-func (source Source) AddQueries(queries []string) (num int, e error) {
+func (source *Source) AddQueries(queries []string) (num int, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
@@ -72,7 +73,7 @@ func (source Source) AddQueries(queries []string) (num int, e error) {
 	return
 }
 
-func (source Source) AddRules(rule_params []RuleParams) (num int, e error) {
+func (source *Source) AddRules(rule_params []RuleParams) (num int, e error) {
 	for _, rule_params := range rule_params {
 		rules, err := getRulesFromParams(rule_params)
 		if err != nil {
@@ -89,18 +90,20 @@ func (source Source) AddRules(rule_params []RuleParams) (num int, e error) {
 					logger.Printf("Ignoring rule: %s: Rule is disabled", rule.RuleId)
 					continue
 				}
-				var Index any
+				var Index string
 				for _, index := range rule.Index {
 					if strings.Count(index, "*") == 1 {
 						Index = index
 						break
 					}
 				}
-				if Index == nil && len(rule.Index) > 0 {
+				if Index != "" {
+					rule.Index = []string{Index}
+				} else if len(rule.Index) > 0 {
 					logger.Printf("Ignoring rule: %s: Too complicated index patterns: %v", rule.RuleId, rule.Index)
 					continue
 				}
-				o_root, err := source.se.AddRule(rule, Index)
+				o_root, err := source.se.AddRule(rule, len(source.rules))
 				if err != nil {
 					if err, ok := err.(*python.Error); ok {
 						if err.Type == "NotImplementedError" || err.Value == "Root without branches" {
@@ -112,6 +115,7 @@ func (source Source) AddRules(rule_params []RuleParams) (num int, e error) {
 					return
 				}
 				o_root.DecRef()
+				source.rules = append(source.rules, rule)
 				num += 1
 			}
 		}
@@ -120,7 +124,7 @@ func (source Source) AddRules(rule_params []RuleParams) (num int, e error) {
 	return
 }
 
-func (source Source) Mappings() (mappings string, e error) {
+func (source *Source) Mappings() (mappings string, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
@@ -145,7 +149,7 @@ func (source Source) Mappings() (mappings string, e error) {
 	return
 }
 
-func (source Source) Emit(count int) (docs []Document, e error) {
+func (source *Source) Emit(count int) (docs []Document, e error) {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
@@ -188,26 +192,28 @@ func (source Source) Emit(count int) (docs []Document, e error) {
 				e = err
 				return
 			}
-			index := ""
+			var rule *geneve.Rule
 			if o_meta != python.Py_None {
-				index, err = o_meta.Str()
+				index, err := python.PythonToAny(o_meta)
 				if err != nil {
 					e = err
 					return
 				}
+				rule = &source.rules[index.(int64)]
 			}
-			docs = append(docs, Document{Data: s_doc, Index: index})
+			docs = append(docs, Document{Data: s_doc, Rule: rule})
 		}
 	}
 	<-done
 	return
 }
 
-func (source Source) Close() {
+func (source *Source) Close() {
 	done := make(chan any)
 	python.Monitor <- func() {
 		defer close(done)
 		source.se.DecRef()
+		source.rules = nil
 	}
 	<-done
 }

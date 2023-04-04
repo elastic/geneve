@@ -97,6 +97,7 @@ func (se *SourceEvents) JsonDumps(o_doc *python.PyObject, sortKeys bool) (*pytho
 }
 
 type Rule struct {
+	Id       string   `json:",omitempy"`
 	Name     string   `json:",omitempy"`
 	RuleId   string   `json:"rule_id,omitempy"`
 	Query    string   `json:",omitempy"`
