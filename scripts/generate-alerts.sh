@@ -7,7 +7,7 @@ TEST_KIBANA_URL=${TEST_KIBANA_URL:-http://elastic:changeme@localhost:5601}
 GENEVE=${GENEVE:-http://localhost:9256}
 
 # RULES_ID=a9cb3641-ff4b-4cdc-a063-b4b8d02a67c7
-RULES_TAGS=AWS
+RULES_TAGS="AWS or Azure or GCP"
 # RULES_NAME="IPSEC NAT Traversal Port Activity"
 
 # Location of the ECS yml definition

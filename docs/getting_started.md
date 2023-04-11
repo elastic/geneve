@@ -112,6 +112,59 @@ $ curl -s "$GENEVE/api/source/mydata/_generate?count=1" | jq
 ]
 ```
 
+### Kibana rules and alerts
+
+If all you need is security alerts then you can use security detection
+rules as data models; generated events will make the detection engine
+create alerts for you. You can select rules by name, tags or (rule) id.
+
+Be sure to direct data to one of the indices monitored by the chosen rule(s).
+
+#### By rule name
+
+Example of source configuration where the rule is selected by name:
+
+```shell
+$ curl -s -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/source/mydata" --data-binary @- <<EOF
+schema: ecs
+rules:
+  - name: IPSEC NAT Traversal Port Activity
+    kibana:
+      url: $TARGET_KIBANA
+EOF
+```
+
+Note how the `queries` entry is now replaced by `rules`, which specifies
+the rule name and the Kibana URL the rule shall be downloaded from.
+
+#### By rule tags
+
+Similarly with rule tags, they can be combined with boolean operators `or` and `and`:
+
+```shell
+$ curl -s -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/source/mydata" --data-binary @- <<EOF
+schema: ecs
+rules:
+  - tags: AWS or Azure or GCP
+    kibana:
+      url: $TARGET_KIBANA
+EOF
+```
+#### By rule id
+
+Once more with `rule_id` as defined on per-rule base (not to be confused
+with the `id` of the rule Kibana stored object):
+
+```shell
+$ curl -s -XPUT -H "Content-Type: application/yaml" "$GENEVE/api/source/mydata" --data-binary @- <<EOF
+schema: ecs
+rules:
+  - rule_id: a9cb3641-ff4b-4cdc-a063-b4b8d02a67c7
+    kibana:
+      url: $TARGET_KIBANA
+EOF
+```
+
 ## Set the destination
 
 Once you're happy with the data model it's time to configure where data
