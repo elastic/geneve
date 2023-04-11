@@ -128,7 +128,7 @@ func (s *Sink) Receive(doc source.Document) error {
 		}
 		return fmt.Errorf(string(resp_body))
 	}
-	if s.ruleQueue != nil {
+	if s.ruleQueue != nil && doc.Rule != nil {
 		s.ruleQueue <- doc.Rule
 	}
 	return nil
