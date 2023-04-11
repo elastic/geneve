@@ -18,9 +18,10 @@
 """Helper for the presentation."""
 
 import os
+from pathlib import Path
 
-presentation_dir = os.path.split(__file__)[0]
-os.chdir(os.path.abspath(os.path.join(presentation_dir, "..", "..")))
+presentation_dir = Path(__file__).parent
+os.chdir(presentation_dir.parent.parent)
 
 from geneve.utils import random
 
