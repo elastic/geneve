@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "geneve"
 description = "Generate data from data models"
-readme = "README.md"
+readme = "geneve/README.md"
 license = {file = "LICENSE.txt"}
 authors = [
   {name = "Domenico Andreoli", email = "domenico.andreoli@elastic.co"}
