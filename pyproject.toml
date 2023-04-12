@@ -2,6 +2,40 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "geneve"
+description = "Generate data from data models"
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+authors = [
+  {name = "Domenico Andreoli", email = "domenico.andreoli@elastic.co"}
+]
+keywords = ["data", "test", "mock", "generator"]
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Testing"
+]
+requires-python = ">=3.8"
+dependencies = [
+  "elasticsearch>=8.2.0",
+  "eql>=0.9.12",
+  "faker",
+  "pytoml",
+  "requests",
+  "ruamel.yaml"
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/elastic/geneve"
+"Bug Tracker" = "https://github.com/elastic/geneve/issues"
+
+[tool.setuptools.dynamic]
+version = {attr = "geneve.version"}
+
 [tool.black]
 line-length = 140
 target-version = ["py38"]
