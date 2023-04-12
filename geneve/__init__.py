@@ -17,4 +17,4 @@
 
 from .events_emitter import *  # noqa: F401, F403
 
-version = "0.1.1"
+version = "0.2.0"
