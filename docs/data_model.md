@@ -18,8 +18,7 @@ Geneve input is queries.
 ## Queries
 
 You have to provide at least one query to Geneve, if you give it multiple
-Geneve will randomly choose the one it will generate the document for at
-that round.
+Geneve will randomly choose one at each round.
 
 Suppose you have this query:
 
