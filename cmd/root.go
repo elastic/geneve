@@ -25,7 +25,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "gnv",
-	Short: "Generate data from languages and models",
+	Short: "Generate data from data models",
 }
 
 func Execute() {
