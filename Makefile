@@ -79,6 +79,9 @@ cli-bench:
 	$(embed_python)
 	go test -bench=. ./cmd/geneve/source
 
+clean:
+	go clean -testcache
+
 pkg-build:
 	$(PYTHON) -m build
 
