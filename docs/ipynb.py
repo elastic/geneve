@@ -15,14 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
-"""Helper for the presentation."""
+"""Helper for the .ipynb files."""
 
 import os
 from pathlib import Path
 
-presentation_dir = Path(__file__).parent
-os.chdir(presentation_dir.parent.parent)
-
-from geneve.utils import random
-
-random.seed("presentation")
+os.chdir(Path(__file__).parent.parent)
