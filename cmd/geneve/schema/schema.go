@@ -20,7 +20,7 @@ package schema
 import (
 	"sync"
 
-	"github.com/elastic/geneve/cmd/internal/python"
+	"gitlab.com/pygolo/py"
 )
 
 type FieldSchema struct {
@@ -62,57 +62,37 @@ func del(name string) bool {
 	return true
 }
 
-func (f *FieldSchema) ToPython() (*python.PyObject, error) {
-	o_dict := python.PyDict_New()
-
+func fieldSchemaToObject(Py py.Py, a interface{}) (py.Object, error) {
+	f, ok := a.(FieldSchema)
+	if !ok {
+		return py.Object{}, Py.Go_ErrorConvToObject(a)
+	}
+	o_dict, err := Py.Dict_New()
+	defer Py.DecRef(o_dict)
+	if err != nil {
+		return py.Object{}, err
+	}
 	if f.Type != "" {
-		o_type, err := python.AnyToPython(f.Type)
+		err := Py.Dict_SetItem(o_dict, "type", f.Type)
 		if err != nil {
-			return nil, err
-		}
-		err = python.PyDict_SetItemString(o_dict, "type", o_type)
-		o_type.DecRef()
-		if err != nil {
-			o_dict.DecRef()
-			return nil, err
+			return py.Object{}, err
 		}
 	}
-
 	if len(f.Normalize) > 0 {
-		o_normalize, err := python.AnyToPython(f.Normalize)
+		err := Py.Dict_SetItem(o_dict, "normalize", f.Normalize)
 		if err != nil {
-			o_dict.DecRef()
-			return nil, err
-		}
-		err = python.PyDict_SetItemString(o_dict, "normalize", o_normalize)
-		o_normalize.DecRef()
-		if err != nil {
-			o_dict.DecRef()
-			return nil, err
+			return py.Object{}, err
 		}
 	}
-
-	return o_dict, nil
+	return Py.NewRef(o_dict), nil
 }
 
-func (schema Schema) ToPython() (*python.PyObject, error) {
-	if schema == nil {
-		return python.Py_None, nil
+func init() {
+	c := py.ConvConf{
+		TypeOf:   FieldSchema{},
+		ToObject: fieldSchemaToObject,
 	}
-
-	o_dict := python.PyDict_New()
-	for field, schema := range schema {
-		o_schema, err := python.AnyToPython(&schema)
-		if err != nil {
-			o_dict.DecRef()
-			return nil, err
-		}
-		err = python.PyDict_SetItemString(o_dict, field, o_schema)
-		o_schema.DecRef()
-		if err != nil {
-			o_dict.DecRef()
-			return nil, err
-		}
+	if err := c.Register(); err != nil {
+		panic(err)
 	}
-	return o_dict, nil
 }
