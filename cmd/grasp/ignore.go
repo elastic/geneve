@@ -20,14 +20,13 @@ package grasp
 import (
 	"container/list"
 	"fmt"
-	"io"
 	"net/http"
 	"regexp"
 	"strings"
 	"sync"
 
 	"github.com/elastic/geneve/cmd/internal/control"
-	"gopkg.in/yaml.v3"
+	"github.com/elastic/geneve/cmd/internal/utils"
 )
 
 var pathIgnore = struct {
@@ -93,40 +92,10 @@ type postIgnoreParams struct {
 	Paths []string `yaml:"paths"`
 }
 
-func getPostIgnoreParams(w http.ResponseWriter, req *http.Request) (params postIgnoreParams, err error) {
-	content_type, ok := req.Header["Content-Type"]
-	if !ok {
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		err = fmt.Errorf("Missing Content-Type header")
-		return
-	}
-
-	switch content_type[0] {
-	case "application/yaml":
-		dec := yaml.NewDecoder(req.Body)
-		dec.KnownFields(true)
-		err = dec.Decode(&params)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			if err == io.EOF {
-				err = fmt.Errorf("No params were provided")
-			} else if e, ok := err.(*yaml.TypeError); ok {
-				err = fmt.Errorf(e.Errors[0])
-			}
-		}
-
-	default:
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		err = fmt.Errorf("Unsupported Content-Type: %s", content_type[0])
-	}
-
-	return
-}
-
 func postIgnore(w http.ResponseWriter, req *http.Request) {
-	params, err := getPostIgnoreParams(w, req)
+	var params postIgnoreParams
+	err := utils.DecodeRequestBody(w, req, &params, true)
 	if err != nil {
-		fmt.Fprintln(w, err.Error())
 		return
 	}
 
