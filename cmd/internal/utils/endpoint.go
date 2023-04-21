@@ -34,7 +34,7 @@ func DecodeRequestBody(w http.ResponseWriter, req *http.Request, data any, known
 	}
 
 	switch content_type[0] {
-	case "application/yaml":
+	case "application/yaml", "text/yaml":
 		dec := yaml.NewDecoder(req.Body)
 		dec.KnownFields(knownFields)
 		err := dec.Decode(data)
