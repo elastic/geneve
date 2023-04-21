@@ -47,6 +47,9 @@ jobs:
       - name: Lint code
         run: make lint
 
+      - name: Check docs
+        run: make docs
+
       - name: Run unit tests
         env:
           TEST_SCHEMA_URI: "./etc/ecs-8.2.0.tar.gz"

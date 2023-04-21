@@ -18,6 +18,8 @@ define embed-python
 endef
 endif
 
+REDOCLY := npx -y @redocly/cli
+
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
 all: lint tests
@@ -32,6 +34,7 @@ prereq-go: prereq-py
 lint:
 	$(PYTHON) -m black -q --check geneve tests || ($(PYTHON) -m black geneve tests; false)
 	$(PYTHON) -m isort -q --check geneve tests || ($(PYTHON) -m isort geneve tests; false)
+	$(REDOCLY) lint docs/api-spec.yaml
 
 license-check:
 	bash scripts/license_check.sh
@@ -92,6 +95,11 @@ package: pkg-build
 	$(MAKE) pkg-install VENV=$(VENV)
 	rm -rf $(VENV)
 
+docs/api-spec.html: docs/api-spec.yaml
+	$(REDOCLY) build-docs --output $@ $<
+
+docs: docs/api-spec.html
+
 CREDS_FILE=credentials-cloud-stack.json
 
 cloud-stack-up:
@@ -135,4 +143,4 @@ override TEST_STACK_VERSION := $(shell \
 )
 endif
 
-.PHONY: lint tests online_tests run up down
+.PHONY: docs lint tests online_tests run up down
