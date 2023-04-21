@@ -8,17 +8,14 @@ ifeq ($(PYTHON),)
 	PYTHON := $(ACTIVATE)python3
 endif
 
-PYTHON_LIBPC := $(shell $(PYTHON) -c 'import sysconfig; print(sysconfig.get_config_var("LIBPC") or "")')
-
-ifneq ($(PYTHON_LIBPC),)
-	PYTHON_VERSION_SHORT := $(shell $(PYTHON) -c 'import sysconfig; print(sysconfig.get_config_var("py_version_short"))')
-	PYTHON_PKG_CONFIG := pkg-config $(PYTHON_LIBPC)/python-$(PYTHON_VERSION_SHORT)-embed.pc
-
-	export CGO_CFLAGS CGO_LDFLAGS
-	CGO_CFLAGS := $(shell $(PYTHON_PKG_CONFIG) --cflags)
-	CGO_LDFLAGS := $(shell $(PYTHON_PKG_CONFIG) --libs)
+PYGOLO_DIR := $(shell go list -f '{{.Dir}}' -m gitlab.com/pygolo/py)
+ifneq ($(PYGOLO_DIR),)
+	include $(PYGOLO_DIR)/Python.mk
+	GO_TAGS := $(if $(PYGOLO_TAGS),-tags "$(PYGOLO_TAGS)")
 else
-	embed-python := $(error Embedding Python is not supported on this system)
+define embed-python
+	$(error Embedding Python is not supported on this platform)
+endef
 endif
 
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
@@ -57,8 +54,8 @@ jupyter:
 	jupyter-notebook
 
 gnv: main.go $(call rwildcard,cmd,*.go)
-	$(embed_python)
-	go build -race -o $@ .
+	$(embed-python)
+	go build $(GO_TAGS) -race -o $@ .
 
 cli-build: gnv
 	./gnv version
@@ -72,12 +69,12 @@ cli-lint:
 	golint .
 
 cli-test:
-	$(embed_python)
-	go test -race ./...
+	$(embed-python)
+	go test $(GO_TAGS) -race ./...
 
 cli-bench:
-	$(embed_python)
-	go test -bench=. ./cmd/geneve/source
+	$(embed-python)
+	go test $(GO_TAGS) -bench=. ./cmd/geneve/source
 
 clean:
 	go clean -testcache
