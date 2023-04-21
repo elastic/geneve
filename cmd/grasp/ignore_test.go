@@ -64,7 +64,7 @@ func TestIgnorePath(t *testing.T) {
 	// no params provided
 	resp = r.Post("/api/grasp/ignore", "application/yaml", "")
 	defer resp.Body.Close()
-	resp.Expect(t, http.StatusBadRequest, "No params were provided\n")
+	resp.Expect(t, http.StatusBadRequest, "No request body was provided\n")
 
 	// some regexp
 	resp = r.Post("/api/grasp/ignore", "application/yaml", "paths:\n  - .*")
