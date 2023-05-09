@@ -9,5 +9,6 @@ pytest
 pytoml
 requests
 ruamel.yaml
+ruff
 semver
 virtualenv

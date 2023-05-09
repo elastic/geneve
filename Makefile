@@ -33,6 +33,7 @@ prereq-go: prereq-py
 	go install golang.org/x/lint/golint@latest
 
 lint:
+	$(PYTHON) -m ruff check geneve tests
 	$(PYTHON) -m black -q --check geneve tests || ($(PYTHON) -m black geneve tests; false)
 	$(PYTHON) -m isort -q --check geneve tests || ($(PYTHON) -m isort geneve tests; false)
 
