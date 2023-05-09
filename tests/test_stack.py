@@ -17,7 +17,6 @@
 
 """Test stack module."""
 
-import os
 import unittest
 from pathlib import Path
 
@@ -61,7 +60,7 @@ class TestStack(unittest.TestCase):
                 "TEST_KIBANA_URL": None,
             }
         ):
-            msg = f"Invalid stack reference: geneve-test-env"
+            msg = "Invalid stack reference: geneve-test-env"
             with self.assertRaises(ValueError, msg=msg) as cm:
                 self.assertEqual(None, stack.lookup("geneve-test-env"))
             self.assertEqual(msg, str(cm.exception))
@@ -95,7 +94,7 @@ class TestStack(unittest.TestCase):
                 "ELASTIC_PACKAGE_KIBANA_HOST": None,
             }
         ):
-            msg = f"Invalid stack reference: elastic-package"
+            msg = "Invalid stack reference: elastic-package"
             with self.assertRaises(ValueError, msg=msg) as cm:
                 self.assertEqual(None, stack.lookup("elastic-package"))
             self.assertEqual(msg, str(cm.exception))

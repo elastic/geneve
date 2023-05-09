@@ -17,7 +17,6 @@
 
 """Implement the Elastic stack base"""
 
-import os
 from pathlib import Path
 
 from elasticsearch import AuthenticationException, Elasticsearch

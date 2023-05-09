@@ -20,7 +20,6 @@
 import functools
 import shutil
 from contextlib import contextmanager
-from glob import glob
 from pathlib import Path
 from random import Random
 from tempfile import mkdtemp

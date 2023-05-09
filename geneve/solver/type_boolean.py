@@ -18,6 +18,7 @@
 """Constraints solver for boolean fields."""
 
 from ..constraints import ConflictError
+from ..utils import random
 from . import solver
 
 

@@ -17,7 +17,6 @@
 
 """Test case mixin classes."""
 
-import csv
 import hashlib
 import itertools
 import json
@@ -237,9 +236,9 @@ class OnlineTestCase:
         cls.kbn = stack.kb
 
         if not cls.es.ping():
-            raise unittest.SkipTest(f"Could not reach Elasticsearch: {es_url}")
+            raise unittest.SkipTest(f"Could not reach Elasticsearch: {cls.es}")
         if not cls.kbn.ping():
-            raise unittest.SkipTest(f"Could not reach Kibana: {kbn_url}")
+            raise unittest.SkipTest(f"Could not reach Kibana: {cls.kbn}")
 
         cls.kbn.create_siem_index()
         cls.siem_index_name = cls.kbn.get_siem_index()["name"]
