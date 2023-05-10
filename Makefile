@@ -9,6 +9,9 @@ ifeq ($(PYTHON),)
 endif
 
 PYGOLO_DIR := $(shell go list -f '{{.Dir}}' -m gitlab.com/pygolo/py)
+ifeq ($(PYGOLO_DIR),)
+	PYGOLO_DIR := $(shell go get gitlab.com/pygolo/py && go list -f '{{.Dir}}' -m gitlab.com/pygolo/py)
+endif
 ifneq ($(PYGOLO_DIR),)
 	include $(PYGOLO_DIR)/Python.mk
 	GO_TAGS := $(if $(PYGOLO_TAGS),-tags "$(PYGOLO_TAGS)")
