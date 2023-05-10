@@ -3,11 +3,11 @@ build
 elasticsearch>=8.2.0
 eql>=0.9.12
 faker==15.3.4
-isort
 nbformat
 pytest
 pytoml
 requests
 ruamel.yaml
+ruff
 semver
 virtualenv
