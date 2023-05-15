@@ -4,9 +4,9 @@ This report captures the unit test queries signals generation coverage.
 Here you can learn what queries are supported.
 
 ## Table of contents
-   1. [Rules with the correct signals (53)](#rules-with-the-correct-signals-53)
+   1. [Rules with the correct signals (54)](#rules-with-the-correct-signals-54)
 
-## Rules with the correct signals (53)
+## Rules with the correct signals (54)
 
 ### Rule 000
 
@@ -820,9 +820,28 @@ sequence
 
 ### Rule 049
 
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-049
+
+```python
+sequence
+        [process where process.name : "*.exe"] by process.name
+        [process where process.name : "*.dll"] by process.parent.name
+```
+
+```python
+[{'process': {'name': 'XIUtkNI.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'process': {'name': 'ixTFlEzswuEEXp.dll', 'parent': {'name': 'XIUtkNI.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1}]
+```
+
+
+
+### Rule 050
+
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-049
+Index: geneve-ut-050
 
 ```python
 sequence
@@ -839,11 +858,11 @@ sequence
 
 
 
-### Rule 050
+### Rule 051
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-050
+Index: geneve-ut-051
 
 ```python
 sequence by user.id
@@ -860,11 +879,11 @@ sequence by user.id
 
 
 
-### Rule 051
+### Rule 052
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-051
+Index: geneve-ut-052
 
 ```python
 sequence
@@ -885,11 +904,11 @@ sequence
 
 
 
-### Rule 052
+### Rule 053
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-052
+Index: geneve-ut-053
 
 ```python
 sequence by user.id

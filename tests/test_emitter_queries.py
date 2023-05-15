@@ -298,6 +298,15 @@ mono_branch_multi_doc = {
             {"event": {"category": ["process"]}, "process": {"parent": {"name": "cmd.exe"}}, "user": {"name": "fmC"}},
         ]
     ],
+    """sequence
+        [process where process.name : "*.exe"] by process.name
+        [process where process.name : "*.dll"] by process.parent.name
+    """: [
+        [
+            {"event": {"category": ["process"]}, "process": {"name": "QfHxGuOAe.exe"}},
+            {"event": {"category": ["process"]}, "process": {"name": "lAJmCOdS.dll", "parent": {"name": "QfHxGuOAe.exe"}}},
+        ]
+    ],
 }
 
 multi_branch_multi_doc = {
