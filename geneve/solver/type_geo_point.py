@@ -17,12 +17,11 @@
 
 """Constraints solver for geo_point fields."""
 
-from . import solver
+from . import Field, solver
 
 
-@solver("geo_point")
-def solve_geo_point_field(field, value, constraints, left_attempts, environment):
-    if left_attempts and value is None:
+@solver("&geo_point")
+class GeoPointField(Field):
+    def solve(self, left_attempts, environment):
         value = [0, 0]
-        left_attempts -= 1
-    return {"value": value, "left_attempts": left_attempts}
+        return {"value": value, "left_attempts": left_attempts}

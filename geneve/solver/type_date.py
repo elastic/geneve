@@ -20,19 +20,26 @@
 import time
 
 from ..constraints import ConflictError
-from . import solver
+from . import Field, solver
 
 
-@solver("date", "==")
-def solve_date_field(field, value, constraints, left_attempts, environment):
-    for k, v, *_ in constraints:
-        if k == "==":
-            if value is None or value == v:
-                value = v
-            else:
-                raise ConflictError(f"is already {value}, cannot set to {v}", field, k)
+@solver("&date")
+class DateField(Field):
+    valid_constraints = ["=="]
 
-    if left_attempts and value is None:
-        value = int(time.time() * 1000)
-        left_attempts -= 1
-    return {"value": value, "left_attempts": left_attempts}
+    def __init__(self, field, constraints, schema, group):
+        super().__init__(field, constraints, schema, group)
+
+        for k, v, *_ in constraints:
+            if k == "==":
+                if self.value is None or self.value == v:
+                    self.value = v
+                else:
+                    raise ConflictError(f"is already {self.value}, cannot set to {v}", field, k)
+
+    def solve(self, left_attempts, environment):
+        value = self.value
+        if left_attempts and value is None:
+            value = int(time.time() * 1000)
+            left_attempts -= 1
+        return {"value": value, "left_attempts": left_attempts}

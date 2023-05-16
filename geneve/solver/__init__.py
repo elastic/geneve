@@ -17,8 +17,6 @@
 
 """Constraints solver helper class."""
 
-from functools import wraps
-
 import faker
 
 from ..constraints import ConflictError
@@ -27,36 +25,17 @@ from ..utils import deep_merge, random
 faker.generator.random = random
 _max_attempts = 100000
 
-ecs_constraints = {
-    "as.number": [(">=", 0), ("<", 2**16)],
-    "bytes": [(">=", 0), ("<", 2**32)],
-    "pid": [(">", 0), ("<", 2**32)],
-    "port": [(">", 0), ("<", 2**16)],
-}
 
-
-def get_ecs_constraints(field):
+def get_ecs_constraints(solver, field):
     while field:
         try:
-            return ecs_constraints[field]
+            return solver.ecs_constraints[field]
         except KeyError:
             dot = field.find(".")
             if dot == -1:
                 break
             field = field[dot + 1 :]
     return []
-
-
-def delete_by_cond(list, cond):
-    for i in reversed([i for i, x in enumerate(list) if cond(x)]):
-        del list[i]
-
-
-def delete_use_once(list):
-    def is_use_once(item):
-        return len(item) > 2 and item[2] and item[2].get("use_once", False)
-
-    delete_by_cond(list, is_use_once)
 
 
 def emit_field(doc, field, value):
@@ -81,93 +60,116 @@ def emit_group(doc, group, values):
 class solver:  # noqa: N801
     solvers = {}
 
-    def __init__(self, name, *args):
+    def __init__(self, name):
         if name in self.solvers:
             raise ValueError(f"duplicate solver: {name}")
         self.name = name
-        self.valid_constraints = ("join_value", "max_attempts", "cardinality") + args
-
-    def wrap_field_solver(self, func):
-        @wraps(func)
-        def _solver(field, value, constraints, environment):
-            join_values = []
-            max_attempts = None
-            cardinality = 0
-            history = []
-            augmented_constraints = constraints + get_ecs_constraints(field)
-            for k, v, *_ in augmented_constraints:
-                if k not in self.valid_constraints:
-                    raise NotImplementedError(f"Unsupported {self.name} constraint: {k}")
-                if k == "join_value":
-                    join_values.append(v)
-                if k == "max_attempts":
-                    v = int(v)
-                    if v < 0:
-                        raise ValueError(f"max_attempts cannot be negative: {v}")
-                    if max_attempts is None or max_attempts > v:
-                        max_attempts = v
-                if k == "cardinality":
-                    if type(v) is tuple:
-                        if len(v) > 1:
-                            raise ValueError(f"Too many arguments for cardinality of '{field}': {v}")
-                        v = v[0]
-                    cardinality = int(v)
-                    history = environment.setdefault("fields_history", {}).setdefault(field, [])
-            if max_attempts is None:
-                max_attempts = _max_attempts
-            if len(history) < cardinality:
-                augmented_constraints.extend(("!=", v["value"]) for v in history)
-            if not cardinality or len(history) < cardinality:
-                value = func(field, value, augmented_constraints, max_attempts + 1, environment)
-                if not value["left_attempts"]:
-                    raise ConflictError(f"attempts exausted: {max_attempts}", field)
-                del value["left_attempts"]
-                if cardinality:
-                    history.append(value)
-            else:
-                value = random.choice(history[:cardinality])
-            for field, constraint in join_values:
-                constraint.append_constraint(field, "==", value["value"], {"use_once": True})
-            delete_use_once(constraints)
-            return value
-
-        return _solver
 
     def __call__(self, func):
-        if not self.name.endswith("."):
-            func = self.wrap_field_solver(func)
         self.solvers[self.name] = func
+        func.type = self.name
         return func
 
     @classmethod
-    def solve_field(cls, doc, group, field, constraints, schema, environment):
+    def solve_field(cls, doc, join_doc, group, field, constraints, schema, environment):
         if constraints is None:
             return None
         field = f"{group}.{field}" if group else field
         field_schema = schema.get(field, {})
         field_type = field_schema.get("type", "keyword")
+        field_is_array = "array" in field_schema.get("normalize", [])
         try:
-            solver = cls.solvers[field_type]
+            field_solver = cls.solvers[f"&{field_type}"]
         except KeyError:
             raise NotImplementedError(f"Constraints solver not implemented: {field_type}")
-        if "array" in field_schema.get("normalize", []):
-            value = []
-        else:
-            value = None
-        value = solver(field, value, constraints, environment)["value"]
+        constraints = constraints + get_ecs_constraints(field_solver, field)
+        value = field_solver(field, constraints, field_is_array, group)(join_doc, environment)["value"]
         if doc is not None:
             emit_field(doc, field, value)
         return value
 
     @classmethod
-    def solve_nogroup(cls, doc, group, fields, schema, environment):
-        for field, constraints in fields.items():
-            cls.solve_field(doc, group, field, constraints, schema, environment)
+    def new_entity(cls, group, fields):
+        return cls.solvers.get(group + ".", Entity)(group, fields)
 
-    @classmethod
-    def solve(cls, doc, group, fields, schema, environment):
-        solve_group = cls.solvers.get(group + ".", cls.solve_nogroup)
-        solve_group(doc, group, fields, schema, environment)
+
+class Entity:
+    def __init__(self, group, fields):
+        self.group = group
+        self.fields = fields
+
+    def solve(self, doc, join_doc, schema, environment):
+        for field, constraints in self.fields.items():
+            solver.solve_field(doc, join_doc, self.group, field, constraints, schema, environment)
+
+
+class Field:
+    common_constraints = ["join_value", "max_attempts", "cardinality"]
+    ecs_constraints = {}
+    type = None
+
+    def __init__(self, field, constraints, is_array, group=None):
+        self.field = f"{group}.{field}" if group else field
+        self.value = [] if is_array else None
+        self.is_array = is_array
+        self.join_field_parts = None
+        self.max_attempts = None
+        self.cardinality = 0
+
+        valid_constraints = self.common_constraints + getattr(self, "valid_constraints", [])
+
+        for k, v, *flags in constraints:
+            if k not in valid_constraints:
+                raise NotImplementedError(f"Unsupported {self.type} '{field}' constraint: {k}")
+            if k == "join_value":
+                self.join_field_parts = v[1].split(".")
+            if k == "max_attempts":
+                v = int(v)
+                if v < 0:
+                    raise ValueError(f"max_attempts cannot be negative: {v}")
+                if self.max_attempts is None or self.max_attempts > v:
+                    self.max_attempts = v
+            if k == "cardinality":
+                if type(v) is tuple:
+                    if len(v) > 1:
+                        raise ValueError(f"Too many arguments for cardinality of '{field}': {v}")
+                    v = v[0]
+                self.cardinality = int(v)
+
+        if self.max_attempts is None:
+            self.max_attempts = _max_attempts
+
+    def get_history(self, environment):
+        if not self.cardinality:
+            return []
+        return environment.setdefault("fields_history", {}).setdefault(self.field, [])
+
+    def __call__(self, join_doc, environment):
+        history = self.get_history(environment)
+
+        if self.join_field_parts:
+            value = join_doc
+            for part in self.join_field_parts:
+                value = value[part]
+            value = {"value": value}
+            if self.cardinality:
+                history.append(value)
+            return value
+
+        if not self.cardinality or len(history) < self.cardinality:
+            value = self.solve(self.max_attempts + 1, environment)
+            if not value["left_attempts"]:
+                raise ConflictError(f"attempts exausted: {self.max_attempts}", self.field)
+            del value["left_attempts"]
+            if self.cardinality:
+                history.append(value)
+        else:
+            value = random.choice(history[: self.cardinality])
+
+        return value
+
+    def solve(self, left_attempts, environment):
+        pass
 
 
 def load_solvers():

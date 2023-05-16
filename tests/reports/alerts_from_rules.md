@@ -7,7 +7,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 ## Table of contents
    1. [Rules with no signals (5)](#rules-with-no-signals-5)
-   1. [Rules with the correct signals (560)](#rules-with-the-correct-signals-560)
+   1. [Rules with the correct signals (561)](#rules-with-the-correct-signals-561)
 
 ## Rules with no signals (5)
 
@@ -105,19 +105,19 @@ sequence by host.id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/System/Library/LaunchDaemons/UyyFjSvILOoOHmx'}, 'host': {'id': 'BnL'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'BnL'}, '@timestamp': 1},
- {'event': {'type': ['eOA'], 'category': ['file']}, 'file': {'path': '/System/Library/LaunchDaemons/gaiFqsyzKNyyQ'}, 'host': {'id': 'DpU'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'DpU'}, '@timestamp': 3},
- {'event': {'type': ['EUD'], 'category': ['file']}, 'file': {'path': '/Library/LaunchDaemons/xVTOLWtimrFgT'}, 'host': {'id': 'msh'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'msh'}, '@timestamp': 5},
- {'event': {'type': ['CeL'], 'category': ['file']}, 'file': {'path': '/Library/LaunchDaemons/L'}, 'host': {'id': 'Sjo'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'Sjo'}, '@timestamp': 7}]
+[{'event': {'type': ['XIU'], 'category': ['file']}, 'file': {'path': '/System/Library/LaunchDaemons/kNIoixTF'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['swu'], 'category': ['file']}, 'file': {'path': '/System/Library/LaunchDaemons/LeOAagaiFq'}, 'host': {'id': 'lEz'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'lEz'}, '@timestamp': 3},
+ {'event': {'type': ['KNy'], 'category': ['file']}, 'file': {'path': '/Library/LaunchDaemons/QDpUEUDqxVTO'}, 'host': {'id': 'syz'}, '@timestamp': 4},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'syz'}, '@timestamp': 5},
+ {'event': {'type': ['imr'], 'category': ['file']}, 'file': {'path': '/Library/LaunchDaemons/Tm'}, 'host': {'id': 'LWt'}, '@timestamp': 6},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'LWt'}, '@timestamp': 7}]
 ```
 
 
 
-## Rules with the correct signals (560)
+## Rules with the correct signals (561)
 
 ### AWS Access Secret in Secrets Manager
 
@@ -1158,8 +1158,8 @@ sequence by host.id with maxspan=5m
 ```
 
 ```python
-[{'event': {'action': 'logged-in', 'outcome': 'success', 'category': ['authentication']}, 'winlog': {'logon': {'type': 'Network'}, 'event_data': {'TargetLogonId': 'ZFy'}}, 'source': {'ip': '229.172.181.141'}, 'host': {'id': 'Uyy'}, '@timestamp': 0},
- {'event': {'action': 'reset-password', 'category': ['iam']}, 'winlog': {'event_data': {'SubjectLogonId': 'ZFy'}}, 'host': {'id': 'Uyy'}, '@timestamp': 1}]
+[{'event': {'action': 'logged-in', 'outcome': 'success', 'category': ['authentication']}, 'winlog': {'logon': {'type': 'Network'}, 'event_data': {'TargetLogonId': 'XIU'}}, 'source': {'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'action': 'reset-password', 'category': ['iam']}, 'host': {'id': 'ZFy'}, 'winlog': {'event_data': {'SubjectLogonId': 'XIU'}}, '@timestamp': 1}]
 ```
 
 
@@ -1327,8 +1327,8 @@ sequence by host.id, process.entity_id with maxspan=30s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'entity_id': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['tkN'], 'category': ['network']}, 'process': {'name': 'osascript', 'entity_id': 'ZFy'}, 'destination': {'ip': '48.35.95.170'}, 'host': {'id': 'XIU'}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'entity_id': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['tkN'], 'category': ['network']}, 'process': {'name': 'osascript', 'entity_id': 'XIU'}, 'destination': {'ip': '48.35.95.170'}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -3254,8 +3254,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pid': 4289255490, 'entity_id': 'UTv'}, '@timestamp': 0},
- {'destination': {'port': 445, 'ip': '229.172.181.141'}, 'process': {'pid': 3874133221, 'entity_id': 'UTv'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'pid': 4052611751, 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'destination': {'port': 445, 'ip': '229.172.181.141'}, 'process': {'pid': 3874133221, 'entity_id': 'ZFy'}, 'event': {'category': ['network']}, '@timestamp': 1}]
 ```
 
 
@@ -3703,10 +3703,10 @@ sequence with maxspan=2h
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'XIU'}, 'process': {'name': 'eqnedt32.exe'}, 'host': {'id': 'yyF'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'XIU'}, 'host': {'id': 'yyF'}, '@timestamp': 1},
- {'event': {'type': ['jSv'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'ILO'}, 'process': {'name': 'POWERPNT.EXE'}, 'host': {'id': 'Ezs'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'ILO'}, 'host': {'id': 'Ezs'}, '@timestamp': 3}]
+[{'event': {'type': ['tkN'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'XIU'}, 'process': {'name': 'OUTLOOK.EXE'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'executable': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['Ezs'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'TFl'}, 'process': {'name': 'fltldr.exe'}, 'host': {'id': 'oix'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'oix'}, 'process': {'executable': 'TFl'}, '@timestamp': 3}]
 ```
 
 
@@ -3735,10 +3735,10 @@ sequence with maxspan=2h
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'XIU', 'path': 'tkN'}, 'process': {'name': 'FoxitPhantomPDF.exe'}, 'host': {'id': 'oix'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'tkN'}, 'host': {'id': 'oix'}, '@timestamp': 1},
- {'event': {'type': ['TFl'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'Ezs', 'path': 'wuE'}, 'process': {'name': 'AcroRd32.exe'}, 'host': {'id': 'pWq'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'wuE'}, 'host': {'id': 'pWq'}, '@timestamp': 3}]
+[{'event': {'type': ['tkN'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'Ioi', 'path': 'XIU'}, 'process': {'name': 'rdrcef.exe'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'executable': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['mxB'], 'category': ['file']}, 'file': {'extension': 'exe', 'name': 'nLe', 'path': 'oOH'}, 'process': {'name': 'FoxitReader.exe'}, 'host': {'id': 'ILO'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'ILO'}, 'process': {'executable': 'oOH'}, '@timestamp': 3}]
 ```
 
 
@@ -5543,10 +5543,10 @@ sequence with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'args': ['-Embedding'], 'entity_id': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mshta.exe', 'entity_id': 'ZFy'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 64839, 'ip': '119.10.44.216'}, 'destination': {'port': 55313}, 'host': {'id': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'args': ['-Embedding'], 'entity_id': 'oix'}, 'host': {'id': 'TFl'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mshta.exe', 'entity_id': 'oix'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 61095, 'ip': '112.141.185.70'}, 'destination': {'port': 64057}, 'host': {'id': 'TFl'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'args': ['-Embedding'], 'entity_id': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mshta.exe', 'entity_id': 'XIU'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 64839, 'ip': '119.10.44.216'}, 'destination': {'port': 55313}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'args': ['-Embedding'], 'entity_id': 'TFl'}, 'host': {'id': 'oix'}, '@timestamp': 2},
+ {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mshta.exe', 'entity_id': 'TFl'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 61095, 'ip': '112.141.185.70'}, 'destination': {'port': 64057}, 'host': {'id': 'oix'}, '@timestamp': 3}]
 ```
 
 
@@ -5568,10 +5568,10 @@ sequence by host.id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mmc.exe', 'entity_id': 'ZFy'}, 'source': {'port': 52641, 'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, 'destination': {'port': 55313}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'host': {'id': 'SvI'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'mmc.exe', 'entity_id': 'ZFy'}}, 'host': {'id': 'SvI'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mmc.exe', 'entity_id': 'LOo'}, 'source': {'port': 65131, 'ip': '62bd:10db:7472:f04b:708d:b945:3e09:df80'}, 'destination': {'port': 57712}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'host': {'id': 'pWq'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'mmc.exe', 'entity_id': 'LOo'}}, 'host': {'id': 'pWq'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mmc.exe', 'entity_id': 'XIU'}, 'source': {'port': 61522, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'destination': {'port': 55313}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'mmc.exe', 'entity_id': 'XIU'}}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'mmc.exe', 'entity_id': 'LOo'}, 'source': {'port': 65131, 'ip': '62bd:10db:7472:f04b:708d:b945:3e09:df80'}, 'destination': {'port': 57712}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'host': {'id': 'SvI'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'mmc.exe', 'entity_id': 'LOo'}}, 'host': {'id': 'SvI'}, '@timestamp': 3}]
 ```
 
 
@@ -5594,10 +5594,10 @@ sequence by host.id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'explorer.exe', 'entity_id': 'ZFy'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'port': 61522, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'destination': {'port': 55313}, 'host': {'id': 'oix'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe', 'entity_id': 'ZFy'}}, 'host': {'id': 'oix'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'explorer.exe', 'entity_id': 'TFl'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 61095, 'ip': '112.141.185.70'}, 'destination': {'port': 64057}, 'host': {'id': 'uEE'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe', 'entity_id': 'TFl'}}, 'host': {'id': 'uEE'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'explorer.exe', 'entity_id': 'XIU'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 64839, 'ip': '119.10.44.216'}, 'destination': {'port': 55313}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe', 'entity_id': 'XIU'}}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['network']}, 'process': {'name': 'explorer.exe', 'entity_id': 'TFl'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 61095, 'ip': '112.141.185.70'}, 'destination': {'port': 64057}, 'host': {'id': 'oix'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'explorer.exe', 'entity_id': 'TFl'}}, 'host': {'id': 'oix'}, '@timestamp': 3}]
 ```
 
 
@@ -5617,10 +5617,10 @@ sequence by host.id with maxspan = 30s
 ```
 
 ```python
-[{'network': {'direction': 'ingress', 'protocol': 'http'}, 'destination': {'port': 5985}, 'source': {'ip': '1b43:3a53:aa79:ec58:8d14:2981:f18d:f2a7'}, 'event': {'category': ['network']}, 'host': {'id': 'Utk'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wsmprovhost.exe'}, 'name': 'NIo'}, 'host': {'id': 'Utk'}, '@timestamp': 1},
- {'network': {'direction': 'incoming', 'protocol': 'http'}, 'destination': {'port': 5986}, 'source': {'ip': 'baf5:6682:de3c:cb58:a9e1:79f2:73bd:f2be'}, 'event': {'category': ['network']}, 'host': {'id': 'FlE'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wsmprovhost.exe'}, 'name': 'zsw'}, 'host': {'id': 'FlE'}, '@timestamp': 3}]
+[{'network': {'direction': 'incoming', 'protocol': 'http'}, 'destination': {'port': 5985}, 'source': {'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wsmprovhost.exe'}, 'name': 'FjS'}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'network': {'direction': 'incoming', 'protocol': 'http'}, 'destination': {'port': 5986}, 'source': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af'}, 'event': {'category': ['network']}, 'host': {'id': 'vIL'}, '@timestamp': 2},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wsmprovhost.exe'}, 'name': 'swu'}, 'host': {'id': 'vIL'}, '@timestamp': 3}]
 ```
 
 
@@ -5640,10 +5640,10 @@ sequence by host.id with maxspan=30s
 ```
 
 ```python
-[{'process': {'pid': 4}, 'network': {'direction': 'ingress', 'protocol': 'http'}, 'destination': {'port': 5985}, 'source': {'ip': '1b43:3a53:aa79:ec58:8d14:2981:f18d:f2a7'}, 'event': {'category': ['network']}, 'host': {'id': 'Utk'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'winrshost.exe'}, 'name': 'NIo'}, 'host': {'id': 'Utk'}, '@timestamp': 1},
- {'process': {'pid': 4}, 'network': {'direction': 'incoming', 'protocol': 'http'}, 'destination': {'port': 5986}, 'source': {'ip': 'baf5:6682:de3c:cb58:a9e1:79f2:73bd:f2be'}, 'event': {'category': ['network']}, 'host': {'id': 'FlE'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'winrshost.exe'}, 'name': 'zsw'}, 'host': {'id': 'FlE'}, '@timestamp': 3}]
+[{'process': {'pid': 4}, 'network': {'direction': 'incoming', 'protocol': 'http'}, 'destination': {'port': 5985}, 'source': {'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'winrshost.exe'}, 'name': 'FjS'}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'process': {'pid': 4}, 'network': {'direction': 'incoming', 'protocol': 'http'}, 'destination': {'port': 5986}, 'source': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af'}, 'event': {'category': ['network']}, 'host': {'id': 'vIL'}, '@timestamp': 2},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'winrshost.exe'}, 'name': 'swu'}, 'host': {'id': 'vIL'}, '@timestamp': 3}]
 ```
 
 
@@ -5686,22 +5686,22 @@ sequence by process.entity_id with maxspan = 5m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ZFy', 'entity_id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\kNIoixTF.sdb'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'lEz', 'entity_id': 'swu'}, '@timestamp': 2},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\LeOAagaiFq.sdb'}, 'process': {'entity_id': 'swu'}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'syz'}, 'entity_id': 'KNy'}, '@timestamp': 4},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\QDpUEUDqxVTO.sdb'}, 'process': {'entity_id': 'KNy'}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'LWt'}, 'entity_id': 'imr'}, '@timestamp': 6},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\Tm.sdb'}, 'process': {'entity_id': 'imr'}, '@timestamp': 7},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'shC', 'entity_id': 'eLW'}, '@timestamp': 8},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\L.sdb'}, 'process': {'entity_id': 'eLW'}, '@timestamp': 9},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'Sjo', 'entity_id': 'Grm'}, '@timestamp': 10},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\wDUNrZjeyLuZfIz.sdb'}, 'process': {'entity_id': 'Grm'}, '@timestamp': 11},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'miE'}, 'entity_id': 'Gga'}, '@timestamp': 12},
- {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\K.sdb'}, 'process': {'entity_id': 'Gga'}, '@timestamp': 13},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'EIp'}, 'entity_id': 'duD'}, '@timestamp': 14},
- {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\xFEiZBTXzJCW.sdb'}, 'process': {'entity_id': 'duD'}, '@timestamp': 15}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'XIU', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\kNIoixTF.sdb'}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'swu', 'entity_id': 'lEz'}, '@timestamp': 2},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\LeOAagaiFq.sdb'}, 'process': {'entity_id': 'lEz'}, '@timestamp': 3},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'KNy'}, 'entity_id': 'syz'}, '@timestamp': 4},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\QDpUEUDqxVTO.sdb'}, 'process': {'entity_id': 'syz'}, '@timestamp': 5},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'imr'}, 'entity_id': 'LWt'}, '@timestamp': 6},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\Tm.sdb'}, 'process': {'entity_id': 'LWt'}, '@timestamp': 7},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'eLW', 'entity_id': 'shC'}, '@timestamp': 8},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\L.sdb'}, 'process': {'entity_id': 'shC'}, '@timestamp': 9},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'Grm', 'entity_id': 'Sjo'}, '@timestamp': 10},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\wDUNrZjeyLuZfIz.sdb'}, 'process': {'entity_id': 'Sjo'}, '@timestamp': 11},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'Gga'}, 'entity_id': 'miE'}, '@timestamp': 12},
+ {'event': {'type': ['creation'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\K.sdb'}, 'process': {'entity_id': 'miE'}, '@timestamp': 13},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'duD'}, 'entity_id': 'EIp'}, '@timestamp': 14},
+ {'event': {'type': ['change'], 'category': ['registry']}, 'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Custom\\xFEiZBTXzJCW.sdb'}, 'process': {'entity_id': 'EIp'}, '@timestamp': 15}]
 ```
 
 
@@ -5958,10 +5958,10 @@ sequence by host.id with maxspan=30s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['network']}, 'process': {'pid': 4, 'entity_id': 'ZFy'}, 'destination': {'port': 445}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec'}, 'host': {'id': 'FjS'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4, 'entity_id': 'ZFy'}, 'file': {'extension': 'exe'}, 'host': {'id': 'FjS'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['network']}, 'process': {'pid': 4, 'entity_id': 'xTF'}, 'destination': {'port': 445}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af'}, 'host': {'id': 'swu'}, '@timestamp': 2},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4, 'entity_id': 'xTF'}, 'file': {'extension': 'dll'}, 'host': {'id': 'swu'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['network']}, 'process': {'pid': 4, 'entity_id': 'XIU'}, 'destination': {'port': 445}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4, 'entity_id': 'XIU'}, 'file': {'extension': 'cmd'}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['network']}, 'process': {'pid': 4, 'entity_id': 'TFl'}, 'destination': {'port': 445}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'ip': '62bd:10db:7472:f04b:708d:b945:3e09:df80'}, 'host': {'id': 'oix'}, '@timestamp': 2},
+ {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4, 'entity_id': 'TFl'}, 'file': {'extension': 'dll'}, 'host': {'id': 'oix'}, '@timestamp': 3}]
 ```
 
 
@@ -5981,10 +5981,10 @@ sequence by host.id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['file']}, 'file': {'path': '/Users/fUyyFjSvILO/Library/LaunchAgents/Ezswu'}, 'host': {'id': 'EEX'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'EEX'}, '@timestamp': 1},
- {'event': {'type': ['pWq'], 'category': ['file']}, 'file': {'path': '/Library/LaunchAgents/aiFqsyzKNyyQDpU'}, 'host': {'id': 'EUD'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'EUD'}, '@timestamp': 3}]
+[{'event': {'type': ['XIU'], 'category': ['file']}, 'file': {'path': '/System/Library/LaunchAgents/kNIoixTF'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['swu'], 'category': ['file']}, 'file': {'path': '/Users/EXpWq/Library/LaunchAgents/gaiFqsyzKNyyQ'}, 'host': {'id': 'lEz'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'launchctl', 'args': ['load']}, 'host': {'id': 'lEz'}, '@timestamp': 3}]
 ```
 
 
@@ -6175,18 +6175,18 @@ sequence with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['ZFy'], 'category': ['process']}, 'process': {'name': 'winrshost.exe', 'entity_id': 'IUt'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'kNI'}}, 'parent': {'entity_id': 'IUt'}}, 'winlog': {'event_data': {'IntegrityLevel': 'oix'}}, '@timestamp': 1},
- {'event': {'type': ['TFl'], 'category': ['process']}, 'process': {'name': 'wmic.exe', 'entity_id': 'OHm'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'xBn'}}, 'parent': {'entity_id': 'OHm'}}, 'winlog': {'event_data': {'IntegrityLevel': 'LeO'}}, '@timestamp': 3},
- {'event': {'type': ['Aag'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'WmiPrvSe.exe'}, 'entity_id': 'Rcy'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'mEE'}}, 'parent': {'entity_id': 'Rcy'}}, 'winlog': {'event_data': {'IntegrityLevel': 'wVP'}}, '@timestamp': 5},
- {'event': {'type': ['YMG'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'rundll32.exe'}, 'entity_id': 'pUE'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'UDq'}}, 'parent': {'entity_id': 'pUE'}}, 'winlog': {'event_data': {'IntegrityLevel': 'xVT'}}, '@timestamp': 7},
- {'event': {'type': ['OLW'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'entity_id': 'tim'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'rFg'}}, 'parent': {'entity_id': 'tim'}}, 'winlog': {'event_data': {'IntegrityLevel': 'Tms'}}, '@timestamp': 9},
- {'event': {'type': ['hCe'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'entity_id': 'LWY'}, '@timestamp': 10},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'cYs'}}, 'parent': {'entity_id': 'LWY'}}, 'winlog': {'event_data': {'IntegrityLevel': 'cnU'}}, '@timestamp': 11}]
+[{'event': {'type': ['XIU'], 'category': ['process']}, 'process': {'name': 'regsvr32.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'yyF'}}, 'parent': {'entity_id': 'ZFy'}}, 'winlog': {'event_data': {'IntegrityLevel': 'jSv'}}, '@timestamp': 1},
+ {'event': {'type': ['oOH'], 'category': ['process']}, 'process': {'name': 'powershell.exe', 'entity_id': 'ILO'}, '@timestamp': 2},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'wuE'}}, 'parent': {'entity_id': 'ILO'}}, 'winlog': {'event_data': {'IntegrityLevel': 'EXp'}}, '@timestamp': 3},
+ {'event': {'type': ['VRc'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'rundll32.exe'}, 'entity_id': 'WqN'}, '@timestamp': 4},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'qsy'}}, 'parent': {'entity_id': 'WqN'}}, 'winlog': {'event_data': {'IntegrityLevel': 'zKN'}}, '@timestamp': 5},
+ {'event': {'type': ['DpU'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'wmic.exe'}, 'entity_id': 'yyQ'}, '@timestamp': 6},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'mlO'}}, 'parent': {'entity_id': 'yyQ'}}, 'winlog': {'event_data': {'IntegrityLevel': 'PZR'}}, '@timestamp': 7},
+ {'event': {'type': ['WCi'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'entity_id': 'gUv'}, '@timestamp': 8},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'schtasks.exe', 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'MZO'}}, 'parent': {'entity_id': 'gUv'}}, 'winlog': {'event_data': {'IntegrityLevel': 'fHa'}}, '@timestamp': 9},
+ {'event': {'type': ['zRJ'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'entity_id': 'TDg'}, '@timestamp': 10},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'pe': {'original_file_name': 'schtasks.exe'}, 'args': ['/create', '-create', '/RU', '/SC', '/TN', '/TR', '/F', '/XML'], 'Ext': {'token': {'integrity_level_name': 'iLS'}}, 'parent': {'entity_id': 'TDg'}}, 'winlog': {'event_data': {'IntegrityLevel': 'joG'}}, '@timestamp': 11}]
 ```
 
 
@@ -7185,10 +7185,10 @@ sequence by process.entity_id with maxspan=10m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'args': ['ZFy'], 'entity_id': 'XIU', 'parent': {'name': 'tkN', 'executable': 'Ioi'}}, '@timestamp': 0},
- {'process': {'name': 'mshta.exe', 'entity_id': 'XIU'}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'args': ['xTF'], 'entity_id': 'lEz', 'parent': {'name': 'swu', 'executable': 'EEX'}}, '@timestamp': 2},
- {'process': {'name': 'mshta.exe', 'entity_id': 'lEz'}, 'event': {'category': ['network']}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'args': ['XIU'], 'entity_id': 'ZFy', 'parent': {'name': 'tkN', 'executable': 'Ioi'}}, '@timestamp': 0},
+ {'process': {'name': 'mshta.exe', 'entity_id': 'ZFy'}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'mshta.exe', 'args': ['lEz'], 'entity_id': 'xTF', 'parent': {'name': 'swu', 'executable': 'EEX'}}, '@timestamp': 2},
+ {'process': {'name': 'mshta.exe', 'entity_id': 'xTF'}, 'event': {'category': ['network']}, '@timestamp': 3}]
 ```
 
 
@@ -7428,10 +7428,10 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'regsvr32.exe', 'entity_id': 'TvC', 'Ext': {'token': {'integrity_level_name': 'fUy'}}}, 'winlog': {'event_data': {'IntegrityLevel': 'yFj'}}, '@timestamp': 0},
- {'process': {'name': 'RegAsm.exe', 'entity_id': 'TvC'}, 'destination': {'ip': '115.189.242.190'}, 'network': {'protocol': 'ILO'}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'RegSvcs.exe', 'entity_id': 'Ezs', 'parent': {'name': 'wuE', 'executable': 'EXp'}}, '@timestamp': 2},
- {'process': {'name': 'regsvr32.exe', 'entity_id': 'Ezs'}, 'destination': {'ip': '0.167.86.71'}, 'network': {'protocol': 'NVR'}, 'event': {'category': ['network']}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'regsvr32.exe', 'entity_id': 'ZFy', 'Ext': {'token': {'integrity_level_name': 'IUt'}}}, 'winlog': {'event_data': {'IntegrityLevel': 'kNI'}}, '@timestamp': 0},
+ {'process': {'name': 'RegSvcs.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '104.129.204.102'}, 'network': {'protocol': 'xTF'}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'RegSvcs.exe', 'entity_id': 'lEz', 'parent': {'name': 'mxB', 'executable': 'nLe'}}, '@timestamp': 2},
+ {'process': {'name': 'regsvr32.exe', 'entity_id': 'lEz'}, 'destination': {'ip': '0.167.86.71'}, 'network': {'protocol': 'NVR'}, 'event': {'category': ['network']}, '@timestamp': 3}]
 ```
 
 
@@ -7457,8 +7457,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'makecab.exe', 'entity_id': 'vCf'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'makecab.exe', 'entity_id': 'vCf'}, 'destination': {'ip': '54.2.158.30'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'process': {'name': 'expand.exe', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'name': 'makecab.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '54.2.158.30'}, 'event': {'category': ['network']}, '@timestamp': 1}]
 ```
 
 
@@ -7652,8 +7652,8 @@ sequence by host.id, process.entity_id with maxspan = 5s
 ```
 
 ```python
-[{'dll': {'name': 'taskschd.dll'}, 'process': {'name': 'pwsh.exe', 'entity_id': 'TvC'}, 'event': {'category': ['library']}, 'host': {'id': 'fUy'}, '@timestamp': 0},
- {'process': {'name': 'powershell_ise.exe', 'entity_id': 'TvC'}, 'destination': {'port': 135, 'address': 'NIo'}, 'event': {'category': ['network']}, 'host': {'id': 'fUy'}, '@timestamp': 1}]
+[{'dll': {'name': 'taskschd.dll'}, 'process': {'name': 'powershell_ise.exe', 'entity_id': 'XIU'}, 'event': {'category': ['library']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'process': {'name': 'powershell_ise.exe', 'entity_id': 'XIU'}, 'destination': {'port': 135, 'address': 'kNI'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -7800,138 +7800,138 @@ sequence by host.id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4289255490}, 'host': {'id': 'UTv'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 4289255490}}, 'host': {'id': 'UTv'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2366908802}, 'host': {'id': 'IUt'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 2366908802}}, 'host': {'id': 'IUt'}, '@timestamp': 3},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 906141214}, 'host': {'id': 'yFj'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 906141214}}, 'host': {'id': 'yFj'}, '@timestamp': 5},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3677792346}, 'host': {'id': 'ixT'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 3677792346}}, 'host': {'id': 'ixT'}, '@timestamp': 7},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2587729011}, 'host': {'id': 'OoO'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 2587729011}}, 'host': {'id': 'OoO'}, '@timestamp': 9},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2804472236}, 'host': {'id': 'swu'}, '@timestamp': 10},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 2804472236}}, 'host': {'id': 'swu'}, '@timestamp': 11},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2506521768}, 'host': {'id': 'nLe'}, '@timestamp': 12},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 2506521768}}, 'host': {'id': 'nLe'}, '@timestamp': 13},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3305599734}, 'host': {'id': 'WqN'}, '@timestamp': 14},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 3305599734}}, 'host': {'id': 'WqN'}, '@timestamp': 15},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3939106657}, 'host': {'id': 'aiF'}, '@timestamp': 16},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 3939106657}}, 'host': {'id': 'aiF'}, '@timestamp': 17},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1362918111}, 'host': {'id': 'mEE'}, '@timestamp': 18},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 1362918111}}, 'host': {'id': 'mEE'}, '@timestamp': 19},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1895033132}, 'host': {'id': 'KNy'}, '@timestamp': 20},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 1895033132}}, 'host': {'id': 'KNy'}, '@timestamp': 21},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2012990140}, 'host': {'id': 'MGz'}, '@timestamp': 22},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 2012990140}}, 'host': {'id': 'MGz'}, '@timestamp': 23},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3303154878}, 'host': {'id': 'UEU'}, '@timestamp': 24},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 3303154878}}, 'host': {'id': 'UEU'}, '@timestamp': 25},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2477530642}, 'host': {'id': 'OPZ'}, '@timestamp': 26},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 2477530642}}, 'host': {'id': 'OPZ'}, '@timestamp': 27},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3599972005}, 'host': {'id': 'TOL'}, '@timestamp': 28},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 3599972005}}, 'host': {'id': 'TOL'}, '@timestamp': 29},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3979402863}, 'host': {'id': 'WCi'}, '@timestamp': 30},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 3979402863}}, 'host': {'id': 'WCi'}, '@timestamp': 31},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3180170912}, 'host': {'id': 'rFg'}, '@timestamp': 32},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 3180170912}}, 'host': {'id': 'rFg'}, '@timestamp': 33},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3792025424}, 'host': {'id': 'HaT'}, '@timestamp': 34},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 3792025424}}, 'host': {'id': 'HaT'}, '@timestamp': 35},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2471050154}, 'host': {'id': 'CeL'}, '@timestamp': 36},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 2471050154}}, 'host': {'id': 'CeL'}, '@timestamp': 37},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3985920459}, 'host': {'id': 'JiL'}, '@timestamp': 38},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 3985920459}}, 'host': {'id': 'JiL'}, '@timestamp': 39},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3708746937}, 'host': {'id': 'scn'}, '@timestamp': 40},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 3708746937}}, 'host': {'id': 'scn'}, '@timestamp': 41},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3801207942}, 'host': {'id': 'rmy'}, '@timestamp': 42},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 3801207942}}, 'host': {'id': 'rmy'}, '@timestamp': 43},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1833600481}, 'host': {'id': 'rHt'}, '@timestamp': 44},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 1833600481}}, 'host': {'id': 'rHt'}, '@timestamp': 45},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2128618533}, 'host': {'id': 'rZj'}, '@timestamp': 46},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 2128618533}}, 'host': {'id': 'rZj'}, '@timestamp': 47},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 400112021}, 'host': {'id': 'XgN'}, '@timestamp': 48},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 400112021}}, 'host': {'id': 'XgN'}, '@timestamp': 49},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1026037519}, 'host': {'id': 'ZfI'}, '@timestamp': 50},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 1026037519}}, 'host': {'id': 'ZfI'}, '@timestamp': 51},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2113724176}, 'host': {'id': 'CEZ'}, '@timestamp': 52},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 2113724176}}, 'host': {'id': 'CEZ'}, '@timestamp': 53},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1274618821}, 'host': {'id': 'Gga'}, '@timestamp': 54},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 1274618821}}, 'host': {'id': 'Gga'}, '@timestamp': 55},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1804792198}, 'host': {'id': 'bku'}, '@timestamp': 56},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 1804792198}}, 'host': {'id': 'bku'}, '@timestamp': 57},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4186876242}, 'host': {'id': 'pdu'}, '@timestamp': 58},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 4186876242}}, 'host': {'id': 'pdu'}, '@timestamp': 59},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2432100033}, 'host': {'id': 'xXc'}, '@timestamp': 60},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 2432100033}}, 'host': {'id': 'xXc'}, '@timestamp': 61},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1971152911}, 'host': {'id': 'ruT'}, '@timestamp': 62},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 1971152911}}, 'host': {'id': 'ruT'}, '@timestamp': 63},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1186792986}, 'host': {'id': 'ZBT'}, '@timestamp': 64},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 1186792986}}, 'host': {'id': 'ZBT'}, '@timestamp': 65},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4071505358}, 'host': {'id': 'Bay'}, '@timestamp': 66},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 4071505358}}, 'host': {'id': 'Bay'}, '@timestamp': 67},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2162665687}, 'host': {'id': 'WOc'}, '@timestamp': 68},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 2162665687}}, 'host': {'id': 'WOc'}, '@timestamp': 69},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2007001738}, 'host': {'id': 'YAR'}, '@timestamp': 70},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 2007001738}}, 'host': {'id': 'YAR'}, '@timestamp': 71},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3074937576}, 'host': {'id': 'ujy'}, '@timestamp': 72},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 3074937576}}, 'host': {'id': 'ujy'}, '@timestamp': 73},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 300589007}, 'host': {'id': 'WYs'}, '@timestamp': 74},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 300589007}}, 'host': {'id': 'WYs'}, '@timestamp': 75},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1483372706}, 'host': {'id': 'sSU'}, '@timestamp': 76},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 1483372706}}, 'host': {'id': 'sSU'}, '@timestamp': 77},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1089429130}, 'host': {'id': 'OYU'}, '@timestamp': 78},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 1089429130}}, 'host': {'id': 'OYU'}, '@timestamp': 79},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 21073247}, 'host': {'id': 'jQK'}, '@timestamp': 80},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 21073247}}, 'host': {'id': 'jQK'}, '@timestamp': 81},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3149948582}, 'host': {'id': 'NYj'}, '@timestamp': 82},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 3149948582}}, 'host': {'id': 'NYj'}, '@timestamp': 83},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3098384605}, 'host': {'id': 'MsS'}, '@timestamp': 84},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 3098384605}}, 'host': {'id': 'MsS'}, '@timestamp': 85},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 135261239}, 'host': {'id': 'vbz'}, '@timestamp': 86},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 135261239}}, 'host': {'id': 'vbz'}, '@timestamp': 87},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2835039273}, 'host': {'id': 'nOT'}, '@timestamp': 88},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 2835039273}}, 'host': {'id': 'nOT'}, '@timestamp': 89},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3693142260}, 'host': {'id': 'xtP'}, '@timestamp': 90},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 3693142260}}, 'host': {'id': 'xtP'}, '@timestamp': 91},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1677515276}, 'host': {'id': 'DrI'}, '@timestamp': 92},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 1677515276}}, 'host': {'id': 'DrI'}, '@timestamp': 93},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3414423166}, 'host': {'id': 'Fqp'}, '@timestamp': 94},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 3414423166}}, 'host': {'id': 'Fqp'}, '@timestamp': 95},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 875141340}, 'host': {'id': 'jbr'}, '@timestamp': 96},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 875141340}}, 'host': {'id': 'jbr'}, '@timestamp': 97},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 400114045}, 'host': {'id': 'ist'}, '@timestamp': 98},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 400114045}}, 'host': {'id': 'ist'}, '@timestamp': 99},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 586863955}, 'host': {'id': 'piy'}, '@timestamp': 100},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 586863955}}, 'host': {'id': 'piy'}, '@timestamp': 101},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 281451242}, 'host': {'id': 'nNj'}, '@timestamp': 102},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 281451242}}, 'host': {'id': 'nNj'}, '@timestamp': 103},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 269558298}, 'host': {'id': 'hwp'}, '@timestamp': 104},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 269558298}}, 'host': {'id': 'hwp'}, '@timestamp': 105},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1374759451}, 'host': {'id': 'SbA'}, '@timestamp': 106},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 1374759451}}, 'host': {'id': 'SbA'}, '@timestamp': 107},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 572132152}, 'host': {'id': 'xPJ'}, '@timestamp': 108},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 572132152}}, 'host': {'id': 'xPJ'}, '@timestamp': 109},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3545927791}, 'host': {'id': 'ZaT'}, '@timestamp': 110},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 3545927791}}, 'host': {'id': 'ZaT'}, '@timestamp': 111},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 274260594}, 'host': {'id': 'CwD'}, '@timestamp': 112},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 274260594}}, 'host': {'id': 'CwD'}, '@timestamp': 113},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2015810304}, 'host': {'id': 'Isj'}, '@timestamp': 114},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 2015810304}}, 'host': {'id': 'Isj'}, '@timestamp': 115},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 706603744}, 'host': {'id': 'LkN'}, '@timestamp': 116},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 706603744}}, 'host': {'id': 'LkN'}, '@timestamp': 117},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1128049119}, 'host': {'id': 'tYo'}, '@timestamp': 118},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 1128049119}}, 'host': {'id': 'tYo'}, '@timestamp': 119},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3836230137}, 'host': {'id': 'dDy'}, '@timestamp': 120},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 3836230137}}, 'host': {'id': 'dDy'}, '@timestamp': 121},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3267556835}, 'host': {'id': 'WkP'}, '@timestamp': 122},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 3267556835}}, 'host': {'id': 'WkP'}, '@timestamp': 123},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3576322544}, 'host': {'id': 'OUM'}, '@timestamp': 124},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 3576322544}}, 'host': {'id': 'OUM'}, '@timestamp': 125},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 273287148}, 'host': {'id': 'rkN'}, '@timestamp': 126},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 273287148}}, 'host': {'id': 'rkN'}, '@timestamp': 127},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 512933394}, 'host': {'id': 'bnM'}, '@timestamp': 128},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 512933394}}, 'host': {'id': 'bnM'}, '@timestamp': 129},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3173164246}, 'host': {'id': 'ZiZ'}, '@timestamp': 130},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 3173164246}}, 'host': {'id': 'ZiZ'}, '@timestamp': 131}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4052611751}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 4052611751}}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2056249324}, 'host': {'id': 'CfU'}, '@timestamp': 2},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 2056249324}}, 'host': {'id': 'CfU'}, '@timestamp': 3},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1235046169}, 'host': {'id': 'kNI'}, '@timestamp': 4},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 1235046169}}, 'host': {'id': 'kNI'}, '@timestamp': 5},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3136644739}, 'host': {'id': 'SvI'}, '@timestamp': 6},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 3136644739}}, 'host': {'id': 'SvI'}, '@timestamp': 7},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2094521982}, 'host': {'id': 'FlE'}, '@timestamp': 8},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 2094521982}}, 'host': {'id': 'FlE'}, '@timestamp': 9},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2255904345}, 'host': {'id': 'Hmx'}, '@timestamp': 10},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 2255904345}}, 'host': {'id': 'Hmx'}, '@timestamp': 11},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1305990393}, 'host': {'id': 'EEX'}, '@timestamp': 12},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 1305990393}}, 'host': {'id': 'EEX'}, '@timestamp': 13},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 570412576}, 'host': {'id': 'OAa'}, '@timestamp': 14},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 570412576}}, 'host': {'id': 'OAa'}, '@timestamp': 15},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2040616183}, 'host': {'id': 'VRc'}, '@timestamp': 16},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 2040616183}}, 'host': {'id': 'VRc'}, '@timestamp': 17},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2075775563}, 'host': {'id': 'qsy'}, '@timestamp': 18},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 2075775563}}, 'host': {'id': 'qsy'}, '@timestamp': 19},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4163567191}, 'host': {'id': 'wVP'}, '@timestamp': 20},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 4163567191}}, 'host': {'id': 'wVP'}, '@timestamp': 21},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1266848455}, 'host': {'id': 'yQD'}, '@timestamp': 22},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 1266848455}}, 'host': {'id': 'yQD'}, '@timestamp': 23},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 977141374}, 'host': {'id': 'Nfm'}, '@timestamp': 24},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 977141374}}, 'host': {'id': 'Nfm'}, '@timestamp': 25},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3936445964}, 'host': {'id': 'Dqx'}, '@timestamp': 26},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 3936445964}}, 'host': {'id': 'Dqx'}, '@timestamp': 27},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1757971487}, 'host': {'id': 'RgU'}, '@timestamp': 28},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 1757971487}}, 'host': {'id': 'RgU'}, '@timestamp': 29},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1010327188}, 'host': {'id': 'Wti'}, '@timestamp': 30},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 1010327188}}, 'host': {'id': 'Wti'}, '@timestamp': 31},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 424121613}, 'host': {'id': 'MZO'}, '@timestamp': 32},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 424121613}}, 'host': {'id': 'MZO'}, '@timestamp': 33},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 649571089}, 'host': {'id': 'Tms'}, '@timestamp': 34},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 649571089}}, 'host': {'id': 'Tms'}, '@timestamp': 35},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3611702861}, 'host': {'id': 'Dgz'}, '@timestamp': 36},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 3611702861}}, 'host': {'id': 'Dgz'}, '@timestamp': 37},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4137067386}, 'host': {'id': 'WYc'}, '@timestamp': 38},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 4137067386}}, 'host': {'id': 'WYc'}, '@timestamp': 39},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2681595795}, 'host': {'id': 'Sjo'}, '@timestamp': 40},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 2681595795}}, 'host': {'id': 'Sjo'}, '@timestamp': 41},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3962003952}, 'host': {'id': 'UJM'}, '@timestamp': 42},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 3962003952}}, 'host': {'id': 'UJM'}, '@timestamp': 43},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3302194335}, 'host': {'id': 'wDU'}, '@timestamp': 44},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 3302194335}}, 'host': {'id': 'wDU'}, '@timestamp': 45},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 335194986}, 'host': {'id': 'zIg'}, '@timestamp': 46},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 335194986}}, 'host': {'id': 'zIg'}, '@timestamp': 47},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1690413928}, 'host': {'id': 'eyL'}, '@timestamp': 48},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 1690413928}}, 'host': {'id': 'eyL'}, '@timestamp': 49},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2576449812}, 'host': {'id': 'moE'}, '@timestamp': 50},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 2576449812}}, 'host': {'id': 'moE'}, '@timestamp': 51},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2553210391}, 'host': {'id': 'zmi'}, '@timestamp': 52},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 2553210391}}, 'host': {'id': 'zmi'}, '@timestamp': 53},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 875903594}, 'host': {'id': 'pgI'}, '@timestamp': 54},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 875903594}}, 'host': {'id': 'pgI'}, '@timestamp': 55},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2886210066}, 'host': {'id': 'vKE'}, '@timestamp': 56},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 2886210066}}, 'host': {'id': 'vKE'}, '@timestamp': 57},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1020915657}, 'host': {'id': 'YnD'}, '@timestamp': 58},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 1020915657}}, 'host': {'id': 'YnD'}, '@timestamp': 59},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3189187129}, 'host': {'id': 'DJL'}, '@timestamp': 60},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 3189187129}}, 'host': {'id': 'DJL'}, '@timestamp': 61},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 731296981}, 'host': {'id': 'xFE'}, '@timestamp': 62},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 731296981}}, 'host': {'id': 'xFE'}, '@timestamp': 63},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1747979819}, 'host': {'id': 'ocs'}, '@timestamp': 64},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 1747979819}}, 'host': {'id': 'ocs'}, '@timestamp': 65},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2331735818}, 'host': {'id': 'XzJ'}, '@timestamp': 66},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 2331735818}}, 'host': {'id': 'XzJ'}, '@timestamp': 67},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2827813567}, 'host': {'id': 'Aol'}, '@timestamp': 68},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 2827813567}}, 'host': {'id': 'Aol'}, '@timestamp': 69},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2610465613}, 'host': {'id': 'yqv'}, '@timestamp': 70},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 2610465613}}, 'host': {'id': 'yqv'}, '@timestamp': 71},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2119610071}, 'host': {'id': 'LbR'}, '@timestamp': 72},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 2119610071}}, 'host': {'id': 'LbR'}, '@timestamp': 73},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1319961685}, 'host': {'id': 'dmT'}, '@timestamp': 74},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 1319961685}}, 'host': {'id': 'dmT'}, '@timestamp': 75},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 96872843}, 'host': {'id': 'rfy'}, '@timestamp': 76},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 96872843}}, 'host': {'id': 'rfy'}, '@timestamp': 77},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 321018594}, 'host': {'id': 'nVT'}, '@timestamp': 78},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 321018594}}, 'host': {'id': 'nVT'}, '@timestamp': 79},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1484942953}, 'host': {'id': 'agT'}, '@timestamp': 80},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 1484942953}}, 'host': {'id': 'agT'}, '@timestamp': 81},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 364282236}, 'host': {'id': 'MVU'}, '@timestamp': 82},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 364282236}}, 'host': {'id': 'MVU'}, '@timestamp': 83},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3793706889}, 'host': {'id': 'LwO'}, '@timestamp': 84},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 3793706889}}, 'host': {'id': 'LwO'}, '@timestamp': 85},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2433853372}, 'host': {'id': 'bdC'}, '@timestamp': 86},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 2433853372}}, 'host': {'id': 'bdC'}, '@timestamp': 87},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3097938760}, 'host': {'id': 'Ivl'}, '@timestamp': 88},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 3097938760}}, 'host': {'id': 'Ivl'}, '@timestamp': 89},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4017982120}, 'host': {'id': 'SsF'}, '@timestamp': 90},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 4017982120}}, 'host': {'id': 'SsF'}, '@timestamp': 91},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3187763082}, 'host': {'id': 'uAM'}, '@timestamp': 92},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 3187763082}}, 'host': {'id': 'uAM'}, '@timestamp': 93},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2039378787}, 'host': {'id': 'Pmm'}, '@timestamp': 94},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 2039378787}}, 'host': {'id': 'Pmm'}, '@timestamp': 95},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 846858696}, 'host': {'id': 'kOO'}, '@timestamp': 96},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 846858696}}, 'host': {'id': 'kOO'}, '@timestamp': 97},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1687397388}, 'host': {'id': 'ebK'}, '@timestamp': 98},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 1687397388}}, 'host': {'id': 'ebK'}, '@timestamp': 99},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2122179744}, 'host': {'id': 'hBC'}, '@timestamp': 100},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 2122179744}}, 'host': {'id': 'hBC'}, '@timestamp': 101},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2937055128}, 'host': {'id': 'dJs'}, '@timestamp': 102},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 2937055128}}, 'host': {'id': 'dJs'}, '@timestamp': 103},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1072533441}, 'host': {'id': 'dyQ'}, '@timestamp': 104},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 1072533441}}, 'host': {'id': 'dyQ'}, '@timestamp': 105},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2451257571}, 'host': {'id': 'qhw'}, '@timestamp': 106},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 2451257571}}, 'host': {'id': 'qhw'}, '@timestamp': 107},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2685579375}, 'host': {'id': 'gZp'}, '@timestamp': 108},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 2685579375}}, 'host': {'id': 'gZp'}, '@timestamp': 109},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2215758242}, 'host': {'id': 'QRL'}, '@timestamp': 110},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'parent': {'pid': 2215758242}}, 'host': {'id': 'QRL'}, '@timestamp': 111},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3594559144}, 'host': {'id': 'dbF'}, '@timestamp': 112},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'python', 'parent': {'pid': 3594559144}}, 'host': {'id': 'dbF'}, '@timestamp': 113},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2806789095}, 'host': {'id': 'yvI'}, '@timestamp': 114},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'tcl', 'parent': {'pid': 2806789095}}, 'host': {'id': 'yvI'}, '@timestamp': 115},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3446719455}, 'host': {'id': 'iLn'}, '@timestamp': 116},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'node', 'parent': {'pid': 3446719455}}, 'host': {'id': 'iLn'}, '@timestamp': 117},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3559344598}, 'host': {'id': 'nGb'}, '@timestamp': 118},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'perl', 'parent': {'pid': 3559344598}}, 'host': {'id': 'nGb'}, '@timestamp': 119},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2580185788}, 'host': {'id': 'Ufu'}, '@timestamp': 120},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'ruby', 'parent': {'pid': 2580185788}}, 'host': {'id': 'Ufu'}, '@timestamp': 121},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 2468689419}, 'host': {'id': 'NMV'}, '@timestamp': 122},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'php', 'parent': {'pid': 2468689419}}, 'host': {'id': 'NMV'}, '@timestamp': 123},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4070540704}, 'host': {'id': 'RaQ'}, '@timestamp': 124},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'bash', 'parent': {'pid': 4070540704}}, 'host': {'id': 'RaQ'}, '@timestamp': 125},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 4273915087}, 'host': {'id': 'dVl'}, '@timestamp': 126},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'csh', 'parent': {'pid': 4273915087}}, 'host': {'id': 'dVl'}, '@timestamp': 127},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 3093363983}, 'host': {'id': 'gyX'}, '@timestamp': 128},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'zsh', 'parent': {'pid': 3093363983}}, 'host': {'id': 'gyX'}, '@timestamp': 129},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'com.apple.foundation.UserScriptService', 'pid': 1824210849}, 'host': {'id': 'MZn'}, '@timestamp': 130},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'parent': {'pid': 1824210849}}, 'host': {'id': 'MZn'}, '@timestamp': 131}]
 ```
 
 
@@ -8310,9 +8310,9 @@ sequence by host.id, user.name with maxspan = 5s
 ```
 
 ```python
-[{'dll': {'name': 'IEProxy.dll'}, 'process': {'name': 'rundll32.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'vCf'}, 'user': {'name': 'Uyy'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'iexplore.exe', 'args': ['-Embedding']}}, 'host': {'id': 'vCf'}, 'user': {'name': 'Uyy'}, '@timestamp': 1},
- {'network': {'protocol': 'dns'}, 'process': {'name': 'iexplore.exe'}, 'dns': {'question': {'name': 'FjS'}}, 'event': {'category': ['network']}, 'host': {'id': 'vCf'}, 'user': {'name': 'Uyy'}, '@timestamp': 2}]
+[{'dll': {'name': 'IEProxy.dll'}, 'process': {'name': 'rundll32.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'iexplore.exe', 'args': ['-Embedding']}}, 'host': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 1},
+ {'network': {'protocol': 'dns'}, 'process': {'name': 'iexplore.exe'}, 'dns': {'question': {'name': 'yyF'}}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, 'user': {'name': 'XIU'}, '@timestamp': 2}]
 ```
 
 
@@ -8610,16 +8610,16 @@ sequence by host.id with maxspan=1m
 ```
 
 ```python
-[{'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 4289255490}, 'destination': {'port': 1389}, 'host': {'id': 'UTv'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 4289255490}, 'name': 'sh'}, 'host': {'id': 'UTv'}, '@timestamp': 1},
- {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 2860117081}, 'destination': {'port': 389}, 'host': {'id': 'fUy'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 2860117081}, 'name': 'rubyFjSvILOoOHmxB'}, 'host': {'id': 'fUy'}, '@timestamp': 3},
- {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 1122000958}, 'destination': {'port': 1099}, 'host': {'id': 'EXp'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 1122000958}, 'name': 'sh'}, 'host': {'id': 'EXp'}, '@timestamp': 5},
- {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 1349188291}, 'destination': {'port': 53}, 'host': {'id': 'aga'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 1349188291}, 'name': 'dash'}, 'host': {'id': 'aga'}, '@timestamp': 7},
- {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 246915063}, 'destination': {'port': 5353}, 'host': {'id': 'Fqs'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 246915063}, 'name': 'rubyzKNyyQDpUE'}, 'host': {'id': 'Fqs'}, '@timestamp': 9}]
+[{'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 4052611751}, 'destination': {'port': 1389}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 4052611751}, 'name': 'sh'}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 906141214}, 'destination': {'port': 389}, 'host': {'id': 'IUt'}, '@timestamp': 2},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 906141214}, 'name': 'rubyFjSvILOoOHmxB'}, 'host': {'id': 'IUt'}, '@timestamp': 3},
+ {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 3305599734}, 'destination': {'port': 1099}, 'host': {'id': 'nLe'}, '@timestamp': 4},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 3305599734}, 'name': 'sh'}, 'host': {'id': 'nLe'}, '@timestamp': 5},
+ {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 3588492870}, 'destination': {'port': 53}, 'host': {'id': 'qNV'}, '@timestamp': 6},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 3588492870}, 'name': 'dash'}, 'host': {'id': 'qNV'}, '@timestamp': 7},
+ {'event': {'action': 'connection_attempted', 'category': ['network']}, 'process': {'name': 'java', 'pid': 2543124572}, 'destination': {'port': 5353}, 'host': {'id': 'cym'}, '@timestamp': 8},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'java', 'pid': 2543124572}, 'name': 'rubyzKNyyQDpUE'}, 'host': {'id': 'cym'}, '@timestamp': 9}]
 ```
 
 
@@ -9006,8 +9006,8 @@ sequence with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'executable': 'ZFy', 'entity_id': 'XIU'}, 'executable': 'tkN'}, 'host': {'id': 'Ioi'}, '@timestamp': 0},
- {'event': {'type': ['change'], 'action': 'overwrite', 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'tkN'}, 'process': {'entity_id': 'XIU'}, 'host': {'id': 'Ioi'}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'executable': 'Ioi', 'entity_id': 'tkN'}, 'executable': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['change'], 'action': 'overwrite', 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'XIU'}, 'host': {'id': 'ZFy'}, 'process': {'entity_id': 'tkN'}, '@timestamp': 1}]
 ```
 
 
@@ -9025,6 +9025,29 @@ process where event.type == "start" and
 
 ```python
 [{'event': {'type': ['start'], 'category': ['process']}, 'process': {'args': ['-s', '-d', 'rssocks']}, '@timestamp': 0}]
+```
+
+
+
+### Potential Remote Credential Access via Registry
+
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-454
+
+```python
+sequence by host.id, user.id with maxspan=1m
+ [authentication where
+   event.outcome == "success" and
+   winlog.logon.type == "Network" and not user.name == "ANONYMOUS LOGON" and
+   not user.domain == "NT AUTHORITY" and source.ip != "127.0.0.1" and source.ip !="::1"]
+ [file where event.action == "creation" and process.name : "svchost.exe" and
+  file.Ext.header_bytes : "72656766*" and user.id : "S-1-5-21-*" and file.size >= 30000]
+```
+
+```python
+[{'event': {'outcome': 'success', 'category': ['authentication']}, 'winlog': {'logon': {'type': 'Network'}}, 'user': {'name': 'BnL', 'domain': 'eOA', 'id': 'S-1-5-21-UyyFjSvILOoOHmx'}, 'source': {'ip': '194.6.67.138'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'action': 'creation', 'category': ['file']}, 'process': {'name': 'svchost.exe'}, 'file': {'Ext': {'header_bytes': '72656766aiFqsyzKNyyQDpU'}, 'size': 2168447428837614839}, 'user': {'id': 'S-1-5-21-UyyFjSvILOoOHmx'}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -9183,8 +9206,8 @@ sequence by host.id, process.entity_id with maxspan = 5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'wermgr.exe', 'args_count': 1, 'entity_id': 'vCf'}, 'host': {'id': 'Uyy'}, '@timestamp': 0},
- {'process': {'name': 'WerFault.exe', 'entity_id': 'vCf'}, 'network': {'protocol': 'oix', 'direction': 'egress'}, 'destination': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af'}, 'event': {'category': ['network']}, 'host': {'id': 'Uyy'}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'wermgr.exe', 'args_count': 1, 'entity_id': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'process': {'name': 'wermgr.exe', 'entity_id': 'XIU'}, 'network': {'protocol': 'kNI', 'direction': 'outgoing'}, 'destination': {'ip': '104.129.204.102'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -9536,8 +9559,8 @@ sequence by host.id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['end'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 1}]
+[{'event': {'type': ['end'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['deletion'], 'category': ['file']}, 'file': {'extension': 'exe', 'path': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -10005,14 +10028,14 @@ sequence with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'tkN'}, 'host': {'id': 'Ioi'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'tkN'}, 'host': {'id': 'Ioi'}, '@timestamp': 3},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'xTF'}, 'host': {'id': 'lEz'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'executable': 'xTF'}, 'host': {'id': 'lEz'}, '@timestamp': 5},
- {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'swu'}, 'host': {'id': 'EEX'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'executable': 'swu'}, 'host': {'id': 'EEX'}, '@timestamp': 7}]
+[{'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'ZFy'}, 'process': {'executable': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'Ioi'}, 'host': {'id': 'tkN'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'tkN'}, 'process': {'executable': 'Ioi'}, '@timestamp': 3},
+ {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'lEz'}, 'host': {'id': 'xTF'}, '@timestamp': 4},
+ {'event': {'type': ['start'], 'category': ['process']}, 'host': {'id': 'xTF'}, 'process': {'executable': 'lEz'}, '@timestamp': 5},
+ {'event': {'type': ['change'], 'category': ['file']}, 'process': {'pid': 4}, 'file': {'extension': 'exe', 'path': 'EEX'}, 'host': {'id': 'swu'}, '@timestamp': 6},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'host': {'id': 'swu'}, 'process': {'executable': 'EEX'}, '@timestamp': 7}]
 ```
 
 
@@ -10109,8 +10132,8 @@ sequence by host.id, process.entity_id with maxspan=30s
 ```
 
 ```python
-[{'process': {'name': 'pwsh.exe', 'entity_id': 'TvC'}, 'network': {'protocol': 'dns'}, 'dns': {'question': {'name': 'fUy'}}, 'user': {'domain': 'yFj'}, 'event': {'category': ['network']}, 'host': {'id': 'SvI'}, '@timestamp': 0},
- {'process': {'name': 'powershell.exe', 'entity_id': 'TvC'}, 'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'dll', 'name': 'oOH'}, 'host': {'id': 'SvI'}, '@timestamp': 1}]
+[{'process': {'name': 'powershell_ise.exe', 'entity_id': 'XIU'}, 'network': {'protocol': 'dns'}, 'dns': {'question': {'name': 'yyF'}}, 'user': {'domain': 'jSv'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'process': {'name': 'powershell.exe', 'entity_id': 'XIU'}, 'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'dll', 'name': 'oOH'}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -10130,8 +10153,8 @@ sequence by host.id, process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'wscript.exe', 'entity_id': 'vCf'}, 'network': {'protocol': 'Uyy', 'direction': 'egress', 'type': 'ipv4'}, 'destination': {'ip': '219.54.168.90'}, 'event': {'category': ['network']}, 'host': {'id': 'ixT'}, '@timestamp': 0},
- {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'dll'}, 'process': {'entity_id': 'vCf'}, 'host': {'id': 'ixT'}, '@timestamp': 1}]
+[{'process': {'name': 'wscript.exe', 'entity_id': 'XIU'}, 'network': {'protocol': 'yyF', 'direction': 'egress', 'type': 'ipv4'}, 'destination': {'ip': '219.54.168.90'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['creation'], 'category': ['file']}, 'file': {'extension': 'dll'}, 'host': {'id': 'ZFy'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1}]
 ```
 
 
@@ -10173,8 +10196,8 @@ sequence by host.id, process.entity_id with maxspan = 1m
 ```
 
 ```python
-[{'process': {'name': 'svchost.exe', 'entity_id': 'ZFy'}, 'network': {'direction': 'incoming'}, 'source': {'port': 61522, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'destination': {'port': 55313}, 'event': {'category': ['network']}, 'host': {'id': 'oix'}, '@timestamp': 0},
- {'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\Ezswu\\Actions'}, 'event': {'category': ['registry']}, 'process': {'entity_id': 'ZFy'}, 'host': {'id': 'oix'}, '@timestamp': 1}]
+[{'process': {'name': 'svchost.exe', 'entity_id': 'XIU'}, 'network': {'direction': 'ingress'}, 'source': {'port': 64839, 'ip': '119.10.44.216'}, 'destination': {'port': 55313}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\ixTFlEzswuEEXp\\Actions'}, 'event': {'category': ['registry']}, 'host': {'id': 'ZFy'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1}]
 ```
 
 
@@ -10222,22 +10245,22 @@ sequence with maxspan=1s
 ```
 
 ```python
-[{'process': {'name': 'services.exe', 'entity_id': 'ZFy'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'port': 61522, 'ip': '9a9f:e89a:c443:b67a:770a:2cd7:3602:9e1e'}, 'destination': {'port': 55313}, 'event': {'category': ['network']}, 'host': {'id': 'oix'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'ZFy'}, 'name': 'TFl'}, 'host': {'id': 'oix'}, '@timestamp': 1},
- {'process': {'name': 'services.exe', 'entity_id': 'Ezs'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 64057, 'ip': '968a:1fd9:42e0:603d:9566:7ca7:8676:5e59'}, 'destination': {'port': 51970}, 'event': {'category': ['network']}, 'host': {'id': 'pWq'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'Ezs'}, 'name': 'NVR', 'args': ['cym']}, 'host': {'id': 'pWq'}, '@timestamp': 3},
- {'process': {'name': 'services.exe', 'entity_id': 'EEw'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 64509, 'ip': '1bf9:1e9e:e2fc:2265:c4e2:24bd:4b82:92c7'}, 'destination': {'port': 56855}, 'event': {'category': ['network']}, 'host': {'id': 'UDq'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'EEw'}, 'args': ['xVT'], 'name': 'OLW'}, 'host': {'id': 'UDq'}, '@timestamp': 5},
- {'process': {'name': 'services.exe', 'entity_id': 'tim'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 53294, 'ip': '226.5.183.80'}, 'destination': {'port': 56836}, 'event': {'category': ['network']}, 'host': {'id': 'aTD'}, '@timestamp': 6},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'tim'}, 'args': ['gzR']}, 'host': {'id': 'aTD'}, '@timestamp': 7},
- {'process': {'name': 'services.exe', 'entity_id': 'JiL'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 55078, 'ip': '69.241.190.167'}, 'destination': {'port': 57529}, 'event': {'category': ['network']}, 'host': {'id': 'Grm'}, '@timestamp': 8},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'JiL'}, 'name': 'ywD'}, 'host': {'id': 'Grm'}, '@timestamp': 9},
- {'process': {'name': 'services.exe', 'entity_id': 'UNr'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'port': 55352, 'ip': '23.217.57.149'}, 'destination': {'port': 64471}, 'event': {'category': ['network']}, 'host': {'id': 'gNm'}, '@timestamp': 10},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'UNr'}, 'name': 'oEF', 'args': ['CEZ']}, 'host': {'id': 'gNm'}, '@timestamp': 11},
- {'process': {'name': 'services.exe', 'entity_id': 'pgI'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'port': 62921, 'ip': '180.77.58.27'}, 'destination': {'port': 55984}, 'event': {'category': ['network']}, 'host': {'id': 'EIp'}, '@timestamp': 12},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'pgI'}, 'args': ['duD'], 'name': 'JLM'}, 'host': {'id': 'EIp'}, '@timestamp': 13},
- {'process': {'name': 'services.exe', 'entity_id': 'ruT'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 50783, 'ip': '8713:9758:f2ae:3dcd:6830:e2a:dffa:77e'}, 'destination': {'port': 65226}, 'event': {'category': ['network']}, 'host': {'id': 'ayA'}, '@timestamp': 14},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'ruT'}, 'args': ['olI']}, 'host': {'id': 'ayA'}, '@timestamp': 15}]
+[{'process': {'name': 'services.exe', 'entity_id': 'XIU'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 64839, 'ip': '119.10.44.216'}, 'destination': {'port': 55313}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'XIU'}, 'name': 'oix'}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'process': {'name': 'services.exe', 'entity_id': 'Ezs'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 64057, 'ip': '968a:1fd9:42e0:603d:9566:7ca7:8676:5e59'}, 'destination': {'port': 51970}, 'event': {'category': ['network']}, 'host': {'id': 'TFl'}, '@timestamp': 2},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'Ezs'}, 'name': 'pWq', 'args': ['NVR']}, 'host': {'id': 'TFl'}, '@timestamp': 3},
+ {'process': {'name': 'services.exe', 'entity_id': 'EEw'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 64509, 'ip': '1bf9:1e9e:e2fc:2265:c4e2:24bd:4b82:92c7'}, 'destination': {'port': 56855}, 'event': {'category': ['network']}, 'host': {'id': 'cym'}, '@timestamp': 4},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'EEw'}, 'args': ['UDq'], 'name': 'xVT'}, 'host': {'id': 'cym'}, '@timestamp': 5},
+ {'process': {'name': 'services.exe', 'entity_id': 'tim'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 53294, 'ip': '226.5.183.80'}, 'destination': {'port': 56836}, 'event': {'category': ['network']}, 'host': {'id': 'OLW'}, '@timestamp': 6},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'tim'}, 'args': ['aTD']}, 'host': {'id': 'OLW'}, '@timestamp': 7},
+ {'process': {'name': 'services.exe', 'entity_id': 'JiL'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 55078, 'ip': '69.241.190.167'}, 'destination': {'port': 57529}, 'event': {'category': ['network']}, 'host': {'id': 'gzR'}, '@timestamp': 8},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'JiL'}, 'name': 'Grm'}, 'host': {'id': 'gzR'}, '@timestamp': 9},
+ {'process': {'name': 'services.exe', 'entity_id': 'UNr'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'port': 55352, 'ip': '23.217.57.149'}, 'destination': {'port': 64471}, 'event': {'category': ['network']}, 'host': {'id': 'ywD'}, '@timestamp': 10},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'UNr'}, 'name': 'gNm', 'args': ['oEF']}, 'host': {'id': 'ywD'}, '@timestamp': 11},
+ {'process': {'name': 'services.exe', 'entity_id': 'pgI'}, 'network': {'direction': 'incoming', 'transport': 'tcp'}, 'source': {'port': 62921, 'ip': '180.77.58.27'}, 'destination': {'port': 55984}, 'event': {'category': ['network']}, 'host': {'id': 'CEZ'}, '@timestamp': 12},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'pgI'}, 'args': ['EIp'], 'name': 'duD'}, 'host': {'id': 'CEZ'}, '@timestamp': 13},
+ {'process': {'name': 'services.exe', 'entity_id': 'ruT'}, 'network': {'direction': 'ingress', 'transport': 'tcp'}, 'source': {'port': 50783, 'ip': '8713:9758:f2ae:3dcd:6830:e2a:dffa:77e'}, 'destination': {'port': 65226}, 'event': {'category': ['network']}, 'host': {'id': 'JLM'}, '@timestamp': 14},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'services.exe', 'entity_id': 'ruT'}, 'args': ['ayA']}, 'host': {'id': 'JLM'}, '@timestamp': 15}]
 ```
 
 
@@ -10592,8 +10615,8 @@ sequence by host.id with maxspan = 30s
 ```
 
 ```python
-[{'dll': {'name': 'taskschd.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'TvC'}, '@timestamp': 0},
- {'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\UyyFjSvILOoOHmx\\Actions'}, 'event': {'category': ['registry']}, 'host': {'id': 'TvC'}, '@timestamp': 1}]
+[{'dll': {'name': 'taskschd.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'registry': {'path': 'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\UyyFjSvILOoOHmx\\Actions'}, 'event': {'category': ['registry']}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -10959,18 +10982,18 @@ sequence by host.id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 4289255490}, 'host': {'id': 'UTv'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 4289255490}}, 'host': {'id': 'UTv'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 2366908802}, 'host': {'id': 'IUt'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 2366908802}}, 'host': {'id': 'IUt'}, '@timestamp': 3},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 906141214}, 'host': {'id': 'yFj'}, '@timestamp': 4},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 906141214}}, 'host': {'id': 'yFj'}, '@timestamp': 5},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 3677792346}, 'host': {'id': 'ixT'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 3677792346}}, 'host': {'id': 'ixT'}, '@timestamp': 7},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 2587729011}, 'host': {'id': 'OoO'}, '@timestamp': 8},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 2587729011}}, 'host': {'id': 'OoO'}, '@timestamp': 9},
- {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 2804472236}, 'host': {'id': 'swu'}, '@timestamp': 10},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 2804472236}}, 'host': {'id': 'swu'}, '@timestamp': 11}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 4052611751}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 4052611751}}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 2056249324}, 'host': {'id': 'CfU'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 2056249324}}, 'host': {'id': 'CfU'}, '@timestamp': 3},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 1235046169}, 'host': {'id': 'kNI'}, '@timestamp': 4},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 1235046169}}, 'host': {'id': 'kNI'}, '@timestamp': 5},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 3136644739}, 'host': {'id': 'SvI'}, '@timestamp': 6},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 3136644739}}, 'host': {'id': 'SvI'}, '@timestamp': 7},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 2094521982}, 'host': {'id': 'FlE'}, '@timestamp': 8},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 2094521982}}, 'host': {'id': 'FlE'}, '@timestamp': 9},
+ {'event': {'type': ['info'], 'category': ['process']}, 'process': {'name': 'osascript', 'pid': 2255904345}, 'host': {'id': 'Hmx'}, '@timestamp': 10},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'sh', 'args': ['-c'], 'parent': {'pid': 2255904345}}, 'host': {'id': 'Hmx'}, '@timestamp': 11}]
 ```
 
 
@@ -11035,10 +11058,10 @@ sequence by host.id, process.entity_id with maxspan=5s
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\Windows\\Tasks\\yXIUtkNIoixTFl.exe', 'entity_id': 'Ezs'}, 'host': {'id': 'wuE'}, '@timestamp': 0},
- {'event': {'type': ['EXp'], 'category': ['file']}, 'user': {'domain': 'WqN'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\iFqsyzKNyyQDpU'}, 'process': {'entity_id': 'Ezs'}, 'host': {'id': 'wuE'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\Windows\\Tasks\\UDqx.exe', 'entity_id': 'VTO'}, 'host': {'id': 'LWt'}, '@timestamp': 2},
- {'event': {'type': ['imr'], 'category': ['file']}, 'user': {'domain': 'FgT'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\s'}, 'process': {'entity_id': 'VTO'}, 'host': {'id': 'LWt'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\Users\\kNIoixTF.exe', 'entity_id': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['lEz'], 'category': ['file']}, 'user': {'domain': 'swu'}, 'file': {'path': 'C:\\Users\\LeOAagaiFq\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\EEwVPY'}, 'host': {'id': 'ZFy'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'code_signature': {'trusted': False}, 'executable': 'C:\\PerfLogs\\OPZRgUvWCi.exe', 'entity_id': 'Nfm'}, 'host': {'id': 'MGz'}, '@timestamp': 2},
+ {'event': {'type': ['MZO'], 'category': ['file']}, 'user': {'domain': 'fHa'}, 'file': {'path': 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\CeLWYcYscn'}, 'host': {'id': 'MGz'}, 'process': {'entity_id': 'Nfm'}, '@timestamp': 3}]
 ```
 
 
@@ -11668,8 +11691,8 @@ sequence by process.entity_id with maxspan=5m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'wscript.exe', 'entity_id': 'vCf'}, '@timestamp': 0},
- {'event': {'type': ['Uyy'], 'category': ['file']}, 'file': {'name': 'mshta.exe.log'}, 'process': {'entity_id': 'vCf'}, '@timestamp': 1}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'cscript.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['Utk'], 'category': ['file']}, 'file': {'name': 'mshta.exe.log'}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -11802,8 +11825,8 @@ sequence by host.id with maxspan=1m
 ```
 
 ```python
-[{'event': {'code': '1', 'category': ['process']}, 'process': {'parent': {'name': 'winword.exe', 'entity_id': 'vCf'}, 'entity_id': 'Uyy'}, 'host': {'id': 'FjS'}, '@timestamp': 0},
- {'event': {'code': '10', 'category': ['process']}, 'winlog': {'event_data': {'CallTrace': 'ILOoOHmxUNKNOWNEEXpWqNVR', 'TargetProcessGUID': 'Uyy'}}, 'process': {'entity_id': 'vCf'}, 'host': {'id': 'FjS'}, '@timestamp': 1}]
+[{'event': {'code': '1', 'category': ['process']}, 'process': {'parent': {'name': 'mshta.exe', 'entity_id': 'XIU'}, 'entity_id': 'tkN'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'code': '10', 'category': ['process']}, 'winlog': {'event_data': {'CallTrace': 'ixTFlEzswuEEXpUNKNOWNAagaiFqsyzKNyyQ', 'TargetProcessGUID': 'tkN'}}, 'host': {'id': 'ZFy'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1}]
 ```
 
 
@@ -11890,8 +11913,8 @@ sequence by host.id, winlog.event_data.SubjectLogonId with maxspan=1m
 ```
 
 ```python
-[{'event': {'action': 'logged-in-special', 'category': ['iam']}, 'winlog': {'event_data': {'PrivilegeList': 'SeBackupPrivilege', 'SubjectLogonId': 'ZFy'}}, 'host': {'id': 'XIU'}, '@timestamp': 0},
- {'event': {'action': 'Detailed File Share'}, 'winlog': {'event_data': {'RelativeTargetName': 'winreg', 'SubjectLogonId': 'ZFy'}}, 'host': {'id': 'XIU'}, '@timestamp': 1}]
+[{'event': {'action': 'logged-in-special', 'category': ['iam']}, 'winlog': {'event_data': {'PrivilegeList': 'SeBackupPrivilege', 'SubjectLogonId': 'XIU'}}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'action': 'Detailed File Share'}, 'winlog': {'event_data': {'RelativeTargetName': 'winreg', 'SubjectLogonId': 'XIU'}}, 'host': {'id': 'ZFy'}, '@timestamp': 1}]
 ```
 
 
@@ -11929,10 +11952,10 @@ sequence by process.entity_id with maxspan=2m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'subject_name': 'Microsoft Corporation', 'trusted': True}, 'executable': 'ZFy', 'entity_id': 'XIU'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['library']}, 'dll': {'name': 'scrobj.dll'}, 'process': {'entity_id': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'subject_name': 'Microsoft Windows', 'trusted': True}, 'executable': 'tkN', 'entity_id': 'Ioi'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['library']}, 'dll': {'name': 'scrobj.dll'}, 'process': {'entity_id': 'Ioi'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'subject_name': 'Microsoft Corporation', 'trusted': True}, 'executable': 'XIU', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['library']}, 'dll': {'name': 'scrobj.dll'}, 'process': {'entity_id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'code_signature': {'subject_name': 'Microsoft Windows', 'trusted': True}, 'executable': 'Ioi', 'entity_id': 'tkN'}, '@timestamp': 2},
+ {'event': {'type': ['start'], 'category': ['library']}, 'dll': {'name': 'scrobj.dll'}, 'process': {'entity_id': 'tkN'}, '@timestamp': 3}]
 ```
 
 
@@ -12804,10 +12827,10 @@ sequence by process.entity_id with maxspan=5m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'xwizard.exe', 'entity_id': 'TvC'}, '@timestamp': 0},
- {'process': {'name': 'cdb.exe', 'entity_id': 'TvC'}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'msdt.exe', 'entity_id': 'yyF'}, '@timestamp': 2},
- {'process': {'name': 'csi.exe', 'entity_id': 'yyF'}, 'event': {'category': ['network']}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'rcsi.exe', 'entity_id': 'ZFy'}, '@timestamp': 0},
+ {'process': {'name': 'cdb.exe', 'entity_id': 'ZFy'}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'xwizard.exe', 'entity_id': 'Utk'}, '@timestamp': 2},
+ {'process': {'name': 'csi.exe', 'entity_id': 'Utk'}, 'event': {'category': ['network']}, '@timestamp': 3}]
 ```
 
 
@@ -12830,10 +12853,10 @@ sequence by host.id, process.entity_id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dllhost.exe', 'args_count': 1, 'entity_id': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 0},
- {'process': {'name': 'dllhost.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '122.143.223.236'}, 'event': {'category': ['network']}, 'host': {'id': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'dllhost.exe', 'args_count': 1, 'entity_id': 'kNI'}, 'host': {'id': 'oix'}, '@timestamp': 2},
- {'process': {'name': 'dllhost.exe', 'entity_id': 'kNI'}, 'destination': {'ip': '467b:3f4c:3786:ab02:c5ea:f06e:9a3d:9c73'}, 'event': {'category': ['network']}, 'host': {'id': 'oix'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'dllhost.exe', 'args_count': 1, 'entity_id': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'process': {'name': 'dllhost.exe', 'entity_id': 'XIU'}, 'destination': {'ip': '122.143.223.236'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'dllhost.exe', 'args_count': 1, 'entity_id': 'oix'}, 'host': {'id': 'kNI'}, '@timestamp': 2},
+ {'process': {'name': 'dllhost.exe', 'entity_id': 'oix'}, 'destination': {'ip': '467b:3f4c:3786:ab02:c5ea:f06e:9a3d:9c73'}, 'event': {'category': ['network']}, 'host': {'id': 'kNI'}, '@timestamp': 3}]
 ```
 
 
@@ -12856,10 +12879,10 @@ sequence by host.id, process.entity_id with maxspan=1m
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'ZFy'}, 'host': {'id': 'XIU'}, '@timestamp': 0},
- {'process': {'name': 'rundll32.exe', 'entity_id': 'ZFy'}, 'destination': {'ip': '122.143.223.236'}, 'event': {'category': ['network']}, 'host': {'id': 'XIU'}, '@timestamp': 1},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'kNI'}, 'host': {'id': 'oix'}, '@timestamp': 2},
- {'process': {'name': 'rundll32.exe', 'entity_id': 'kNI'}, 'destination': {'ip': '467b:3f4c:3786:ab02:c5ea:f06e:9a3d:9c73'}, 'event': {'category': ['network']}, 'host': {'id': 'oix'}, '@timestamp': 3}]
+[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'XIU'}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'process': {'name': 'rundll32.exe', 'entity_id': 'XIU'}, 'destination': {'ip': '122.143.223.236'}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'name': 'rundll32.exe', 'args_count': 1, 'entity_id': 'oix'}, 'host': {'id': 'kNI'}, '@timestamp': 2},
+ {'process': {'name': 'rundll32.exe', 'entity_id': 'oix'}, 'destination': {'ip': '467b:3f4c:3786:ab02:c5ea:f06e:9a3d:9c73'}, 'event': {'category': ['network']}, 'host': {'id': 'kNI'}, '@timestamp': 3}]
 ```
 
 
@@ -13068,8 +13091,8 @@ sequence by process.entity_id
 ```
 
 ```python
-[{'process': {'name': 'odbcconf.exe', 'entity_id': 'TvC'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'bginfo.exe', 'entity_id': 'TvC'}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'process': {'name': 'iexpress.exe', 'entity_id': 'ZFy'}, 'event': {'type': ['start'], 'category': ['process']}, '@timestamp': 0},
+ {'process': {'name': 'rcsi.exe', 'entity_id': 'ZFy'}, 'event': {'category': ['network']}, '@timestamp': 1}]
 ```
 
 
@@ -13470,10 +13493,10 @@ sequence by host.id with maxspan = 2s
 ```
 
 ```python
-[{'process': {'name': 'svchost.exe'}, 'network': {'direction': 'ingress'}, 'source': {'ip': '1b43:3a53:aa79:ec58:8d14:2981:f18d:f2a7', 'port': 61522}, 'destination': {'port': 64839}, 'event': {'category': ['network']}, 'host': {'id': 'kNI'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'args': ['oix']}, 'host': {'id': 'kNI'}, '@timestamp': 1},
- {'process': {'name': 'svchost.exe'}, 'network': {'direction': 'incoming'}, 'source': {'ip': 'a728:d9ab:7cd7:de7d:c77f:b9c1:95ef:56af', 'port': 61095}, 'destination': {'port': 57092}, 'event': {'category': ['network']}, 'host': {'id': 'wuE'}, '@timestamp': 2},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'args': ['EXp']}, 'host': {'id': 'wuE'}, '@timestamp': 3}]
+[{'process': {'name': 'svchost.exe'}, 'network': {'direction': 'incoming'}, 'source': {'ip': 'c443:b67a:770a:2cd7:3602:9e1d:7a8f:dfec', 'port': 55313}, 'destination': {'port': 58574}, 'event': {'category': ['network']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'args': ['SvI']}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'process': {'name': 'svchost.exe'}, 'network': {'direction': 'ingress'}, 'source': {'ip': '62bd:10db:7472:f04b:708d:b945:3e09:df80', 'port': 57712}, 'destination': {'port': 51970}, 'event': {'category': ['network']}, 'host': {'id': 'LOo'}, '@timestamp': 2},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'WmiPrvSE.exe'}, 'args': ['pWq']}, 'host': {'id': 'LOo'}, '@timestamp': 3}]
 ```
 
 
@@ -13830,14 +13853,14 @@ sequence by host.id with maxspan = 5s
 ```
 
 ```python
-[{'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'vCf'}, '@timestamp': 0},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'cscript.exe'}}, 'user': {'domain': 'yyF'}, 'host': {'id': 'vCf'}, '@timestamp': 1},
- {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'cscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'oix'}, '@timestamp': 2},
- {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'C:\\ProgramData\\Ezswu.exe'}, 'user': {'domain': 'EEX'}, 'host': {'id': 'oix'}, '@timestamp': 3},
- {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'OAa'}, '@timestamp': 4},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'MSBuild.exe'}}, 'user': {'domain': 'VRc'}, 'host': {'id': 'OAa'}, '@timestamp': 5},
- {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'qsy'}, '@timestamp': 6},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'C:\\Users\\KNyyQDpU.exe'}, 'user': {'domain': 'EUD'}, 'host': {'id': 'qsy'}, '@timestamp': 7}]
+[{'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'cscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'ZFy'}, '@timestamp': 0},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'cscript.exe'}}, 'user': {'domain': 'yyF'}, 'host': {'id': 'ZFy'}, '@timestamp': 1},
+ {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'cscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'jSv'}, '@timestamp': 2},
+ {'event': {'type': ['start'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'C:\\Users\\OHmxBnLeOA.exe'}, 'user': {'domain': 'aga'}, 'host': {'id': 'jSv'}, '@timestamp': 3},
+ {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'iFq'}, '@timestamp': 4},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'pe': {'original_file_name': 'msxsl.exe'}}, 'user': {'domain': 'EwV'}, 'host': {'id': 'iFq'}, '@timestamp': 5},
+ {'dll': {'name': 'wmiutils.dll'}, 'process': {'name': 'wscript.exe'}, 'event': {'category': ['library']}, 'host': {'id': 'PYM'}, '@timestamp': 6},
+ {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'parent': {'name': 'wmiprvse.exe'}, 'executable': 'C:\\Users\\UEUDqxVTOLWti.exe'}, 'user': {'domain': 'mrF'}, 'host': {'id': 'PYM'}, '@timestamp': 7}]
 ```
 
 

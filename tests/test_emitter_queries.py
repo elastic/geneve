@@ -298,6 +298,15 @@ mono_branch_multi_doc = {
             {"event": {"category": ["process"]}, "process": {"parent": {"name": "cmd.exe"}}, "user": {"name": "fmC"}},
         ]
     ],
+    """sequence
+        [process where process.name : "*.exe"] by process.name
+        [process where process.name : "*.dll"] by process.parent.name
+    """: [
+        [
+            {"event": {"category": ["process"]}, "process": {"name": "QfHxGuOAe.exe"}},
+            {"event": {"category": ["process"]}, "process": {"name": "lAJmCOdS.dll", "parent": {"name": "QfHxGuOAe.exe"}}},
+        ]
+    ],
 }
 
 multi_branch_multi_doc = {
@@ -422,11 +431,11 @@ exceptions = {
     """sequence by process.name
         [process where process.name : "cmd.exe"]
         [process where process.name : "powershell.exe"]
-    """: "Unsolvable constraints ==: process.name (is already 'powershell.exe', cannot set to 'cmd.exe')",
+    """: "Unsolvable constraints wildcard: process.name (is already 'cmd.exe', cannot set to 'powershell.exe')",
     """sequence
         [process where process.name : "cmd.exe"] by process.name
         [process where process.parent.name : "powershell.exe"] by process.parent.name
-    """: "Unsolvable constraints ==: process.parent.name (is already 'powershell.exe', cannot set to 'cmd.exe')",
+    """: "Unsolvable constraints wildcard: process.name (is already 'cmd.exe', cannot set to 'powershell.exe')",
     """sequence by process.name
         [process where process.name == null]
         [process where process.name : "powershell.exe"]
@@ -464,39 +473,39 @@ cardinality = [
         """process where process.pid > 0 and process.pid < 100 and _cardinality(process.pid, 2)""",
         1,
         [
-            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 38}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
         ],
     ),
     (
         """network where source.ip == "10.0.0.0/24" and _cardinality(source.ip, 2)""",
         1,
         [
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.214"}}],
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.214"}}],
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.214"}}],
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.214"}}],
         ],
     ),
     (
         """network where destination.ip == "1::/112" and _cardinality(destination.ip, 3)""",
         1,
         [
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b"}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14"}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b"}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b"}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
         ],
     ),
@@ -504,12 +513,12 @@ cardinality = [
         """process where _cardinality(process.name, 3)""",
         1,
         [
+            [{"event": {"category": ["process"]}, "process": {"name": "Iwi"}}],
             [{"event": {"category": ["process"]}, "process": {"name": "tQY"}}],
             [{"event": {"category": ["process"]}, "process": {"name": "FmB"}}],
             [{"event": {"category": ["process"]}, "process": {"name": "Iwi"}}],
             [{"event": {"category": ["process"]}, "process": {"name": "Iwi"}}],
             [{"event": {"category": ["process"]}, "process": {"name": "FmB"}}],
-            [{"event": {"category": ["process"]}, "process": {"name": "tQY"}}],
             [{"event": {"category": ["process"]}, "process": {"name": "tQY"}}],
         ],
     ),
@@ -517,44 +526,44 @@ cardinality = [
         """network where destination.port in (22, 443) and _cardinality(destination.ip, 1)""",
         2,
         [
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "54.133.127.168", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "54.133.127.168", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "54.133.127.168", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "54.133.127.168", "port": 443}}],
         ],
     ),
     (
         """network where destination.port in (22, 443) and _cardinality(destination.ip, 2)""",
         2,
         [
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "92.242.152.131", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "92.242.152.131", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "92.242.152.131", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "92.242.152.131", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "92.242.152.131", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 443}}],
         ],
     ),
     (
         """network where destination.port in (22, 443) and _cardinality(destination.ip, 3)""",
         2,
         [
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "213.228.113.133", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "38.70.19.31", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "38.70.19.31", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "213.228.113.133", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "38.70.19.31", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "38.70.19.31", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "213.228.113.133", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 443}}],
         ],
     ),
 ]

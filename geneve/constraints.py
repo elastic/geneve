@@ -34,15 +34,15 @@ class ConflictError(ValueError):
 
 class Document:
     def __init__(self, field=None, name=None, value=None):
-        self.environment = {}
+        self.__aliases = {}
         self.__constraints = hdict()
         if field is not None:
             self.append_constraint(field, name, value)
 
     def clone(self):
         doc = Document()
+        doc.__aliases = copy.deepcopy(self.__aliases)
         doc.__constraints = copy.deepcopy(self.__constraints)
-        doc.environment = self.environment
         return doc
 
     def append_constraint(self, field, name=None, value=None, flags=None):
@@ -74,6 +74,9 @@ class Document:
     def fields(self):
         return set(self.__constraints)
 
+    def entities(self):
+        return self.__entities.values()
+
     def __iadd__(self, other):
         for field, constraints in other.__constraints.items():
             self.extend_constraints(field, constraints)
@@ -97,12 +100,38 @@ class Document:
             doc.extend_constraints(field, constraints)
         return doc
 
-    def solve(self, schema):
+    def join_fields(self, doc, fields):
+        doc = doc.clone()
+        for i, field in enumerate(fields):
+            # remembed the field names referring to the same join field
+            self.__aliases.setdefault(i, []).append(field)
+            # take the first name as reference so that during generation we
+            # have a proper ECS field name and type
+            alias = self.__aliases[i][0]
+            # concatenate all the constraints that refer to the same join field
+            if field in doc.__constraints:
+                self.extend_constraints(alias, doc.__constraints[field])
+            else:
+                self.append_constraint(alias)
+            # each of the depending fields need access to the join field
+            doc.append_constraint(field, "join_value", (self, alias))
+        return doc
+
+    def get_join_doc(self):
+        for field, constraints in self.__constraints.items():
+            for k, v, *_ in constraints or []:
+                if k == "join_value":
+                    return v[0]
+
+    def consolidate(self):
         from .solver import solver
 
+        self.__entities = {group: solver.new_entity(group, fields) for group, fields in self.__constraints.groups()}
+
+    def solve(self, join_doc, schema, environment):
         doc = {}
-        for group, fields in self.__constraints.groups():
-            solver.solve(doc, group, fields, schema, self.environment)
+        for entity in self.entities():
+            entity.solve(doc, join_doc, schema, environment)
         return doc
 
 
@@ -118,8 +147,22 @@ class Branch(List[Document]):
     def fields(self):
         return set(chain(*(constraints.fields() for constraints in self)))
 
-    def solve(self, schema):
-        return (constraints.solve(schema) for constraints in self)
+    def __get_join_doc(self):
+        for constraints in self:
+            join_doc = constraints.get_join_doc()
+            if join_doc:
+                return join_doc
+
+    def consolidate(self):
+        self.join_doc = self.__get_join_doc()
+        if self.join_doc:
+            self.join_doc.consolidate()
+        for constraints in self:
+            constraints.consolidate()
+
+    def solve(self, schema, environment):
+        join_doc = self.join_doc.solve(None, schema, environment) if self.join_doc else None
+        return (constraints.solve(join_doc, schema, environment) for constraints in self)
 
 
 Branch.Identity = Branch([Document()])
@@ -138,6 +181,10 @@ class Root(List[Branch]):
 
     def constraints(self):
         return chain(*self)
+
+    def consolidate(self):
+        for branch in self:
+            branch.consolidate()
 
     @classmethod
     def chain(cls, roots):

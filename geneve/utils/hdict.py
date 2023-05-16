@@ -45,10 +45,9 @@ class hdict:
 
     def __init__(self):
         self.__top_level = {}
-        self.__groups = []
 
     def __eq__(self, other):
-        return self.__top_level == other.__top_level and self.__groups == other.__groups
+        return self.__top_level == other.__top_level
 
     def __getitem__(self, key):
         d = self.__top_level
@@ -65,7 +64,6 @@ class hdict:
         for part in parts[:-1]:
             d = d.setdefault(part, {})
         d[parts[-1]] = value
-        self.__update_groups()
 
     def __delitem__(self, key):
         d = self.__top_level
@@ -76,7 +74,6 @@ class hdict:
         except KeyError:
             return
         del d[parts[-1]]
-        self.__update_groups()
 
     def __iter__(self):
         return depth_first_keys(self.__top_level)
@@ -84,7 +81,7 @@ class hdict:
     def items(self):
         return depth_first_items(self.__top_level)
 
-    def __update_groups(self):
+    def groups(self):
         groups = []
         tail = []
         for field in self:
@@ -95,9 +92,6 @@ class hdict:
                     groups.append(x)
                 parts = parts[:-1]
             tail = tail or [""]
-        self.__groups = groups + tail
-
-    def groups(self):
-        for group in self.__groups:
+        for group in groups + tail:
             group_dict = self[group] if group else self.__top_level
             yield group, {k: v for k, v in group_dict.items() if k and not isinstance(v, dict)}

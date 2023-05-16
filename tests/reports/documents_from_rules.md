@@ -17,12 +17,12 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsupported function: match (5)](#unsupported-function-match-5)
       1. [Constraints solver not implemented: match_only_text (4)](#constraints-solver-not-implemented-match_only_text-4)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (4)](#unsupported-lhs-type-class-eqlastfunctioncall-4)
-      1. [Unsupported keyword constraint: > (3)](#unsupported-keyword-constraint--3)
+      1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsolvable constraints ==: powershell.file.script_block_text (is already 'waveInGetNumDevs', cannot set to 'mciSendStringA') (1)](#unsolvable-constraints--powershellfilescript_block_text-is-already-waveingetnumdevs-cannot-set-to-mcisendstringa-1)
-      1. [Unsolvable constraints ==: user.id (is already 'S-1-5-21-*', cannot set to 'rcL') (1)](#unsolvable-constraints--userid-is-already-s-1-5-21--cannot-set-to-rcl-1)
       1. [Unsolvable constraints wildcard: winlog.event_data.AttributeValue (is already '*827D319E-6EAC-11D2-A4EA-00C04F79F83A*', cannot set to '*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*') (1)](#unsolvable-constraints-wildcard-winlogevent_dataattributevalue-is-already-827d319e-6eac-11d2-a4ea-00c04f79f83a-cannot-set-to-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsolvable constraints wildcard: winlog.event_data.AttributeValue (is already '*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*', cannot set to '*AADCED64-746C-4633-A97C-D61349046527*') (1)](#unsolvable-constraints-wildcard-winlogevent_dataattributevalue-is-already-cab54552-deea-4691-817e-ed4a4d1afc72-cannot-set-to-aadced64-746c-4633-a97c-d61349046527-1)
       1. [Unsolvable constraints: process.name (wildcard(s) both included and excluded: 'rundll32.exe') (1)](#unsolvable-constraints-processname-wildcards-both-included-and-excluded-rundll32exe-1)
+      1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (1)](#unsupported-keyword-processparentextrealpid-constraint--1)
 
 ## Skipped rules
 
@@ -213,22 +213,16 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Suspicious Execution - Short Program Name (rules/windows/execution_suspicious_short_program_name.toml)
 * Suspicious Process Access via Direct System Call (rules/windows/defense_evasion_suspicious_process_access_direct_syscall.toml)
 
-### Unsupported keyword constraint: > (3)
+### Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)
 
-3 rules:
+2 rules:
 * Downloaded Shortcut Files (rules/windows/execution_downloaded_shortcut_files.toml)
 * Downloaded URL Files (rules/windows/execution_downloaded_url_file.toml)
-* Parent Process PID Spoofing (rules/windows/defense_evasion_parent_process_pid_spoofing.toml)
 
 ### Unsolvable constraints ==: powershell.file.script_block_text (is already 'waveInGetNumDevs', cannot set to 'mciSendStringA') (1)
 
 1 rules:
 * PowerShell Suspicious Script with Audio Capture Capabilities (rules/windows/collection_posh_audio_capture.toml)
-
-### Unsolvable constraints ==: user.id (is already 'S-1-5-21-*', cannot set to 'rcL') (1)
-
-1 rules:
-* Potential Remote Credential Access via Registry (rules/windows/credential_access_remote_sam_secretsdump.toml)
 
 ### Unsolvable constraints wildcard: winlog.event_data.AttributeValue (is already '*827D319E-6EAC-11D2-A4EA-00C04F79F83A*', cannot set to '*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*') (1)
 
@@ -244,3 +238,8 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 1 rules:
 * Execution from Unusual Directory - Command Line (rules/windows/execution_from_unusual_path_cmdline.toml)
+
+### Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (1)
+
+1 rules:
+* Parent Process PID Spoofing (rules/windows/defense_evasion_parent_process_pid_spoofing.toml)

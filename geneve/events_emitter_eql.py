@@ -162,17 +162,8 @@ def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool) -> List[Tuple[Documen
 
 
 def cc_join_branch(seq: List[Tuple[Document, List[str]]]) -> Branch:
-    docs = []
-    join_rows = []
-    for doc, join_fields in seq:
-        doc = doc.clone()
-        docs.append(doc)
-        join_rows.append([(field, doc) for field in join_fields])
-    for join_col in zip(*join_rows):
-        field0 = None
-        for field, doc in join_col:
-            field0 = field0 or field
-            docs[0].append_constraint(field0, "join_value", (field, doc))
+    join_doc = Document()
+    docs = [join_doc.join_fields(doc, join_fields) for doc, join_fields in seq]
     return Branch(docs)
 
 
