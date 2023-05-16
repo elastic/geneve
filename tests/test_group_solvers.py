@@ -48,28 +48,32 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
             def solve(self, doc, join_doc, schema, env):
                 emit_group(doc, self.group, {"lat": 0.0, "lon": 0.0})
 
+        join_doc = {}
         schema = {}
+        env = {}
+
         d = Document()
         d.append_constraint("test.geo.")
         d.append_constraint("test2.geo.")
         d.consolidate()
-        join_doc = {}
 
         self.assertEqual(
             {
                 "test": {"geo": {"lat": 0.0, "lon": 0.0}},
                 "test2": {"geo": {"lat": 0.0, "lon": 0.0}},
             },
-            d.solve(join_doc, schema),
+            d.solve(join_doc, schema, env),
         )
 
     def test_geo(self):
+        join_doc = {}
         schema = {}
+        env = {}
+
         d = Document()
         d.append_constraint("source.geo.")
         d.append_constraint("destination.geo.")
         d.consolidate()
-        join_doc = {}
 
         self.assertEqual(
             {
@@ -90,24 +94,26 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
                     }
                 },
             },
-            d.solve(join_doc, schema),
+            d.solve(join_doc, schema, env),
         )
 
     def test_as(self):
+        join_doc = {}
         schema = {
             "source.as.number": {"type": "long"},
             "destination.as.number": {"type": "long"},
         }
+        env = {}
+
         d = Document()
         d.append_constraint("source.as.")
         d.append_constraint("destination.as.")
         d.consolidate()
-        join_doc = {}
 
         self.assertEqual(
             {
                 "source": {"as": {"number": 44454, "organization": {"name": "Reeves Inc"}}},
                 "destination": {"as": {"number": 2299, "organization": {"name": "Cooper Ltd"}}},
             },
-            d.solve(join_doc, schema),
+            d.solve(join_doc, schema, env),
         )

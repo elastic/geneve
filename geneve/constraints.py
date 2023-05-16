@@ -35,7 +35,6 @@ class ConflictError(ValueError):
 class Document:
     def __init__(self, field=None, name=None, value=None):
         self.__aliases = {}
-        self.environment = {}
         self.__constraints = hdict()
         if field is not None:
             self.append_constraint(field, name, value)
@@ -44,7 +43,6 @@ class Document:
         doc = Document()
         doc.__aliases = copy.deepcopy(self.__aliases)
         doc.__constraints = copy.deepcopy(self.__constraints)
-        doc.environment = self.environment
         return doc
 
     def append_constraint(self, field, name=None, value=None, flags=None):
@@ -130,10 +128,10 @@ class Document:
 
         self.__entities = {group: solver.new_entity(group, fields) for group, fields in self.__constraints.groups()}
 
-    def solve(self, join_doc, schema):
+    def solve(self, join_doc, schema, environment):
         doc = {}
         for entity in self.entities():
-            entity.solve(doc, join_doc, schema, self.environment)
+            entity.solve(doc, join_doc, schema, environment)
         return doc
 
 
@@ -162,9 +160,9 @@ class Branch(List[Document]):
         for constraints in self:
             constraints.consolidate()
 
-    def solve(self, schema):
-        join_doc = self.join_doc.solve(None, schema) if self.join_doc else None
-        return (constraints.solve(join_doc, schema) for constraints in self)
+    def solve(self, schema, environment):
+        join_doc = self.join_doc.solve(None, schema, environment) if self.join_doc else None
+        return (constraints.solve(join_doc, schema, environment) for constraints in self)
 
 
 Branch.Identity = Branch([Document()])
