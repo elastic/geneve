@@ -149,5 +149,7 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         collection = sorted(tu.load_test_rules(), key=lambda x: x.name)
         rules, asts = self.parse_from_collection(collection)
         pending = self.load_rules_and_docs(rules, asts)
-        self.check_signals(rules, pending)
-        tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")
+        try:
+            self.check_signals(rules, pending)
+        finally:
+            tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")

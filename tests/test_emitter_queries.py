@@ -823,5 +823,7 @@ class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCas
         queries = tuple(mono_branch_mono_doc) + tuple(multi_branch_mono_doc) + tuple(mono_branch_multi_doc) + tuple(multi_branch_multi_doc)
         rules, asts = self.parse_from_queries(queries)
         pending = self.load_rules_and_docs(rules, asts)
-        self.check_signals(rules, pending)
-        tu.assertReportUnchanged(self, self.nb, f"alerts_from_queries{mf_ext}.md")
+        try:
+            self.check_signals(rules, pending)
+        finally:
+            tu.assertReportUnchanged(self, self.nb, f"alerts_from_queries{mf_ext}.md")
