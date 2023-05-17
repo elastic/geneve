@@ -43,7 +43,7 @@ tests: tests/*.py
 	$(PYTHON) -m pytest -raP tests/test_*.py
 
 online-tests: tests/*.py
-	$(PYTHON) -m pytest -raP tests/test_emitter_*.py
+	$(PYTHON) -m pytest -raP --maxfail=1 tests/test_emitter_*.py
 
 up:
 	@$(call print_server_version,ES,ELASTICSEARCH)
