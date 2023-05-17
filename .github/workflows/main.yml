@@ -146,7 +146,12 @@ jobs:
           TEST_ELASTICSEARCH_URL: "http://localhost:9280"
         run: make online-tests
 
+      - name: Explain shards allocation
+        if: always()
+        run: curl -s $TEST_ELASTICSEARCH_URL/_cat/shards?v
+
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
+        if: always()
         run: make down
 
       - name: Stop Geneve server
