@@ -115,27 +115,27 @@ emitter_rules:
       ack_no_signals: 5
       ack_too_few_signals: 11
     "8.18":
-      ack_failed: 12
+      ack_failed: 10
       ack_unsuccessful_with_signals: 9
       ack_no_signals: 7
       ack_too_few_signals: 12
     "8.19":
-      ack_failed: 16
+      ack_failed: 10
       ack_unsuccessful_with_signals: 9
       ack_no_signals: 7
       ack_too_few_signals: 12
     "9.0":
-      ack_failed: 13
+      ack_failed: 10
       ack_unsuccessful_with_signals: 9
       ack_no_signals: 7
       ack_too_few_signals: 12
     "9.1":
-      ack_failed: 18
+      ack_failed: 10
       ack_unsuccessful_with_signals: 9
       ack_no_signals: 7
       ack_too_few_signals: 12
     "9.2":
-      ack_failed: 18
+      ack_failed: 10
       ack_unsuccessful_with_signals: 9
       ack_no_signals: 7
       ack_too_few_signals: 12

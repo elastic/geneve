@@ -1,37 +1,117 @@
 name: geneve-test
 
 services:
-  es:
+  certs:
+    container_name: certs
+    image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-9.0.0}}
+    command: >
+      bash -ec '
+        if [ ! -f /certs/ok ]; then
+          bin/elasticsearch-certutil ca -s --pem -out /certs/ca.zip;
+          unzip /certs/ca.zip -d /certs;
+
+          echo "instances: [{name: es01, dns: [es01, localhost], ip: [127.0.0.1]}, {name: es02, dns: [es02, localhost], ip: [127.0.0.1]}]" |
+            bin/elasticsearch-certutil cert -s --pem --ca-key /certs/ca/ca.key --ca-cert /certs/ca/ca.crt --in /dev/stdin -out /certs/nodes.zip;
+          unzip /certs/nodes.zip -d /certs;
+
+          touch /certs/ok;
+          chown -R 1000:0 /certs;
+        fi;
+        while true; do
+          sleep 60;
+        done
+      '
+    user: "0"
+    working_dir: /usr/share/elasticsearch
+    volumes: ['certs:/certs']
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /certs/ok ]"]
+      interval: 5s
+      retries: 15
+      timeout: 10s
+
+  es01:
+    depends_on:
+      certs:
+        condition: service_healthy
     image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-9.0.0}}
     environment:
-      - node.name=es
+      - node.name=es01
       - cluster.name=geneve-test
-      - discovery.type=single-node
+      - discovery.seed_hosts=es02
+      - cluster.initial_master_nodes=es01,es02
       - xpack.security.enabled=true
       - xpack.security.authc.api_key.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=certs/es01/es01.crt
+      - xpack.security.transport.ssl.key=certs/es01/es01.key
       - ELASTIC_USERNAME=elastic
       - ELASTIC_PASSWORD=changeme
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - "ES_JAVA_OPTS=-Xms3g -Xmx3g"
     ulimits:
       memlock:
         soft: -1
         hard: -1
+    volumes: ['certs:/usr/share/elasticsearch/config/certs']
     ports:
       - 127.0.0.1:29650:9200
     networks:
       - net
     healthcheck:
-      test: ["CMD-SHELL", "[ -e kibana_system_ready ] || curl -s -X POST -H 'Content-Type: application/json' -u elastic:changeme http://es:9200/_security/user/kibana_system/_password -d '{\"password\":\"changeme\"}' | grep -q '^{}' && touch kibana_system_ready"]
+      test: ["CMD-SHELL", "[ -f kibana_system_ready ] || curl -s -X POST -H 'Content-Type: application/json' -u elastic:changeme http://es01:9200/_security/user/kibana_system/_password -d '{\"password\":\"changeme\"}' | grep -q '^{}' && touch kibana_system_ready"]
       interval: 5s
       retries: 15
       timeout: 10s
+
+  es02:
+    depends_on:
+      certs:
+        condition: service_healthy
+    image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-9.0.0}}
+    environment:
+      - node.name=es02
+      - cluster.name=geneve-test
+      - discovery.seed_hosts=es01
+      - cluster.initial_master_nodes=es01,es02
+      - xpack.security.enabled=true
+      - xpack.security.authc.api_key.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=certs/es02/es02.crt
+      - xpack.security.transport.ssl.key=certs/es02/es02.key
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=changeme
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms3g -Xmx3g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes: ['certs:/usr/share/elasticsearch/config/certs']
+    ports:
+      - 127.0.0.1:29651:9200
+    networks:
+      - net
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f kibana_system_ready ] || curl -s -X POST -H 'Content-Type: application/json' -u elastic:changeme http://es02:9200/_security/user/kibana_system/_password -d '{\"password\":\"changeme\"}' | grep -q '^{}' && touch kibana_system_ready"]
+      interval: 5s
+      retries: 15
+      timeout: 10s
+
   kbn:
-    depends_on: [es]
+    depends_on:
+      es01:
+        condition: service_healthy
+      es02:
+        condition: service_healthy
     image: ${TEST_KIBANA_IMAGE:-docker.elastic.co/kibana/kibana:${TEST_STACK_VERSION:-9.0.0}}
     environment:
       SERVER_NAME: kbn
-      ELASTICSEARCH_HOSTS: http://es:9200
+      ELASTICSEARCH_HOSTS: "http://es01:9200 http://es02:9200"
       ELASTICSEARCH_USERNAME: kibana_system
       ELASTICSEARCH_PASSWORD: changeme
       XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: 0123456789abcdef0123456789ABCDEF
@@ -50,3 +130,6 @@ services:
 networks:
   net:
     driver: bridge
+
+volumes:
+  certs:

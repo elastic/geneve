@@ -8,98 +8,13 @@ Curious about the inner workings? Read [here](signals_generation.md).
 Rules version: 9.0.8
 
 ## Table of contents
-   1. [Rejected documents](#rejected-documents)
-   1. [Failed rules (13)](#failed-rules-13)
+   1. [Failed rules (10)](#failed-rules-10)
    1. [Unsuccessful rules with signals (9)](#unsuccessful-rules-with-signals-9)
    1. [Rules with no signals (7)](#rules-with-no-signals-7)
    1. [Rules with too few signals (12)](#rules-with-too-few-signals-12)
-   1. [Rules with the correct signals (922)](#rules-with-the-correct-signals-922)
+   1. [Rules with the correct signals (925)](#rules-with-the-correct-signals-925)
 
-## Rejected documents
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1451', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1452', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-{'_index': 'geneve-ut-1453', '_id': None, 'status': 400, 'error': {'type': 'validation_exception', 'reason': 'Validation Failed: 1: this action would add [1] shards, but this cluster currently has [1000]/[1000] maximum normal shards open; for more information, see https://www.elastic.co/docs/deploy-manage/production-guidance/optimize-performance/size-shards?version=9.0#troubleshooting-max-shards-open;'}}
-
-## Failed rules (13)
+## Failed rules (10)
 
 ### Execution of a Downloaded Windows Script
 
@@ -441,79 +356,6 @@ process where host.os.type == "windows" and event.type == "start" and
        ) and user.id : "S-1-5-18"
     ) and
     not (process.name : "msiexec.exe" and user.id : "S-1-5-18")
-```
-
-
-
-### Yum Package Manager Plugin File Creation
-
-Branch count: 16  
-Document count: 16  
-Index: geneve-ut-1451  
-Failure message(s):  
-  SDE says:
-> This rule is attempting to query data from Elasticsearch indices listed in the "Index patterns" section of the rule definition, however no index matching: ["geneve-ut-1451"] was found. This warning will continue to appear until a matching index is created or this rule is disabled.  
-
-```python
-file where host.os.type == "linux" and event.action in ("rename", "creation") and
-file.path : ("/usr/lib/yum-plugins/*", "/etc/yum/pluginconf.d/*") and not (
-  process.executable in (
-    "/bin/dockerd", "/usr/bin/dockerd", "/usr/sbin/dockerd", "/bin/microdnf", "/usr/bin/microdnf", "/bin/rpm",
-    "/usr/bin/rpm", "/bin/snapd", "/usr/bin/snapd", "/bin/yum", "/usr/bin/yum", "/bin/dnf", "/usr/bin/dnf",
-    "/bin/podman", "/usr/bin/podman", "/bin/dnf-automatic", "/usr/bin/dnf-automatic", "/sbin/apk", "/usr/sbin/apk",
-    "/usr/local/sbin/apk", "/bin/podman", "/usr/bin/podman", "/usr/bin/puppet", "/bin/puppet",
-    "/opt/puppetlabs/puppet/bin/puppet", "/usr/bin/chef-client", "/bin/chef-client", "/bin/autossl_check",
-    "/usr/bin/autossl_check", "/proc/self/exe", "/dev/fd/*", "/usr/lib/snapd/snapd", "/usr/local/bin/dockerd",
-    "/usr/libexec/netplan/generate"
-  ) or
-  process.name in ("yumBackend.py", "crio") or
-  file.extension in ("swp", "swpx", "swx") or
-  file.Ext.original.name like ".ansible*" or
-  file.name like ".ansible_tmp*" or
-  process.executable : (
-    "/nix/store/*", "/var/lib/dpkg/*", "/tmp/vmis.*", "/snap/*", "/dev/fd/*", "/usr/lib/*", "/usr/libexec/*",
-    "/etc/kernel/*"
-  ) or
-  process.executable == null or
-  (process.name == "sed" and file.name : "sed*") or
-  (process.name == "perl" and file.name : "e2scrub_all.tmp*")
-)
-```
-
-
-
-### Yum/DNF Plugin Status Discovery
-
-Branch count: 24  
-Document count: 24  
-Index: geneve-ut-1452  
-Failure message(s):  
-  SDE says:
-> This rule is attempting to query data from Elasticsearch indices listed in the "Index patterns" section of the rule definition, however no index matching: ["geneve-ut-1452"] was found. This warning will continue to appear until a matching index is created or this rule is disabled.  
-
-```python
-process where host.os.type == "linux" and event.type == "start" and
-  event.action in ("exec", "exec_event", "start", "ProcessRollup2") and
-  process.name == "grep" and process.args : "plugins*" and process.args : (
-    "/etc/yum.conf", "/usr/lib/yum-plugins/*", "/etc/yum/pluginconf.d/*",
-    "/usr/lib/python*/site-packages/dnf-plugins/*", "/etc/dnf/plugins/*", "/etc/dnf/dnf.conf"
-  )
-```
-
-
-
-### Zoom Meeting with no Passcode
-
-Branch count: 1  
-Document count: 1  
-Index: geneve-ut-1453  
-Failure message(s):  
-  SDE says:
-> This rule is attempting to query data from Elasticsearch indices listed in the "Index patterns" section of the rule definition, however no index matching: ["geneve-ut-1453"] was found. This warning will continue to appear until a matching index is created or this rule is disabled.  
-
-```python
-event.type:creation and event.module:zoom and event.dataset:zoom.webhook and
-  event.action:meeting.created and not zoom.meeting.password:*
 ```
 
 
@@ -1276,7 +1118,7 @@ sequence by host.id with maxspan=5s
 
 
 
-## Rules with the correct signals (922)
+## Rules with the correct signals (925)
 
 ### A scheduled task was created
 
@@ -19544,6 +19386,70 @@ Index: geneve-ut-1450
 process where host.os.type == "windows" and event.type == "start" and
  (process.name : "netsh.exe" or ?process.pe.original_file_name == "netsh.exe") and
   process.args : "wlan" and process.args : "key*clear"
+```
+
+
+
+### Yum Package Manager Plugin File Creation
+
+Branch count: 16  
+Document count: 16  
+Index: geneve-ut-1451
+
+```python
+file where host.os.type == "linux" and event.action in ("rename", "creation") and
+file.path : ("/usr/lib/yum-plugins/*", "/etc/yum/pluginconf.d/*") and not (
+  process.executable in (
+    "/bin/dockerd", "/usr/bin/dockerd", "/usr/sbin/dockerd", "/bin/microdnf", "/usr/bin/microdnf", "/bin/rpm",
+    "/usr/bin/rpm", "/bin/snapd", "/usr/bin/snapd", "/bin/yum", "/usr/bin/yum", "/bin/dnf", "/usr/bin/dnf",
+    "/bin/podman", "/usr/bin/podman", "/bin/dnf-automatic", "/usr/bin/dnf-automatic", "/sbin/apk", "/usr/sbin/apk",
+    "/usr/local/sbin/apk", "/bin/podman", "/usr/bin/podman", "/usr/bin/puppet", "/bin/puppet",
+    "/opt/puppetlabs/puppet/bin/puppet", "/usr/bin/chef-client", "/bin/chef-client", "/bin/autossl_check",
+    "/usr/bin/autossl_check", "/proc/self/exe", "/dev/fd/*", "/usr/lib/snapd/snapd", "/usr/local/bin/dockerd",
+    "/usr/libexec/netplan/generate"
+  ) or
+  process.name in ("yumBackend.py", "crio") or
+  file.extension in ("swp", "swpx", "swx") or
+  file.Ext.original.name like ".ansible*" or
+  file.name like ".ansible_tmp*" or
+  process.executable : (
+    "/nix/store/*", "/var/lib/dpkg/*", "/tmp/vmis.*", "/snap/*", "/dev/fd/*", "/usr/lib/*", "/usr/libexec/*",
+    "/etc/kernel/*"
+  ) or
+  process.executable == null or
+  (process.name == "sed" and file.name : "sed*") or
+  (process.name == "perl" and file.name : "e2scrub_all.tmp*")
+)
+```
+
+
+
+### Yum/DNF Plugin Status Discovery
+
+Branch count: 24  
+Document count: 24  
+Index: geneve-ut-1452
+
+```python
+process where host.os.type == "linux" and event.type == "start" and
+  event.action in ("exec", "exec_event", "start", "ProcessRollup2") and
+  process.name == "grep" and process.args : "plugins*" and process.args : (
+    "/etc/yum.conf", "/usr/lib/yum-plugins/*", "/etc/yum/pluginconf.d/*",
+    "/usr/lib/python*/site-packages/dnf-plugins/*", "/etc/dnf/plugins/*", "/etc/dnf/dnf.conf"
+  )
+```
+
+
+
+### Zoom Meeting with no Passcode
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1453
+
+```python
+event.type:creation and event.module:zoom and event.dataset:zoom.webhook and
+  event.action:meeting.created and not zoom.meeting.password:*
 ```
 
 
