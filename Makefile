@@ -45,10 +45,11 @@ tests: tests/*.py
 online-tests: tests/*.py
 	$(PYTHON) -m pytest -raP --maxfail=1 tests/test_emitter_*.py
 
+up: VERBOSE := $(if $(filter-out 0,$(V)),,--wait)
 up:
 	@$(call print_server_version,ES,ELASTICSEARCH)
 	@$(call print_server_version,KB,KIBANA)
-	docker compose up --wait --quiet-pull
+	docker compose up --quiet-pull $(VERBOSE)
 
 down:
 	docker compose down
