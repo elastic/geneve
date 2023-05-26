@@ -150,6 +150,10 @@ jobs:
         if: always()
         run: curl -s $TEST_ELASTICSEARCH_URL/_cat/shards?v
 
+      - name: Print Stack logs
+        if: always()
+        run: docker compose logs
+
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
         if: always()
         run: make down
