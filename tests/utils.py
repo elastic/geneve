@@ -320,14 +320,13 @@ class SignalsTestCase:
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
 
         ret = self.es.cluster.health(level="cluster")
-        number_of_shards = ret["number_of_data_nodes"]
 
         kwargs = {
             "name": self.index_template,
             "index_patterns": [f"{self.index_template}-*"],
             "template": {
                 "settings": {
-                    "number_of_shards": number_of_shards,
+                    "number_of_shards": 1,
                     "number_of_replicas": 0,
                 },
                 "mappings": mappings,
