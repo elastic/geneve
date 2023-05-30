@@ -522,8 +522,6 @@ class SignalsTestCase:
         return "\n" + "\n".join(lines)
 
     def assertSignals(self, rules, rule_ids, msg, value=0):  # noqa: N802
-        if rule_ids:
-            self.report_rules(rules, rule_ids, msg)
         with self.subTest(msg):
             msg = None if verbose < 3 else self.debug_rules(rules, rule_ids)
             self.assertEqual(len(rule_ids), value, msg=msg)
@@ -539,9 +537,16 @@ class SignalsTestCase:
         too_many_signals = {rule_id for rule_id, (signals, expected) in signals.items() if signals > expected}
 
         rules = sorted(rules, key=lambda rule: rule["name"])
+
+        self.report_rules(rules, failed, "Failed rules")
+        self.report_rules(rules, unsuccessful, "Unsuccessful rules with signals")
+        self.report_rules(rules, no_signals, "Rules with no signals")
+        self.report_rules(rules, too_few_signals, "Rules with too few signals")
+        self.report_rules(rules, too_many_signals, "Rules with too many signals")
+        self.report_rules(rules, correct_signals, "Rules with the correct signals")
+
         self.assertSignals(rules, failed, "Failed rules")
         self.assertSignals(rules, unsuccessful, "Unsuccessful rules with signals")
         self.assertSignals(rules, no_signals, "Rules with no signals", getattr(self, "ack_no_signals", 0))
         self.assertSignals(rules, too_few_signals, "Rules with too few signals", getattr(self, "ack_too_few_signals", 0))
         self.assertSignals(rules, too_many_signals, "Rules with too many signals")
-        self.report_rules(rules, correct_signals, "Rules with the correct signals")
