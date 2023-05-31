@@ -1,4 +1,6 @@
 version: '3'
+name: geneve-test
+
 services:
   es:
     image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-8.7.0}}

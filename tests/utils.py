@@ -320,14 +320,13 @@ class SignalsTestCase:
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
 
         ret = self.es.cluster.health(level="cluster")
-        number_of_shards = ret["number_of_data_nodes"]
 
         kwargs = {
             "name": self.index_template,
             "index_patterns": [f"{self.index_template}-*"],
             "template": {
                 "settings": {
-                    "number_of_shards": number_of_shards,
+                    "number_of_shards": 1,
                     "number_of_replicas": 0,
                 },
                 "mappings": mappings,
@@ -386,22 +385,26 @@ class SignalsTestCase:
 
             last_execution = rule["execution_summary"]["last_execution"]
             if last_execution["status"] == "succeeded":
-                del pending[rule_id]
-                successful[rule_id] = None
+                self.handle_rule_success(rule_id, pending, successful, failed)
             elif last_execution["status"] == "failed":
-                del pending[rule_id]
-                failed[rule_id] = last_execution["message"]
+                self.handle_rule_failure(rule_id, failed, last_execution["message"])
 
     def check_rules_legacy(self, pending, successful, failed):
         statuses = self.kbn.find_detection_engine_rules_statuses(pending)
         for rule_id, rule_status in statuses.items():
             current_status = rule_status["current_status"]
             if current_status["last_success_at"]:
-                del pending[rule_id]
-                successful[rule_id] = None
+                self.handle_rule_success(rule_id, pending, successful, failed)
             elif current_status["last_failure_at"]:
-                del pending[rule_id]
-                failed[rule_id] = current_status["last_failure_message"]
+                self.handle_rule_failure(rule_id, failed, current_status["last_failure_message"])
+
+    def handle_rule_success(self, rule_id, pending, successful, failed):
+        del pending[rule_id]
+        successful[rule_id] = None
+        failed.pop(rule_id, None)
+
+    def handle_rule_failure(self, rule_id, failed, message):
+        failed.setdefault(rule_id, set()).add(message)
 
     def check_docs(self, rule):
         try:
@@ -503,8 +506,9 @@ class SignalsTestCase:
                     if self.multiplying_factor == 1:
                         cells.append(self.query_cell(rule["query"], docs))
                     if type(rule_ids) == dict:
-                        failure_message = rule_ids[rule["id"]].replace(rule["id"], "<i>&lt;redacted&gt;</i>")
-                        cells.append(jupyter.Markdown(f"SDE says:\n> {failure_message}"))
+                        for failure_message in rule_ids[rule["id"]]:
+                            failure_message = failure_message.replace(rule["id"], "<i>&lt;redacted&gt;</i>")
+                            cells.append(jupyter.Markdown(f"SDE says:\n> {failure_message}"))
 
     def debug_rules(self, rules, rule_ids):
         lines = []
