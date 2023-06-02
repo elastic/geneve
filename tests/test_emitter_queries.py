@@ -273,6 +273,20 @@ multi_branch_mono_doc = {
         [{"event": {"type": ["start"]}, "process": {"args": ["dump-keychain", "-d"]}}],
         [{"event": {"type": ["process_started"]}, "process": {"args": ["dump-keychain", "-d"]}}],
     ],
+    """event.category:process and process.args:a and process.args:(b1 or b2) and process.args:(c1 or c2)
+    """: [
+        [{"event": {"category": ["process"]}, "process": {"args": ["a", "b1", "c1"]}}],
+        [{"event": {"category": ["process"]}, "process": {"args": ["a", "b1", "c2"]}}],
+        [{"event": {"category": ["process"]}, "process": {"args": ["a", "b2", "c1"]}}],
+        [{"event": {"category": ["process"]}, "process": {"args": ["a", "b2", "c2"]}}],
+    ],
+    """process where process.args : "a" and process.args : ("b1", "b2") and process.args : ("c1", "c2")
+    """: [
+        [{"event": {"category": ["process"]}, "process": {"args": ["a", "b1", "c1"]}}],
+        [{"event": {"category": ["process"]}, "process": {"args": ["a", "b1", "c2"]}}],
+        [{"event": {"category": ["process"]}, "process": {"args": ["a", "b2", "c1"]}}],
+        [{"event": {"category": ["process"]}, "process": {"args": ["a", "b2", "c2"]}}],
+    ],
 }
 
 mono_branch_multi_doc = {
