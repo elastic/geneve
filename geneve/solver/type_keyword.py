@@ -80,12 +80,12 @@ class KeywordField(Field):
                     self.exclude_wildcards.add(v)
 
         for k, v, *_ in constraints:
-            if k == "self.min_length":
+            if k == "min_length":
                 if v >= self.min_length:
                     self.min_length = v
                 else:
                     raise ConflictError(f"{v} < {self.min_length}", field, k)
-            elif k == "self.allowed_chars":
+            elif k == "allowed_chars":
                 if set(v).issubset(set(self.allowed_chars)):
                     self.allowed_chars = v
                 else:
