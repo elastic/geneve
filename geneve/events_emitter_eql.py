@@ -187,7 +187,7 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool) -> Root:
         raise NotImplementedError(f"Unsupported argument type(s): {', '.join(wrong_types)}")
     fn_name = node.name.lower()
     if fn_name == "wildcard":
-        return cc_function(node, negate, "wildcard")
+        return cc_wildcard(node, negate)
     elif fn_name == "cidrmatch":
         return cc_function(node, negate, "in")
     elif fn_name == "_cardinality":
@@ -201,6 +201,21 @@ def cc_function(node: eql.ast.FunctionCall, negate: bool, constraint_name: str) 
     constraint_name = constraint_name if not negate else f"not {constraint_name}"
     doc = Document(field, constraint_name, tuple(arg.value for arg in node.arguments[1:]))
     return Root([Branch([doc])])
+
+
+def cc_wildcard(node: eql.ast.FunctionCall, negate: bool) -> Root:
+    field = node.arguments[0].render()
+    branches = []
+    if negate:
+        doc = Document(field)
+        for arg in node.arguments[1:]:
+            doc.append_constraint(field, "not wildcard", arg.value)
+        branches.append(Branch([doc]))
+    else:
+        for arg in node.arguments[1:]:
+            doc = Document(field, "wildcard", arg.value)
+            branches.append(Branch([doc]))
+    return Root(branches)
 
 
 @traverser(eql.ast.BaseNode)
