@@ -51,7 +51,7 @@ def ast_from_eql_query(query):
 def ast_from_kql_query(query):
     from . import kql
 
-    return kql.to_eql(query)  # shortcut?
+    return kql.to_eql(query, optimize=False)  # shortcut?
 
 
 def guess_from_query(query):

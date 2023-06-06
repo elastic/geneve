@@ -13,11 +13,15 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsupported rule type: threat_match (3)](#unsupported-rule-type-threat_match-3)
    1. [Generation errors](#generation-errors)
       1. [Constraints solver not implemented: wildcard (44)](#constraints-solver-not-implemented-wildcard-44)
-      1. [Root without branches (15)](#root-without-branches-15)
+      1. [Root without branches (9)](#root-without-branches-9)
       1. [Unsupported function: match (5)](#unsupported-function-match-5)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (4)](#unsupported-lhs-type-class-eqlastfunctioncall-4)
       1. [Constraints solver not implemented: match_only_text (3)](#constraints-solver-not-implemented-match_only_text-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
+      1. [Unsolvable constraints ==: powershell.file.script_block_text (is already 'CopyFromScreen', cannot set to 'System.Drawing.Bitmap') (1)](#unsolvable-constraints--powershellfilescript_block_text-is-already-copyfromscreen-cannot-set-to-systemdrawingbitmap-1)
+      1. [Unsolvable constraints ==: powershell.file.script_block_text (is already 'SetWindowsHookA', cannot set to 'GetForegroundWindow') (1)](#unsolvable-constraints--powershellfilescript_block_text-is-already-setwindowshooka-cannot-set-to-getforegroundwindow-1)
+      1. [Unsolvable constraints ==: powershell.file.script_block_text (is already 'System.IO.Compression.DeflateStream', cannot set to 'FromBase64String') (1)](#unsolvable-constraints--powershellfilescript_block_text-is-already-systemiocompressiondeflatestream-cannot-set-to-frombase64string-1)
+      1. [Unsolvable constraints ==: powershell.file.script_block_text (is already 'VirtualAlloc', cannot set to 'WriteProcessMemory') (1)](#unsolvable-constraints--powershellfilescript_block_text-is-already-virtualalloc-cannot-set-to-writeprocessmemory-1)
       1. [Unsolvable constraints ==: powershell.file.script_block_text (is already 'waveInGetNumDevs', cannot set to 'mciSendStringA') (1)](#unsolvable-constraints--powershellfilescript_block_text-is-already-waveingetnumdevs-cannot-set-to-mcisendstringa-1)
       1. [Unsolvable constraints wildcard: winlog.event_data.AttributeValue (is already '*42B5FAAE-6536-11D2-AE5A-0000F87571E3*', cannot set to '*40B66650-4972-11D1-A7CA-0000F87571E3*') (1)](#unsolvable-constraints-wildcard-winlogevent_dataattributevalue-is-already-42b5faae-6536-11d2-ae5a-0000f87571e3-cannot-set-to-40b66650-4972-11d1-a7ca-0000f87571e3-1)
       1. [Unsolvable constraints wildcard: winlog.event_data.AttributeValue (is already '*827D319E-6EAC-11D2-A4EA-00C04F79F83A*', cannot set to '*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*') (1)](#unsolvable-constraints-wildcard-winlogevent_dataattributevalue-is-already-827d319e-6eac-11d2-a4ea-00c04f79f83a-cannot-set-to-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
@@ -170,9 +174,9 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Web Application Suspicious Activity: No User Agent (rules/apm/apm_null_user_agent.toml)
 * Windows Defender Disabled via Registry Modification (rules/windows/defense_evasion_defender_disabled_via_registry.toml)
 
-### Root without branches (15)
+### Root without branches (9)
 
-15 rules:
+9 rules:
 * Linux Restricted Shell Breakout via c89/c99 Shell evasion (rules/linux/execution_c89_c99_binary.toml)
 * Linux Restricted Shell Breakout via cpulimit Shell Evasion (rules/linux/execution_cpulimit_binary.toml)
 * Linux Restricted Shell Breakout via flock Shell evasion (rules/linux/execution_flock_binary.toml)
@@ -182,12 +186,6 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Linux Restricted Shell Breakout via the ssh command (rules/linux/execution_ssh_binary.toml)
 * Linux Restricted Shell Breakout via the vi command (rules/linux/execution_vi_binary.toml)
 * Persistence via Login or Logout Hook (rules/macos/persistence_login_logout_hooks_defaults.toml)
-* Potential Admin Group Account Addition (rules/macos/privilege_escalation_local_user_added_to_admin.toml)
-* Potential Hidden Local User Account Creation (rules/macos/persistence_account_creation_hide_at_logon.toml)
-* Potential Process Injection via PowerShell (rules/windows/defense_evasion_posh_process_injection.toml)
-* PowerShell Suspicious Payload Encoded and Compressed (rules/windows/defense_evasion_posh_compressed.toml)
-* PowerShell Suspicious Script with Screenshot Capabilities (rules/windows/collection_posh_screen_grabber.toml)
-* SoftwareUpdate Preferences Modification (rules/macos/defense_evasion_apple_softupdates_modification.toml)
 
 ### Unsupported function: match (5)
 
@@ -218,6 +216,26 @@ Curious about the inner workings? Read [here](signals_generation.md).
 2 rules:
 * Downloaded Shortcut Files (rules/windows/execution_downloaded_shortcut_files.toml)
 * Downloaded URL Files (rules/windows/execution_downloaded_url_file.toml)
+
+### Unsolvable constraints ==: powershell.file.script_block_text (is already 'CopyFromScreen', cannot set to 'System.Drawing.Bitmap') (1)
+
+1 rules:
+* PowerShell Suspicious Script with Screenshot Capabilities (rules/windows/collection_posh_screen_grabber.toml)
+
+### Unsolvable constraints ==: powershell.file.script_block_text (is already 'SetWindowsHookA', cannot set to 'GetForegroundWindow') (1)
+
+1 rules:
+* PowerShell Keylogging Script (rules/windows/collection_posh_keylogger.toml)
+
+### Unsolvable constraints ==: powershell.file.script_block_text (is already 'System.IO.Compression.DeflateStream', cannot set to 'FromBase64String') (1)
+
+1 rules:
+* PowerShell Suspicious Payload Encoded and Compressed (rules/windows/defense_evasion_posh_compressed.toml)
+
+### Unsolvable constraints ==: powershell.file.script_block_text (is already 'VirtualAlloc', cannot set to 'WriteProcessMemory') (1)
+
+1 rules:
+* Potential Process Injection via PowerShell (rules/windows/defense_evasion_posh_process_injection.toml)
 
 ### Unsolvable constraints ==: powershell.file.script_block_text (is already 'waveInGetNumDevs', cannot set to 'mciSendStringA') (1)
 
