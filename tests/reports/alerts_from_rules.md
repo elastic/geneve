@@ -7,7 +7,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 ## Table of contents
    1. [Rules with no signals (5)](#rules-with-no-signals-5)
-   1. [Rules with the correct signals (561)](#rules-with-the-correct-signals-561)
+   1. [Rules with the correct signals (563)](#rules-with-the-correct-signals-563)
 
 ## Rules with no signals (5)
 
@@ -121,7 +121,7 @@ sequence by host.id with maxspan=1m
 
 
 
-## Rules with the correct signals (561)
+## Rules with the correct signals (563)
 
 ### AWS Access Secret in Secrets Manager
 
@@ -4067,8 +4067,8 @@ process where event.type in ("start", "process_started") and
 
 ### Enumeration of Kernel Modules
 
-Branch count: 2  
-Document count: 2  
+Branch count: 8  
+Document count: 8  
 Index: geneve-ut-200
 
 ```python
@@ -4078,7 +4078,13 @@ event.category:process and event.type:(start or process_started) and
 
 ```python
 [{'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['kmod', 'list', 'sudo']}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['kmod', 'list', 'sudo']}, '@timestamp': 1}]
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['sudo', 'depmod']}, '@timestamp': 1},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['sudo', 'lsmod']}, '@timestamp': 2},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['sudo', 'modinfo']}, '@timestamp': 3},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['kmod', 'list', 'sudo']}, '@timestamp': 4},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['sudo', 'depmod']}, '@timestamp': 5},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['sudo', 'lsmod']}, '@timestamp': 6},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['sudo', 'modinfo']}, '@timestamp': 7}]
 ```
 
 
@@ -7543,8 +7549,8 @@ network where event.type == "start" and network.direction : ("outgoing", "egress
 
 ### Kernel Module Removal
 
-Branch count: 2  
-Document count: 2  
+Branch count: 6  
+Document count: 6  
 Index: geneve-ut-283
 
 ```python
@@ -7554,7 +7560,11 @@ event.category:process and event.type:(start or process_started) and
 
 ```python
 [{'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['rmmod', 'sudo']}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['rmmod', 'sudo']}, '@timestamp': 1}]
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['modprobe', 'sudo', '--remove']}, '@timestamp': 1},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['modprobe', 'sudo', '-r']}, '@timestamp': 2},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['rmmod', 'sudo']}, '@timestamp': 3},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['modprobe', 'sudo', '--remove']}, '@timestamp': 4},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['modprobe', 'sudo', '-r']}, '@timestamp': 5}]
 ```
 
 
@@ -11676,6 +11686,38 @@ sequence by user.email with maxspan=10m
 
 
 
+### Potential Admin Group Account Addition
+
+Branch count: 16  
+Document count: 16  
+Index: geneve-ut-412
+
+```python
+event.category:process and event.type:(start or process_started) and
+ process.name:(dscl or dseditgroup) and process.args:(("/Groups/admin" or admin) and ("-a" or "-append"))
+```
+
+```python
+[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dscl', 'args': ['/Groups/admin', '-a']}, '@timestamp': 0},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dscl', 'args': ['/Groups/admin', '-append']}, '@timestamp': 1},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dscl', 'args': ['admin', '-a']}, '@timestamp': 2},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dscl', 'args': ['admin', '-append']}, '@timestamp': 3},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dseditgroup', 'args': ['/Groups/admin', '-a']}, '@timestamp': 4},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dseditgroup', 'args': ['/Groups/admin', '-append']}, '@timestamp': 5},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dseditgroup', 'args': ['admin', '-a']}, '@timestamp': 6},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dseditgroup', 'args': ['admin', '-append']}, '@timestamp': 7},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dscl', 'args': ['/Groups/admin', '-a']}, '@timestamp': 8},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dscl', 'args': ['/Groups/admin', '-append']}, '@timestamp': 9},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dscl', 'args': ['admin', '-a']}, '@timestamp': 10},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dscl', 'args': ['admin', '-append']}, '@timestamp': 11},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dseditgroup', 'args': ['/Groups/admin', '-a']}, '@timestamp': 12},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dseditgroup', 'args': ['/Groups/admin', '-append']}, '@timestamp': 13},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dseditgroup', 'args': ['admin', '-a']}, '@timestamp': 14},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dseditgroup', 'args': ['admin', '-append']}, '@timestamp': 15}]
+```
+
+
+
 ### Potential Application Shimming via Sdbinst
 
 Branch count: 2  
@@ -12037,6 +12079,28 @@ process where event.type in ("start", "process_started") and
 
 
 
+### Potential Hidden Local User Account Creation
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-427
+
+```python
+event.category:process and event.type:(start or process_started) and
+ process.name:dscl and process.args:(IsHidden and create and (true or 1 or yes))
+```
+
+```python
+[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dscl', 'args': ['IsHidden', 'create', True]}, '@timestamp': 0},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dscl', 'args': ['IsHidden', 'create', 1]}, '@timestamp': 1},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dscl', 'args': ['IsHidden', 'create', 'yes']}, '@timestamp': 2},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dscl', 'args': ['IsHidden', 'create', True]}, '@timestamp': 3},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dscl', 'args': ['IsHidden', 'create', 1]}, '@timestamp': 4},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dscl', 'args': ['IsHidden', 'create', 'yes']}, '@timestamp': 5}]
+```
+
+
+
 ### Potential JAVA/JNDI Exploitation Attempt
 
 Branch count: 60  
@@ -12198,8 +12262,8 @@ sequence by host.id with maxspan=1m
 
 ### Potential Kerberos Attack via Bifrost
 
-Branch count: 6  
-Document count: 6  
+Branch count: 8  
+Document count: 8  
 Index: geneve-ut-429
 
 ```python
@@ -12213,7 +12277,9 @@ event.category:process and event.type:start and
  {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['-action', 'asktgs']}, '@timestamp': 2},
  {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['-action', 'asktgt']}, '@timestamp': 3},
  {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['-action', 's4u']}, '@timestamp': 4},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['-action', '-ticket', 'ptt']}, '@timestamp': 5}]
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['-action', '-ticket', 'ptt']}, '@timestamp': 5},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['-action', 'dump', 'tickets']}, '@timestamp': 6},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['-action', 'dump', 'keytab']}, '@timestamp': 7}]
 ```
 
 
@@ -12984,32 +13050,6 @@ event.category:process and
 
 ```python
 [{'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'KerberosRequestorSecurityToken'}}, '@timestamp': 0}]
-```
-
-
-
-### PowerShell Keylogging Script
-
-Branch count: 4  
-Document count: 4  
-Index: geneve-ut-465
-
-```python
-event.category:process and 
-  ( 
-   powershell.file.script_block_text : (GetAsyncKeyState or NtUserGetAsyncKeyState or GetKeyboardState or "Get-Keystrokes") or 
-   powershell.file.script_block_text : (
-        (SetWindowsHookA or SetWindowsHookW or SetWindowsHookEx or SetWindowsHookExA or NtUserSetWindowsHookEx) and
-        (GetForegroundWindow or GetWindowTextA or GetWindowTextW or "WM_KEYBOARD_LL")
-   )
-   )
-```
-
-```python
-[{'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'GetAsyncKeyState'}}, '@timestamp': 0},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'NtUserGetAsyncKeyState'}}, '@timestamp': 1},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'GetKeyboardState'}}, '@timestamp': 2},
- {'event': {'category': ['process']}, 'powershell': {'file': {'script_block_text': 'Get-Keystrokes'}}, '@timestamp': 3}]
 ```
 
 
@@ -15392,6 +15432,27 @@ event.category:process and event.type:(start or process_started) and process.nam
 ```python
 [{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'socat', 'args': ['ZFy']}, '@timestamp': 0},
  {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'socat', 'args': ['XIU']}, '@timestamp': 1}]
+```
+
+
+
+### SoftwareUpdate Preferences Modification
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-542
+
+```python
+event.category:process and event.type:(start or process_started) and
+ process.name:defaults and 
+ process.args:(write and "-bool" and (com.apple.SoftwareUpdate or /Library/Preferences/com.apple.SoftwareUpdate.plist) and not (TRUE or true))
+```
+
+```python
+[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'defaults', 'args': ['write', '-bool', 'com.apple.SoftwareUpdate']}, '@timestamp': 0},
+ {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'defaults', 'args': ['write', '-bool', '/Library/Preferences/com.apple.SoftwareUpdate.plist']}, '@timestamp': 1},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'defaults', 'args': ['write', '-bool', 'com.apple.SoftwareUpdate']}, '@timestamp': 2},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'defaults', 'args': ['write', '-bool', '/Library/Preferences/com.apple.SoftwareUpdate.plist']}, '@timestamp': 3}]
 ```
 
 
