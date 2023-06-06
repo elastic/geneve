@@ -404,7 +404,10 @@ class SignalsTestCase:
         failed.pop(rule_id, None)
 
     def handle_rule_failure(self, rule_id, failed, message):
-        failed.setdefault(rule_id, set()).add(message)
+        if verbose > 1:
+            sys.stderr.write(f"rule failure:\n  {rule_id}\n  {message}")
+            sys.stderr.flush()
+        failed.setdefault(rule_id, set()).add(f"SDE says:\n> {message}")
 
     def check_docs(self, rule):
         try:
@@ -492,23 +495,25 @@ class SignalsTestCase:
                         t0 = t0 or datetime.fromisoformat(docs[0]["@timestamp"])
                         t = datetime.fromisoformat(doc["@timestamp"])
                         doc["@timestamp"] = int((t - t0) / timedelta(milliseconds=1))
-                    cells.append(
-                        jupyter.Markdown(
-                            f"""
-                        ### {rule['name']}
-
-                        Branch count: {rule[".test_private"]["branch_count"]}  
-                        Document count: {rule[".test_private"]["doc_count"]}  
-                        Index: {rule["index"][0]}
-                    """
-                        )
-                    )  # noqa: W291: trailing double space makes a new line in markdown
+                    descr = [
+                        f"### {rule['name']}",
+                        "",
+                        f"Branch count: {rule['.test_private']['branch_count']}  ",
+                        f"Document count: {rule['.test_private']['doc_count']}  ",
+                    ]
+                    if isinstance(rule_ids, dict):
+                        descr += [
+                            f"Index: {rule['index'][0]}  ",
+                            "Failure message(s):  ",
+                        ] + [
+                            ("  " + failure_message.replace(rule["id"], "<i>&lt;redacted&gt;</i>") + "  ")
+                            for failure_message in rule_ids[rule["id"]]
+                        ]
+                    else:
+                        descr.append(f'Index: {rule["index"][0]}')
+                    cells.append(jupyter.Markdown("\n".join(descr)))
                     if self.multiplying_factor == 1:
                         cells.append(self.query_cell(rule["query"], docs))
-                    if type(rule_ids) == dict:
-                        for failure_message in rule_ids[rule["id"]]:
-                            failure_message = failure_message.replace(rule["id"], "<i>&lt;redacted&gt;</i>")
-                            cells.append(jupyter.Markdown(f"SDE says:\n> {failure_message}"))
 
     def debug_rules(self, rules, rule_ids):
         lines = []
@@ -520,9 +525,7 @@ class SignalsTestCase:
                 lines.append(rule["query"].strip())
                 lines.extend(json.dumps(doc, sort_keys=True) for doc in docs)
                 if type(rule_ids) == dict:
-                    failure_message = rule_ids[rule["id"]]
-                    lines.append("SDE says:")
-                    lines.append(f"  {failure_message}")
+                    lines.extend(rule_ids[rule["id"]].split("\n"))
         return "\n" + "\n".join(lines)
 
     def assertSignals(self, rules, rule_ids, msg, value=0):  # noqa: N802
@@ -536,9 +539,17 @@ class SignalsTestCase:
 
         unsuccessful = set(signals) - set(successful)
         no_signals = set(successful) - set(signals)
-        too_few_signals = {rule_id for rule_id, (signals, expected) in signals.items() if signals < expected}
+        too_few_signals = {
+            rule_id: [f"got {signals} signals, expected {expected}"]
+            for rule_id, (signals, expected) in signals.items()
+            if signals < expected
+        }
         correct_signals = {rule_id for rule_id, (signals, expected) in signals.items() if signals == expected}
-        too_many_signals = {rule_id for rule_id, (signals, expected) in signals.items() if signals > expected}
+        too_many_signals = {
+            rule_id: [f"got {signals} signals, expected {expected}"]
+            for rule_id, (signals, expected) in signals.items()
+            if signals > expected
+        }
 
         rules = sorted(rules, key=lambda rule: rule["name"])
 

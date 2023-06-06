@@ -367,11 +367,11 @@ Document count: 1
 Index: geneve-ut-022
 
 ```python
-process where process.name : ("*.EXE", "*.DLL")
+process where process.args != null
 ```
 
 ```python
-[{'process': {'name': 'XIUtkNI.EXE'}, 'event': {'category': ['process']}, '@timestamp': 0}]
+[{'process': {'args': ['ZFy']}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -383,11 +383,11 @@ Document count: 1
 Index: geneve-ut-023
 
 ```python
-process where process.args != null
+process where process.args : "-f" and process.args == "-r"
 ```
 
 ```python
-[{'process': {'args': ['ZFy']}, 'event': {'category': ['process']}, '@timestamp': 0}]
+[{'process': {'args': ['-f', '-r']}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -399,11 +399,11 @@ Document count: 1
 Index: geneve-ut-024
 
 ```python
-process where process.args : "-f" and process.args == "-r"
+network where destination.ip == "127.0.0.1"
 ```
 
 ```python
-[{'process': {'args': ['-f', '-r']}, 'event': {'category': ['process']}, '@timestamp': 0}]
+[{'destination': {'ip': '127.0.0.1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -415,11 +415,11 @@ Document count: 1
 Index: geneve-ut-025
 
 ```python
-network where destination.ip == "127.0.0.1"
+network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 ```
 
 ```python
-[{'destination': {'ip': '127.0.0.1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'destination': {'ip': '192.168.214.62'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -431,11 +431,11 @@ Document count: 1
 Index: geneve-ut-026
 
 ```python
-network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
+network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 ```
 
 ```python
-[{'destination': {'ip': '192.168.214.62'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'destination': {'ip': '107.31.65.130'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -447,7 +447,7 @@ Document count: 1
 Index: geneve-ut-027
 
 ```python
-network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
+network where destination.ip != null
 ```
 
 ```python
@@ -463,11 +463,11 @@ Document count: 1
 Index: geneve-ut-028
 
 ```python
-network where destination.ip != null
+network where destination.ip == "::1"
 ```
 
 ```python
-[{'destination': {'ip': '107.31.65.130'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'destination': {'ip': '::1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -479,11 +479,11 @@ Document count: 1
 Index: geneve-ut-029
 
 ```python
-network where destination.ip == "::1"
+network where destination.ip == "822e::/16"
 ```
 
 ```python
-[{'destination': {'ip': '::1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'destination': {'ip': '822e:c14a:e6ea:94e4:e5ac:b58c:1b43:3a53'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -495,11 +495,11 @@ Document count: 1
 Index: geneve-ut-030
 
 ```python
-network where destination.ip == "822e::/16"
+event.category:network and destination.ip:"822e::/16"
 ```
 
 ```python
-[{'destination': {'ip': '822e:c14a:e6ea:94e4:e5ac:b58c:1b43:3a53'}, 'event': {'category': ['network']}, '@timestamp': 0}]
+[{'event': {'category': ['network']}, 'destination': {'ip': '822e:c14a:e6ea:94e4:e5ac:b58c:1b43:3a53'}, '@timestamp': 0}]
 ```
 
 
@@ -511,11 +511,11 @@ Document count: 1
 Index: geneve-ut-031
 
 ```python
-event.category:network and destination.ip:"822e::/16"
+network where host.ip != null
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'destination': {'ip': '822e:c14a:e6ea:94e4:e5ac:b58c:1b43:3a53'}, '@timestamp': 0}]
+[{'host': {'ip': ['107.31.65.130']}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -527,22 +527,6 @@ Document count: 1
 Index: geneve-ut-032
 
 ```python
-network where host.ip != null
-```
-
-```python
-[{'host': {'ip': ['107.31.65.130']}, 'event': {'category': ['network']}, '@timestamp': 0}]
-```
-
-
-
-### Rule 033
-
-Branch count: 1  
-Document count: 1  
-Index: geneve-ut-033
-
-```python
 event.category:network and host.ip:"822e::/96"
 ```
 
@@ -552,11 +536,11 @@ event.category:network and host.ip:"822e::/96"
 
 
 
-### Rule 034
+### Rule 033
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-034
+Index: geneve-ut-033
 
 ```python
 network where not (source.port > 512 and source.port < 1024)
@@ -569,11 +553,11 @@ network where not (source.port > 512 and source.port < 1024)
 
 
 
-### Rule 035
+### Rule 034
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-035
+Index: geneve-ut-034
 
 ```python
 network where source.port > 512 or source.port < 1024
@@ -586,11 +570,11 @@ network where source.port > 512 or source.port < 1024
 
 
 
-### Rule 036
+### Rule 035
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-036
+Index: geneve-ut-035
 
 ```python
 network where source.port < 2000 and (source.port > 512 or source.port > 1024)
@@ -603,11 +587,11 @@ network where source.port < 2000 and (source.port > 512 or source.port > 1024)
 
 
 
-### Rule 037
+### Rule 036
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-037
+Index: geneve-ut-036
 
 ```python
 network where (source.port > 512 or source.port > 1024) and source.port < 2000
@@ -620,11 +604,11 @@ network where (source.port > 512 or source.port > 1024) and source.port < 2000
 
 
 
-### Rule 038
+### Rule 037
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-038
+Index: geneve-ut-037
 
 ```python
 network where (source.port > 1024 or source.port < 2000) and (source.port < 4000 or source.port > 512)
@@ -639,11 +623,11 @@ network where (source.port > 1024 or source.port < 2000) and (source.port < 4000
 
 
 
-### Rule 039
+### Rule 038
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-039
+Index: geneve-ut-038
 
 ```python
 network where destination.port in (80, 443)
@@ -652,6 +636,23 @@ network where destination.port in (80, 443)
 ```python
 [{'destination': {'port': 80}, 'event': {'category': ['network']}, '@timestamp': 0},
  {'destination': {'port': 443}, 'event': {'category': ['network']}, '@timestamp': 1}]
+```
+
+
+
+### Rule 039
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-039
+
+```python
+process where process.name : ("*.EXE", "*.DLL")
+```
+
+```python
+[{'process': {'name': 'XIUtkNI.EXE'}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'process': {'name': 'ixTFlEzswuEEXp.DLL'}, 'event': {'category': ['process']}, '@timestamp': 1}]
 ```
 
 
