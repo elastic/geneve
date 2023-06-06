@@ -18,7 +18,7 @@
 """Constraints solver for keyword fields."""
 
 import string
-from fnmatch import fnmatch
+from fnmatch import fnmatchcase
 
 from ..constraints import ConflictError
 from ..utils import random
@@ -43,10 +43,13 @@ def has_wildcards(value):
     return False
 
 
-def match_wildcards(values, wildcards):
+def match_wildcards(values, wildcards, case=False):
     if type(values) != list:
         values = [values]
-    return any(fnmatch(v, wc) for v in values for wc in wildcards)
+    if case:
+        return any(fnmatchcase(v, wc) for v in values for wc in wildcards)
+    else:
+        return any(fnmatchcase(v.lower(), wc.lower()) for v in values for wc in wildcards)
 
 
 @solver("&keyword")
