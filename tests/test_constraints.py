@@ -1042,6 +1042,7 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
                 self.assertEqual(test_values, [solver("test_var", constraints, None, None)(None, env) for _ in test_values])
 
     def test_entity(self):
+        schema = {}
         d = Document()
 
         for field in [
@@ -1056,7 +1057,7 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         ]:
             d.append_constraint(field)
 
-        d.consolidate()
+        d.consolidate(schema)
         entities = list(d.entities())
 
         self.assertEqual(
@@ -1102,26 +1103,26 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
         d2 = jd.join_fields(d2, ["process.parent.name"])
 
         branch = Branch([d1, d2])
-        branch.consolidate()
+        branch.consolidate(schema)
 
         self.assertEqual(
             [
                 {"process": {"name": "LbS.exe"}},
                 {"process": {"name": "lwfFIAXQgMefK.dll", "parent": {"name": "LbS.exe"}}},
             ],
-            list(branch.solve(schema, {})),
+            list(branch.solve({})),
         )
         self.assertEqual(
             [
                 {"process": {"name": "OWrl.bat"}},
                 {"process": {"name": "lywc.scr", "parent": {"name": "OWrl.bat"}}},
             ],
-            list(branch.solve(schema, {})),
+            list(branch.solve({})),
         )
         self.assertEqual(
             [
                 {"process": {"name": "lIkqw.bat"}},
                 {"process": {"name": "uxRWqYK.dll", "parent": {"name": "lIkqw.bat"}}},
             ],
-            list(branch.solve(schema, {})),
+            list(branch.solve({})),
         )

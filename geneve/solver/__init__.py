@@ -71,24 +71,25 @@ class solver:  # noqa: N801
         return func
 
     @classmethod
-    def new_entity(cls, group, fields):
-        return cls.solvers.get(group + ".", Entity)(group, fields)
+    def new_entity(cls, group, fields, schema):
+        return cls.solvers.get(group + ".", Entity)(group, fields, schema)
 
 
 class Entity:
-    def __init__(self, group, fields):
+    def __init__(self, group, fields, schema):
         self.group = group
         self.fields = fields
+        self.schema = schema
 
-    def solve(self, doc, join_doc, schema, environment):
+    def solve(self, doc, join_doc, environment):
         for field, constraints in self.fields.items():
-            self.solve_field(doc, join_doc, field, constraints, schema, environment)
+            self.solve_field(doc, join_doc, field, constraints, environment)
 
-    def field_solver(self, field, constraints, schema):
+    def field_solver(self, field, constraints):
         if constraints is not None:
             if self.group:
                 field = f"{self.group}.{field}"
-            field_schema = schema.get(field, {})
+            field_schema = self.schema.get(field, {})
             field_type = field_schema.get("type", "keyword")
             field_is_array = "array" in field_schema.get("normalize", [])
             field_solver = solver.solvers.get(f"&{field_type}", None)
@@ -97,8 +98,8 @@ class Entity:
             constraints = constraints + get_ecs_constraints(field_solver, field)
             return field_solver(field, constraints, field_is_array, self.group)
 
-    def solve_field(self, doc, join_doc, field, constraints, schema, environment):
-        solve = self.field_solver(field, constraints, schema)
+    def solve_field(self, doc, join_doc, field, constraints, environment):
+        solve = self.field_solver(field, constraints)
         if solve:
             value = solve(join_doc, environment)["value"]
             if doc is not None:
