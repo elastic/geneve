@@ -33,7 +33,7 @@ faker = Faker()
 class ASEntity(Entity):
     def solve(self, doc, join_doc, schema, env):
         entities = env.setdefault("entities", {}).setdefault("as", {})
-        asn = solver.solve_field(None, join_doc, self.group, "number", [], schema, env)
+        asn = self.solve_field(None, join_doc, "number", [], schema, env)
         org_name = entities.get(asn, None)
         if org_name is None:
             org_name = faker.company()

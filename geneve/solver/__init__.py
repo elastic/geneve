@@ -71,24 +71,6 @@ class solver:  # noqa: N801
         return func
 
     @classmethod
-    def solve_field(cls, doc, join_doc, group, field, constraints, schema, environment):
-        if constraints is None:
-            return None
-        field = f"{group}.{field}" if group else field
-        field_schema = schema.get(field, {})
-        field_type = field_schema.get("type", "keyword")
-        field_is_array = "array" in field_schema.get("normalize", [])
-        try:
-            field_solver = cls.solvers[f"&{field_type}"]
-        except KeyError:
-            raise NotImplementedError(f"Constraints solver not implemented: {field_type}")
-        constraints = constraints + get_ecs_constraints(field_solver, field)
-        value = field_solver(field, constraints, field_is_array, group)(join_doc, environment)["value"]
-        if doc is not None:
-            emit_field(doc, field, value)
-        return value
-
-    @classmethod
     def new_entity(cls, group, fields):
         return cls.solvers.get(group + ".", Entity)(group, fields)
 
@@ -100,7 +82,30 @@ class Entity:
 
     def solve(self, doc, join_doc, schema, environment):
         for field, constraints in self.fields.items():
-            solver.solve_field(doc, join_doc, self.group, field, constraints, schema, environment)
+            self.solve_field(doc, join_doc, field, constraints, schema, environment)
+
+    def field_solver(self, field, constraints, schema):
+        if constraints is not None:
+            if self.group:
+                field = f"{self.group}.{field}"
+            field_schema = schema.get(field, {})
+            field_type = field_schema.get("type", "keyword")
+            field_is_array = "array" in field_schema.get("normalize", [])
+            field_solver = solver.solvers.get(f"&{field_type}", None)
+            if not field_solver:
+                raise NotImplementedError(f"Constraints solver not implemented: {field_type}")
+            constraints = constraints + get_ecs_constraints(field_solver, field)
+            return field_solver(field, constraints, field_is_array, self.group)
+
+    def solve_field(self, doc, join_doc, field, constraints, schema, environment):
+        solve = self.field_solver(field, constraints, schema)
+        if solve:
+            value = solve(join_doc, environment)["value"]
+            if doc is not None:
+                if self.group:
+                    field = f"{self.group}.{field}"
+                emit_field(doc, field, value)
+            return value
 
 
 class Field:
