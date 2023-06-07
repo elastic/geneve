@@ -34,7 +34,7 @@ random = random.Random()
 
 class Digraph(graphviz.Digraph):
     def _repr_mimebundle_(self, *args, **kwargs):
-        bundle = super(graphviz.Digraph, self)._repr_mimebundle_(*args, **kwargs)
+        bundle = super()._repr_mimebundle_(*args, **kwargs)
         bundle["text/plain"] = None
         return bundle
 

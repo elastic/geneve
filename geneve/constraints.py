@@ -29,7 +29,7 @@ from .utils.hdict import hdict
 class ConflictError(ValueError):
     def __init__(self, msg, field, name=None):
         name = f" {name}" if name else ""
-        super(ConflictError, self).__init__(f"Unsolvable constraints{name}: {field} ({msg})")
+        super().__init__(f"Unsolvable constraints{name}: {field} ({msg})")
 
 
 class Document:
@@ -139,7 +139,7 @@ class Branch(List[Document]):
     def __iter__(self):
         if not self:
             raise ValueError("Branch without constraints")
-        return super(Branch, self).__iter__()
+        return super().__iter__()
 
     def __mul__(self, other):
         return Branch(x + y for x in self for y in other)
@@ -174,7 +174,7 @@ class Root(List[Branch]):
     def __iter__(self):
         if not self:
             raise ValueError("Root without branches")
-        return super(Root, self).__iter__()
+        return super().__iter__()
 
     def fields(self):
         return set(["@timestamp"]) | set(chain(*(branch.fields() for branch in self)))
