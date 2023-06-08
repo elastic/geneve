@@ -4,6 +4,7 @@ elasticsearch>=8.2.0
 eql>=0.9.12
 faker==18.10.0
 faker-datasets
+infinite-sets
 nbformat
 pytest
 pytoml

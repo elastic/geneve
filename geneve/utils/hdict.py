@@ -46,6 +46,9 @@ class hdict:
     def __init__(self):
         self.__top_level = {}
 
+    def __repr__(self):
+        return repr(self.__top_level)
+
     def __eq__(self, other):
         return self.__top_level == other.__top_level
 
