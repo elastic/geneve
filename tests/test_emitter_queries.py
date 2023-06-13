@@ -147,6 +147,10 @@ mono_branch_mono_doc = {
     """: [
         [{"event": {"category": ["process"]}, "process": {"name": "regsvr32.exe", "parent": {"name": "cmd.exe"}}}],
     ],
+    """process where process.name : ("*.EXE", "*.DLL")
+    """: [
+        [{"event": {"category": ["process"]}, "process": {"name": "LeneQZk.EXE"}}],
+    ],
     """process where process.args != null
     """: [
         [{"event": {"category": ["process"]}, "process": {"args": ["CJI"]}}],
@@ -225,11 +229,6 @@ multi_branch_mono_doc = {
     """: [
         [{"event": {"category": ["network"]}, "destination": {"port": 80}}],
         [{"event": {"category": ["network"]}, "destination": {"port": 443}}],
-    ],
-    """process where process.name : ("*.EXE", "*.DLL")
-    """: [
-        [{"event": {"category": ["process"]}, "process": {"name": "LeneQZk.EXE"}}],
-        [{"event": {"category": ["process"]}, "process": {"name": "DDGexfWHqOtavH.DLL"}}],
     ],
     """process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
     """: [
