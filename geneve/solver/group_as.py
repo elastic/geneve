@@ -31,9 +31,15 @@ faker = Faker()
 @solver("threat.enrichments.indicator.as.")
 @solver("threat.indicator.as.")
 class ASEntity(Entity):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if "number" not in self.fields:
+            self.fields["number"] = self.field_solver("number")
+
     def solve(self, doc, join_doc, env):
         entities = env.setdefault("entities", {}).setdefault("as", {})
-        asn = self.solve_field(None, join_doc, "number", [], env)
+        asn = self.solve_field(None, join_doc, "number", env)
         org_name = entities.get(asn, None)
         if org_name is None:
             org_name = faker.company()

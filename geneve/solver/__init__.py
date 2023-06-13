@@ -76,16 +76,14 @@ class solver:  # noqa: N801
 
 
 class Entity:
+    ecs_constraints = {}
+
     def __init__(self, group, fields, schema):
         self.group = group
-        self.fields = fields
         self.schema = schema
+        self.fields = {field: self.field_solver(field, constraints) for field, constraints in fields.items()}
 
-    def solve(self, doc, join_doc, environment):
-        for field, constraints in self.fields.items():
-            self.solve_field(doc, join_doc, field, constraints, environment)
-
-    def field_solver(self, field, constraints):
+    def field_solver(self, field, constraints=[]):
         if constraints is not None:
             if self.group:
                 field = f"{self.group}.{field}"
@@ -95,11 +93,15 @@ class Entity:
             field_solver = solver.solvers.get(f"&{field_type}", None)
             if not field_solver:
                 raise NotImplementedError(f"Constraints solver not implemented: {field_type}")
-            constraints = constraints + get_ecs_constraints(field_solver, field)
+            constraints = constraints + get_ecs_constraints(self, field) + get_ecs_constraints(field_solver, field)
             return field_solver(field, constraints, field_is_array, self.group)
 
-    def solve_field(self, doc, join_doc, field, constraints, environment):
-        solve = self.field_solver(field, constraints)
+    def solve(self, doc, join_doc, environment):
+        for field in self.fields:
+            self.solve_field(doc, join_doc, field, environment)
+
+    def solve_field(self, doc, join_doc, field, environment):
+        solve = self.fields[field]
         if solve:
             value = solve(join_doc, environment)["value"]
             if doc is not None:
