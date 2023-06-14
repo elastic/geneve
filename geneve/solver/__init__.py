@@ -97,18 +97,9 @@ class Entity:
             return field_solver(field, constraints, field_is_array)
 
     def solve(self, doc, join_doc, environment):
-        for field in self.fields:
-            self.solve_field(doc, join_doc, field, environment)
-
-    def solve_field(self, doc, join_doc, field, environment):
-        solve = self.fields[field]
-        if solve:
-            value = solve(join_doc, environment)["value"]
-            if doc is not None:
-                if self.group:
-                    field = f"{self.group}.{field}"
-                emit_field(doc, field, value)
-            return value
+        for field, solver in self.fields.items():
+            if solver:
+                solver.solve_field(doc, join_doc, environment)
 
     def emit_group(self, doc, values):
         emit_group(doc, self.group, values)
@@ -181,6 +172,12 @@ class Field:
 
     def solve(self, left_attempts, environment):
         pass
+
+    def solve_field(self, doc, join_doc, environment):
+        value = self(join_doc, environment)["value"]
+        if doc is not None:
+            emit_field(doc, self.field, value)
+        return value
 
 
 def load_solvers():
