@@ -4,9 +4,9 @@ This report captures the unit test queries signals generation coverage.
 Here you can learn what queries are supported.
 
 ## Table of contents
-   1. [Rules with the correct signals (54)](#rules-with-the-correct-signals-54)
+   1. [Rules with the correct signals (55)](#rules-with-the-correct-signals-55)
 
-## Rules with the correct signals (54)
+## Rules with the correct signals (55)
 
 ### Rule 000
 
@@ -179,7 +179,7 @@ process where process.name != "regsvr32.exe"
 ```
 
 ```python
-[{'process': {'name': 'ZFy'}, 'event': {'category': ['process']}, '@timestamp': 0}]
+[{'process': {'name': 'TvCfUyyFjS'}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -371,7 +371,7 @@ process where process.args != null
 ```
 
 ```python
-[{'process': {'args': ['ZFy']}, 'event': {'category': ['process']}, '@timestamp': 0}]
+[{'process': {'args': ['TvCfUyyFjS']}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -499,7 +499,7 @@ event.category:network and destination.ip:"822e::/16"
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'destination': {'ip': '822e:c14a:e6ea:94e4:e5ac:b58c:1b43:3a53'}, '@timestamp': 0}]
+[{'event': {'category': ['network']}, 'destination': {'ip': '822e:3686:aa79:ec58:8d14:2981:f18d:f2a6'}, '@timestamp': 0}]
 ```
 
 
@@ -531,24 +531,23 @@ event.category:network and host.ip:"822e::/96"
 ```
 
 ```python
-[{'event': {'category': ['network']}, 'host': {'ip': ['822e::e6ea:94e4']}, '@timestamp': 0}]
+[{'event': {'category': ['network']}, 'host': {'ip': ['822e::aa79:ec58']}, '@timestamp': 0}]
 ```
 
 
 
 ### Rule 033
 
-Branch count: 2  
-Document count: 2  
+Branch count: 1  
+Document count: 1  
 Index: geneve-ut-033
 
 ```python
-network where not (source.port > 512 and source.port < 1024)
+event.category:process and not process.args : (TRUE or true)
 ```
 
 ```python
-[{'source': {'port': 488}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 28447}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'event': {'category': ['process']}, 'process': {'args': ['XIUtkNI']}, '@timestamp': 0}]
 ```
 
 
@@ -560,12 +559,12 @@ Document count: 2
 Index: geneve-ut-034
 
 ```python
-network where source.port > 512 or source.port < 1024
+network where not (source.port > 512 and source.port < 1024)
 ```
 
 ```python
-[{'source': {'port': 59173}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 628}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'source': {'port': 488}, 'event': {'category': ['network']}, '@timestamp': 0},
+ {'source': {'port': 62861}, 'event': {'category': ['network']}, '@timestamp': 1}]
 ```
 
 
@@ -577,12 +576,12 @@ Document count: 2
 Index: geneve-ut-035
 
 ```python
-network where source.port < 2000 and (source.port > 512 or source.port > 1024)
+network where source.port > 512 or source.port < 1024
 ```
 
 ```python
-[{'source': {'port': 1768}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 1915}, 'event': {'category': ['network']}, '@timestamp': 1}]
+[{'source': {'port': 59173}, 'event': {'category': ['network']}, '@timestamp': 0},
+ {'source': {'port': 429}, 'event': {'category': ['network']}, '@timestamp': 1}]
 ```
 
 
@@ -594,21 +593,38 @@ Document count: 2
 Index: geneve-ut-036
 
 ```python
-network where (source.port > 512 or source.port > 1024) and source.port < 2000
+network where source.port < 2000 and (source.port > 512 or source.port > 1024)
 ```
 
 ```python
 [{'source': {'port': 1768}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 1915}, 'event': {'category': ['network']}, '@timestamp': 1}]
+ {'source': {'port': 1453}, 'event': {'category': ['network']}, '@timestamp': 1}]
 ```
 
 
 
 ### Rule 037
 
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-037
+
+```python
+network where (source.port > 512 or source.port > 1024) and source.port < 2000
+```
+
+```python
+[{'source': {'port': 1768}, 'event': {'category': ['network']}, '@timestamp': 0},
+ {'source': {'port': 1453}, 'event': {'category': ['network']}, '@timestamp': 1}]
+```
+
+
+
+### Rule 038
+
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-037
+Index: geneve-ut-038
 
 ```python
 network where (source.port > 1024 or source.port < 2000) and (source.port < 4000 or source.port > 512)
@@ -616,18 +632,18 @@ network where (source.port > 1024 or source.port < 2000) and (source.port < 4000
 
 ```python
 [{'source': {'port': 3536}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 58008}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'source': {'port': 975}, 'event': {'category': ['network']}, '@timestamp': 2},
- {'source': {'port': 1369}, 'event': {'category': ['network']}, '@timestamp': 3}]
+ {'source': {'port': 28448}, 'event': {'category': ['network']}, '@timestamp': 1},
+ {'source': {'port': 1838}, 'event': {'category': ['network']}, '@timestamp': 2},
+ {'source': {'port': 1493}, 'event': {'category': ['network']}, '@timestamp': 3}]
 ```
 
 
 
-### Rule 038
+### Rule 039
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-038
+Index: geneve-ut-039
 
 ```python
 network where destination.port in (80, 443)
@@ -640,11 +656,11 @@ network where destination.port in (80, 443)
 
 
 
-### Rule 039
+### Rule 040
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-039
+Index: geneve-ut-040
 
 ```python
 process where process.name : ("*.EXE", "*.DLL")
@@ -652,16 +668,16 @@ process where process.name : ("*.EXE", "*.DLL")
 
 ```python
 [{'process': {'name': 'XIUtkNI.EXE'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'ixTFlEzswuEEXp.DLL'}, 'event': {'category': ['process']}, '@timestamp': 1}]
+ {'process': {'name': 'xTFlEzs.DLL'}, 'event': {'category': ['process']}, '@timestamp': 1}]
 ```
 
 
 
-### Rule 040
+### Rule 041
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-040
+Index: geneve-ut-041
 
 ```python
 process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
@@ -674,24 +690,6 @@ process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
 
 
 
-### Rule 041
-
-Branch count: 3  
-Document count: 3  
-Index: geneve-ut-041
-
-```python
-process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or process.name == "powershell.exe"
-```
-
-```python
-[{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 2}]
-```
-
-
-
 ### Rule 042
 
 Branch count: 3  
@@ -699,7 +697,7 @@ Document count: 3
 Index: geneve-ut-042
 
 ```python
-process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
+process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or process.name == "powershell.exe"
 ```
 
 ```python
@@ -717,7 +715,7 @@ Document count: 3
 Index: geneve-ut-043
 
 ```python
-process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "powershell.exe"
+process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
 ```
 
 ```python
@@ -730,9 +728,27 @@ process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "po
 
 ### Rule 044
 
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-044
+
+```python
+process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "powershell.exe"
+```
+
+```python
+[{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 2}]
+```
+
+
+
+### Rule 045
+
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-044
+Index: geneve-ut-045
 
 ```python
 process where event.type in ("start", "process_started") and process.args : "dump-keychain" and process.args : "-d"
@@ -745,11 +761,11 @@ process where event.type in ("start", "process_started") and process.args : "dum
 
 
 
-### Rule 045
+### Rule 046
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-045
+Index: geneve-ut-046
 
 ```python
 event.type:(start or process_started) and (process.args:"dump-keychain" and process.args:"-d")
@@ -762,11 +778,11 @@ event.type:(start or process_started) and (process.args:"dump-keychain" and proc
 
 
 
-### Rule 046
+### Rule 047
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-046
+Index: geneve-ut-047
 
 ```python
 sequence
@@ -781,11 +797,11 @@ sequence
 
 
 
-### Rule 047
+### Rule 048
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-047
+Index: geneve-ut-048
 
 ```python
 sequence by user.id
@@ -794,27 +810,8 @@ sequence by user.id
 ```
 
 ```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'ZFy'}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'ZFy'}, '@timestamp': 1}]
-```
-
-
-
-### Rule 048
-
-Branch count: 1  
-Document count: 2  
-Index: geneve-ut-048
-
-```python
-sequence
-        [process where process.name : "cmd.exe"] by user.id
-        [process where process.parent.name : "cmd.exe"] by user.name
-```
-
-```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'ZFy'}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'name': 'ZFy'}, '@timestamp': 1}]
+[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 1}]
 ```
 
 
@@ -827,22 +824,41 @@ Index: geneve-ut-049
 
 ```python
 sequence
-        [process where process.name : "*.exe"] by process.name
-        [process where process.name : "*.dll"] by process.parent.name
+        [process where process.name : "cmd.exe"] by user.id
+        [process where process.parent.name : "cmd.exe"] by user.name
 ```
 
 ```python
-[{'process': {'name': 'XIUtkNI.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'ixTFlEzswuEEXp.dll', 'parent': {'name': 'XIUtkNI.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1}]
+[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'name': 'TvCfUyyFjS'}, '@timestamp': 1}]
 ```
 
 
 
 ### Rule 050
 
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-050
+
+```python
+sequence
+        [process where process.name : "*.exe"] by process.name
+        [process where process.name : "*.dll"] by process.parent.name
+```
+
+```python
+[{'process': {'name': 'XIUtkNI.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'process': {'name': 'xTFlEzs.dll', 'parent': {'name': 'XIUtkNI.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1}]
+```
+
+
+
+### Rule 051
+
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-050
+Index: geneve-ut-051
 
 ```python
 sequence
@@ -859,11 +875,11 @@ sequence
 
 
 
-### Rule 051
+### Rule 052
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-051
+Index: geneve-ut-052
 
 ```python
 sequence by user.id
@@ -872,19 +888,19 @@ sequence by user.id
 ```
 
 ```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'ZFy'}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'ZFy'}, '@timestamp': 1},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'XIU'}, '@timestamp': 2},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'XIU'}, '@timestamp': 3}]
+[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
+ {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 1},
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 2},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 3}]
 ```
 
 
 
-### Rule 052
+### Rule 053
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-052
+Index: geneve-ut-053
 
 ```python
 sequence
@@ -905,11 +921,11 @@ sequence
 
 
 
-### Rule 053
+### Rule 054
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-053
+Index: geneve-ut-054
 
 ```python
 sequence by user.id
@@ -918,12 +934,12 @@ sequence by user.id
 ```
 
 ```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'ZFy'}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'ZFy'}, '@timestamp': 1},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'XIU'}, '@timestamp': 2},
- {'process': {'name': 'powershell.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'XIU'}, '@timestamp': 3},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'tkN'}, '@timestamp': 4},
- {'process': {'name': 'cmd.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'tkN'}, '@timestamp': 5},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'Ioi'}, '@timestamp': 6},
- {'process': {'name': 'powershell.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'Ioi'}, '@timestamp': 7}]
+[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
+ {'process': {'name': 'cmd.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 1},
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 2},
+ {'process': {'name': 'powershell.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 3},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'F'}, '@timestamp': 4},
+ {'process': {'name': 'cmd.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'F'}, '@timestamp': 5},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'zKNyyQDpUE'}, '@timestamp': 6},
+ {'process': {'name': 'powershell.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'zKNyyQDpUE'}, '@timestamp': 7}]
 ```

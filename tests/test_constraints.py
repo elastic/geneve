@@ -657,20 +657,20 @@ constraints_ip_exceptions = [
 ]
 
 constraints_keyword = [
-    ([], {"value": "ZFy"}),
-    ([], {"value": "ZFy"}),
+    ([], {"value": "TvCfUyyFjS"}),
+    ([], {"value": "TvCfUyyFjS"}),
     (
         [
-            ("!=", "ZFy"),
+            ("!=", "TvCfUyyFjS"),
         ],
-        {"value": "XIU"},
+        {"value": "xTFlEzs"},
     ),
     (
         [
-            ("!=", "ZFy"),
-            ("!=", "XIU"),
+            ("!=", "TvCfUyyFjS"),
+            ("!=", "xTFlEzs"),
         ],
-        {"value": "tkN"},
+        {"value": "xBnLeOAa"},
     ),
     (
         [
@@ -681,17 +681,17 @@ constraints_keyword = [
     (
         [
             ("wildcard", "*.exe"),
-            ("not wildcard", "XIUt*.exe"),
+            ("not wildcard", "XIUtk*.exe"),
         ],
-        {"value": "ixTFlEzswuEEXp.exe"},
+        {"value": "vIL.exe"},
     ),
     (
         [
             ("wildcard", "*.exe"),
-            ("not wildcard", "XIUt*.exe"),
-            ("not wildcard", "ixTF*.exe"),
+            ("not wildcard", "XIUtk*.exe"),
+            ("not wildcard", "*IL.exe"),
         ],
-        {"value": "N.exe"},
+        {"value": "Ezswu.exe"},
     ),
     (
         [
@@ -738,9 +738,9 @@ constraints_keyword_cardinality = [
     (
         [],
         [
-            {"value": "ZFy"},
-            {"value": "XIU"},
-            {"value": "tkN"},
+            {"value": "TvCfUyyFjS"},
+            {"value": "xTFlEzs"},
+            {"value": "xBnLeOAa"},
         ],
     ),
     (
@@ -748,9 +748,9 @@ constraints_keyword_cardinality = [
             ("cardinality", 0),
         ],
         [
-            {"value": "ZFy"},
-            {"value": "XIU"},
-            {"value": "tkN"},
+            {"value": "TvCfUyyFjS"},
+            {"value": "xTFlEzs"},
+            {"value": "xBnLeOAa"},
         ],
     ),
     (
@@ -758,9 +758,9 @@ constraints_keyword_cardinality = [
             ("cardinality", 1),
         ],
         [
-            {"value": "ZFy"},
-            {"value": "ZFy"},
-            {"value": "ZFy"},
+            {"value": "TvCfUyyFjS"},
+            {"value": "TvCfUyyFjS"},
+            {"value": "TvCfUyyFjS"},
         ],
     ),
     (
@@ -768,11 +768,11 @@ constraints_keyword_cardinality = [
             ("cardinality", 2),
         ],
         [
-            {"value": "ZFy"},
-            {"value": "XIU"},
-            {"value": "XIU"},
-            {"value": "XIU"},
-            {"value": "ZFy"},
+            {"value": "TvCfUyyFjS"},
+            {"value": "xTFlEzs"},
+            {"value": "xTFlEzs"},
+            {"value": "xTFlEzs"},
+            {"value": "xTFlEzs"},
         ],
     ),
     (
@@ -780,13 +780,13 @@ constraints_keyword_cardinality = [
             ("cardinality", 3),
         ],
         [
-            {"value": "ZFy"},
-            {"value": "XIU"},
-            {"value": "tkN"},
-            {"value": "tkN"},
-            {"value": "ZFy"},
-            {"value": "XIU"},
-            {"value": "ZFy"},
+            {"value": "TvCfUyyFjS"},
+            {"value": "xTFlEzs"},
+            {"value": "xBnLeOAa"},
+            {"value": "TvCfUyyFjS"},
+            {"value": "TvCfUyyFjS"},
+            {"value": "TvCfUyyFjS"},
+            {"value": "TvCfUyyFjS"},
         ],
     ),
 ]
@@ -797,63 +797,63 @@ constraints_keyword_exceptions = [
             ("!=", "cmd.exe"),
             ("==", "cmd.exe"),
         ],
-        "Unsolvable constraints: test_var (cannot be 'cmd.exe')",
+        "Unsolvable constraints: test_var (not in Strings(everything(), exclude=Strings({'cmd.exe'})): ('cmd.exe'))",
     ),
     (
         [
             ("==", "cmd.exe"),
             ("!=", "cmd.exe"),
         ],
-        "Unsolvable constraints: test_var (cannot be 'cmd.exe')",
+        "Unsolvable constraints: test_var (excluded by Strings({'cmd.exe'}): ('cmd.exe'))",
     ),
     (
         [
             ("==", "cmd.exe"),
             ("not wildcard", "*.exe"),
         ],
-        "Unsolvable constraints: test_var (cannot match '*.exe')",
+        "Unsolvable constraints: test_var (excluded by Strings({'cmd.exe'}): ('*.exe'))",
     ),
     (
         [
             ("wildcard", "powershell.exe"),
             ("==", "cmd.exe"),
         ],
-        "Unsolvable constraints ==: test_var (is already 'powershell.exe', cannot set to 'cmd.exe')",
+        "Unsolvable constraints: test_var (not in Strings({'powershell.exe'}): ('cmd.exe'))",
     ),
     (
         [
             ("wildcard", ("powershell.exe",)),
             ("==", "cmd.exe"),
         ],
-        "Unsolvable constraints ==: test_var (is already 'powershell.exe', cannot set to 'cmd.exe')",
+        "Unsolvable constraints: test_var (not in Strings({'powershell.exe'}): ('cmd.exe'))",
     ),
     (
         [
             ("wildcard", "cmd.exe"),
             ("wildcard", "powershell.exe"),
         ],
-        "Unsolvable constraints wildcard: test_var (is already 'cmd.exe', cannot set to 'powershell.exe')",
+        "Unsolvable constraints: test_var (not in Strings({'cmd.exe'}): ('powershell.exe'))",
     ),
     (
         [
             ("wildcard", ("cmd.exe", "powershell.exe")),
             ("==", "regedit.exe"),
         ],
-        "Unsolvable constraints: test_var (does not match any of ('cmd.exe', 'powershell.exe'))",
+        "Unsolvable constraints: test_var (not in Strings({'cmd.exe', 'powershell.exe'}): ('regedit.exe'))",
     ),
     (
         [
             ("wildcard", ("cmd.exe", "powershell.exe")),
             ("not wildcard", "*.exe"),
         ],
-        "Unsolvable constraints: test_var (filtered wildcard(s): ('cmd.exe', 'powershell.exe') are filtered out by ('*.exe'))",
+        "Unsolvable constraints: test_var (excluded by Strings({'cmd.exe', 'powershell.exe'}): ('*.exe'))",
     ),  # noqa: E501
     (
         [
             ("wildcard", ("cmd.exe", "powershell.exe")),
             ("not wildcard", ("*.exe", "cmd.*")),
         ],
-        "Unsolvable constraints: test_var (filtered wildcard(s): ('cmd.exe', 'powershell.exe') are filtered out by ('*.exe', 'cmd.*'))",
+        "Unsolvable constraints: test_var (excluded by Strings({'cmd.exe', 'powershell.exe'}): ('*.exe', 'cmd.*'))",
     ),  # noqa: E501
 ]
 
@@ -961,25 +961,27 @@ constraints_exceptions = [
 
 
 class TestConstraints(tu.SeededTestCase, unittest.TestCase):
+    maxDiff = None
+
     def test_long(self):
         from geneve.solver.type_long import LongField as solver
 
         for i, (constraints, test_value) in enumerate(constraints_long):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_value, solver("test_var", constraints, None)(None, env))
+                self.assertEqual(test_value, solver("test_var", constraints, [], None)(None, env))
 
         for i, (constraints, msg) in enumerate(constraints_long_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     env = {}
-                    self.assertEqual(None, solver("test_var", constraints, None)(None, env))
+                    self.assertEqual(None, solver("test_var", constraints, [], None)(None, env))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_long_cardinality):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_values, [solver("test_var", constraints, None)(None, env) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, [], None)(None, env) for _ in test_values])
 
     def test_geo_point(self):
         from geneve.solver.type_geo_point import GeoPointField as solver
@@ -987,19 +989,19 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_geo_point):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_value, solver("test_var", constraints, None)(None, env))
+                self.assertEqual(test_value, solver("test_var", constraints, [], None)(None, env))
 
         for i, (constraints, msg) in enumerate(constraints_geo_point_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     env = {}
-                    self.assertEqual(None, solver("test_var", constraints, None)(None, env))
+                    self.assertEqual(None, solver("test_var", constraints, [], None)(None, env))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_geo_point_cardinality):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_values, [solver("test_var", constraints, None)(None, env) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, [], None)(None, env) for _ in test_values])
 
     def test_ip(self):
         from geneve.solver.type_ip import IPField as solver
@@ -1007,19 +1009,19 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_ip):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_value, solver("test_var", constraints, None)(None, env))
+                self.assertEqual(test_value, solver("test_var", constraints, [], None)(None, env))
 
         for i, (constraints, msg) in enumerate(constraints_ip_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     env = {}
-                    self.assertEqual(None, solver("test_var", constraints, None)(None, env))
+                    self.assertEqual(None, solver("test_var", constraints, [], None)(None, env))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_ip_cardinality):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_values, [solver("test_var", constraints, None)(None, env) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, [], None)(None, env) for _ in test_values])
 
     def test_keyword(self):
         from geneve.solver.type_keyword import KeywordField as solver
@@ -1027,19 +1029,19 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_keyword):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_value, solver("test_var", constraints, None)(None, env))
+                self.assertEqual(test_value, solver("test_var", constraints, [], None)(None, env))
 
         for i, (constraints, msg) in enumerate(constraints_keyword_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     env = {}
-                    self.assertEqual(None, solver("test_var", constraints, None)(None, env))
+                    self.assertEqual(None, solver("test_var", constraints, [], None)(None, env))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_keyword_cardinality):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_values, [solver("test_var", constraints, None)(None, env) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, [], None)(None, env) for _ in test_values])
 
     def test_entity(self):
         schema = {}
@@ -1076,6 +1078,8 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
 
 
 class TestBranches(tu.SeededTestCase, unittest.TestCase):
+    maxDiff = None
+
     def test_fields(self):
         for a, fields in branch_fields:
             a = Branch([Document.from_dict(x) for x in a])
@@ -1108,14 +1112,14 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
         self.assertEqual(
             [
                 {"process": {"name": "LbS.exe"}},
-                {"process": {"name": "lwfFIAXQgMefK.dll", "parent": {"name": "LbS.exe"}}},
+                {"process": {"name": "rJjN.dll", "parent": {"name": "LbS.exe"}}},
             ],
             list(branch.solve({})),
         )
         self.assertEqual(
             [
-                {"process": {"name": "OWrl.bat"}},
-                {"process": {"name": "lywc.scr", "parent": {"name": "OWrl.bat"}}},
+                {"process": {"name": "gMefKdjabqgZ.exe"}},
+                {"process": {"name": "Siid.dll", "parent": {"name": "gMefKdjabqgZ.exe"}}},
             ],
             list(branch.solve({})),
         )

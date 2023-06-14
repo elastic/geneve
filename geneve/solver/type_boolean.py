@@ -26,10 +26,10 @@ from . import Field, solver
 class BooleanField(Field):
     valid_constraints = ["==", "!="]
 
-    def __init__(self, field, constraints, schema):
-        super().__init__(field, constraints, schema)
+    def __init__(self, field, constraints, field_constraints, schema):
+        super().__init__(field, constraints, field_constraints, schema)
 
-        for k, v, *_ in constraints:
+        for k, v, *_ in constraints + field_constraints:
             if k == "==":
                 v = bool(v)
                 if self.value is None or self.value == v:

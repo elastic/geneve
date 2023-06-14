@@ -93,8 +93,8 @@ class Entity:
             field_solver = solver.solvers.get(f"&{field_type}", None)
             if not field_solver:
                 raise NotImplementedError(f"Constraints solver not implemented: {field_type}")
-            constraints = constraints + get_ecs_constraints(self, field) + get_ecs_constraints(field_solver, field)
-            return field_solver(field, constraints, field_is_array)
+            field_constraints = get_ecs_constraints(self, field) + get_ecs_constraints(field_solver, field)
+            return field_solver(field, constraints, field_constraints, field_is_array)
 
     def solve(self, doc, join_doc, environment):
         for field, solver in self.fields.items():
@@ -110,7 +110,7 @@ class Field:
     ecs_constraints = {}
     type = None
 
-    def __init__(self, field, constraints, is_array):
+    def __init__(self, field, constraints, field_constraints, is_array):
         self.field = field
         self.value = [] if is_array else None
         self.is_array = is_array
@@ -120,7 +120,7 @@ class Field:
 
         valid_constraints = self.common_constraints + getattr(self, "valid_constraints", [])
 
-        for k, v, *flags in constraints:
+        for k, v, *flags in constraints + field_constraints:
             if k not in valid_constraints:
                 raise NotImplementedError(f"Unsupported {self.type} '{field}' constraint: {k}")
             if k == "join_value":
