@@ -34,8 +34,8 @@ def match_nets(values, nets):
 class IPField(Field):
     valid_constraints = ["==", "!=", "in", "not in"]
 
-    def __init__(self, field, constraints, schema, group):
-        super().__init__(field, constraints, schema, group)
+    def __init__(self, field, constraints, schema):
+        super().__init__(field, constraints, schema)
 
         self.include_nets = set()
         self.exclude_nets = set()

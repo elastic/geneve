@@ -94,7 +94,7 @@ class Entity:
             if not field_solver:
                 raise NotImplementedError(f"Constraints solver not implemented: {field_type}")
             constraints = constraints + get_ecs_constraints(self, field) + get_ecs_constraints(field_solver, field)
-            return field_solver(field, constraints, field_is_array, self.group)
+            return field_solver(field, constraints, field_is_array)
 
     def solve(self, doc, join_doc, environment):
         for field in self.fields:
@@ -119,8 +119,8 @@ class Field:
     ecs_constraints = {}
     type = None
 
-    def __init__(self, field, constraints, is_array, group=None):
-        self.field = f"{group}.{field}" if group else field
+    def __init__(self, field, constraints, is_array):
+        self.field = field
         self.value = [] if is_array else None
         self.is_array = is_array
         self.join_field_parts = None
