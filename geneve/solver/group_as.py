@@ -19,7 +19,7 @@
 
 from faker import Faker
 
-from geneve.solver import Entity, emit_group, solver
+from geneve.solver import Entity, solver
 
 faker = Faker()
 
@@ -44,4 +44,4 @@ class ASEntity(Entity):
         if org_name is None:
             org_name = faker.company()
             entities[asn] = org_name
-        emit_group(doc, self.group, {"number": asn, "organization.name": org_name})
+        self.emit_group(doc, {"number": asn, "organization.name": org_name})

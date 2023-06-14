@@ -110,6 +110,9 @@ class Entity:
                 emit_field(doc, field, value)
             return value
 
+    def emit_group(self, doc, values):
+        emit_group(doc, self.group, values)
+
 
 class Field:
     common_constraints = ["join_value", "max_attempts", "cardinality"]

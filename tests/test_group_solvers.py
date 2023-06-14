@@ -21,7 +21,7 @@ import unittest
 
 import tests.utils as tu
 from geneve.constraints import Document
-from geneve.solver import Entity, emit_group, solver
+from geneve.solver import Entity, solver
 
 
 class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
@@ -46,7 +46,7 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
         @solver("test2.geo.")
         class TestGeoEntity(Entity):
             def solve(self, doc, join_doc, env):
-                emit_group(doc, self.group, {"lat": 0.0, "lon": 0.0})
+                self.emit_group(doc, {"lat": 0.0, "lon": 0.0})
 
         join_doc = {}
         schema = {}

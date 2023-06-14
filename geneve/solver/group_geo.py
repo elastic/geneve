@@ -19,7 +19,7 @@
 
 from faker import Faker
 
-from geneve.solver import Entity, emit_group, solver
+from geneve.solver import Entity, solver
 
 faker = Faker()
 
@@ -36,4 +36,4 @@ class GeoEntity(Entity):
             "country_iso_code": lol[3],
             "timezone": lol[4],
         }
-        emit_group(doc, self.group, geo)
+        self.emit_group(doc, geo)
