@@ -967,19 +967,19 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_long):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_value, solver("test_var", constraints, None, None)(None, env))
+                self.assertEqual(test_value, solver("test_var", constraints, None)(None, env))
 
         for i, (constraints, msg) in enumerate(constraints_long_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     env = {}
-                    self.assertEqual(None, solver("test_var", constraints, None, None)(None, env))
+                    self.assertEqual(None, solver("test_var", constraints, None)(None, env))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_long_cardinality):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(None, env) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None)(None, env) for _ in test_values])
 
     def test_geo_point(self):
         from geneve.solver.type_geo_point import GeoPointField as solver
@@ -987,19 +987,19 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_geo_point):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_value, solver("test_var", constraints, None, None)(None, env))
+                self.assertEqual(test_value, solver("test_var", constraints, None)(None, env))
 
         for i, (constraints, msg) in enumerate(constraints_geo_point_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     env = {}
-                    self.assertEqual(None, solver("test_var", constraints, None, None)(None, env))
+                    self.assertEqual(None, solver("test_var", constraints, None)(None, env))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_geo_point_cardinality):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(None, env) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None)(None, env) for _ in test_values])
 
     def test_ip(self):
         from geneve.solver.type_ip import IPField as solver
@@ -1007,19 +1007,19 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_ip):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_value, solver("test_var", constraints, None, None)(None, env))
+                self.assertEqual(test_value, solver("test_var", constraints, None)(None, env))
 
         for i, (constraints, msg) in enumerate(constraints_ip_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     env = {}
-                    self.assertEqual(None, solver("test_var", constraints, None, None)(None, env))
+                    self.assertEqual(None, solver("test_var", constraints, None)(None, env))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_ip_cardinality):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(None, env) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None)(None, env) for _ in test_values])
 
     def test_keyword(self):
         from geneve.solver.type_keyword import KeywordField as solver
@@ -1027,21 +1027,22 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         for i, (constraints, test_value) in enumerate(constraints_keyword):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_value, solver("test_var", constraints, None, None)(None, env))
+                self.assertEqual(test_value, solver("test_var", constraints, None)(None, env))
 
         for i, (constraints, msg) in enumerate(constraints_keyword_exceptions + constraints_exceptions):
             with self.subTest(constraints, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
                     env = {}
-                    self.assertEqual(None, solver("test_var", constraints, None, None)(None, env))
+                    self.assertEqual(None, solver("test_var", constraints, None)(None, env))
                 self.assertEqual(msg, str(cm.exception))
 
         for i, (constraints, test_values) in enumerate(constraints_keyword_cardinality):
             with self.subTest(constraints, i=i):
                 env = {}
-                self.assertEqual(test_values, [solver("test_var", constraints, None, None)(None, env) for _ in test_values])
+                self.assertEqual(test_values, [solver("test_var", constraints, None)(None, env) for _ in test_values])
 
     def test_entity(self):
+        schema = {}
         d = Document()
 
         for field in [
@@ -1056,7 +1057,7 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         ]:
             d.append_constraint(field)
 
-        d.consolidate()
+        d.consolidate(schema)
         entities = list(d.entities())
 
         self.assertEqual(
@@ -1102,26 +1103,26 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
         d2 = jd.join_fields(d2, ["process.parent.name"])
 
         branch = Branch([d1, d2])
-        branch.consolidate()
+        branch.consolidate(schema)
 
         self.assertEqual(
             [
                 {"process": {"name": "LbS.exe"}},
                 {"process": {"name": "lwfFIAXQgMefK.dll", "parent": {"name": "LbS.exe"}}},
             ],
-            list(branch.solve(schema, {})),
+            list(branch.solve({})),
         )
         self.assertEqual(
             [
                 {"process": {"name": "OWrl.bat"}},
                 {"process": {"name": "lywc.scr", "parent": {"name": "OWrl.bat"}}},
             ],
-            list(branch.solve(schema, {})),
+            list(branch.solve({})),
         )
         self.assertEqual(
             [
                 {"process": {"name": "lIkqw.bat"}},
                 {"process": {"name": "uxRWqYK.dll", "parent": {"name": "lIkqw.bat"}}},
             ],
-            list(branch.solve(schema, {})),
+            list(branch.solve({})),
         )

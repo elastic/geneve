@@ -26,8 +26,8 @@ from . import Field, solver
 class BooleanField(Field):
     valid_constraints = ["==", "!="]
 
-    def __init__(self, field, constraints, schema, group):
-        super().__init__(field, constraints, schema, group)
+    def __init__(self, field, constraints, schema):
+        super().__init__(field, constraints, schema)
 
         for k, v, *_ in constraints:
             if k == "==":

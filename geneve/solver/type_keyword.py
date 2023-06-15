@@ -56,8 +56,8 @@ def match_wildcards(values, wildcards, case=False):
 class KeywordField(Field):
     valid_constraints = ["==", "!=", "wildcard", "not wildcard", "min_length", "allowed_chars"]
 
-    def __init__(self, field, constraints, schema, group):
-        super().__init__(field, constraints, schema, group)
+    def __init__(self, field, constraints, schema):
+        super().__init__(field, constraints, schema)
 
         self.allowed_chars = string.ascii_letters
         self.include_wildcards = set()

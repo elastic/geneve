@@ -39,8 +39,8 @@ class LongField(Field):
         "port": [(">", 0), ("<", 2**16)],
     }
 
-    def __init__(self, field, constraints, schema, group):
-        super().__init__(field, constraints, schema, group)
+    def __init__(self, field, constraints, schema):
+        super().__init__(field, constraints, schema)
 
         self.min_value = LongLimits.MIN
         self.max_value = LongLimits.MAX

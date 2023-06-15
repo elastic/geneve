@@ -99,9 +99,9 @@ def emit_mappings(fields, schema):
     return mappings
 
 
-def events_from_branch(branch, schema, environment, timestamp, meta):
+def events_from_branch(branch, environment, timestamp, meta):
     events = []
-    for doc in branch.solve(schema, environment):
+    for doc in branch.solve(environment):
         if timestamp:
             emit_field(doc, "@timestamp", timestamp[0].isoformat(timespec="milliseconds"))
             timestamp[0] += timedelta(milliseconds=1)
@@ -109,8 +109,8 @@ def events_from_branch(branch, schema, environment, timestamp, meta):
     return events
 
 
-def events_from_root(root, schema, environment, timestamp):
-    return [events_from_branch(branch, schema, environment, timestamp, root.meta) for branch in root]
+def events_from_root(root, environment, timestamp):
+    return [events_from_branch(branch, environment, timestamp, root.meta) for branch in root]
 
 
 class SourceEvents:
@@ -144,7 +144,7 @@ class SourceEvents:
     def add_ast(self, ast, *, meta=None):
         root = collect_constraints_eql(ast)
         root.meta = meta
-        root.consolidate()
+        root.consolidate(self.schema)
         self.try_emit(root)
         self.__roots.append(root)
         return root
@@ -172,17 +172,15 @@ class SourceEvents:
             timestamp = [datetime.now(timezone.utc).astimezone()]
         if complete:
             if root:
-                events = (events_from_root(root, self.schema, self.__environment, timestamp) for _ in range(count))
+                events = (events_from_root(root, self.__environment, timestamp) for _ in range(count))
             else:
-                events = (events_from_root(root, self.schema, self.__environment, timestamp) for _ in range(count) for root in self.__roots)
+                events = (events_from_root(root, self.__environment, timestamp) for _ in range(count) for root in self.__roots)
         else:
             if root:
-                events = (
-                    events_from_branch(random.choice(root), self.schema, self.__environment, timestamp, root.meta) for _ in range(count)
-                )
+                events = (events_from_branch(random.choice(root), self.__environment, timestamp, root.meta) for _ in range(count))
             else:
                 events = (
-                    events_from_branch(random.choice(root), self.schema, self.__environment, timestamp, root.meta)
+                    events_from_branch(random.choice(root), self.__environment, timestamp, root.meta)
                     for root in random.choices(self.__roots, k=count)
                 )
         return list(chain(*events))
@@ -190,7 +188,7 @@ class SourceEvents:
     def try_emit(self, root):
         state = random.getstate()
         try:
-            _ = events_from_root(root, self.schema, environment={}, timestamp=False)
+            _ = events_from_root(root, environment={}, timestamp=False)
         finally:
             random.setstate(state)
 

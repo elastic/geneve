@@ -123,15 +123,15 @@ class Document:
                 if k == "join_value":
                     return v[0]
 
-    def consolidate(self):
+    def consolidate(self, schema):
         from .solver import solver
 
-        self.__entities = {group: solver.new_entity(group, fields) for group, fields in self.__constraints.groups()}
+        self.__entities = {group: solver.new_entity(group, fields, schema) for group, fields in self.__constraints.groups()}
 
-    def solve(self, join_doc, schema, environment):
+    def solve(self, join_doc, environment):
         doc = {}
         for entity in self.entities():
-            entity.solve(doc, join_doc, schema, environment)
+            entity.solve(doc, join_doc, environment)
         return doc
 
 
@@ -153,16 +153,16 @@ class Branch(List[Document]):
             if join_doc:
                 return join_doc
 
-    def consolidate(self):
+    def consolidate(self, schema):
         self.join_doc = self.__get_join_doc()
         if self.join_doc:
-            self.join_doc.consolidate()
+            self.join_doc.consolidate(schema)
         for constraints in self:
-            constraints.consolidate()
+            constraints.consolidate(schema)
 
-    def solve(self, schema, environment):
-        join_doc = self.join_doc.solve(None, schema, environment) if self.join_doc else None
-        return (constraints.solve(join_doc, schema, environment) for constraints in self)
+    def solve(self, environment):
+        join_doc = self.join_doc.solve(None, environment) if self.join_doc else None
+        return (constraints.solve(join_doc, environment) for constraints in self)
 
 
 Branch.Identity = Branch([Document()])
@@ -182,9 +182,9 @@ class Root(List[Branch]):
     def constraints(self):
         return chain(*self)
 
-    def consolidate(self):
+    def consolidate(self, schema):
         for branch in self:
-            branch.consolidate()
+            branch.consolidate(schema)
 
     @classmethod
     def chain(cls, roots):

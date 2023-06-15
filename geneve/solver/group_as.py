@@ -19,7 +19,7 @@
 
 from faker import Faker
 
-from geneve.solver import Entity, emit_group, solver
+from geneve.solver import Entity, solver
 
 faker = Faker()
 
@@ -31,11 +31,17 @@ faker = Faker()
 @solver("threat.enrichments.indicator.as.")
 @solver("threat.indicator.as.")
 class ASEntity(Entity):
-    def solve(self, doc, join_doc, schema, env):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if "number" not in self.fields:
+            self.fields["number"] = self.field_solver("number")
+
+    def solve(self, doc, join_doc, env):
         entities = env.setdefault("entities", {}).setdefault("as", {})
-        asn = solver.solve_field(None, join_doc, self.group, "number", [], schema, env)
+        asn = self.fields["number"].solve_field(None, join_doc, env)
         org_name = entities.get(asn, None)
         if org_name is None:
             org_name = faker.company()
             entities[asn] = org_name
-        emit_group(doc, self.group, {"number": asn, "organization.name": org_name})
+        self.emit_group(doc, {"number": asn, "organization.name": org_name})
