@@ -564,7 +564,7 @@ network where not (source.port > 512 and source.port < 1024)
 
 ```python
 [{'source': {'port': 488}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 62861}, 'event': {'category': ['network']}, '@timestamp': 1}]
+ {'source': {'port': 44665}, 'event': {'category': ['network']}, '@timestamp': 80}]
 ```
 
 
@@ -581,7 +581,7 @@ network where source.port > 512 or source.port < 1024
 
 ```python
 [{'source': {'port': 59173}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 429}, 'event': {'category': ['network']}, '@timestamp': 1}]
+ {'source': {'port': 967}, 'event': {'category': ['network']}, '@timestamp': 63}]
 ```
 
 
@@ -598,7 +598,7 @@ network where source.port < 2000 and (source.port > 512 or source.port > 1024)
 
 ```python
 [{'source': {'port': 1768}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 1453}, 'event': {'category': ['network']}, '@timestamp': 1}]
+ {'source': {'port': 1991}, 'event': {'category': ['network']}, '@timestamp': 63}]
 ```
 
 
@@ -615,7 +615,7 @@ network where (source.port > 512 or source.port > 1024) and source.port < 2000
 
 ```python
 [{'source': {'port': 1768}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 1453}, 'event': {'category': ['network']}, '@timestamp': 1}]
+ {'source': {'port': 1991}, 'event': {'category': ['network']}, '@timestamp': 63}]
 ```
 
 
@@ -632,9 +632,9 @@ network where (source.port > 1024 or source.port < 2000) and (source.port < 4000
 
 ```python
 [{'source': {'port': 3536}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 28448}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'source': {'port': 1838}, 'event': {'category': ['network']}, '@timestamp': 2},
- {'source': {'port': 1493}, 'event': {'category': ['network']}, '@timestamp': 3}]
+ {'source': {'port': 62862}, 'event': {'category': ['network']}, '@timestamp': 63},
+ {'source': {'port': 981}, 'event': {'category': ['network']}, '@timestamp': 121},
+ {'source': {'port': 1749}, 'event': {'category': ['network']}, '@timestamp': 190}]
 ```
 
 
@@ -651,7 +651,7 @@ network where destination.port in (80, 443)
 
 ```python
 [{'destination': {'port': 80}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'destination': {'port': 443}, 'event': {'category': ['network']}, '@timestamp': 1}]
+ {'destination': {'port': 443}, 'event': {'category': ['network']}, '@timestamp': 63}]
 ```
 
 
@@ -668,7 +668,7 @@ process where process.name : ("*.EXE", "*.DLL")
 
 ```python
 [{'process': {'name': 'XIUtkNI.EXE'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'xTFlEzs.DLL'}, 'event': {'category': ['process']}, '@timestamp': 1}]
+ {'process': {'name': 'ILOoOHmx.DLL'}, 'event': {'category': ['process']}, '@timestamp': 30}]
 ```
 
 
@@ -685,7 +685,7 @@ process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
 
 ```python
 [{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1}]
+ {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 80}]
 ```
 
 
@@ -702,8 +702,8 @@ process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or pro
 
 ```python
 [{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 2}]
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 80},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 151}]
 ```
 
 
@@ -720,8 +720,8 @@ process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
 
 ```python
 [{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 2}]
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 80},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 151}]
 ```
 
 
@@ -738,8 +738,8 @@ process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "po
 
 ```python
 [{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 2}]
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 80},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 151}]
 ```
 
 
@@ -756,7 +756,7 @@ process where event.type in ("start", "process_started") and process.args : "dum
 
 ```python
 [{'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 1}]
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 58}]
 ```
 
 
@@ -773,7 +773,7 @@ event.type:(start or process_started) and (process.args:"dump-keychain" and proc
 
 ```python
 [{'event': {'type': ['start']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 0},
- {'event': {'type': ['process_started']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 1}]
+ {'event': {'type': ['process_started']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 58}]
 ```
 
 
@@ -790,9 +790,9 @@ event.category:process and process.args:a and process.args:(b1 or b2) and proces
 
 ```python
 [{'event': {'category': ['process']}, 'process': {'args': ['a', 'b1', 'c1']}, '@timestamp': 0},
- {'event': {'category': ['process']}, 'process': {'args': ['a', 'b1', 'c2']}, '@timestamp': 1},
- {'event': {'category': ['process']}, 'process': {'args': ['a', 'b2', 'c1']}, '@timestamp': 2},
- {'event': {'category': ['process']}, 'process': {'args': ['a', 'b2', 'c2']}, '@timestamp': 3}]
+ {'event': {'category': ['process']}, 'process': {'args': ['a', 'b1', 'c2']}, '@timestamp': 71},
+ {'event': {'category': ['process']}, 'process': {'args': ['a', 'b2', 'c1']}, '@timestamp': 101},
+ {'event': {'category': ['process']}, 'process': {'args': ['a', 'b2', 'c2']}, '@timestamp': 185}]
 ```
 
 
@@ -809,9 +809,9 @@ process where process.args : "a" and process.args : ("b1", "b2") and process.arg
 
 ```python
 [{'process': {'args': ['a', 'b1', 'c1']}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'args': ['a', 'b1', 'c2']}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'args': ['a', 'b2', 'c1']}, 'event': {'category': ['process']}, '@timestamp': 2},
- {'process': {'args': ['a', 'b2', 'c2']}, 'event': {'category': ['process']}, '@timestamp': 3}]
+ {'process': {'args': ['a', 'b1', 'c2']}, 'event': {'category': ['process']}, '@timestamp': 71},
+ {'process': {'args': ['a', 'b2', 'c1']}, 'event': {'category': ['process']}, '@timestamp': 101},
+ {'process': {'args': ['a', 'b2', 'c2']}, 'event': {'category': ['process']}, '@timestamp': 185}]
 ```
 
 
@@ -830,7 +830,7 @@ sequence
 
 ```python
 [{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1}]
+ {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 80}]
 ```
 
 
@@ -849,7 +849,7 @@ sequence by user.id
 
 ```python
 [{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 1}]
+ {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 94}]
 ```
 
 
@@ -868,7 +868,7 @@ sequence
 
 ```python
 [{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'name': 'TvCfUyyFjS'}, '@timestamp': 1}]
+ {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'name': 'TvCfUyyFjS'}, '@timestamp': 94}]
 ```
 
 
@@ -887,7 +887,7 @@ sequence
 
 ```python
 [{'process': {'name': 'XIUtkNI.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'xTFlEzs.dll', 'parent': {'name': 'XIUtkNI.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1}]
+ {'process': {'name': 'ILOoOHmx.dll', 'parent': {'name': 'XIUtkNI.exe'}}, 'event': {'category': ['process']}, '@timestamp': 30}]
 ```
 
 
@@ -906,9 +906,9 @@ sequence
 
 ```python
 [{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 2},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 3}]
+ {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 80},
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 151},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 238}]
 ```
 
 
@@ -927,9 +927,9 @@ sequence by user.id
 
 ```python
 [{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 1},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 2},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 3}]
+ {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 94},
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'HmxBnLeO'}, '@timestamp': 178},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'HmxBnLeO'}, '@timestamp': 204}]
 ```
 
 
@@ -948,13 +948,13 @@ sequence
 
 ```python
 [{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 2},
- {'process': {'name': 'powershell.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 3},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 4},
- {'process': {'name': 'cmd.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, '@timestamp': 5},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 6},
- {'process': {'name': 'powershell.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, '@timestamp': 7}]
+ {'process': {'name': 'cmd.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 80},
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 151},
+ {'process': {'name': 'powershell.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 238},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 268},
+ {'process': {'name': 'cmd.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, '@timestamp': 362},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 446},
+ {'process': {'name': 'powershell.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, '@timestamp': 487}]
 ```
 
 
@@ -973,11 +973,11 @@ sequence by user.id
 
 ```python
 [{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 1},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 2},
- {'process': {'name': 'powershell.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 3},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'F'}, '@timestamp': 4},
- {'process': {'name': 'cmd.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'F'}, '@timestamp': 5},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'zKNyyQDpUE'}, '@timestamp': 6},
- {'process': {'name': 'powershell.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'zKNyyQDpUE'}, '@timestamp': 7}]
+ {'process': {'name': 'cmd.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 94},
+ {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'HmxBnLeO'}, '@timestamp': 178},
+ {'process': {'name': 'powershell.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'HmxBnLeO'}, '@timestamp': 204},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'ymEEwVPYMG'}, '@timestamp': 221},
+ {'process': {'name': 'cmd.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'ymEEwVPYMG'}, '@timestamp': 244},
+ {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'PZRgUv'}, '@timestamp': 327},
+ {'process': {'name': 'powershell.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'PZRgUv'}, '@timestamp': 358}]
 ```
