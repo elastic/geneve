@@ -101,7 +101,7 @@ mono_branch_mono_doc = {
     ],
     """process where process.name != "regsvr32.exe"
     """: [
-        [{"event": {"category": ["process"]}, "process": {"name": "Bmc"}}],
+        [{"event": {"category": ["process"]}, "process": {"name": "CFMpmDwut"}}],
     ],
     """process where process.pid != 0
     """: [
@@ -149,7 +149,7 @@ mono_branch_mono_doc = {
     ],
     """process where process.args != null
     """: [
-        [{"event": {"category": ["process"]}, "process": {"args": ["CJI"]}}],
+        [{"event": {"category": ["process"]}, "process": {"args": ["oGyCAQpaw"]}}],
     ],
     """process where process.args : "-f" and process.args == "-r"
     """: [
@@ -181,7 +181,7 @@ mono_branch_mono_doc = {
     ],
     """event.category:network and destination.ip:"822e::/16"
     """: [
-        [{"event": {"category": ["network"]}, "destination": {"ip": "822e:f477:4aa3:d9c5:7494:c408:2f13:daeb"}}],
+        [{"event": {"category": ["network"]}, "destination": {"ip": "822e:f0be:74f0:33be:4671:6fb9:4832:99ba"}}],
     ],
     """network where host.ip != null
     """: [
@@ -189,7 +189,11 @@ mono_branch_mono_doc = {
     ],
     """event.category:network and host.ip:"822e::/96"
     """: [
-        [{"event": {"category": ["network"]}, "host": {"ip": ["822e::c0f6:4909"]}}],
+        [{"event": {"category": ["network"]}, "host": {"ip": ["822e::680b:a785"]}}],
+    ],
+    """event.category:process and not process.args : (TRUE or true)
+    """: [
+        [{"event": {"category": ["process"]}, "process": {"args": ["IjvkBbQFwv"]}}],
     ],
 }
 
@@ -197,29 +201,29 @@ multi_branch_mono_doc = {
     """network where not (source.port > 512 and source.port < 1024)
     """: [
         [{"event": {"category": ["network"]}, "source": {"port": 182}}],
-        [{"event": {"category": ["network"]}, "source": {"port": 54422}}],
+        [{"event": {"category": ["network"]}, "source": {"port": 11985}}],
     ],
     """network where source.port > 512 or source.port < 1024
     """: [
         [{"event": {"category": ["network"]}, "source": {"port": 44925}}],
-        [{"event": {"category": ["network"]}, "source": {"port": 516}}],
+        [{"event": {"category": ["network"]}, "source": {"port": 398}}],
     ],
     """network where source.port < 2000 and (source.port > 512 or source.port > 1024)
     """: [
         [{"event": {"category": ["network"]}, "source": {"port": 1334}}],
-        [{"event": {"category": ["network"]}, "source": {"port": 1034}}],
+        [{"event": {"category": ["network"]}, "source": {"port": 1645}}],
     ],
     """network where (source.port > 512 or source.port > 1024) and source.port < 2000
     """: [
         [{"event": {"category": ["network"]}, "source": {"port": 575}}],
-        [{"event": {"category": ["network"]}, "source": {"port": 1158}}],
+        [{"event": {"category": ["network"]}, "source": {"port": 1635}}],
     ],
     """network where (source.port > 1024 or source.port < 2000) and (source.port < 4000 or source.port > 512)
     """: [
         [{"event": {"category": ["network"]}, "source": {"port": 1970}}],
-        [{"event": {"category": ["network"]}, "source": {"port": 52226}}],
-        [{"event": {"category": ["network"]}, "source": {"port": 692}}],
-        [{"event": {"category": ["network"]}, "source": {"port": 1464}}],
+        [{"event": {"category": ["network"]}, "source": {"port": 31485}}],
+        [{"event": {"category": ["network"]}, "source": {"port": 1825}}],
+        [{"event": {"category": ["network"]}, "source": {"port": 756}}],
     ],
     """network where destination.port in (80, 443)
     """: [
@@ -229,7 +233,7 @@ multi_branch_mono_doc = {
     """process where process.name : ("*.EXE", "*.DLL")
     """: [
         [{"event": {"category": ["process"]}, "process": {"name": "LeneQZk.EXE"}}],
-        [{"event": {"category": ["process"]}, "process": {"name": "DDGexfWHqOtavH.DLL"}}],
+        [{"event": {"category": ["process"]}, "process": {"name": "xfWH.DLL"}}],
     ],
     """process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
     """: [
@@ -286,8 +290,8 @@ mono_branch_multi_doc = {
         [process where process.parent.name : "cmd.exe"]
     """: [
         [
-            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "klM"}},
-            {"event": {"category": ["process"]}, "process": {"parent": {"name": "cmd.exe"}}, "user": {"id": "klM"}},
+            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "LDgZ"}},
+            {"event": {"category": ["process"]}, "process": {"parent": {"name": "cmd.exe"}}, "user": {"id": "LDgZ"}},
         ]
     ],
     """sequence
@@ -295,8 +299,8 @@ mono_branch_multi_doc = {
         [process where process.parent.name : "cmd.exe"] by user.name
     """: [
         [
-            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "fmC"}},
-            {"event": {"category": ["process"]}, "process": {"parent": {"name": "cmd.exe"}}, "user": {"name": "fmC"}},
+            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "Kv"}},
+            {"event": {"category": ["process"]}, "process": {"parent": {"name": "cmd.exe"}}, "user": {"name": "Kv"}},
         ]
     ],
     """sequence
@@ -305,7 +309,7 @@ mono_branch_multi_doc = {
     """: [
         [
             {"event": {"category": ["process"]}, "process": {"name": "QfHxGuOAe.exe"}},
-            {"event": {"category": ["process"]}, "process": {"name": "lAJmCOdS.dll", "parent": {"name": "QfHxGuOAe.exe"}}},
+            {"event": {"category": ["process"]}, "process": {"name": "pEGA.dll", "parent": {"name": "QfHxGuOAe.exe"}}},
         ]
     ],
 }
@@ -329,12 +333,12 @@ multi_branch_multi_doc = {
         [process where process.parent.name : "cmd.exe" or process.name : "powershell.exe"]
     """: [
         [
-            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "pKP"}},
-            {"event": {"category": ["process"]}, "process": {"parent": {"name": "cmd.exe"}}, "user": {"id": "pKP"}},
+            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "lYLed"}},
+            {"event": {"category": ["process"]}, "process": {"parent": {"name": "cmd.exe"}}, "user": {"id": "lYLed"}},
         ],
         [
-            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "dYR"}},
-            {"event": {"category": ["process"]}, "process": {"name": "powershell.exe"}, "user": {"id": "dYR"}},
+            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "nIMUeJSFeX"}},
+            {"event": {"category": ["process"]}, "process": {"name": "powershell.exe"}, "user": {"id": "nIMUeJSFeX"}},
         ],
     ],
     """sequence
@@ -366,35 +370,35 @@ multi_branch_multi_doc = {
         [process where process.name in ("cmd.exe", "powershell.exe")] by process.parent.name
     """: [
         [
-            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "aPd"}},
+            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "v"}},
             {
                 "event": {"category": ["process"]},
                 "process": {"name": "cmd.exe", "parent": {"name": "cmd.exe"}},
-                "user": {"id": "aPd"},
+                "user": {"id": "v"},
             },  # noqa: E501
         ],
         [
-            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "aiW"}},
+            {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "wmg"}},
             {
                 "event": {"category": ["process"]},
                 "process": {"name": "powershell.exe", "parent": {"name": "cmd.exe"}},
-                "user": {"id": "aiW"},
+                "user": {"id": "wmg"},
             },  # noqa: E501
         ],
         [
-            {"event": {"category": ["process"]}, "process": {"name": "powershell.exe"}, "user": {"id": "tSw"}},
+            {"event": {"category": ["process"]}, "process": {"name": "powershell.exe"}, "user": {"id": "dMOeSIvI"}},
             {
                 "event": {"category": ["process"]},
                 "process": {"name": "cmd.exe", "parent": {"name": "powershell.exe"}},
-                "user": {"id": "tSw"},
+                "user": {"id": "dMOeSIvI"},
             },  # noqa: E501
         ],
         [
-            {"event": {"category": ["process"]}, "process": {"name": "powershell.exe"}, "user": {"id": "JEL"}},
+            {"event": {"category": ["process"]}, "process": {"name": "powershell.exe"}, "user": {"id": "oI"}},
             {
                 "event": {"category": ["process"]},
                 "process": {"name": "powershell.exe", "parent": {"name": "powershell.exe"}},
-                "user": {"id": "JEL"},
+                "user": {"id": "oI"},
             },  # noqa: E501
         ],
     ],
@@ -424,7 +428,7 @@ exceptions = {
     """process where process.pid < 0
     """: "Unsolvable constraints: process.pid (empty solution space, 1 <= x <= -1)",
     """any where network.protocol == "http" and network.protocol == "https"
-    """: "Unsolvable constraints ==: network.protocol (is already 'http', cannot set to 'https')",
+    """: "Unsolvable constraints: network.protocol (not in Strings({'http'}): ('https'))",
     """network where destination.port == 22 and destination.port in (80, 443)
     """: "Root without branches",
     """network where not (source.port > 512 or source.port < 1024)
@@ -432,11 +436,11 @@ exceptions = {
     """sequence by process.name
         [process where process.name : "cmd.exe"]
         [process where process.name : "powershell.exe"]
-    """: "Unsolvable constraints wildcard: process.name (is already 'cmd.exe', cannot set to 'powershell.exe')",
+    """: "Unsolvable constraints: process.name (not in Strings({'cmd.exe'}): ('powershell.exe'))",
     """sequence
         [process where process.name : "cmd.exe"] by process.name
         [process where process.parent.name : "powershell.exe"] by process.parent.name
-    """: "Unsolvable constraints wildcard: process.name (is already 'cmd.exe', cannot set to 'powershell.exe')",
+    """: "Unsolvable constraints: process.name (not in Strings({'cmd.exe'}): ('powershell.exe'))",
     """sequence by process.name
         [process where process.name == null]
         [process where process.name : "powershell.exe"]
@@ -449,12 +453,12 @@ cardinality = [
         1,
         [
             [{"event": {"category": ["process"]}, "process": {"pid": 35}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 64}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 30}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 99}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 85}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 42}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 95}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 23}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 86}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 26}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 92}}],
         ],
     ),
     (
@@ -475,12 +479,12 @@ cardinality = [
         1,
         [
             [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 19}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 19}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
-            [{"event": {"category": ["process"]}, "process": {"pid": 80}}],
+            [{"event": {"category": ["process"]}, "process": {"pid": 19}}],
             [{"event": {"category": ["process"]}, "process": {"pid": 87}}],
         ],
     ),
@@ -489,12 +493,12 @@ cardinality = [
         1,
         [
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.214"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.231"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.231"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.231"}}],
+            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.231"}}],
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.214"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
             [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.214"}}],
-            [{"event": {"category": ["network"]}, "source": {"ip": "10.0.0.99"}}],
         ],
     ),
     (
@@ -502,25 +506,25 @@ cardinality = [
         1,
         [
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b"}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f14"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::179c"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::8ad5"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::179c"}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b"}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b"}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "1::1cf0"}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "1::f09b"}}],
         ],
     ),
     (
         """process where _cardinality(process.name, 3)""",
         1,
         [
-            [{"event": {"category": ["process"]}, "process": {"name": "Iwi"}}],
-            [{"event": {"category": ["process"]}, "process": {"name": "tQY"}}],
-            [{"event": {"category": ["process"]}, "process": {"name": "FmB"}}],
-            [{"event": {"category": ["process"]}, "process": {"name": "Iwi"}}],
-            [{"event": {"category": ["process"]}, "process": {"name": "Iwi"}}],
-            [{"event": {"category": ["process"]}, "process": {"name": "FmB"}}],
-            [{"event": {"category": ["process"]}, "process": {"name": "tQY"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "mAfTYLRtkYY"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "eDDub"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "KArreqRoHjY"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "mAfTYLRtkYY"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "eDDub"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "eDDub"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "eDDub"}}],
         ],
     ),
     (
@@ -538,15 +542,15 @@ cardinality = [
         2,
         [
             [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "92.242.152.131", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "238.46.28.79", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "238.46.28.79", "port": 443}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 22}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "92.242.152.131", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "92.242.152.131", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "92.242.152.131", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "92.242.152.131", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "208.66.119.21", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "238.46.28.79", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "238.46.28.79", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "238.46.28.79", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "238.46.28.79", "port": 443}}],
         ],
     ),
     (
@@ -554,16 +558,16 @@ cardinality = [
         2,
         [
             [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "213.228.113.133", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "38.70.19.31", "port": 22}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "38.70.19.31", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "213.228.113.133", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "189.178.87.67", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "38.70.19.31", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "189.178.87.67", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "38.70.19.31", "port": 22}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 443}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 22}}],
+            [{"event": {"category": ["network"]}, "destination": {"ip": "189.178.87.67", "port": 443}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "38.70.19.31", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "38.70.19.31", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 22}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "213.228.113.133", "port": 443}}],
-            [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 22}}],
             [{"event": {"category": ["network"]}, "destination": {"ip": "245.152.197.251", "port": 443}}],
         ],
     ),

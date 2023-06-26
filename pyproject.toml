@@ -24,6 +24,7 @@ dependencies = [
   "eql>=0.9.12",
   "faker",
   "faker-datasets",
+  "infinite-sets",
   "pytoml",
   "requests",
   "ruamel.yaml"
