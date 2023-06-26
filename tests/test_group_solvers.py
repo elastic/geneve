@@ -25,6 +25,8 @@ from geneve.solver import Entity, solver
 
 
 class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
+    maxDiff = None
+
     def test_double_registration(self):
         @solver("test.")
         class TestEntity(Entity):
@@ -116,4 +118,48 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
                 "destination": {"as": {"number": 2299, "organization": {"name": "Cooper Ltd"}}},
             },
             d.solve(join_doc, env),
+        )
+
+    def test_event(self):
+        join_doc = {}
+        schema = {
+            "event.category": {"type": "keyword", "normalize": ["array"]},
+            "event.type": {"type": "keyword", "normalize": ["array"]},
+        }
+        env = {}
+
+        d = Document()
+        d.append_constraint("event.type", "!=", "deletion")
+        d.append_constraint("event.category", "==", "file")
+        d.consolidate(schema)
+
+        self.assertEqual(
+            [
+                {"event": {"category": ["file"], "type": ["creation"]}},
+                {"event": {"category": ["file"], "type": ["change"]}},
+                {"event": {"category": ["file"], "type": ["access"]}},
+                {"event": {"category": ["file"], "type": ["access"]}},
+                {"event": {"category": ["file"], "type": ["change"]}},
+                {"event": {"category": ["file"], "type": ["creation"]}},
+                {"event": {"category": ["file"], "type": ["info"]}},
+            ],
+            [d.solve(join_doc, env) for _ in range(7)],
+        )
+
+        d = Document()
+        d.append_constraint("event.type", "wildcard", ("start", "process_started"))
+        d.append_constraint("event.category")
+        d.consolidate(schema)
+
+        self.assertEqual(
+            [
+                {"event": {"category": ["authentication"], "type": ["start"]}},
+                {"event": {"category": ["driver"], "type": ["start"]}},
+                {"event": {"category": ["process"], "type": ["start"]}},
+                {"event": {"category": ["session"], "type": ["start"]}},
+                {"event": {"category": ["process"], "type": ["process_started"]}},
+                {"event": {"category": ["process"], "type": ["start"]}},
+                {"event": {"category": ["package"], "type": ["start"]}},
+            ],
+            [d.solve(join_doc, env) for _ in range(7)],
         )

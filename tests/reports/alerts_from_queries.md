@@ -4,9 +4,9 @@ This report captures the unit test queries signals generation coverage.
 Here you can learn what queries are supported.
 
 ## Table of contents
-   1. [Rules with the correct signals (55)](#rules-with-the-correct-signals-55)
+   1. [Rules with the correct signals (57)](#rules-with-the-correct-signals-57)
 
-## Rules with the correct signals (55)
+## Rules with the correct signals (57)
 
 ### Rule 000
 
@@ -755,8 +755,8 @@ process where event.type in ("start", "process_started") and process.args : "dum
 ```
 
 ```python
-[{'event': {'type': ['start'], 'category': ['process']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 0},
- {'event': {'type': ['process_started'], 'category': ['process']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 1}]
+[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 0},
+ {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 1}]
 ```
 
 
@@ -780,9 +780,47 @@ event.type:(start or process_started) and (process.args:"dump-keychain" and proc
 
 ### Rule 047
 
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-047
+
+```python
+event.category:process and process.args:a and process.args:(b1 or b2) and process.args:(c1 or c2)
+```
+
+```python
+[{'event': {'category': ['process']}, 'process': {'args': ['a', 'b1', 'c1']}, '@timestamp': 0},
+ {'event': {'category': ['process']}, 'process': {'args': ['a', 'b1', 'c2']}, '@timestamp': 1},
+ {'event': {'category': ['process']}, 'process': {'args': ['a', 'b2', 'c1']}, '@timestamp': 2},
+ {'event': {'category': ['process']}, 'process': {'args': ['a', 'b2', 'c2']}, '@timestamp': 3}]
+```
+
+
+
+### Rule 048
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-048
+
+```python
+process where process.args : "a" and process.args : ("b1", "b2") and process.args : ("c1", "c2")
+```
+
+```python
+[{'process': {'args': ['a', 'b1', 'c1']}, 'event': {'category': ['process']}, '@timestamp': 0},
+ {'process': {'args': ['a', 'b1', 'c2']}, 'event': {'category': ['process']}, '@timestamp': 1},
+ {'process': {'args': ['a', 'b2', 'c1']}, 'event': {'category': ['process']}, '@timestamp': 2},
+ {'process': {'args': ['a', 'b2', 'c2']}, 'event': {'category': ['process']}, '@timestamp': 3}]
+```
+
+
+
+### Rule 049
+
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-047
+Index: geneve-ut-049
 
 ```python
 sequence
@@ -797,11 +835,11 @@ sequence
 
 
 
-### Rule 048
+### Rule 050
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-048
+Index: geneve-ut-050
 
 ```python
 sequence by user.id
@@ -816,11 +854,11 @@ sequence by user.id
 
 
 
-### Rule 049
+### Rule 051
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-049
+Index: geneve-ut-051
 
 ```python
 sequence
@@ -835,11 +873,11 @@ sequence
 
 
 
-### Rule 050
+### Rule 052
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-050
+Index: geneve-ut-052
 
 ```python
 sequence
@@ -854,11 +892,11 @@ sequence
 
 
 
-### Rule 051
+### Rule 053
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-051
+Index: geneve-ut-053
 
 ```python
 sequence
@@ -875,11 +913,11 @@ sequence
 
 
 
-### Rule 052
+### Rule 054
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-052
+Index: geneve-ut-054
 
 ```python
 sequence by user.id
@@ -896,11 +934,11 @@ sequence by user.id
 
 
 
-### Rule 053
+### Rule 055
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-053
+Index: geneve-ut-055
 
 ```python
 sequence
@@ -921,11 +959,11 @@ sequence
 
 
 
-### Rule 054
+### Rule 056
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-054
+Index: geneve-ut-056
 
 ```python
 sequence by user.id

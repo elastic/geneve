@@ -18,9 +18,11 @@
 """Constraints solver helper class."""
 
 import faker
+from itertools import chain
 
 from ..constraints import ConflictError
 from ..utils import deep_merge, random
+from ..utils.solution_space import product, transpose
 
 faker.generator.random = random
 _max_attempts = 100000
@@ -178,6 +180,24 @@ class Field:
         if doc is not None:
             emit_field(doc, self.field, value)
         return value
+
+
+class CombinedFields:
+    def __init__(self, a, b, ab):
+        self.fields = [a, b]
+        a = set(chain(*a.value))
+        b = set(chain(*b.value))
+        ba = transpose(ab)
+        self.solutions = sorted(set(product(a, ab)) & set(product(ba, b)))
+
+    def solve_field(self, doc, join_doc, environment):
+        values = random.choice(self.solutions)
+        if doc is not None:
+            for field, value in zip(self.fields, values):
+                if field.is_array:
+                    value = [value]
+                emit_field(doc, field.field, value)
+        return values
 
 
 def load_solvers():
