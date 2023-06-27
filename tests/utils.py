@@ -106,8 +106,8 @@ def load_test_schema():
     return load_schema(get_test_schema_uri(), "generated/ecs/ecs_flat.yml", root_dir)
 
 
-def load_test_rules():
-    return load_rules(get_test_rules_uri(), "rules/**/*.toml", root_dir)
+def load_test_rules(rules="rules/**/*.toml"):
+    return load_rules(get_test_rules_uri(), rules, root_dir)
 
 
 def get_rule_by_id(rules, rule_id):
