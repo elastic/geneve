@@ -155,3 +155,7 @@ class TreeTraverser:
 
     def get_stats(self):
         return {k.__name__: (v.successful, v.total) for k, v in self.traversers.items()}
+
+
+def split_path(field):
+    return list(p[1:-1] if len(p) > 1 and p.startswith("`") and p.endswith("`") else p for p in field.split("."))

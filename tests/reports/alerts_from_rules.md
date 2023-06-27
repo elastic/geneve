@@ -6,45 +6,10 @@ learn what rules are supported and what not and why.
 Curious about the inner workings? Read [here](signals_generation.md).
 
 ## Table of contents
-   1. [Rules with no signals (5)](#rules-with-no-signals-5)
-   1. [Rules with the correct signals (563)](#rules-with-the-correct-signals-563)
+   1. [Rules with no signals (2)](#rules-with-no-signals-2)
+   1. [Rules with the correct signals (566)](#rules-with-the-correct-signals-566)
 
-## Rules with no signals (5)
-
-### Azure AD Global Administrator Role Assigned
-
-Branch count: 1  
-Document count: 1  
-Index: geneve-ut-110
-
-```python
-event.dataset:azure.auditlogs and azure.auditlogs.properties.category:RoleManagement and
-azure.auditlogs.operation_name:"Add member to role" and
-azure.auditlogs.properties.target_resources.0.modified_properties.1.new_value:"\"Global Administrator\""
-```
-
-```python
-[{'event': {'dataset': 'azure.auditlogs'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'`0`': {'modified_properties': {'`1`': {'new_value': '"Global Administrator"'}}}}}, 'operation_name': 'Add member to role'}}, '@timestamp': 0}]
-```
-
-
-
-### Azure External Guest User Invitation
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-127
-
-```python
-event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Invite external user" and azure.auditlogs.properties.target_resources.*.display_name:guest and event.outcome:(Success or success)
-```
-
-```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Invite external user', 'properties': {'target_resources': {'`*`': {'display_name': 'guest'}}}}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Invite external user', 'properties': {'target_resources': {'`*`': {'display_name': 'guest'}}}}}, '@timestamp': 71}]
-```
-
-
+## Rules with no signals (2)
 
 ### Azure Full Network Packet Capture Detected
 
@@ -69,29 +34,6 @@ event.outcome:(Success or success)
  {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/EU/VPNCONNECTIONS/STARTPACKETCAPTURE/ACTION'}}, '@timestamp': 187},
  {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/vWCiMZOfHaTD/PACKETCAPTURES/WRITE'}}, '@timestamp': 270},
  {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/L/PACKETCAPTURES/WRITE'}}, '@timestamp': 294}]
-```
-
-
-
-### Azure Global Administrator Role Addition to PIM User
-
-Branch count: 4  
-Document count: 4  
-Index: geneve-ut-131
-
-```python
-event.dataset:azure.auditlogs and azure.auditlogs.properties.category:RoleManagement and
-    azure.auditlogs.operation_name:("Add eligible member to role in PIM completed (permanent)" or
-                                    "Add member to role in PIM completed (timebound)") and
-    azure.auditlogs.properties.target_resources.*.display_name:"Global Administrator" and
-    event.outcome:(Success or success)
-```
-
-```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'`*`': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add eligible member to role in PIM completed (permanent)'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'`*`': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add eligible member to role in PIM completed (permanent)'}}, '@timestamp': 37},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'`*`': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add member to role in PIM completed (timebound)'}}, '@timestamp': 104},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'`*`': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add member to role in PIM completed (timebound)'}}, '@timestamp': 170}]
 ```
 
 
@@ -121,7 +63,7 @@ sequence by host.id with maxspan=1m
 
 
 
-## Rules with the correct signals (563)
+## Rules with the correct signals (566)
 
 ### AWS Access Secret in Secrets Manager
 
@@ -1975,6 +1917,24 @@ event.category:file and not event.type:deletion and
 
 
 
+### Azure AD Global Administrator Role Assigned
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-110
+
+```python
+event.dataset:azure.auditlogs and azure.auditlogs.properties.category:RoleManagement and
+azure.auditlogs.operation_name:"Add member to role" and
+azure.auditlogs.properties.target_resources.0.modified_properties.1.new_value:"\"Global Administrator\""
+```
+
+```python
+[{'event': {'dataset': 'azure.auditlogs'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'0': {'modified_properties': {'1': {'new_value': '"Global Administrator"'}}}}}, 'operation_name': 'Add member to role'}}, '@timestamp': 0}]
+```
+
+
+
 ### Azure Active Directory High Risk Sign-in
 
 Branch count: 4  
@@ -2283,6 +2243,23 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 
 
 
+### Azure External Guest User Invitation
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-127
+
+```python
+event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Invite external user" and azure.auditlogs.properties.target_resources.*.display_name:guest and event.outcome:(Success or success)
+```
+
+```python
+[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Invite external user', 'properties': {'target_resources': {'*': {'display_name': 'guest'}}}}}, '@timestamp': 0},
+ {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Invite external user', 'properties': {'target_resources': {'*': {'display_name': 'guest'}}}}}, '@timestamp': 71}]
+```
+
+
+
 ### Azure Firewall Policy Deletion
 
 Branch count: 2  
@@ -2313,6 +2290,29 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 ```python
 [{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/FRONTDOORWEBAPPLICATIONFIREWALLPOLICIES/DELETE'}}, '@timestamp': 0},
  {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/FRONTDOORWEBAPPLICATIONFIREWALLPOLICIES/DELETE'}}, '@timestamp': 58}]
+```
+
+
+
+### Azure Global Administrator Role Addition to PIM User
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-131
+
+```python
+event.dataset:azure.auditlogs and azure.auditlogs.properties.category:RoleManagement and
+    azure.auditlogs.operation_name:("Add eligible member to role in PIM completed (permanent)" or
+                                    "Add member to role in PIM completed (timebound)") and
+    azure.auditlogs.properties.target_resources.*.display_name:"Global Administrator" and
+    event.outcome:(Success or success)
+```
+
+```python
+[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'*': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add eligible member to role in PIM completed (permanent)'}}, '@timestamp': 0},
+ {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'*': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add eligible member to role in PIM completed (permanent)'}}, '@timestamp': 37},
+ {'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'*': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add member to role in PIM completed (timebound)'}}, '@timestamp': 104},
+ {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'*': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add member to role in PIM completed (timebound)'}}, '@timestamp': 170}]
 ```
 
 

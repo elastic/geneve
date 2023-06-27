@@ -17,6 +17,8 @@
 
 """Hierarchical dictionary."""
 
+from . import split_path
+
 
 def depth_first_keys(d, path=None):
     path = path or ()
@@ -55,7 +57,7 @@ class hdict:
     def __getitem__(self, key):
         d = self.__top_level
         try:
-            for part in key.split("."):
+            for part in split_path(key):
                 d = d[part]
         except KeyError:
             raise KeyError(key)
@@ -63,14 +65,14 @@ class hdict:
 
     def __setitem__(self, key, value):
         d = self.__top_level
-        parts = key.split(".")
+        parts = split_path(key)
         for part in parts[:-1]:
             d = d.setdefault(part, {})
         d[parts[-1]] = value
 
     def __delitem__(self, key):
         d = self.__top_level
-        parts = key.split(".")
+        parts = split_path(key)
         try:
             for part in parts[:-1]:
                 d = d[part]
@@ -88,7 +90,7 @@ class hdict:
         groups = []
         tail = []
         for field in self:
-            parts = field.split(".")[:-1]
+            parts = split_path(field)[:-1]
             while parts:
                 x = ".".join(parts)
                 if x not in groups:
