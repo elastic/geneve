@@ -21,7 +21,7 @@ import faker
 from itertools import chain
 
 from ..constraints import ConflictError
-from ..utils import deep_merge, random
+from ..utils import deep_merge, random, split_path
 from ..utils.solution_space import product, transpose
 
 faker.generator.random = random
@@ -42,17 +42,17 @@ def get_ecs_constraints(solver, field):
 
 def emit_field(doc, field, value):
     if value is not None:
-        for part in reversed(field.split(".")):
+        for part in reversed(split_path(field)):
             value = {part: value}
         deep_merge(doc, value)
 
 
 def emit_group(doc, group, values):
-    group_parts = group.split(".")
+    group_parts = split_path(group)
     group_parts.reverse()
     for field, value in values.items():
         if value is not None:
-            for part in reversed(field.split(".")):
+            for part in reversed(split_path(field)):
                 value = {part: value}
             for part in group_parts:
                 value = {part: value}
@@ -126,7 +126,7 @@ class Field:
             if k not in valid_constraints:
                 raise NotImplementedError(f"Unsupported {self.type} '{field}' constraint: {k}")
             if k == "join_value":
-                self.join_field_parts = v[1].split(".")
+                self.join_field_parts = split_path(v[1])
             if k == "max_attempts":
                 v = int(v)
                 if v < 0:

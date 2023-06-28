@@ -142,7 +142,7 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
             )
         return rules, asts
 
-    ack_no_signals = 5
+    ack_no_signals = 2
 
     def test_rules(self):
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
