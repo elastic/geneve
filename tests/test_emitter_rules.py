@@ -44,6 +44,12 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         )
     )
 
+    @classmethod
+    def get_version(cls):
+        import semver
+
+        return semver.VersionInfo.parse(os.getenv("TEST_STACK_VERSION", None))
+
     def parse_from_collection(self, collection):
         asts = []
         rules = []
@@ -119,7 +125,9 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         self.generate_docs(rules, asts)
 
     def test_unchanged(self):
-        tu.assertReportUnchanged(self, self.nb, "documents_from_rules.md")
+        stack_version = self.get_version()
+        major_minor = f"{stack_version.major}.{stack_version.minor}"
+        tu.assertReportUnchanged(self, self.nb, f"documents_from_rules-{major_minor}.md")
 
 
 @unittest.skipIf(os.getenv("TEST_SIGNALS_RULES", "0").lower() in ("0", "false", "no", ""), "Slow online test")
@@ -171,6 +179,8 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
     ack_no_signals = 2
 
     def test_rules(self):
+        stack_version = self.get_version()
+        major_minor = f"{stack_version.major}.{stack_version.minor}"
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
         collection = sorted(tu.load_test_rules(), key=lambda x: x.name)
         rules, asts = self.parse_from_collection(collection)
@@ -178,6 +188,6 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         try:
             self.check_signals(rules, pending)
         except AssertionError:
-            tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")
+            tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules-{major_minor}{mf_ext}.md")
             raise
-        tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")
+        tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules-{major_minor}{mf_ext}.md")

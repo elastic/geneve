@@ -49,6 +49,7 @@ jobs:
 
       - name: Run unit tests
         env:
+          TEST_STACK_VERSION: "8.2.0"
           TEST_SCHEMA_URI: "./etc/ecs-8.2.0.tar.gz"
           TEST_DETECTION_RULES_URI: "./etc/detection-rules-8.2.0.tar.gz"
         run: make tests
