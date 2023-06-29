@@ -6,6 +6,7 @@
 *.tar.gz
 *.toml
 *.yml
+*.zip
 .gitignore
 .license_ignore
 LICENSE.txt
@@ -19,6 +20,7 @@ geneve/solver/datasets/*
 
 scripts/generate-alerts.sh
 scripts/generate-network-events.sh
+scripts/update-reports.sh
 
 tests/deployment.json
 tests/data/config_elastic-package.yaml

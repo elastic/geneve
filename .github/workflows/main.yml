@@ -29,6 +29,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        stack-version: ["8.2.0"]
+        schema-uri: ["./etc/ecs-v8.2.1.tar.gz"]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         os: ["ubuntu-latest", "macos-latest"]
 
@@ -49,9 +51,9 @@ jobs:
 
       - name: Run unit tests
         env:
-          TEST_STACK_VERSION: "8.2.0"
-          TEST_SCHEMA_URI: "./etc/ecs-8.2.0.tar.gz"
-          TEST_DETECTION_RULES_URI: "./etc/detection-rules-8.2.0.tar.gz"
+          TEST_STACK_VERSION: ${{ matrix.stack-version }}
+          TEST_SCHEMA_URI: ${{ matrix.schema-uri }}
+          TEST_DETECTION_RULES_URI: "https://epr.elastic.co/search?package=security_detection_engine&kibana.version=${{ matrix.stack-version }}"
         run: make tests
 
   online-tests:
@@ -71,8 +73,21 @@ jobs:
           - 8.4.0
           - 8.3.0
           - 8.2.0
-        schema-uri: ["./etc/ecs-8.2.0.tar.gz"]
-        detection-rules-uri: ["./etc/detection-rules-8.2.0.tar.gz"]
+        include:
+          - stack-version: 8.8.0
+            schema-uri: "./etc/ecs-v8.8.0.tar.gz"
+          - stack-version: 8.7.0
+            schema-uri: "./etc/ecs-v8.7.0.tar.gz"
+          - stack-version: 8.6.0
+            schema-uri: "./etc/ecs-v8.6.1.tar.gz"
+          - stack-version: 8.5.0
+            schema-uri: "./etc/ecs-v8.5.2.tar.gz"
+          - stack-version: 8.4.0
+            schema-uri: "./etc/ecs-v8.4.0.tar.gz"
+          - stack-version: 8.3.0
+            schema-uri: "./etc/ecs-v8.3.1.tar.gz"
+          - stack-version: 8.2.0
+            schema-uri: "./etc/ecs-v8.2.1.tar.gz"
 
     env:
       TEST_ELASTICSEARCH_URL: "http://elastic:changeme@localhost:29650"
@@ -140,8 +155,9 @@ jobs:
 
       - name: Run online tests
         env:
+          TEST_STACK_VERSION: ${{ matrix.stack-version }}
           TEST_SCHEMA_URI: ${{ matrix.schema-uri }}
-          TEST_DETECTION_RULES_URI: ${{ matrix.detection-rules-uri }}
+          TEST_DETECTION_RULES_URI: "https://epr.elastic.co/search?package=security_detection_engine&kibana.version=${{ matrix.stack-version }}"
           TEST_SIGNALS_QUERIES: 1
           TEST_SIGNALS_RULES: 1
           TEST_ELASTICSEARCH_URL: "http://localhost:9280"
@@ -169,12 +185,19 @@ jobs:
           killall gnv
           if grep "WARNING: DATA RACE" $TEST_GENEVE_LOG; then awk '/WARNING: DATA RACE/{found=1} found' $TEST_GENEVE_LOG; false; fi
 
-      - name: Upload artifacts
+      - name: Upload Geneve logs
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: geneve-log-${{ matrix.stack-version }}
           path: gnv.log
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports-${{ matrix.stack-version }}
+          path: tests/reports/*.new.md
 
   cli:
     name: CLI (${{ matrix.os }}/go-${{ matrix.go-version }}/py-${{ matrix.python-version }})

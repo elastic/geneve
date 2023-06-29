@@ -24,7 +24,9 @@ from pathlib import Path
 from random import Random
 from tempfile import mkdtemp
 from types import SimpleNamespace
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
+
+from . import dirs
 
 random = Random()
 
@@ -43,9 +45,9 @@ def resource(uri, basedir=None, cachedir=None):
     import requests
 
     with tempdir() as tmpdir:
-        uri_parts = urlparse(uri)
+        uri_parts = urlparse(str(uri))
         if uri_parts.scheme.startswith("http"):
-            uri_file = uri_parts.path.split("/")[-1]
+            uri_file = Path(uri_parts.path).name
             uri_dir = Path(cachedir or tmpdir)
             uri_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
             local_file = uri_dir / uri_file
@@ -85,20 +87,60 @@ def load_schema(uri, path, basedir=None):
 
 
 @functools.lru_cache
-def load_rules(uri, paths, basedir=None):
-    import pytoml
+def load_rules(uri, paths=None, basedir=None, *, timeout=17, retries=3):
+    uri_parts = urlparse(uri)
+    if uri_parts.hostname == "epr.elastic.co" and uri_parts.path == "/search":
+        import requests
 
-    if type(paths) == str:
-        paths = (paths,)
+        for n in range(retries):
+            try:
+                res = requests.get(uri, timeout=timeout)
+                break
+            except requests.exceptions.ConnectTimeout:
+                if n == retries - 1:
+                    raise
 
-    rules = []
-    with resource(uri, basedir=basedir) as resource_dir:
-        for path in paths:
-            for filename in resource_dir.glob(f"*/{path}"):
-                with open(filename) as f:
+        res.raise_for_status()
+        res = res.json()
+        if len(res) != 1:
+            raise ValueError(f"Wrong number of packages: {len(res)}")
+        uri_parts = uri_parts._replace(path=res[0]["download"], query="")
+        uri = urlunparse(uri_parts)
+
+    with resource(uri, basedir=basedir, cachedir=dirs.cache) as resource_dir:
+        is_package = bool(list(resource_dir.glob("*/manifest.yml")))
+
+        if paths is None:
+            paths = "kibana/security_rule/*.json" if is_package else "rules/**/*.toml"
+        if type(paths) == str:
+            paths = (paths,)
+
+        if is_package:
+            files = {}
+            for path in paths:
+                for filepath in resource_dir.glob(f"*/{path}"):
+                    rule_id, *rule_rev = filepath.stem.split("_")
+                    rule_rev = int(rule_rev[0]) if rule_rev else 0
+                    try:
+                        if rule_rev > files[rule_id][0]:
+                            files[rule_id] = (rule_rev, filepath)
+                    except KeyError:
+                        files[rule_id] = (rule_rev, filepath)
+            filenames = (filename for _, filename in files.values())
+            import json
+        else:
+            filenames = (filename for path in paths for filename in resource_dir.glob(f"*/{path}"))
+            import pytoml
+
+        rules = []
+        for filename in filenames:
+            with open(filename) as f:
+                if is_package:
+                    rule = json.load(f)["attributes"]
+                else:
                     rule = pytoml.load(f)["rule"]
-                rule["path"] = Path(".").joinpath(*Path(filename).relative_to(resource_dir).parts[1:])
-                rules.append(SimpleNamespace(**rule))
+            rule["path"] = Path(".").joinpath(*Path(filename).relative_to(resource_dir).parts[1:])
+            rules.append(SimpleNamespace(**rule))
     return rules
 
 
