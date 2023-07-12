@@ -62,7 +62,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 heading = [f"{len(errors[err])} rules:", ""]
                 bullets = []
                 for rule in sorted(errors[err], key=lambda r: r.name):
-                    bullets.append(f"* {rule.name} ({rule.path})")
+                    bullets.append(f"* {rule.name}")
                 with self.nb.chapter(f"### {err} ({len(errors[err])})") as cells:
                     cells.append(jupyter.Markdown(heading + sorted(bullets)))
 
@@ -109,7 +109,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 heading = [f"{len(errors[err])} rules:"]
                 bullets = []
                 for rule in sorted(errors[err], key=lambda r: r.name):
-                    bullets.append(f"* {rule.name} ({rule.path})")
+                    bullets.append(f"* {rule.name}")
                 with self.nb.chapter(f"### {err} ({len(errors[err])})") as cells:
                     cells.append(jupyter.Markdown(heading + sorted(bullets)))
 
