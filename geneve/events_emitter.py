@@ -115,6 +115,7 @@ def events_from_root(root, environment, timestamp):
 
 class SourceEvents:
     schema = {}
+    branches_limit = 10000
 
     def __init__(self, schema=None):
         self.__roots = []
@@ -143,6 +144,10 @@ class SourceEvents:
 
     def add_ast(self, ast, *, meta=None):
         root = collect_constraints_eql(ast)
+        if len(root) == 0:
+            raise ValueError("Root without branches")
+        if self.branches_limit and len(root) > self.branches_limit:
+            raise ValueError(f"Root with too many branches: {len(root)} (limit: {self.branches_limit})")
         root.meta = meta
         root.consolidate(self.schema)
         self.try_emit(root)
