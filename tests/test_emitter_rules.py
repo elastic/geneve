@@ -177,5 +177,7 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         pending = self.load_rules_and_docs(rules, asts)
         try:
             self.check_signals(rules, pending)
-        finally:
+        except AssertionError:
             tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")
+            raise
+        tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")
