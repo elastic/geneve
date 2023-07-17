@@ -410,21 +410,15 @@ class SignalsTestCase:
         failed.setdefault(rule_id, set()).add(f"SDE says:\n> {message}")
 
     def check_docs(self, rule):
-        try:
-            kwargs = {
-                "index": ",".join(rule["index"]),
-                "query": {"match_all": {}},
-                "sort": {
-                    "@timestamp": {"order": "asc"},
-                },
-                "size": rule[".test_private"]["doc_count"],
-            }
-            ret = self.es.search(**kwargs)
-        except Exception as e:
-            if verbose > 1:
-                sys.stderr.write(f"{str(e)}\n")
-                sys.stderr.flush()
-            return []
+        kwargs = {
+            "index": ",".join(rule["index"]),
+            "query": {"match_all": {}},
+            "sort": {
+                "@timestamp": {"order": "asc"},
+            },
+            "size": rule[".test_private"]["doc_count"],
+        }
+        ret = self.es.search(**kwargs)
         return [hit["_source"] for hit in ret["hits"]["hits"]]
 
     def get_signals_per_rule(self, rules):
