@@ -1,3 +1,5 @@
+PYTEST_VERBOSE := $(if $(filter-out 0,$(V)),$(if $(filter-out 1,$(V)),$(if $(filter-out 2,$(V)),-vvv,-vv),-v),-q)
+
 ifeq ($(VENV),)
 	ACTIVATE :=
 else
@@ -40,10 +42,10 @@ license-check:
 	bash scripts/license_check.sh
 
 tests: tests/*.py
-	$(PYTHON) -m pytest -raP tests/test_*.py
+	$(PYTHON) -m pytest -raP $(PYTEST_VERBOSE) tests/test_*.py
 
 online-tests: tests/*.py
-	$(PYTHON) -m pytest -raP --maxfail=1 tests/test_emitter_*.py
+	$(PYTHON) -m pytest -raP $(PYTEST_VERBOSE) --maxfail=1 tests/test_emitter_*.py
 
 up:
 	@$(call print_server_version,ES,ELASTICSEARCH)

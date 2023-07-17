@@ -18,9 +18,12 @@
 """System dependent notable dirs."""
 
 import os
+import sys
 from pathlib import Path
 
-if os.name == "win32":
+if sys.platform == "win32":
     cache = Path(os.getenv("LOCALAPPDATA")) / "Geneve" / "Cache"
+elif sys.platform == "darwin":
+    cache = Path.home() / "Library" / "Caches" / "geneve"
 else:
     cache = Path.home() / ".cache" / "geneve"

@@ -18,6 +18,8 @@
 """Test emitter with rules."""
 
 import os
+import sys
+import time
 import unittest
 
 import tests.utils as tu
@@ -68,14 +70,38 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     def generate_docs(self, rules, asts):
         errors = {}
+        stats = []
+        if tu.verbose > 2:
+            sys.stdout.write("\n")
         for rule, ast in zip(rules, asts):
             try:
                 se = SourceEvents(self.schema)
-                se.add_ast(ast)
+                if tu.verbose > 2:
+                    sys.stdout.write(f"adding {rule.name}...")
+                    sys.stdout.flush()
+                if tu.verbose > 1:
+                    t = time.time()
+                root = se.add_ast(ast)
+                if tu.verbose > 1:
+                    dt = time.time() - t
+                    stats.append((len(root), dt, rule.name))
+                if tu.verbose > 2:
+                    sys.stdout.write("\r{} branches in {:.3f}s ({})\n".format(len(root), dt, rule.name))
+                    sys.stdout.flush()
                 _ = se.emit(timestamp=False, complete=True)
             except Exception as e:
+                if tu.verbose > 1:
+                    dt = time.time() - t
+                    stats.append((-1, dt, rule.name))
+                if tu.verbose > 2:
+                    sys.stdout.write("\r{} branches in {:.3f}s ({})\n".format(-1, dt, rule.name))
+                    sys.stdout.flush()
                 errors.setdefault(str(e), []).append(rule)
                 continue
+        if tu.verbose > 1:
+            print("\nTop 10 rules (branches, secs, name):")
+            for branches, dt, name in sorted(stats, reverse=True)[:10]:
+                print(f"  {branches:>6}  {dt:>6.2f}  {name}")
 
         with self.nb.chapter("## Generation errors") as cells:
             cells.append(None)
@@ -151,5 +177,7 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         pending = self.load_rules_and_docs(rules, asts)
         try:
             self.check_signals(rules, pending)
-        finally:
+        except AssertionError:
             tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")
+            raise
+        tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")

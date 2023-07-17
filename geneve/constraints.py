@@ -171,11 +171,6 @@ Branch.Identity = Branch([Document()])
 class Root(List[Branch]):
     meta = None
 
-    def __iter__(self):
-        if not self:
-            raise ValueError("Root without branches")
-        return super().__iter__()
-
     def fields(self):
         return set(["@timestamp"]) | set(chain(*(branch.fields() for branch in self)))
 
