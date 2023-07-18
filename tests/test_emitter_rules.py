@@ -20,6 +20,7 @@
 import os
 import sys
 import time
+import traceback
 import unittest
 
 import tests.utils as tu
@@ -101,6 +102,9 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                     stats.append((-1, dt, rule.name))
                 if tu.verbose > 2:
                     sys.stdout.write("\r{} branches in {:.3f}s ({})\n".format(-1, dt, rule.name))
+                    sys.stdout.flush()
+                if tu.verbose > 3:
+                    sys.stdout.write("".join(traceback.format_exception(e)))
                     sys.stdout.flush()
                 errors.setdefault(str(e), []).append(rule)
                 continue

@@ -20,13 +20,13 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Constraints solver not implemented: match_only_text (3)](#constraints-solver-not-implemented-match_only_text-3)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Cannot choose from an empty sequence (1)](#cannot-choose-from-an-empty-sequence-1)
       1. [Destination field already exists: destination.as.organization.name ('GOOGLE' != 'Flowers-Lewis') (1)](#destination-field-already-exists-destinationasorganizationname-google--flowers-lewis-1)
       1. [Root with too many branches: 131072 (limit: 10000) (1)](#root-with-too-many-branches-131072-limit-10000-1)
       1. [Root with too many branches: 332800 (limit: 10000) (1)](#root-with-too-many-branches-332800-limit-10000-1)
       1. [Root with too many branches: 38016 (limit: 10000) (1)](#root-with-too-many-branches-38016-limit-10000-1)
       1. [Root without branches (1)](#root-without-branches-1)
       1. [Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)](#unsolvable-constraints-dnsquestionname-excluded-by-stringscdndiscordappcom-cdndiscordappcom-1)
+      1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smb')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmb-1)
@@ -284,11 +284,6 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
 
-### Cannot choose from an empty sequence (1)
-
-1 rules:
-* Suspicious File Creation in /etc for Persistence
-
 ### Destination field already exists: destination.as.organization.name ('GOOGLE' != 'Flowers-Lewis') (1)
 
 1 rules:
@@ -318,6 +313,11 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 1 rules:
 * Connection to Commonly Abused Web Services
+
+### Unsolvable constraints: event.category & event.type (empty intersection) (1)
+
+1 rules:
+* Suspicious File Creation in /etc for Persistence
 
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)
 
