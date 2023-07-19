@@ -107,7 +107,7 @@ def load_test_schema():
 
 
 def load_test_rules(rules=None):
-    return load_rules(get_test_rules_uri(), rules or "rules/**/*.toml", root_dir)
+    return load_rules(get_test_rules_uri(), rules, root_dir)
 
 
 def get_rule_by_id(rules, rule_id):
@@ -476,10 +476,13 @@ class SignalsTestCase:
     @classmethod
     def query_cell(cls, query, docs, **kwargs):
         source = textwrap.dedent(query.strip())
-        output = docs if type(docs) == str else "[" + ",\n ".join(str(doc) for doc in docs) + "]"
+        if docs:
+            output = docs if type(docs) == str else "[" + ",\n ".join(str(doc) for doc in docs) + "]"
+        else:
+            output = None
         return jupyter.Code(source, output, **kwargs)
 
-    def report_rules(self, rules, rule_ids, title):
+    def report_rules(self, rules, rule_ids, title, *, docs_cell=True):
         with self.nb.chapter(f"## {title} ({len(rule_ids)})") as cells:
             for rule in rules:
                 if rule["id"] in rule_ids:
@@ -507,7 +510,7 @@ class SignalsTestCase:
                         descr.append(f'Index: {rule["index"][0]}')
                     cells.append(jupyter.Markdown("\n".join(descr)))
                     if self.multiplying_factor == 1:
-                        cells.append(self.query_cell(rule["query"], docs))
+                        cells.append(self.query_cell(rule["query"], docs if docs_cell else None))
 
     def debug_rules(self, rules, rule_ids):
         lines = []
@@ -552,10 +555,10 @@ class SignalsTestCase:
         self.report_rules(rules, no_signals, "Rules with no signals")
         self.report_rules(rules, too_few_signals, "Rules with too few signals")
         self.report_rules(rules, too_many_signals, "Rules with too many signals")
-        self.report_rules(rules, correct_signals, "Rules with the correct signals")
+        self.report_rules(rules, correct_signals, "Rules with the correct signals", docs_cell=False)
 
-        self.assertSignals(rules, failed, "Failed rules")
-        self.assertSignals(rules, unsuccessful, "Unsuccessful rules with signals")
+        self.assertSignals(rules, failed, "Failed rules", getattr(self, "ack_failed", 0))
+        self.assertSignals(rules, unsuccessful, "Unsuccessful rules with signals", getattr(self, "ack_unsuccessful_with_signals", 0))
         self.assertSignals(rules, no_signals, "Rules with no signals", getattr(self, "ack_no_signals", 0))
         self.assertSignals(rules, too_few_signals, "Rules with too few signals", getattr(self, "ack_too_few_signals", 0))
-        self.assertSignals(rules, too_many_signals, "Rules with too many signals")
+        self.assertSignals(rules, too_many_signals, "Rules with too many signals", getattr(self, "ack_too_many_signals", 0))

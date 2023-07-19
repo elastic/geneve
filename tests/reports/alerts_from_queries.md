@@ -18,10 +18,6 @@ Index: geneve-ut-000
 any where true
 ```
 
-```python
-[{'@timestamp': 0}]
-```
-
 
 
 ### Rule 001
@@ -32,10 +28,6 @@ Index: geneve-ut-001
 
 ```python
 any where not false
-```
-
-```python
-[{'@timestamp': 0}]
 ```
 
 
@@ -50,10 +42,6 @@ Index: geneve-ut-002
 any where not (true and false)
 ```
 
-```python
-[{'@timestamp': 0}]
-```
-
 
 
 ### Rule 003
@@ -64,10 +52,6 @@ Index: geneve-ut-003
 
 ```python
 any where not (false or false)
-```
-
-```python
-[{'@timestamp': 0}]
 ```
 
 
@@ -82,10 +66,6 @@ Index: geneve-ut-004
 network where source.port > 512 and source.port < 1024
 ```
 
-```python
-[{'source': {'port': 971}, 'event': {'category': ['network']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 005
@@ -96,10 +76,6 @@ Index: geneve-ut-005
 
 ```python
 network where not (source.port < 512 or source.port > 1024)
-```
-
-```python
-[{'source': {'port': 999}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -114,10 +90,6 @@ Index: geneve-ut-006
 network where destination.port not in (80, 443)
 ```
 
-```python
-[{'destination': {'port': 65449}, 'event': {'category': ['network']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 007
@@ -128,10 +100,6 @@ Index: geneve-ut-007
 
 ```python
 network where not destination.port in (80, 443)
-```
-
-```python
-[{'destination': {'port': 65449}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -146,10 +114,6 @@ Index: geneve-ut-008
 network where destination.port == 22 and destination.port in (80, 443) or destination.port == 25
 ```
 
-```python
-[{'destination': {'port': 25}, 'event': {'category': ['network']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 009
@@ -160,10 +124,6 @@ Index: geneve-ut-009
 
 ```python
 process where process.name == "regsvr32.exe"
-```
-
-```python
-[{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -178,10 +138,6 @@ Index: geneve-ut-010
 process where process.name != "regsvr32.exe"
 ```
 
-```python
-[{'process': {'name': 'TvCfUyyFjS'}, 'event': {'category': ['process']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 011
@@ -192,10 +148,6 @@ Index: geneve-ut-011
 
 ```python
 process where process.pid != 0
-```
-
-```python
-[{'process': {'pid': 4289255490}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -210,10 +162,6 @@ Index: geneve-ut-012
 process where process.pid >= 0
 ```
 
-```python
-[{'process': {'pid': 4289255490}, 'event': {'category': ['process']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 013
@@ -224,10 +172,6 @@ Index: geneve-ut-013
 
 ```python
 process where process.pid > 0
-```
-
-```python
-[{'process': {'pid': 4289255490}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -242,10 +186,6 @@ Index: geneve-ut-014
 process where process.code_signature.exists == true
 ```
 
-```python
-[{'process': {'code_signature': {'exists': True}}, 'event': {'category': ['process']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 015
@@ -256,10 +196,6 @@ Index: geneve-ut-015
 
 ```python
 process where process.code_signature.exists != true
-```
-
-```python
-[{'process': {'code_signature': {'exists': False}}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -274,10 +210,6 @@ Index: geneve-ut-016
 any where network.protocol == "some protocol"
 ```
 
-```python
-[{'network': {'protocol': 'some protocol'}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 017
@@ -288,10 +220,6 @@ Index: geneve-ut-017
 
 ```python
 any where process.pid == null
-```
-
-```python
-[{'@timestamp': 0}]
 ```
 
 
@@ -306,10 +234,6 @@ Index: geneve-ut-018
 any where not process.pid != null
 ```
 
-```python
-[{'@timestamp': 0}]
-```
-
 
 
 ### Rule 019
@@ -320,10 +244,6 @@ Index: geneve-ut-019
 
 ```python
 any where process.pid != null
-```
-
-```python
-[{'process': {'pid': 4289255490}, '@timestamp': 0}]
 ```
 
 
@@ -338,10 +258,6 @@ Index: geneve-ut-020
 any where not process.pid == null
 ```
 
-```python
-[{'process': {'pid': 4289255490}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 021
@@ -352,10 +268,6 @@ Index: geneve-ut-021
 
 ```python
 process where process.name == "regsvr32.exe" and process.parent.name == "cmd.exe"
-```
-
-```python
-[{'process': {'name': 'regsvr32.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -370,10 +282,6 @@ Index: geneve-ut-022
 process where process.args != null
 ```
 
-```python
-[{'process': {'args': ['TvCfUyyFjS']}, 'event': {'category': ['process']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 023
@@ -384,10 +292,6 @@ Index: geneve-ut-023
 
 ```python
 process where process.args : "-f" and process.args == "-r"
-```
-
-```python
-[{'process': {'args': ['-f', '-r']}, 'event': {'category': ['process']}, '@timestamp': 0}]
 ```
 
 
@@ -402,10 +306,6 @@ Index: geneve-ut-024
 network where destination.ip == "127.0.0.1"
 ```
 
-```python
-[{'destination': {'ip': '127.0.0.1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 025
@@ -416,10 +316,6 @@ Index: geneve-ut-025
 
 ```python
 network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
-```
-
-```python
-[{'destination': {'ip': '192.168.214.62'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -434,10 +330,6 @@ Index: geneve-ut-026
 network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 ```
 
-```python
-[{'destination': {'ip': '107.31.65.130'}, 'event': {'category': ['network']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 027
@@ -448,10 +340,6 @@ Index: geneve-ut-027
 
 ```python
 network where destination.ip != null
-```
-
-```python
-[{'destination': {'ip': '107.31.65.130'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -466,10 +354,6 @@ Index: geneve-ut-028
 network where destination.ip == "::1"
 ```
 
-```python
-[{'destination': {'ip': '::1'}, 'event': {'category': ['network']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 029
@@ -480,10 +364,6 @@ Index: geneve-ut-029
 
 ```python
 network where destination.ip == "822e::/16"
-```
-
-```python
-[{'destination': {'ip': '822e:c14a:e6ea:94e4:e5ac:b58c:1b43:3a53'}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -498,10 +378,6 @@ Index: geneve-ut-030
 event.category:network and destination.ip:"822e::/16"
 ```
 
-```python
-[{'event': {'category': ['network']}, 'destination': {'ip': '822e:3686:aa79:ec58:8d14:2981:f18d:f2a6'}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 031
@@ -512,10 +388,6 @@ Index: geneve-ut-031
 
 ```python
 network where host.ip != null
-```
-
-```python
-[{'host': {'ip': ['107.31.65.130']}, 'event': {'category': ['network']}, '@timestamp': 0}]
 ```
 
 
@@ -530,10 +402,6 @@ Index: geneve-ut-032
 event.category:network and host.ip:"822e::/96"
 ```
 
-```python
-[{'event': {'category': ['network']}, 'host': {'ip': ['822e::aa79:ec58']}, '@timestamp': 0}]
-```
-
 
 
 ### Rule 033
@@ -544,10 +412,6 @@ Index: geneve-ut-033
 
 ```python
 event.category:process and not process.args : (TRUE or true)
-```
-
-```python
-[{'event': {'category': ['process']}, 'process': {'args': ['XIUtkNI']}, '@timestamp': 0}]
 ```
 
 
@@ -562,11 +426,6 @@ Index: geneve-ut-034
 network where not (source.port > 512 and source.port < 1024)
 ```
 
-```python
-[{'source': {'port': 488}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 62861}, 'event': {'category': ['network']}, '@timestamp': 1}]
-```
-
 
 
 ### Rule 035
@@ -577,11 +436,6 @@ Index: geneve-ut-035
 
 ```python
 network where source.port > 512 or source.port < 1024
-```
-
-```python
-[{'source': {'port': 59173}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 429}, 'event': {'category': ['network']}, '@timestamp': 1}]
 ```
 
 
@@ -596,11 +450,6 @@ Index: geneve-ut-036
 network where source.port < 2000 and (source.port > 512 or source.port > 1024)
 ```
 
-```python
-[{'source': {'port': 1768}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 1453}, 'event': {'category': ['network']}, '@timestamp': 1}]
-```
-
 
 
 ### Rule 037
@@ -611,11 +460,6 @@ Index: geneve-ut-037
 
 ```python
 network where (source.port > 512 or source.port > 1024) and source.port < 2000
-```
-
-```python
-[{'source': {'port': 1768}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 1453}, 'event': {'category': ['network']}, '@timestamp': 1}]
 ```
 
 
@@ -630,13 +474,6 @@ Index: geneve-ut-038
 network where (source.port > 1024 or source.port < 2000) and (source.port < 4000 or source.port > 512)
 ```
 
-```python
-[{'source': {'port': 3536}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'source': {'port': 28448}, 'event': {'category': ['network']}, '@timestamp': 1},
- {'source': {'port': 1838}, 'event': {'category': ['network']}, '@timestamp': 2},
- {'source': {'port': 1493}, 'event': {'category': ['network']}, '@timestamp': 3}]
-```
-
 
 
 ### Rule 039
@@ -647,11 +484,6 @@ Index: geneve-ut-039
 
 ```python
 network where destination.port in (80, 443)
-```
-
-```python
-[{'destination': {'port': 80}, 'event': {'category': ['network']}, '@timestamp': 0},
- {'destination': {'port': 443}, 'event': {'category': ['network']}, '@timestamp': 1}]
 ```
 
 
@@ -666,11 +498,6 @@ Index: geneve-ut-040
 process where process.name : ("*.EXE", "*.DLL")
 ```
 
-```python
-[{'process': {'name': 'XIUtkNI.EXE'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'xTFlEzs.DLL'}, 'event': {'category': ['process']}, '@timestamp': 1}]
-```
-
 
 
 ### Rule 041
@@ -681,11 +508,6 @@ Index: geneve-ut-041
 
 ```python
 process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
-```
-
-```python
-[{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -700,12 +522,6 @@ Index: geneve-ut-042
 process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or process.name == "powershell.exe"
 ```
 
-```python
-[{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 2}]
-```
-
 
 
 ### Rule 043
@@ -716,12 +532,6 @@ Index: geneve-ut-043
 
 ```python
 process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
-```
-
-```python
-[{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 2}]
 ```
 
 
@@ -736,12 +546,6 @@ Index: geneve-ut-044
 process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "powershell.exe"
 ```
 
-```python
-[{'process': {'name': 'regsvr32.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 2}]
-```
-
 
 
 ### Rule 045
@@ -752,11 +556,6 @@ Index: geneve-ut-045
 
 ```python
 process where event.type in ("start", "process_started") and process.args : "dump-keychain" and process.args : "-d"
-```
-
-```python
-[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 1}]
 ```
 
 
@@ -771,11 +570,6 @@ Index: geneve-ut-046
 event.type:(start or process_started) and (process.args:"dump-keychain" and process.args:"-d")
 ```
 
-```python
-[{'event': {'type': ['start']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 0},
- {'event': {'type': ['process_started']}, 'process': {'args': ['dump-keychain', '-d']}, '@timestamp': 1}]
-```
-
 
 
 ### Rule 047
@@ -788,13 +582,6 @@ Index: geneve-ut-047
 event.category:process and process.args:a and process.args:(b1 or b2) and process.args:(c1 or c2)
 ```
 
-```python
-[{'event': {'category': ['process']}, 'process': {'args': ['a', 'b1', 'c1']}, '@timestamp': 0},
- {'event': {'category': ['process']}, 'process': {'args': ['a', 'b1', 'c2']}, '@timestamp': 1},
- {'event': {'category': ['process']}, 'process': {'args': ['a', 'b2', 'c1']}, '@timestamp': 2},
- {'event': {'category': ['process']}, 'process': {'args': ['a', 'b2', 'c2']}, '@timestamp': 3}]
-```
-
 
 
 ### Rule 048
@@ -805,13 +592,6 @@ Index: geneve-ut-048
 
 ```python
 process where process.args : "a" and process.args : ("b1", "b2") and process.args : ("c1", "c2")
-```
-
-```python
-[{'process': {'args': ['a', 'b1', 'c1']}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'args': ['a', 'b1', 'c2']}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'args': ['a', 'b2', 'c1']}, 'event': {'category': ['process']}, '@timestamp': 2},
- {'process': {'args': ['a', 'b2', 'c2']}, 'event': {'category': ['process']}, '@timestamp': 3}]
 ```
 
 
@@ -828,11 +608,6 @@ sequence
         [process where process.parent.name : "cmd.exe"]
 ```
 
-```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1}]
-```
-
 
 
 ### Rule 050
@@ -845,11 +620,6 @@ Index: geneve-ut-050
 sequence by user.id
         [process where process.name : "cmd.exe"]
         [process where process.parent.name : "cmd.exe"]
-```
-
-```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 1}]
 ```
 
 
@@ -866,11 +636,6 @@ sequence
         [process where process.parent.name : "cmd.exe"] by user.name
 ```
 
-```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'name': 'TvCfUyyFjS'}, '@timestamp': 1}]
-```
-
 
 
 ### Rule 052
@@ -883,11 +648,6 @@ Index: geneve-ut-052
 sequence
         [process where process.name : "*.exe"] by process.name
         [process where process.name : "*.dll"] by process.parent.name
-```
-
-```python
-[{'process': {'name': 'XIUtkNI.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'xTFlEzs.dll', 'parent': {'name': 'XIUtkNI.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1}]
 ```
 
 
@@ -904,13 +664,6 @@ sequence
         [process where process.parent.name : "cmd.exe" or process.name : "powershell.exe"]
 ```
 
-```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 2},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 3}]
-```
-
 
 
 ### Rule 054
@@ -923,13 +676,6 @@ Index: geneve-ut-054
 sequence by user.id
         [process where process.name : "cmd.exe"]
         [process where process.parent.name : "cmd.exe" or process.name : "powershell.exe"]
-```
-
-```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
- {'process': {'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 1},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 2},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 3}]
 ```
 
 
@@ -946,17 +692,6 @@ sequence
         [process where process.name in ("cmd.exe", "powershell.exe")] by process.parent.name
 ```
 
-```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 1},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, '@timestamp': 2},
- {'process': {'name': 'powershell.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, '@timestamp': 3},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 4},
- {'process': {'name': 'cmd.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, '@timestamp': 5},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, '@timestamp': 6},
- {'process': {'name': 'powershell.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, '@timestamp': 7}]
-```
-
 
 
 ### Rule 056
@@ -969,15 +704,4 @@ Index: geneve-ut-056
 sequence by user.id
         [process where process.name in ("cmd.exe", "powershell.exe")] by process.name
         [process where process.name in ("cmd.exe", "powershell.exe")] by process.parent.name
-```
-
-```python
-[{'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 0},
- {'process': {'name': 'cmd.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'TvCfUyyFjS'}, '@timestamp': 1},
- {'process': {'name': 'cmd.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 2},
- {'process': {'name': 'powershell.exe', 'parent': {'name': 'cmd.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'OHmxBnLeOA'}, '@timestamp': 3},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'F'}, '@timestamp': 4},
- {'process': {'name': 'cmd.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'F'}, '@timestamp': 5},
- {'process': {'name': 'powershell.exe'}, 'event': {'category': ['process']}, 'user': {'id': 'zKNyyQDpUE'}, '@timestamp': 6},
- {'process': {'name': 'powershell.exe', 'parent': {'name': 'powershell.exe'}}, 'event': {'category': ['process']}, 'user': {'id': 'zKNyyQDpUE'}, '@timestamp': 7}]
 ```

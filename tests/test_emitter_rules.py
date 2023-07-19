@@ -20,6 +20,7 @@
 import os
 import sys
 import time
+import traceback
 import unittest
 
 import tests.utils as tu
@@ -44,6 +45,12 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         )
     )
 
+    @classmethod
+    def get_version(cls):
+        import semver
+
+        return semver.VersionInfo.parse(os.getenv("TEST_STACK_VERSION", None))
+
     def parse_from_collection(self, collection):
         asts = []
         rules = []
@@ -62,7 +69,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 heading = [f"{len(errors[err])} rules:", ""]
                 bullets = []
                 for rule in sorted(errors[err], key=lambda r: r.name):
-                    bullets.append(f"* {rule.name} ({rule.path})")
+                    bullets.append(f"* {rule.name}")
                 with self.nb.chapter(f"### {err} ({len(errors[err])})") as cells:
                     cells.append(jupyter.Markdown(heading + sorted(bullets)))
 
@@ -96,6 +103,9 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 if tu.verbose > 2:
                     sys.stdout.write("\r{} branches in {:.3f}s ({})\n".format(-1, dt, rule.name))
                     sys.stdout.flush()
+                if tu.verbose > 3:
+                    sys.stdout.write("".join(traceback.format_exception(e)))
+                    sys.stdout.flush()
                 errors.setdefault(str(e), []).append(rule)
                 continue
         if tu.verbose > 1:
@@ -109,7 +119,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 heading = [f"{len(errors[err])} rules:"]
                 bullets = []
                 for rule in sorted(errors[err], key=lambda r: r.name):
-                    bullets.append(f"* {rule.name} ({rule.path})")
+                    bullets.append(f"* {rule.name}")
                 with self.nb.chapter(f"### {err} ({len(errors[err])})") as cells:
                     cells.append(jupyter.Markdown(heading + sorted(bullets)))
 
@@ -119,7 +129,9 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         self.generate_docs(rules, asts)
 
     def test_unchanged(self):
-        tu.assertReportUnchanged(self, self.nb, "documents_from_rules.md")
+        stack_version = self.get_version()
+        major_minor = f"{stack_version.major}.{stack_version.minor}"
+        tu.assertReportUnchanged(self, self.nb, f"documents_from_rules-{major_minor}.md")
 
 
 @unittest.skipIf(os.getenv("TEST_SIGNALS_RULES", "0").lower() in ("0", "false", "no", ""), "Slow online test")
@@ -168,16 +180,50 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
             )
         return rules, asts
 
-    ack_no_signals = 2
+    stack_signals = {
+        "8.2": {
+            "ack_no_signals": 1,
+            "ack_too_few_signals": 1,
+        },
+        "8.3": {
+            "ack_no_signals": 7,
+            "ack_too_few_signals": 2,
+        },
+        "8.4": {
+            "ack_no_signals": 7,
+            "ack_too_few_signals": 2,
+        },
+        "8.5": {
+            "ack_no_signals": 9,
+            "ack_too_few_signals": 2,
+        },
+        "8.6": {
+            "ack_no_signals": 8,
+            "ack_too_few_signals": 5,
+        },
+        "8.7": {
+            "ack_no_signals": 8,
+            "ack_too_few_signals": 5,
+        },
+        "8.8": {
+            "ack_no_signals": 8,
+            "ack_too_few_signals": 5,
+            "ack_unsuccessful_with_signals": 5,
+        },
+    }
 
     def test_rules(self):
+        stack_version = self.get_version()
+        major_minor = f"{stack_version.major}.{stack_version.minor}"
+        for k, v in self.stack_signals.get(major_minor, {}).items():
+            setattr(self, k, v)
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
-        collection = sorted(tu.load_test_rules(), key=lambda x: x.name)
+        collection = sorted(tu.load_test_rules(), key=lambda x: (x.name, x.rule_id))
         rules, asts = self.parse_from_collection(collection)
         pending = self.load_rules_and_docs(rules, asts)
         try:
             self.check_signals(rules, pending)
         except AssertionError:
-            tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")
+            tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules-{major_minor}{mf_ext}.md")
             raise
-        tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules{mf_ext}.md")
+        tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules-{major_minor}{mf_ext}.md")

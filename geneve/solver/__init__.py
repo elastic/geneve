@@ -185,10 +185,12 @@ class Field:
 class CombinedFields:
     def __init__(self, a, b, ab):
         self.fields = [a, b]
-        a = set(chain(*a.value))
-        b = set(chain(*b.value))
+        A = set(chain(*a.value))
+        B = set(chain(*b.value))
         ba = transpose(ab)
-        self.solutions = sorted(set(product(a, ab)) & set(product(ba, b)))
+        self.solutions = sorted(set(product(A, ab)) & set(product(ba, B)))
+        if not self.solutions:
+            raise ConflictError("empty intersection", f"{a.field} & {b.field}")
 
     def solve_field(self, doc, join_doc, environment):
         values = random.choice(self.solutions)
