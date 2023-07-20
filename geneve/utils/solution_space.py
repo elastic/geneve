@@ -23,25 +23,7 @@ from fnmatch import fnmatchcase
 
 from infinite_sets import everything
 
-from . import random
-
-
-def has_wildcards(value):
-    if isinstance(value, str):
-        return value.find("?") + value.find("*") > -2
-    return False
-
-
-def expand_wildcards(value, alphabet, min_star_len, max_star_len):
-    chars = []
-    for c in value:
-        if c == "?":
-            chars.append(random.choice(alphabet))
-        elif c == "*":
-            chars.extend(random.choices(alphabet, k=random.randint(min_star_len, max_star_len)))
-        else:
-            chars.append(c)
-    return "".join(chars)
+from . import expand_wildcards, has_wildcards, random
 
 
 class Strings:

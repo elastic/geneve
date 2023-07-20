@@ -31,6 +31,26 @@ from . import dirs
 random = Random()
 
 
+def has_wildcards(s):
+    if not isinstance(s, str):
+        return False
+    return s.find("?") + s.find("*") > -2
+
+
+def expand_wildcards(s, alphabet, min_star_len, max_star_len):
+    if not isinstance(s, str):
+        return s
+    chars = []
+    for c in s:
+        if c == "?":
+            chars.append(random.choice(alphabet))
+        elif c == "*":
+            chars.extend(random.choices(alphabet, k=random.randint(min_star_len, max_star_len)))
+        else:
+            chars.append(c)
+    return "".join(chars)
+
+
 @contextmanager
 def tempdir():
     tmpdir = mkdtemp()
