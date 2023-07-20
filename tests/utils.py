@@ -145,16 +145,16 @@ def assertIdenticalFiles(tc, first, second):  # noqa: N802
 
 
 def assertReportUnchanged(tc, nb, report):  # noqa: N802
-    filename = os.path.join(root_dir, "tests", "reports", report)
-    old_filename = "{:s}.old{:s}".format(*os.path.splitext(filename))
-    new_filename = "{:s}.new{:s}".format(*os.path.splitext(filename))
-    if os.path.exists(filename):
-        os.rename(filename, old_filename)
+    filename = root_dir / "tests" / "reports" / report
+    old_filename = Path("{:s}.old{:s}".format(*os.path.splitext(filename)))
+    new_filename = Path("{:s}.new{:s}".format(*os.path.splitext(filename)))
+    if filename.exists:
+        filename.rename(old_filename)
     jupyter.random.seed(report)
     nb.save(filename)
-    if os.path.exists(old_filename):
-        os.rename(filename, new_filename)
-        os.rename(old_filename, filename)
+    if old_filename.exists:
+        filename.rename(new_filename)
+        old_filename.rename(filename)
         with tc.subTest(os.path.join("tests", "reports", report)):
             assertIdenticalFiles(tc, filename, new_filename)
             os.unlink(new_filename)

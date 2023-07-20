@@ -17,7 +17,6 @@
 
 """Helpers to generate Jupyter Notebooks."""
 
-import os
 import random
 import string
 import textwrap
@@ -82,7 +81,7 @@ def _get_nb_badges(filename):
 
 
 def to_file(filename, cells):
-    ext = os.path.splitext(filename)[1][1:]
+    ext = Path(filename).suffix[1:]
     if ext == "ipynb":
         nb = to_notebook(_get_nb_badges(filename) + cells)
         nbf.write(nb, filename)
@@ -217,7 +216,7 @@ class Notebook:
         return Notebook.Chapter(self, title)
 
     def save(self, filename):
-        toc_style = os.path.splitext(filename)[1][1:]
+        toc_style = Path(filename).suffix[1:]
         toc = []
         cells = []
         for chap_title, chap_cells in self.chapters:
