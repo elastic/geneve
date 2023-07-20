@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/spf13/cobra v1.5.0
-	gitlab.com/pygolo/py v0.1.0-rc
+	gitlab.com/pygolo/py v0.1.0
 	golang.org/x/mod v0.7.0
 	gopkg.in/yaml.v3 v3.0.1
 )
