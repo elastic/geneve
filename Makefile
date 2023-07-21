@@ -33,6 +33,7 @@ prereq-py:
 
 prereq-go: prereq-py
 	go install golang.org/x/lint/golint@latest
+	go install honnef.co/go/tools/cmd/staticcheck@latest
 
 lint:
 	$(PYTHON) -m ruff check geneve tests
@@ -70,8 +71,9 @@ cli-build: gnv
 	fi
 
 cli-lint:
-	go vet .
 	golint .
+	go vet $(GO_TAGS) .
+	staticcheck $(GO_TAGS) .
 
 cli-test:
 	$(embed-python)
