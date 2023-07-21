@@ -115,7 +115,7 @@ jobs:
           make prereq-py
 
       - name: Build CLI
-        run: make cli-build
+        run: make pygolo-diags cli-build
 
       - name: Start Geneve server
         run: |
@@ -230,7 +230,7 @@ jobs:
         run: make prereq-go
 
       - name: Build
-        run: make cli-build
+        run: make pygolo-diags cli-build
 
       - name: Lint
         run: make cli-lint
