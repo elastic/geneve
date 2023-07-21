@@ -82,7 +82,8 @@ cli-bench:
 	go test $(GO_TAGS) -bench=. ./cmd/geneve/source
 
 clean:
-	go clean -testcache
+	go clean -cache -testcache
+	rm -rf gnv
 
 pkg-build:
 	$(PYTHON) -m build
