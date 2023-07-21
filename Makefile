@@ -27,11 +27,11 @@ rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(su
 
 all: lint tests
 
-prereq-py:
+prereq:
 	$(PYTHON) -m pip install --user --upgrade pip
 	$(PYTHON) -m pip install --user -r requirements.txt
 
-prereq-go: prereq-py
+prereq-lint: prereq
 	go install golang.org/x/lint/golint@latest
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 
