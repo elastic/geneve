@@ -27,12 +27,13 @@ rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(su
 
 all: lint tests
 
-prereq-py:
+prereq:
 	$(PYTHON) -m pip install --user --upgrade pip
 	$(PYTHON) -m pip install --user -r requirements.txt
 
-prereq-go: prereq-py
+prereq-lint: prereq
 	go install golang.org/x/lint/golint@latest
+	go install honnef.co/go/tools/cmd/staticcheck@latest
 
 lint:
 	$(PYTHON) -m ruff check geneve tests
@@ -70,8 +71,9 @@ cli-build: gnv
 	fi
 
 cli-lint:
-	go vet .
 	golint .
+	go vet $(GO_TAGS) .
+	staticcheck $(GO_TAGS) .
 
 cli-test:
 	$(embed-python)
@@ -82,7 +84,8 @@ cli-bench:
 	go test $(GO_TAGS) -bench=. ./cmd/geneve/source
 
 clean:
-	go clean -testcache
+	go clean -cache -testcache
+	rm -rf gnv
 
 pkg-build:
 	$(PYTHON) -m build

@@ -22,6 +22,31 @@ jobs:
       - name: License check
         run: make license-check
 
+  lint-check:
+    name: Code lint check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.20"
+          cache: false
+
+      - name: Install dependencies
+        run: make prereq-lint
+
+      - name: Lint
+        run: make lint cli-lint
+
   unit-tests:
     name: Unit tests (${{ matrix.os }}/py-${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
@@ -44,10 +69,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: make prereq-py
-
-      - name: Lint code
-        run: make lint
+        run: make prereq
 
       - name: Run unit tests
         env:
@@ -101,21 +123,19 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.19"
+          go-version: "1.18"
           cache: false
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.8"
 
       - name: Install dependencies
-        run: |
-          make prereq-go
-          make prereq-py
+        run: make prereq
 
       - name: Build CLI
-        run: make cli-build
+        run: make pygolo-diags cli-build
 
       - name: Start Geneve server
         run: |
@@ -207,7 +227,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go-version: ["1.18", "1.19"]
+        go-version: ["1.18", "1.19", "1.20"]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         os: ["ubuntu-latest", "macos-latest"]
 
@@ -227,13 +247,10 @@ jobs:
           cache: false
 
       - name: Install dependencies
-        run: make prereq-go
+        run: make prereq
 
       - name: Build
-        run: make cli-build
-
-      - name: Lint
-        run: make cli-lint
+        run: make pygolo-diags cli-build
 
       - name: Test
         run: make cli-test
@@ -261,7 +278,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: make prereq-py
+        run: make prereq
 
       - name: Build package
         run: make package
@@ -308,6 +325,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - license-check
+      - lint-check
       - unit-tests
       - online-tests
       - package-tests
