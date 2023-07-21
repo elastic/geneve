@@ -102,6 +102,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: "1.19"
+          cache: false
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -223,6 +224,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
+          cache: false
 
       - name: Install dependencies
         run: make prereq-go
