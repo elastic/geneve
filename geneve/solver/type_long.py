@@ -29,7 +29,7 @@ NumberLimits = namedtuple("NumberLimits", ["MIN", "MAX"])
 LongLimits = NumberLimits(-(2**63), 2**63 - 1)
 
 
-@solver("&long")
+@solver.type("long")
 class LongField(Field):
     valid_constraints = ["==", "!=", ">=", "<=", ">", "<"]
     ecs_constraints = {

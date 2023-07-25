@@ -30,7 +30,7 @@ def match_nets(values, nets):
     return any(v in net for v in values for net in nets)
 
 
-@solver("&ip")
+@solver.type("ip")
 class IPField(Field):
     valid_constraints = ["==", "!=", "in", "not in"]
 

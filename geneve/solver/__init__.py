@@ -76,6 +76,14 @@ class solver:  # noqa: N801
     def new_entity(cls, group, fields, schema):
         return cls.solvers.get(group + ".", Entity)(group, fields, schema)
 
+    @classmethod
+    def type(cls, name):
+        return cls("&" + name)
+
+    @classmethod
+    def group(cls, name):
+        return cls(name + ".")
+
 
 class Entity:
     ecs_constraints = {}

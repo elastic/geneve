@@ -22,7 +22,7 @@ from ..utils import random
 from . import Field, solver
 
 
-@solver("&boolean")
+@solver.type("boolean")
 class BooleanField(Field):
     valid_constraints = ["==", "!="]
 

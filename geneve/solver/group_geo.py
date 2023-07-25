@@ -24,8 +24,8 @@ from geneve.solver import Entity, solver
 faker = Faker()
 
 
-@solver("source.geo.")
-@solver("destination.geo.")
+@solver.group("source.geo")
+@solver.group("destination.geo")
 class GeoEntity(Entity):
     def solve(self, doc, join_doc, env):
         lol = faker.location_on_land()

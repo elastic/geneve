@@ -51,7 +51,7 @@ def get_templ(field, constraints):
     return templ
 
 
-@solver("&keyword")
+@solver.type("keyword")
 class KeywordField(Field):
     valid_constraints = ["==", "!=", "wildcard", "not wildcard", "min_length", "allowed_chars"]
     alphabet = string.ascii_letters

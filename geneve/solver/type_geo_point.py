@@ -20,7 +20,7 @@
 from . import Field, solver
 
 
-@solver("&geo_point")
+@solver.type("geo_point")
 class GeoPointField(Field):
     def solve(self, left_attempts, environment):
         value = [0, 0]
