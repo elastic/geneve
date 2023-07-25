@@ -98,7 +98,7 @@ class TestResource(unittest.TestCase):
             for uri, basedir in tests:
                 with self.subTest(uri=uri, basedir=basedir):
                     with resource(uri, basedir=basedir) as resource_dir:
-                        manifest = next(resource_dir.glob("*")) / "manifest.yml"
+                        manifest = resource_dir / "manifest.yml"
                         self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
 
     def test_remote(self):
@@ -106,7 +106,7 @@ class TestResource(unittest.TestCase):
             uri = "http://%s:%s/%s.zip" % (*server.server_address, self.resource.name)
 
             with resource(uri) as resource_dir:
-                manifest = next(resource_dir.glob("*")) / "manifest.yml"
+                manifest = resource_dir / "manifest.yml"
                 self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
 
     def test_cached(self):
@@ -118,7 +118,7 @@ class TestResource(unittest.TestCase):
 
                 self.assertFalse(cached_resource.exists(), msg=f"{cached_resource} does exist")
                 with resource(uri, cachedir=cachedir) as resource_dir:
-                    manifest = next(resource_dir.glob("*")) / "manifest.yml"
+                    manifest = resource_dir / "manifest.yml"
                     self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
                 self.assertTrue(cached_resource.exists(), msg=f"{cached_resource} does not exist")
 
