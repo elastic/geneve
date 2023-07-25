@@ -61,18 +61,23 @@ def tempdir():
 
 
 @contextmanager
-def resource(uri, basedir=None, cachedir=None):
+def resource(uri, basedir=None, cachedir=None, cachefile=None, validate=None):
     import requests
 
     with tempdir() as tmpdir:
         uri_parts = urlparse(str(uri))
         if uri_parts.scheme.startswith("http"):
-            uri_file = Path(uri_parts.path).name
-            uri_dir = Path(cachedir or tmpdir)
-            uri_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
-            local_file = uri_dir / uri_file
-            with open(local_file, "wb") as f:
-                f.write(requests.get(uri).content)
+            download_dir = Path(cachedir or tmpdir)
+            if cachedir and cachefile:
+                local_file = download_dir / cachefile
+            else:
+                local_file = download_dir / Path(uri_parts.path).name
+            if local_file.exists() and validate and not validate(local_file):
+                local_file.unlink()
+            if not local_file.exists():
+                download_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+                with open(local_file, "wb") as f:
+                    f.write(requests.get(uri).content)
         elif uri_parts.scheme == "file":
             local_file = Path(basedir or Path.cwd()) / (uri_parts.netloc + uri_parts.path)
         elif uri_parts.scheme == "":
@@ -109,17 +114,17 @@ def load_schema(uri, path, basedir=None):
 
 
 @functools.lru_cache
-def load_rules(uri, paths=None, basedir=None, *, timeout=17, retries=3):
+def load_rules(uri, paths=None, basedir=None, *, timeout=17, tries=3):
     uri_parts = urlparse(uri)
     if uri_parts.hostname == "epr.elastic.co" and uri_parts.path == "/search":
         import requests
 
-        for n in range(retries):
+        for n in range(tries):
             try:
                 res = requests.get(uri, timeout=timeout)
                 break
             except requests.exceptions.ConnectTimeout:
-                if n == retries - 1:
+                if n == tries - 1:
                     raise
 
         res.raise_for_status()
