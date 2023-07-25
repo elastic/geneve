@@ -289,6 +289,7 @@ class SignalsTestCase:
     def generate_docs_and_mappings(self, rules, asts):
         schema = load_test_schema()
         se = SourceEvents(schema)
+        se.stack_version = self.get_version()
 
         bulk = []
         for rule, ast in zip(rules, asts):

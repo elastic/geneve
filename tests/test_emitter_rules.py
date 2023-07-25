@@ -29,6 +29,12 @@ from geneve.events_emitter import SourceEvents, ast_from_rule
 from . import jupyter
 
 
+def get_stack_version():
+    import semver
+
+    return semver.VersionInfo.parse(os.getenv("TEST_STACK_VERSION", None))
+
+
 class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
     nb = jupyter.Notebook()
@@ -44,12 +50,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     """
         )
     )
-
-    @classmethod
-    def get_version(cls):
-        import semver
-
-        return semver.VersionInfo.parse(os.getenv("TEST_STACK_VERSION", None))
+    stack_version = get_stack_version()
 
     def parse_from_collection(self, collection):
         asts = []
@@ -83,6 +84,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         for rule, ast in zip(rules, asts):
             try:
                 se = SourceEvents(self.schema)
+                se.stack_version = self.stack_version
                 if tu.verbose > 2:
                     sys.stdout.write(f"adding {rule.name}...")
                     sys.stdout.flush()
@@ -129,7 +131,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         self.generate_docs(rules, asts)
 
     def test_unchanged(self):
-        stack_version = self.get_version()
+        stack_version = self.stack_version
         major_minor = f"{stack_version.major}.{stack_version.minor}"
         tu.assertReportUnchanged(self, self.nb, f"documents_from_rules-{major_minor}.md")
 

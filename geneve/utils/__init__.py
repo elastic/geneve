@@ -18,6 +18,7 @@
 """Util functions."""
 
 import functools
+import json
 import shutil
 from contextlib import contextmanager
 from pathlib import Path
@@ -25,8 +26,9 @@ from random import Random
 from tempfile import mkdtemp
 from types import SimpleNamespace
 from urllib.parse import urlparse, urlunparse
+from warnings import warn
 
-from . import dirs
+from . import dirs, epr
 
 random = Random()
 
@@ -111,6 +113,46 @@ def load_schema(uri, path, basedir=None):
         with open(resource_dir / path) as f:
             yaml = YAML(typ="safe")
             return yaml.load(f)
+
+
+def load_integration_schema(name, kibana_version):
+    from ruamel.yaml import YAML
+
+    conditions = {}
+    if kibana_version:
+        conditions["kibana.version"] = kibana_version
+    else:
+        warn(f"Loading integration '{name}' but no Kibana version was specified, assuming latest.")
+
+    e = epr.EPR(timeout=17, tries=3)
+    res = e.search_package(name, **conditions)
+    uri = urlunparse(urlparse(e.url)._replace(path=res[0]["download"]))
+
+    def is_array(tree):
+        return "example" in tree and isinstance(json.loads(tree["example"]), list)
+
+    def field_schema(tree, path=()):
+        path = path + (tree["name"],)
+        if tree["type"] == "group":
+            try:
+                fields = tree["fields"]
+            except KeyError:
+                fields = tree["field"]
+            for tree in fields:
+                for field, schema in field_schema(tree, path):
+                    yield field, schema
+        else:
+            schema = {"type": tree["type"]}
+            if is_array(tree):
+                schema["normalize"] = ["array"]
+            yield ".".join(path), schema
+
+    schema = {}
+    with resource(uri, cachedir=dirs.cache) as resource_dir:
+        for fields_yml in resource_dir.glob("**/fields.yml"):
+            with open(fields_yml) as f:
+                schema.update({field: schema for tree in YAML(typ="safe").load(f) for field, schema in field_schema(tree)})
+    return schema
 
 
 @functools.lru_cache
