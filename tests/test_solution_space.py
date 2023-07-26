@@ -21,7 +21,7 @@ import string
 import unittest
 
 import tests.utils as tu
-from geneve.utils.solution_space import transpose, Strings, product
+from geneve.utils.solution_space import Strings, product, transpose
 
 alphabet = string.printable
 

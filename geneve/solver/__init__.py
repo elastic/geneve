@@ -17,8 +17,9 @@
 
 """Constraints solver helper class."""
 
-import faker
 from itertools import chain
+
+import faker
 
 from ..constraints import ConflictError
 from ..utils import deep_merge, random, split_path
