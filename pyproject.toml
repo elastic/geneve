@@ -43,6 +43,10 @@ line-length = 140
 target-version = ["py38"]
 exclude = "geneve/kql|tests/kuery|tests/reports"
 
+[tool.isort]
+profile = 'black'
+skip = ["geneve/kql", "tests/kuery", "tests/reports"]
+
 [tool.ruff]
 line-length = 140
 exclude = ["geneve/kql", "tests/kuery", "tests/reports"]

@@ -17,8 +17,8 @@
 
 """Helpers for field value generation with constraints."""
 
-import copy
 import operator
+from copy import copy
 from functools import reduce
 from itertools import chain, product
 from typing import List
@@ -41,8 +41,8 @@ class Document:
 
     def clone(self):
         doc = Document()
-        doc.__aliases = copy.deepcopy(self.__aliases)
-        doc.__constraints = copy.deepcopy(self.__constraints)
+        doc.__aliases = {k: copy(v) for k, v in self.__aliases.items()}
+        doc.__constraints = copy(self.__constraints)
         return doc
 
     def append_constraint(self, field, name=None, value=None, flags=None):
@@ -62,7 +62,7 @@ class Document:
 
     def extend_constraints(self, field, constraints):
         if field not in self.__constraints:
-            self.__constraints[field] = copy.deepcopy(constraints)
+            self.__constraints[field] = copy(constraints)
         elif self.__constraints[field] is None:
             if constraints is not None:
                 raise ConflictError("cannot be non-null", field)

@@ -31,6 +31,26 @@ from . import dirs
 random = Random()
 
 
+def has_wildcards(s):
+    if not isinstance(s, str):
+        return False
+    return s.find("?") + s.find("*") > -2
+
+
+def expand_wildcards(s, alphabet, min_star_len, max_star_len):
+    if not isinstance(s, str):
+        return s
+    chars = []
+    for c in s:
+        if c == "?":
+            chars.append(random.choice(alphabet))
+        elif c == "*":
+            chars.extend(random.choices(alphabet, k=random.randint(min_star_len, max_star_len)))
+        else:
+            chars.append(c)
+    return "".join(chars)
+
+
 @contextmanager
 def tempdir():
     tmpdir = mkdtemp()
@@ -66,6 +86,14 @@ def resource(uri, basedir=None, cachedir=None):
             shutil.unpack_archive(local_file, tmpdir)
             if local_file.parent == tmpdir:
                 local_file.unlink()
+            inner_entries = tmpdir.glob("*")
+            new_tmpdir = next(inner_entries)
+            try:
+                # check if there are other directories or files
+                _ = next(inner_entries)
+            except StopIteration:
+                # lone entry, probably a directory, let's use it as base
+                tmpdir = new_tmpdir
 
         yield tmpdir
 
@@ -75,13 +103,7 @@ def load_schema(uri, path, basedir=None):
     from ruamel.yaml import YAML
 
     with resource(uri, basedir=basedir) as resource_dir:
-        filenames = list(resource_dir.glob(f"*/{path}"))
-        if len(filenames) < 1:
-            raise ValueError(f"File not found in '{resource_dir}': '{path}'")
-        if len(filenames) > 1:
-            raise ValueError(f"Too many files: {filenames}")
-
-        with open(filenames[0]) as f:
+        with open(resource_dir / path) as f:
             yaml = YAML(typ="safe")
             return yaml.load(f)
 
@@ -108,7 +130,7 @@ def load_rules(uri, paths=None, basedir=None, *, timeout=17, retries=3):
         uri = urlunparse(uri_parts)
 
     with resource(uri, basedir=basedir, cachedir=dirs.cache) as resource_dir:
-        is_package = bool(list(resource_dir.glob("*/manifest.yml")))
+        is_package = (resource_dir / "manifest.yml").exists()
 
         if paths is None:
             paths = "kibana/security_rule/*.json" if is_package else "rules/**/*.toml"
@@ -118,7 +140,7 @@ def load_rules(uri, paths=None, basedir=None, *, timeout=17, retries=3):
         if is_package:
             files = {}
             for path in paths:
-                for filepath in resource_dir.glob(f"*/{path}"):
+                for filepath in resource_dir.glob(path):
                     rule_id, *rule_rev = filepath.stem.split("_")
                     rule_rev = int(rule_rev[0]) if rule_rev else 0
                     try:
@@ -129,7 +151,7 @@ def load_rules(uri, paths=None, basedir=None, *, timeout=17, retries=3):
             filenames = (filename for _, filename in files.values())
             import json
         else:
-            filenames = (filename for path in paths for filename in resource_dir.glob(f"*/{path}"))
+            filenames = (filename for path in paths for filename in resource_dir.glob(path))
             import pytoml
 
         rules = []

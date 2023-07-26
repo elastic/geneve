@@ -17,8 +17,9 @@
 
 """Constraints solver helper class."""
 
-import faker
 from itertools import chain
+
+import faker
 
 from ..constraints import ConflictError
 from ..utils import deep_merge, random, split_path
@@ -75,6 +76,14 @@ class solver:  # noqa: N801
     @classmethod
     def new_entity(cls, group, fields, schema):
         return cls.solvers.get(group + ".", Entity)(group, fields, schema)
+
+    @classmethod
+    def type(cls, name):
+        return cls("&" + name)
+
+    @classmethod
+    def group(cls, name):
+        return cls(name + ".")
 
 
 class Entity:

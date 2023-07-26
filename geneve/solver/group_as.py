@@ -24,12 +24,12 @@ from geneve.solver import Entity, solver
 faker = Faker()
 
 
-@solver("client.as.")
-@solver("destination.as.")
-@solver("server.as.")
-@solver("source.as.")
-@solver("threat.enrichments.indicator.as.")
-@solver("threat.indicator.as.")
+@solver.group("client.as")
+@solver.group("destination.as")
+@solver.group("server.as")
+@solver.group("source.as")
+@solver.group("threat.enrichments.indicator.as")
+@solver.group("threat.indicator.as")
 class ASEntity(Entity):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

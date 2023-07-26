@@ -46,7 +46,7 @@ event_categories = {
 }
 
 
-@solver("event.")
+@solver.group("event")
 class EventEntity(Entity):
     ecs_constraints = {
         "category": [("wildcard", sorted(event_categories))],

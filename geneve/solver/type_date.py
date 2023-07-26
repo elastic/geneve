@@ -23,7 +23,7 @@ from ..constraints import ConflictError
 from . import Field, solver
 
 
-@solver("&date")
+@solver.type("date")
 class DateField(Field):
     valid_constraints = ["=="]
 

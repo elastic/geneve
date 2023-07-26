@@ -148,11 +148,11 @@ def assertReportUnchanged(tc, nb, report):  # noqa: N802
     filename = root_dir / "tests" / "reports" / report
     old_filename = Path("{:s}.old{:s}".format(*os.path.splitext(filename)))
     new_filename = Path("{:s}.new{:s}".format(*os.path.splitext(filename)))
-    if filename.exists:
+    if filename.exists():
         filename.rename(old_filename)
     jupyter.random.seed(report)
     nb.save(filename)
-    if old_filename.exists:
+    if old_filename.exists():
         filename.rename(new_filename)
         old_filename.rename(filename)
         with tc.subTest(os.path.join("tests", "reports", report)):
