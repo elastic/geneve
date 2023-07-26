@@ -65,7 +65,12 @@ class solver:  # noqa: N801
 
     def __init__(self, name):
         if name in self.solvers:
-            raise ValueError(f"duplicate solver: {name}")
+            if name.startswith("&"):
+                raise ValueError(f"duplicate type solver: {name[1:]}")
+            elif name.endswith("."):
+                raise ValueError(f"duplicate group solver: {name[:-1]}")
+            else:
+                raise ValueError(f"duplicate (unknown) solver: {name}")
         self.name = name
 
     def __call__(self, func):
@@ -74,8 +79,25 @@ class solver:  # noqa: N801
         return func
 
     @classmethod
+    def get_type_solver(cls, type):
+        try:
+            return cls.solvers["&" + type]
+        except KeyError:
+            raise NotImplementedError(f"Field type solver: {type}")
+
+    @classmethod
+    def get_group_solver(cls, group):
+        group_parts = split_path(group)
+        while group_parts:
+            try:
+                return cls.solvers[".".join(group_parts) + "."]
+            except KeyError:
+                group_parts = group_parts[:-1]
+        return Entity
+
+    @classmethod
     def new_entity(cls, group, fields, schema):
-        return cls.solvers.get(group + ".", Entity)(group, fields, schema)
+        return cls.get_group_solver(group)(group, fields, schema)
 
     @classmethod
     def type(cls, name):
@@ -101,9 +123,7 @@ class Entity:
             field_schema = self.schema.get(field, {})
             field_type = field_schema.get("type", "keyword")
             field_is_array = "array" in field_schema.get("normalize", [])
-            field_solver = solver.solvers.get(f"&{field_type}", None)
-            if not field_solver:
-                raise NotImplementedError(f"Constraints solver not implemented: {field_type}")
+            field_solver = solver.get_type_solver(field_type)
             field_constraints = get_ecs_constraints(self, field) + get_ecs_constraints(field_solver, field)
             return field_solver(field, constraints, field_constraints, field_is_array)
 

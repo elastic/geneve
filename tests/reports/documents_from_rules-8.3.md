@@ -12,10 +12,10 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (2)](#unsupported-rule-type-threat_match-2)
    1. [Generation errors](#generation-errors)
-      1. [Constraints solver not implemented: wildcard (46)](#constraints-solver-not-implemented-wildcard-46)
+      1. [Field type solver: wildcard (46)](#field-type-solver-wildcard-46)
       1. [Unsupported function: match (8)](#unsupported-function-match-8)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (5)](#unsupported-lhs-type-class-eqlastfunctioncall-5)
-      1. [Constraints solver not implemented: match_only_text (3)](#constraints-solver-not-implemented-match_only_text-3)
+      1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Root with too many branches: 38016 (limit: 10000) (1)](#root-with-too-many-branches-38016-limit-10000-1)
       1. [Root without branches (1)](#root-without-branches-1)
@@ -132,7 +132,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 ## Generation errors
 
-### Constraints solver not implemented: wildcard (46)
+### Field type solver: wildcard (46)
 
 46 rules:
 * Apple Scripting Execution with Administrator Privileges
@@ -203,7 +203,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Suspicious Execution - Short Program Name
 * Suspicious Process Access via Direct System Call
 
-### Constraints solver not implemented: match_only_text (3)
+### Field type solver: match_only_text (3)
 
 3 rules:
 * Account Configured with Never-Expiring Password

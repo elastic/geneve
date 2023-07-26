@@ -28,15 +28,15 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
 
     def test_double_registration(self):
-        @solver("test.")
+        @solver.group("test")
         class TestEntity(Entity):
             def solve(self, doc, join_doc, env):
                 pass
 
-        msg = "duplicate solver: test."
+        msg = "duplicate group solver: test"
         with self.assertRaises(ValueError, msg=msg) as cm:
 
-            @solver("test.")
+            @solver.group("test")
             class TestEntity2(Entity):
                 def solve(self, doc, join_doc, env):
                     pass
@@ -44,8 +44,8 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
         self.assertEqual(msg, str(cm.exception))
 
     def test_group(self):
-        @solver("test.geo.")
-        @solver("test2.geo.")
+        @solver.group("test.geo")
+        @solver.group("test2.geo")
         class TestGeoEntity(Entity):
             def solve(self, doc, join_doc, env):
                 self.emit_group(doc, {"lat": 0.0, "lon": 0.0})

@@ -13,10 +13,10 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsupported rule type: new_terms (3)](#unsupported-rule-type-new_terms-3)
       1. [Unsupported rule type: threat_match (2)](#unsupported-rule-type-threat_match-2)
    1. [Generation errors](#generation-errors)
-      1. [Constraints solver not implemented: wildcard (50)](#constraints-solver-not-implemented-wildcard-50)
+      1. [Field type solver: wildcard (50)](#field-type-solver-wildcard-50)
       1. [Unsupported function: match (9)](#unsupported-function-match-9)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)](#unsupported-lhs-type-class-eqlastfunctioncall-6)
-      1. [Constraints solver not implemented: match_only_text (3)](#constraints-solver-not-implemented-match_only_text-3)
+      1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Root with too many branches: 38016 (limit: 10000) (1)](#root-with-too-many-branches-38016-limit-10000-1)
       1. [Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)](#unsolvable-constraints-dnsquestionname-excluded-by-stringscdndiscordappcom-cdndiscordappcom-1)
@@ -148,7 +148,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 ## Generation errors
 
-### Constraints solver not implemented: wildcard (50)
+### Field type solver: wildcard (50)
 
 50 rules:
 * Apple Scripting Execution with Administrator Privileges
@@ -225,7 +225,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Suspicious Execution - Short Program Name
 * Suspicious Process Access via Direct System Call
 
-### Constraints solver not implemented: match_only_text (3)
+### Field type solver: match_only_text (3)
 
 3 rules:
 * Account Configured with Never-Expiring Password

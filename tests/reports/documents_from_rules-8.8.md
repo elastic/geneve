@@ -13,14 +13,13 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
    1. [Generation errors](#generation-errors)
-      1. [Constraints solver not implemented: wildcard (50)](#constraints-solver-not-implemented-wildcard-50)
+      1. [Field type solver: wildcard (50)](#field-type-solver-wildcard-50)
       1. [Unsupported function: match (7)](#unsupported-function-match-7)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)](#unsupported-lhs-type-class-eqlastfunctioncall-6)
       1. [Pipes are unsupported (4)](#pipes-are-unsupported-4)
-      1. [Constraints solver not implemented: match_only_text (3)](#constraints-solver-not-implemented-match_only_text-3)
+      1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Destination field already exists: destination.as.organization.name ('GOOGLE' != 'Wang Group') (1)](#destination-field-already-exists-destinationasorganizationname-google--wang-group-1)
       1. [Root with too many branches: 131072 (limit: 10000) (1)](#root-with-too-many-branches-131072-limit-10000-1)
       1. [Root with too many branches: 332800 (limit: 10000) (1)](#root-with-too-many-branches-332800-limit-10000-1)
       1. [Root with too many branches: 38016 (limit: 10000) (1)](#root-with-too-many-branches-38016-limit-10000-1)
@@ -183,7 +182,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 ## Generation errors
 
-### Constraints solver not implemented: wildcard (50)
+### Field type solver: wildcard (50)
 
 50 rules:
 * Adding Hidden File Attribute via Attrib
@@ -266,7 +265,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Potential Successful Linux RDP Brute Force Attack Detected
 * Suspicious File Changes Activity Detected
 
-### Constraints solver not implemented: match_only_text (3)
+### Field type solver: match_only_text (3)
 
 3 rules:
 * Account Configured with Never-Expiring Password
@@ -284,11 +283,6 @@ Curious about the inner workings? Read [here](signals_generation.md).
 2 rules:
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
-
-### Destination field already exists: destination.as.organization.name ('GOOGLE' != 'Wang Group') (1)
-
-1 rules:
-* Potential Malicious File Downloaded from Google Drive
 
 ### Root with too many branches: 131072 (limit: 10000) (1)
 
