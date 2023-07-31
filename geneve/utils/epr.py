@@ -25,25 +25,20 @@ from urllib.parse import quote
 
 class EPR:
     def __init__(self, *, url=None, timeout=None, tries=None):
-        import requests
-
         self.url = url or "https://epr.elastic.co"
-        self.session = requests.Session()
         self.timeout = timeout
         self.tries = tries or 1
 
     def get(self, url):
+        import requests
         from requests.exceptions import ConnectTimeout
 
         for n in range(self.tries):
             try:
-                return self.session.get(url, timeout=self.timeout)
+                return requests.get(url, timeout=self.timeout)
             except ConnectTimeout:
                 if n == self.retries - 1:
                     raise
-
-    def close(self):
-        self.session.close()
 
     def search_package(self, name, **conditions):
         conditions = "&".join(f"{quote(str(k))}={quote(str(v))}" for k, v in conditions.items())
