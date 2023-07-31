@@ -115,6 +115,7 @@ def events_from_root(root, environment, timestamp):
 
 class SourceEvents:
     schema = {}
+    stack_version = None
     branches_limit = 10000
 
     def __init__(self, schema=None):
@@ -149,7 +150,7 @@ class SourceEvents:
         if self.branches_limit and len(root) > self.branches_limit:
             raise ValueError(f"Root with too many branches: {len(root)} (limit: {self.branches_limit})")
         root.meta = meta
-        root.consolidate(self.schema)
+        root.optimize(self.schema, self.stack_version)
         self.try_emit(root)
         self.__roots.append(root)
         return root

@@ -1059,7 +1059,7 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         ]:
             d.append_constraint(field)
 
-        d.consolidate(schema)
+        d.optimize(schema)
         entities = list(d.entities())
 
         self.assertEqual(
@@ -1107,7 +1107,7 @@ class TestBranches(tu.SeededTestCase, unittest.TestCase):
         d2 = jd.join_fields(d2, ["process.parent.name"])
 
         branch = Branch([d1, d2])
-        branch.consolidate(schema)
+        branch.optimize(schema)
 
         self.assertEqual(
             [

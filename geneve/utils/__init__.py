@@ -18,6 +18,7 @@
 """Util functions."""
 
 import functools
+import json
 import shutil
 from contextlib import contextmanager
 from pathlib import Path
@@ -25,8 +26,9 @@ from random import Random
 from tempfile import mkdtemp
 from types import SimpleNamespace
 from urllib.parse import urlparse, urlunparse
+from warnings import warn
 
-from . import dirs
+from . import dirs, epr
 
 random = Random()
 
@@ -61,18 +63,23 @@ def tempdir():
 
 
 @contextmanager
-def resource(uri, basedir=None, cachedir=None):
+def resource(uri, basedir=None, cachedir=None, cachefile=None, validate=None):
     import requests
 
     with tempdir() as tmpdir:
         uri_parts = urlparse(str(uri))
         if uri_parts.scheme.startswith("http"):
-            uri_file = Path(uri_parts.path).name
-            uri_dir = Path(cachedir or tmpdir)
-            uri_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
-            local_file = uri_dir / uri_file
-            with open(local_file, "wb") as f:
-                f.write(requests.get(uri).content)
+            download_dir = Path(cachedir or tmpdir)
+            if cachedir and cachefile:
+                local_file = download_dir / cachefile
+            else:
+                local_file = download_dir / Path(uri_parts.path).name
+            if local_file.exists() and validate and not validate(local_file):
+                local_file.unlink()
+            if not local_file.exists():
+                download_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+                with open(local_file, "wb") as f:
+                    f.write(requests.get(uri).content)
         elif uri_parts.scheme == "file":
             local_file = Path(basedir or Path.cwd()) / (uri_parts.netloc + uri_parts.path)
         elif uri_parts.scheme == "":
@@ -108,18 +115,58 @@ def load_schema(uri, path, basedir=None):
             return yaml.load(f)
 
 
+def load_integration_schema(name, kibana_version):
+    from ruamel.yaml import YAML
+
+    conditions = {}
+    if kibana_version:
+        conditions["kibana.version"] = kibana_version
+    else:
+        warn(f"Loading integration '{name}' but no Kibana version was specified, assuming latest.")
+
+    e = epr.EPR(timeout=17, tries=3)
+    res = e.search_package(name, **conditions)
+    uri = urlunparse(urlparse(e.url)._replace(path=res[0]["download"]))
+
+    def is_array(tree):
+        return "example" in tree and isinstance(json.loads(tree["example"]), list)
+
+    def field_schema(tree, path=()):
+        path = path + (tree["name"],)
+        if tree["type"] == "group":
+            try:
+                fields = tree["fields"]
+            except KeyError:
+                fields = tree["field"]
+            for tree in fields:
+                for field, schema in field_schema(tree, path):
+                    yield field, schema
+        else:
+            schema = {"type": tree["type"]}
+            if is_array(tree):
+                schema["normalize"] = ["array"]
+            yield ".".join(path), schema
+
+    schema = {}
+    with resource(uri, cachedir=dirs.cache) as resource_dir:
+        for fields_yml in resource_dir.glob("**/fields.yml"):
+            with open(fields_yml) as f:
+                schema.update({field: schema for tree in YAML(typ="safe").load(f) for field, schema in field_schema(tree)})
+    return schema
+
+
 @functools.lru_cache
-def load_rules(uri, paths=None, basedir=None, *, timeout=17, retries=3):
+def load_rules(uri, paths=None, basedir=None, *, timeout=17, tries=3):
     uri_parts = urlparse(uri)
     if uri_parts.hostname == "epr.elastic.co" and uri_parts.path == "/search":
         import requests
 
-        for n in range(retries):
+        for n in range(tries):
             try:
                 res = requests.get(uri, timeout=timeout)
                 break
             except requests.exceptions.ConnectTimeout:
-                if n == retries - 1:
+                if n == tries - 1:
                     raise
 
         res.raise_for_status()

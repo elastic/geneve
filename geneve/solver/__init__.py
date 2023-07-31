@@ -17,12 +17,13 @@
 
 """Constraints solver helper class."""
 
+from functools import wraps
 from itertools import chain
 
 import faker
 
 from ..constraints import ConflictError
-from ..utils import deep_merge, random, split_path
+from ..utils import deep_merge, load_integration_schema, random, split_path
 from ..utils.solution_space import product, transpose
 
 faker.generator.random = random
@@ -96,8 +97,8 @@ class solver:  # noqa: N801
         return Entity
 
     @classmethod
-    def new_entity(cls, group, fields, schema):
-        return cls.get_group_solver(group)(group, fields, schema)
+    def new_entity(cls, group, fields, schema, stack_version=None):
+        return cls.get_group_solver(group)(group, fields, schema, stack_version)
 
     @classmethod
     def type(cls, name):
@@ -107,11 +108,25 @@ class solver:  # noqa: N801
     def group(cls, name):
         return cls(name + ".")
 
+    class integration:
+        def __init__(self, name):
+            self.name = name
+
+        def __call__(self, func):
+            @wraps(func)
+            def wrapper(group, fields, schema, stack_version):
+                if self.name:
+                    deep_merge(schema, load_integration_schema(self.name, stack_version))
+                    self.name = None
+                return func(group, fields, schema, stack_version)
+
+            return wrapper
+
 
 class Entity:
     ecs_constraints = {}
 
-    def __init__(self, group, fields, schema):
+    def __init__(self, group, fields, schema, stack_version):
         self.group = group
         self.schema = schema
         self.fields = {field: self.field_solver(field, constraints) for field, constraints in fields.items()}

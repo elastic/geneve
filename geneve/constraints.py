@@ -123,10 +123,10 @@ class Document:
                 if k == "join_value":
                     return v[0]
 
-    def consolidate(self, schema):
+    def optimize(self, *args, **kwargs):
         from .solver import solver
 
-        self.__entities = {group: solver.new_entity(group, fields, schema) for group, fields in self.__constraints.groups()}
+        self.__entities = {group: solver.new_entity(group, fields, *args, **kwargs) for group, fields in self.__constraints.groups()}
 
     def solve(self, join_doc, environment):
         doc = {}
@@ -153,12 +153,12 @@ class Branch(List[Document]):
             if join_doc:
                 return join_doc
 
-    def consolidate(self, schema):
+    def optimize(self, *args, **kwargs):
         self.join_doc = self.__get_join_doc()
         if self.join_doc:
-            self.join_doc.consolidate(schema)
+            self.join_doc.optimize(*args, **kwargs)
         for constraints in self:
-            constraints.consolidate(schema)
+            constraints.optimize(*args, **kwargs)
 
     def solve(self, environment):
         join_doc = self.join_doc.solve(None, environment) if self.join_doc else None
@@ -177,9 +177,9 @@ class Root(List[Branch]):
     def constraints(self):
         return chain(*self)
 
-    def consolidate(self, schema):
+    def optimize(self, *args, **kwargs):
         for branch in self:
-            branch.consolidate(schema)
+            branch.optimize(*args, **kwargs)
 
     @classmethod
     def chain(cls, roots):
