@@ -333,13 +333,21 @@ class SignalsTestCase:
 
         kwargs = {
             "name": self.index_template,
+            "template": {
+                "mappings": mappings,
+            },
+        }
+        self.es.cluster.put_component_template(**kwargs)
+
+        kwargs = {
+            "name": self.index_template,
             "index_patterns": [f"{self.index_template}-*"],
+            "composed_of": [self.index_template],
             "template": {
                 "settings": {
                     "number_of_shards": 1,
                     "number_of_replicas": 0,
                 },
-                "mappings": mappings,
             },
         }
         self.es.indices.put_index_template(**kwargs)

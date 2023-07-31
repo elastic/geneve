@@ -24,7 +24,7 @@ from itertools import chain
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
 from .events_emitter_eql import get_ast_stats  # noqa: F401
 from .solver import emit_field
-from .utils import deep_merge, random, split_path
+from .utils import deep_merge, has_wildcards, random, split_path
 
 __all__ = ("SourceEvents",)
 
@@ -93,8 +93,20 @@ def emit_mappings(fields, schema):
         except KeyError:
             field_type = "keyword"
         value = {"type": field_type}
-        for part in reversed(split_path(field)):
-            value = {"properties": {part: value}}
+        if has_wildcards(field):
+            value = {
+                "dynamic_templates": [
+                    {
+                        field: {
+                            "path_match": field,
+                            "mapping": value,
+                        },
+                    }
+                ]
+            }
+        else:
+            for part in reversed(split_path(field)):
+                value = {"properties": {part: value}}
         deep_merge(mappings, value)
     return mappings
 

@@ -56,6 +56,31 @@ event_docs_mappings = {
             },  # noqa: E501
         },
     },
+    """azure.auditlogs.properties.target_resources.*.display_name:guest and azure.activitylogs.level:*
+    """: {
+        "dynamic_templates": [
+            {
+                "azure.auditlogs.properties.target_resources.*.display_name": {
+                    "path_match": "azure.auditlogs.properties.target_resources.*.display_name",
+                    "mapping": {
+                        "type": "keyword",
+                    },
+                },
+            }
+        ],
+        "properties": {
+            "@timestamp": {"type": "date"},
+            "azure": {
+                "properties": {
+                    "activitylogs": {
+                        "properties": {
+                            "level": {"type": "long"},
+                        },
+                    },
+                },
+            },
+        },
+    },
 }
 
 mono_branch_mono_doc = {
