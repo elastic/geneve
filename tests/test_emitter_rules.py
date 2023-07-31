@@ -29,12 +29,6 @@ from geneve.events_emitter import SourceEvents, ast_from_rule
 from . import jupyter
 
 
-def get_stack_version():
-    import semver
-
-    return semver.VersionInfo.parse(os.getenv("TEST_STACK_VERSION", None))
-
-
 class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
     nb = jupyter.Notebook()
@@ -50,7 +44,6 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     """
         )
     )
-    stack_version = get_stack_version()
 
     def parse_from_collection(self, collection):
         asts = []

@@ -656,6 +656,8 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     def test_len(self):
         se = SourceEvents(self.schema)
+        se.stack_version = self.stack_version
+
         self.assertEqual(len(se), 0)
         self.assertEqual(bool(se), False)
 
@@ -673,6 +675,8 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         for query, mappings in event_docs_mappings.items():
             with self.subTest(query):
                 se = SourceEvents(self.schema)
+                se.stack_version = self.stack_version
+
                 root = se.add_query(query)
                 self.assertEqual(mappings, se.mappings(root))
                 self.assertEqual(mappings, se.mappings())
