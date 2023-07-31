@@ -149,7 +149,7 @@ class SourceEvents:
         if self.branches_limit and len(root) > self.branches_limit:
             raise ValueError(f"Root with too many branches: {len(root)} (limit: {self.branches_limit})")
         root.meta = meta
-        root.consolidate(self.schema)
+        root.optimize(self.schema)
         self.try_emit(root)
         self.__roots.append(root)
         return root
