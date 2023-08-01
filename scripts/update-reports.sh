@@ -1,8 +1,13 @@
 #!/bin/bash -e
 
 PYTHON=${PYTHON:-python3}
+
 DEFAULT_STACK_VERSIONS="8.9 8.8 8.7 8.6 8.5 8.4 8.3 8.2"
 STACK_VERSIONS=
+
+DEFAULT_TESTS="tests/test_emitter_*.py"
+TESTS=
+
 ONLINE_TESTS=0
 ITERATIONS=1
 VERBOSE_UT=
@@ -33,6 +38,12 @@ while [ -n "$1" ]; do
 			;;
 		--online)
 			ONLINE_TESTS=1
+			;;
+		--queries)
+			TESTS="$TESTS tests/test_emitter_queries.py"
+			;;
+		--rules)
+			TESTS="$TESTS tests/test_emitter_rules.py"
 			;;
 		-h|--help)
 			usage
@@ -76,6 +87,10 @@ TMP_LOG=$(mktemp)
 trap "iteration_banner; rm $TMP_LOG" EXIT
 rm -rf tests/reports/*.new.md
 
+echo STACK_VERSIONS: ${STACK_VERSIONS:-$DEFAULT_STACK_VERSIONS}
+echo TESTS: ${TESTS:-$DEFAULT_TESTS}
+echo
+
 ITERATION=0
 while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 	iteration_banner
@@ -95,7 +110,7 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 			make down up
 		fi
 
-		if $PYTHON -m unittest $VERBOSE_UT tests/test_emitter_*.py 2> >(tee $TMP_LOG >&2); then
+		if $PYTHON -m unittest $VERBOSE_UT ${TESTS:-$DEFAULT_TESTS} 2> >(tee $TMP_LOG >&2); then
 			continue
 		fi
 

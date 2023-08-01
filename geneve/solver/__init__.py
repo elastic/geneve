@@ -17,13 +17,21 @@
 
 """Constraints solver helper class."""
 
+import string
 from functools import wraps
 from itertools import chain
 
 import faker
 
 from ..constraints import ConflictError
-from ..utils import deep_merge, load_integration_schema, random, split_path
+from ..utils import (
+    deep_merge,
+    expand_wildcards,
+    has_wildcards,
+    load_integration_schema,
+    random,
+    split_path,
+)
 from ..utils.solution_space import product, transpose
 
 faker.generator.random = random
@@ -160,6 +168,7 @@ class Field:
         self.field = field
         self.value = [] if is_array else None
         self.is_array = is_array
+        self.has_wildcards = has_wildcards(field)
         self.join_field_parts = None
         self.max_attempts = None
         self.cardinality = 0
@@ -222,7 +231,8 @@ class Field:
     def solve_field(self, doc, join_doc, environment):
         value = self(join_doc, environment)["value"]
         if doc is not None:
-            emit_field(doc, self.field, value)
+            field = expand_wildcards(self.field, string.ascii_letters, 1, 3) if self.has_wildcards else self.field
+            emit_field(doc, field, value)
         return value
 
 

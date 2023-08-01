@@ -56,6 +56,31 @@ event_docs_mappings = {
             },  # noqa: E501
         },
     },
+    """azure.auditlogs.properties.target_resources.*.display_name:guest and azure.activitylogs.level:*
+    """: {
+        "dynamic_templates": [
+            {
+                "azure.auditlogs.properties.target_resources.*.display_name": {
+                    "path_match": "azure.auditlogs.properties.target_resources.*.display_name",
+                    "mapping": {
+                        "type": "keyword",
+                    },
+                },
+            }
+        ],
+        "properties": {
+            "@timestamp": {"type": "date"},
+            "azure": {
+                "properties": {
+                    "activitylogs": {
+                        "properties": {
+                            "level": {"type": "long"},
+                        },
+                    },
+                },
+            },
+        },
+    },
 }
 
 mono_branch_mono_doc = {
@@ -656,6 +681,8 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     def test_len(self):
         se = SourceEvents(self.schema)
+        se.stack_version = self.stack_version
+
         self.assertEqual(len(se), 0)
         self.assertEqual(bool(se), False)
 
@@ -673,6 +700,8 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         for query, mappings in event_docs_mappings.items():
             with self.subTest(query):
                 se = SourceEvents(self.schema)
+                se.stack_version = self.stack_version
+
                 root = se.add_query(query)
                 self.assertEqual(mappings, se.mappings(root))
                 self.assertEqual(mappings, se.mappings())

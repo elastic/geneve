@@ -29,12 +29,6 @@ from geneve.events_emitter import SourceEvents, ast_from_rule
 from . import jupyter
 
 
-def get_stack_version():
-    import semver
-
-    return semver.VersionInfo.parse(os.getenv("TEST_STACK_VERSION", None))
-
-
 class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
     nb = jupyter.Notebook()
@@ -50,7 +44,6 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     """
         )
     )
-    stack_version = get_stack_version()
 
     def parse_from_collection(self, collection):
         asts = []
@@ -184,31 +177,31 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
 
     stack_signals = {
         "8.2": {
-            "ack_no_signals": 1,
+            "ack_no_signals": 3,
             "ack_too_few_signals": 1,
         },
         "8.3": {
-            "ack_no_signals": 7,
+            "ack_no_signals": 9,
             "ack_too_few_signals": 2,
         },
         "8.4": {
-            "ack_no_signals": 7,
+            "ack_no_signals": 9,
             "ack_too_few_signals": 2,
         },
         "8.5": {
-            "ack_no_signals": 9,
+            "ack_no_signals": 11,
             "ack_too_few_signals": 3,
         },
         "8.6": {
-            "ack_no_signals": 8,
+            "ack_no_signals": 10,
             "ack_too_few_signals": 6,
         },
         "8.7": {
-            "ack_no_signals": 8,
+            "ack_no_signals": 10,
             "ack_too_few_signals": 6,
         },
         "8.8": {
-            "ack_no_signals": 8,
+            "ack_no_signals": 10,
             "ack_too_few_signals": 6,
             "ack_unsuccessful_with_signals": 5,
         },

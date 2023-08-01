@@ -94,6 +94,12 @@ def http_server(directory, timeout=10):
         thread.join(timeout=timeout)
 
 
+def get_stack_version():
+    import semver
+
+    return semver.VersionInfo.parse(os.getenv("TEST_STACK_VERSION", None))
+
+
 def get_test_schema_uri():
     return os.getenv("TEST_SCHEMA_URI") or "https://github.com/elastic/ecs/archive/refs/heads/main.tar.gz"
 
@@ -189,6 +195,8 @@ class SeededTestCase:
 
 
 class QueryTestCase:
+    stack_version = get_stack_version()
+
     @classmethod
     def setUpClass(cls):
         super(QueryTestCase, cls).setUpClass()
@@ -207,6 +215,7 @@ class QueryTestCase:
 
     def assertQuery(self, query, docs, count=1):  # noqa: N802
         se = SourceEvents(self.schema)
+        se.stack_version = self.stack_version
         se.add_query(query, meta=query)
         branches = se.emit(timestamp=False, complete=True, count=count)
         _docs = [[event.doc for event in branch] for branch in branches]
@@ -324,13 +333,21 @@ class SignalsTestCase:
 
         kwargs = {
             "name": self.index_template,
+            "template": {
+                "mappings": mappings,
+            },
+        }
+        self.es.cluster.put_component_template(**kwargs)
+
+        kwargs = {
+            "name": self.index_template,
             "index_patterns": [f"{self.index_template}-*"],
+            "composed_of": [self.index_template],
             "template": {
                 "settings": {
                     "number_of_shards": 1,
                     "number_of_replicas": 0,
                 },
-                "mappings": mappings,
             },
         }
         self.es.indices.put_index_template(**kwargs)
