@@ -4,9 +4,9 @@ This report captures the unit test queries signals generation coverage.
 Here you can learn what queries are supported.
 
 ## Table of contents
-   1. [Rules with the correct signals (57)](#rules-with-the-correct-signals-57)
+   1. [Rules with the correct signals (58)](#rules-with-the-correct-signals-58)
 
-## Rules with the correct signals (57)
+## Rules with the correct signals (58)
 
 ### Rule 000
 
@@ -654,14 +654,14 @@ sequence
 
 ### Rule 053
 
-Branch count: 2  
+Branch count: 1  
 Document count: 4  
 Index: geneve-ut-053
 
 ```python
 sequence
-        [process where process.name : "cmd.exe"]
-        [process where process.parent.name : "cmd.exe" or process.name : "powershell.exe"]
+        [process where process.name : "*.exe"] with runs=2
+        [process where process.pid < 10] with runs=2
 ```
 
 
@@ -673,7 +673,7 @@ Document count: 4
 Index: geneve-ut-054
 
 ```python
-sequence by user.id
+sequence
         [process where process.name : "cmd.exe"]
         [process where process.parent.name : "cmd.exe" or process.name : "powershell.exe"]
 ```
@@ -682,14 +682,14 @@ sequence by user.id
 
 ### Rule 055
 
-Branch count: 4  
-Document count: 8  
+Branch count: 2  
+Document count: 4  
 Index: geneve-ut-055
 
 ```python
-sequence
-        [process where process.name in ("cmd.exe", "powershell.exe")] by process.name
-        [process where process.name in ("cmd.exe", "powershell.exe")] by process.parent.name
+sequence by user.id
+        [process where process.name : "cmd.exe"]
+        [process where process.parent.name : "cmd.exe" or process.name : "powershell.exe"]
 ```
 
 
@@ -699,6 +699,20 @@ sequence
 Branch count: 4  
 Document count: 8  
 Index: geneve-ut-056
+
+```python
+sequence
+        [process where process.name in ("cmd.exe", "powershell.exe")] by process.name
+        [process where process.name in ("cmd.exe", "powershell.exe")] by process.parent.name
+```
+
+
+
+### Rule 057
+
+Branch count: 4  
+Document count: 8  
+Index: geneve-ut-057
 
 ```python
 sequence by user.id
