@@ -17,6 +17,7 @@
 
 """Functions for collecting constraints from an EQL AST."""
 
+import math
 from itertools import chain, product
 from typing import Any, List, NoReturn, Tuple, Union
 
@@ -30,8 +31,8 @@ __all__ = ()
 traverser = TreeTraverser()
 
 
-def collect_constraints(node: eql.ast.BaseNode, negate: bool = False) -> Root:
-    return traverser.traverse(node, negate)
+def collect_constraints(node: eql.ast.BaseNode, negate: bool = False, max_branches: int = None) -> Root:
+    return traverser.traverse(node, negate, max_branches)
 
 
 def get_ast_stats():
@@ -53,58 +54,68 @@ def _nope(operation: Any, negate: bool) -> Any:
 
 
 @traverser(eql.ast.Field)
-def cc_field(node: eql.ast.Field, value: str, negate: bool) -> Root:
+def cc_field(node: eql.ast.Field, value: str, negate: bool, max_branches: int) -> Root:
     doc = Document(node.render(), _nope("==", negate), value)
     return Root([Branch([doc])])
 
 
 @traverser(eql.ast.Boolean)
-def cc_boolean(node: eql.ast.Boolean, negate: bool) -> Root:
+def cc_boolean(node: eql.ast.Boolean, negate: bool, max_branches: int) -> Root:
     branches = []
     if _nope(node.value, negate):
         branches.append(Branch.Identity)
     return Root(branches)
 
 
-def cc_or_terms(node: Union[eql.ast.Or, eql.ast.And], negate: bool) -> Root:
-    return Root.chain(collect_constraints(term, negate) for term in node.terms)
+def cc_or_terms(node: Union[eql.ast.Or, eql.ast.And], negate: bool, max_branches: int) -> Root:
+    terms = tuple(collect_constraints(term, negate, max_branches) for term in node.terms)
+    if max_branches:
+        nr_branches = sum(len(branches) for branches in terms)
+        if nr_branches > max_branches:
+            raise ValueError(f"Root with too many branches (limit: {max_branches})")
+    return Root.chain(terms)
 
 
-def cc_and_terms(node: Union[eql.ast.Or, eql.ast.And], negate: bool) -> Root:
-    return Root.product(collect_constraints(term, negate) for term in node.terms)
+def cc_and_terms(node: Union[eql.ast.Or, eql.ast.And], negate: bool, max_branches: int) -> Root:
+    terms = tuple(collect_constraints(term, negate, max_branches) for term in node.terms)
+    if max_branches:
+        nr_branches = math.prod(len(branches) for branches in terms)
+        if nr_branches > max_branches:
+            raise ValueError(f"Root with too many branches (limit: {max_branches})")
+    return Root.product(terms)
 
 
 @traverser(eql.ast.Or)
-def cc_or(node: eql.ast.Or, negate: bool) -> Root:
-    return _nope(cc_or_terms, negate)(node, negate)
+def cc_or(node: eql.ast.Or, negate: bool, max_branches: int) -> Root:
+    return _nope(cc_or_terms, negate)(node, negate, max_branches)
 
 
 @traverser(eql.ast.And)
-def cc_and(node: eql.ast.And, negate: bool) -> Root:
-    return _nope(cc_and_terms, negate)(node, negate)
+def cc_and(node: eql.ast.And, negate: bool, max_branches: int) -> Root:
+    return _nope(cc_and_terms, negate)(node, negate, max_branches)
 
 
 @traverser(eql.ast.Not)
-def cc_not(node: eql.ast.Not, negate: bool) -> Root:
-    return collect_constraints(node.term, not negate)
+def cc_not(node: eql.ast.Not, negate: bool, max_branches: int) -> Root:
+    return collect_constraints(node.term, not negate, max_branches)
 
 
 @traverser(eql.ast.IsNull)
-def cc_is_null(node: eql.ast.IsNull, negate: bool) -> Root:
+def cc_is_null(node: eql.ast.IsNull, negate: bool, max_branches: int) -> Root:
     if type(node.expr) != eql.ast.Field:
         raise NotImplementedError(f"Unsupported expression type: {type(node.expr)}")
-    return cc_field(node.expr, None, negate)
+    return cc_field(node.expr, None, negate, max_branches)
 
 
 @traverser(eql.ast.IsNotNull)
-def cc_is_not_null(node: eql.ast.IsNotNull, negate: bool) -> Root:
+def cc_is_not_null(node: eql.ast.IsNotNull, negate: bool, max_branches: int) -> Root:
     if type(node.expr) != eql.ast.Field:
         raise NotImplementedError(f"Unsupported expression type: {type(node.expr)}")
-    return cc_field(node.expr, None, not negate)
+    return cc_field(node.expr, None, not negate, max_branches)
 
 
 @traverser(eql.ast.InSet)
-def cc_in_set(node: eql.ast.InSet, negate: bool) -> Root:
+def cc_in_set(node: eql.ast.InSet, negate: bool, max_branches: int) -> Root:
     if type(node.expression) != eql.ast.Field:
         raise NotImplementedError(f"Unsupported expression type: {type(node.expression)}")
     branches = []
@@ -116,12 +127,12 @@ def cc_in_set(node: eql.ast.InSet, negate: bool) -> Root:
         branches.append(Branch([doc]))
     else:
         for term in node.container:
-            branches.extend(cc_field(node.expression, term.value, negate))
+            branches.extend(cc_field(node.expression, term.value, negate, max_branches))
     return Root(branches)
 
 
 @traverser(eql.ast.Comparison)
-def cc_comparison(node: eql.ast.Comparison, negate: bool) -> Root:
+def cc_comparison(node: eql.ast.Comparison, negate: bool, max_branches: int) -> Root:
     if type(node.left) != eql.ast.Field:
         raise NotImplementedError(f"Unsupported LHS type: {type(node.left)}")
     doc = Document(node.left.render(), _nope(node.comparator, negate), node.right.value)
@@ -129,12 +140,12 @@ def cc_comparison(node: eql.ast.Comparison, negate: bool) -> Root:
 
 
 @traverser(eql.ast.EventQuery)
-def cc_event_query(node: eql.ast.EventQuery, negate: bool) -> Root:
+def cc_event_query(node: eql.ast.EventQuery, negate: bool, max_branches: int) -> Root:
     if negate:
         raise NotImplementedError(f"Negation of {type(node)} is not supported")
     if type(node.event_type) != str:
         raise NotImplementedError(f"Unsupported event_type type: {type(node.event_type)}")
-    root = collect_constraints(node.query, negate)
+    root = collect_constraints(node.query, negate, max_branches)
     if node.event_type != "any":
         for c in root.constraints():
             c.append_constraint("event.category", "==", node.event_type)
@@ -142,15 +153,15 @@ def cc_event_query(node: eql.ast.EventQuery, negate: bool) -> Root:
 
 
 @traverser(eql.ast.PipedQuery)
-def cc_piped_query(node: eql.ast.PipedQuery, negate: bool) -> Root:
+def cc_piped_query(node: eql.ast.PipedQuery, negate: bool, max_branches: int) -> Root:
     if negate:
         raise NotImplementedError(f"Negation of {type(node)} is not supported")
     if node.pipes:
         raise NotImplementedError("Pipes are unsupported")
-    return collect_constraints(node.first, negate)
+    return collect_constraints(node.first, negate, max_branches)
 
 
-def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool) -> List[Tuple[Document, List[str]]]:
+def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool, max_branches: int) -> List[Tuple[Document, List[str]]]:
     if negate:
         raise NotImplementedError(f"Negation of {type(node)} is not supported")
     if any(type(value) != eql.ast.Field for value in node.join_values):
@@ -158,7 +169,7 @@ def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool) -> List[Tuple[Documen
     if node.fork:
         raise NotImplementedError(f"Unsupported fork: {node.fork}")
     join_fields = [field.render() for field in node.join_values]
-    return [[(doc, join_fields) for doc in branch] for branch in collect_constraints(node.query, negate)]
+    return [[(doc, join_fields) for doc in branch] for branch in collect_constraints(node.query, negate, max_branches)]
 
 
 def cc_join_branch(seq: List[Tuple[Document, List[str]]]) -> Branch:
@@ -168,17 +179,21 @@ def cc_join_branch(seq: List[Tuple[Document, List[str]]]) -> Branch:
 
 
 @traverser(eql.ast.Sequence)
-def cc_sequence(node: eql.ast.Sequence, negate: bool) -> Root:
+def cc_sequence(node: eql.ast.Sequence, negate: bool, max_branches: int) -> Root:
     if negate:
         raise NotImplementedError(f"Negation of {type(node)} is not supported")
-    queries = [cc_subquery_by(query, negate) for query in node.queries]
+    queries = [cc_subquery_by(query, negate, max_branches) for query in node.queries]
     if node.close:
-        queries.append([[(doc, []) for doc in branch] for branch in collect_constraints(node.close, negate)])
+        queries.append([[(doc, []) for doc in branch] for branch in collect_constraints(node.close, negate, max_branches)])
+    if max_branches:
+        nr_branches = math.prod(len(branches) for branches in queries)
+        if nr_branches > max_branches:
+            raise ValueError(f"Root with too many branches (limit: {max_branches})")
     return Root([cc_join_branch(chain(*branches)) for branches in chain(product(*queries))])
 
 
 @traverser(eql.ast.FunctionCall)
-def cc_function_call(node: eql.ast.FunctionCall, negate: bool) -> Root:
+def cc_function_call(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
     if type(node.arguments[0]) is not eql.ast.Field:
         raise NotImplementedError(f"Unsupported argument type: {type(node.arguments[0])}")
     args_types = (eql.ast.String, eql.ast.Number)
@@ -187,23 +202,23 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool) -> Root:
         raise NotImplementedError(f"Unsupported argument type(s): {', '.join(wrong_types)}")
     fn_name = node.name.lower()
     if fn_name == "wildcard":
-        return cc_wildcard(node, negate)
+        return cc_wildcard(node, negate, max_branches)
     elif fn_name == "cidrmatch":
-        return cc_function(node, negate, "in")
+        return cc_function(node, negate, max_branches, "in")
     elif fn_name == "_cardinality":
-        return cc_function(node, negate, "cardinality")
+        return cc_function(node, negate, max_branches, "cardinality")
     else:
         raise NotImplementedError(f"Unsupported function: {node.name}")
 
 
-def cc_function(node: eql.ast.FunctionCall, negate: bool, constraint_name: str) -> Root:
+def cc_function(node: eql.ast.FunctionCall, negate: bool, max_branches: int, constraint_name: str) -> Root:
     field = node.arguments[0].render()
     constraint_name = constraint_name if not negate else f"not {constraint_name}"
     doc = Document(field, constraint_name, tuple(arg.value for arg in node.arguments[1:]))
     return Root([Branch([doc])])
 
 
-def cc_wildcard(node: eql.ast.FunctionCall, negate: bool) -> Root:
+def cc_wildcard(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
     field = node.arguments[0].render()
     branches = []
     if negate:
@@ -239,5 +254,5 @@ def cc_wildcard(node: eql.ast.FunctionCall, negate: bool) -> Root:
 @traverser(eql.ast.Macro)
 @traverser(eql.ast.Constant)
 @traverser(eql.ast.PreProcessor)
-def cc_not_implemented(node: eql.ast.BaseNode, negate: bool) -> NoReturn:
+def cc_not_implemented(node: eql.ast.BaseNode, negate: bool, max_branches: int) -> NoReturn:
     raise NotImplementedError(f"Traverser not implemented: {type(node)}")

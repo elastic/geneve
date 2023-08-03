@@ -9,22 +9,21 @@ Curious about the inner workings? Read [here](signals_generation.md).
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (47)](#unsupported-rule-type-machine_learning-47)
       1. [Unsupported rule type: threshold (21)](#unsupported-rule-type-threshold-21)
-      1. [Unsupported rule type: new_terms (18)](#unsupported-rule-type-new_terms-18)
-      1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
+      1. [Unsupported rule type: new_terms (19)](#unsupported-rule-type-new_terms-19)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
+      1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
       1. [Field type solver: wildcard (50)](#field-type-solver-wildcard-50)
-      1. [Unsupported function: match (7)](#unsupported-function-match-7)
+      1. [Unsupported function: match (8)](#unsupported-function-match-8)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)](#unsupported-lhs-type-class-eqlastfunctioncall-6)
       1. [Pipes are unsupported (4)](#pipes-are-unsupported-4)
       1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
+      1. [Root with too many branches (limit: 10000) (3)](#root-with-too-many-branches-limit-10000-3)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Root with too many branches: 131072 (limit: 10000) (1)](#root-with-too-many-branches-131072-limit-10000-1)
-      1. [Root with too many branches: 332800 (limit: 10000) (1)](#root-with-too-many-branches-332800-limit-10000-1)
-      1. [Root with too many branches: 38016 (limit: 10000) (1)](#root-with-too-many-branches-38016-limit-10000-1)
       1. [Root without branches (1)](#root-without-branches-1)
       1. [Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)](#unsolvable-constraints-dnsquestionname-excluded-by-stringscdndiscordappcom-cdndiscordappcom-1)
+      1. [Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)](#unsolvable-constraints-eventaction-excluded-by-stringsexec-exec-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
@@ -34,6 +33,9 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdumpcreds-dumpcerts-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Eventing.Reader.EventLogSession'}): ('.ClearLog')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringseventingreadereventlogsession-clearlog-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-ItemProperty'}): ('-Path')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsget-itemproperty--path-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'IO.Compression.ZipFile'}): ('CompressionLevel')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsiocompressionzipfile-compressionlevel-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstartupinfoex-updateprocthreadattribute-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookA'}): ('GetForegroundWindow')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssetwindowshooka-getforegroundwindow-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'System.IO.Compression.DeflateStream'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemiocompressiondeflatestream-frombase64string-1)
@@ -135,9 +137,9 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported rule type: new_terms (18)
+### Unsupported rule type: new_terms (19)
 
-18 rules:
+19 rules:
 
 * Abnormal Process ID or Lock File Created
 * Cron Job Created or Changed by Previously Unknown Process
@@ -155,19 +157,9 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Potential Persistence Through init.d Detected
 * Potential Shadow File Read via Command Line Utilities
 * Shared Object Created or Changed by Previously Unknown Process
+* Suspicious Microsoft 365 Mail Access by ClientAppId
 * Suspicious Network Activity to the Internet by Previously Unknown Executable
 * Suspicious System Commands Executed by Previously Unknown Executable
-
-### Unsupported rule type: threat_match (6)
-
-6 rules:
-
-* Deprecated - Threat Intel Filebeat Module (v8.x) Indicator Match
-* Deprecated - Threat Intel Indicator Match
-* Threat Intel Hash Indicator Match
-* Threat Intel IP Address Indicator Match
-* Threat Intel URL Indicator Match
-* Threat Intel Windows Registry Indicator Match
 
 ### Unsupported query language: lucene (5)
 
@@ -178,6 +170,15 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 * Setuid / Setgid Bit Set via chmod
+
+### Unsupported rule type: threat_match (4)
+
+4 rules:
+
+* Threat Intel Hash Indicator Match
+* Threat Intel IP Address Indicator Match
+* Threat Intel URL Indicator Match
+* Threat Intel Windows Registry Indicator Match
 
 ## Generation errors
 
@@ -235,13 +236,14 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Windows Defender Disabled via Registry Modification
 * Windows Subsystem for Linux Enabled via Dism Utility
 
-### Unsupported function: match (7)
+### Unsupported function: match (8)
 
-7 rules:
+8 rules:
 * Creation of Hidden Files and Directories via CommandLine
 * Executable File Creation with Multiple Extensions
 * Masquerading Space After Filename
 * Potential Credential Access via Windows Utilities
+* Potential Exploitation of an Unquoted Service Path Vulnerability
 * Process Started from Process ID (PID) File
 * Suspicious Execution via Microsoft Office Add-Ins
 * Suspicious Service was Installed in the System
@@ -253,7 +255,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Image File Execution Options Injection
 * Ingress Transfer via Windows BITS
 * NullSessionPipe Registry Modification
-* Suspicious Execution - Short Program Name
+* Renamed Utility Executed with Short Program Name
 * Suspicious Process Access via Direct System Call
 
 ### Pipes are unsupported (4)
@@ -271,6 +273,13 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Kerberos Pre-authentication Disabled for User
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
+### Root with too many branches (limit: 10000) (3)
+
+3 rules:
+* Execution from Unusual Directory - Command Line
+* Potential Reverse Shell via Suspicious Binary
+* Startup or Run Key Registry Modification
+
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)
 
 2 rules:
@@ -283,21 +292,6 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
 
-### Root with too many branches: 131072 (limit: 10000) (1)
-
-1 rules:
-* Potential Reverse Shell via Suspicious Binary
-
-### Root with too many branches: 332800 (limit: 10000) (1)
-
-1 rules:
-* Startup or Run Key Registry Modification
-
-### Root with too many branches: 38016 (limit: 10000) (1)
-
-1 rules:
-* Execution from Unusual Directory - Command Line
-
 ### Root without branches (1)
 
 1 rules:
@@ -307,6 +301,11 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 1 rules:
 * Connection to Commonly Abused Web Services
+
+### Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)
+
+1 rules:
+* Process Discovery via Built-In Applications
 
 ### Unsolvable constraints: event.category & event.type (empty intersection) (1)
 
@@ -352,6 +351,21 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 1 rules:
 * Potential Invoke-Mimikatz PowerShell Script
+
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Eventing.Reader.EventLogSession'}): ('.ClearLog')) (1)
+
+1 rules:
+* PowerShell Script with Log Clear Capabilities
+
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-ItemProperty'}): ('-Path')) (1)
+
+1 rules:
+* PowerShell Script with Discovery Capabilities
+
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'IO.Compression.ZipFile'}): ('CompressionLevel')) (1)
+
+1 rules:
+* PowerShell Script with Archive Compression Capabilities
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)
 

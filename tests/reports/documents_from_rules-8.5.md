@@ -18,10 +18,9 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)](#unsupported-lhs-type-class-eqlastfunctioncall-6)
       1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
+      1. [Root with too many branches (limit: 10000) (2)](#root-with-too-many-branches-limit-10000-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Root with too many branches: 332800 (limit: 10000) (1)](#root-with-too-many-branches-332800-limit-10000-1)
-      1. [Root with too many branches: 38016 (limit: 10000) (1)](#root-with-too-many-branches-38016-limit-10000-1)
       1. [Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)](#unsolvable-constraints-dnsquestionname-excluded-by-stringscdndiscordappcom-cdndiscordappcom-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
@@ -249,6 +248,12 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Potential Linux Ransomware Note Creation Detected
 * Suspicious File Changes Activity Detected
 
+### Root with too many branches (limit: 10000) (2)
+
+2 rules:
+* Execution from Unusual Directory - Command Line
+* Startup or Run Key Registry Modification
+
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)
 
 2 rules:
@@ -260,16 +265,6 @@ Curious about the inner workings? Read [here](signals_generation.md).
 2 rules:
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
-
-### Root with too many branches: 332800 (limit: 10000) (1)
-
-1 rules:
-* Startup or Run Key Registry Modification
-
-### Root with too many branches: 38016 (limit: 10000) (1)
-
-1 rules:
-* Execution from Unusual Directory - Command Line
 
 ### Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)
 
