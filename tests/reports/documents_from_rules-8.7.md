@@ -9,7 +9,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (47)](#unsupported-rule-type-machine_learning-47)
       1. [Unsupported rule type: threshold (22)](#unsupported-rule-type-threshold-22)
-      1. [Unsupported rule type: new_terms (19)](#unsupported-rule-type-new_terms-19)
+      1. [Unsupported rule type: new_terms (21)](#unsupported-rule-type-new_terms-21)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
@@ -17,14 +17,14 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsupported function: match (8)](#unsupported-function-match-8)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)](#unsupported-lhs-type-class-eqlastfunctioncall-6)
       1. [Pipes are unsupported (4)](#pipes-are-unsupported-4)
+      1. [Root with too many branches (limit: 10000) (4)](#root-with-too-many-branches-limit-10000-4)
       1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
-      1. [Root with too many branches (limit: 10000) (3)](#root-with-too-many-branches-limit-10000-3)
+      1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Root without branches (1)](#root-without-branches-1)
       1. [Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)](#unsolvable-constraints-dnsquestionname-excluded-by-stringscdndiscordappcom-cdndiscordappcom-1)
       1. [Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)](#unsolvable-constraints-eventaction-excluded-by-stringsexec-exec-1)
-      1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smb')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmb-1)
@@ -42,6 +42,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'VirtualAlloc'}): ('WriteProcessMemory')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsvirtualalloc-writeprocessmemory-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswindowsclipboard-gettext-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Runtime.InteropServices.Marshal]::Copy'}): ('VirtualProtect')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemruntimeinteropservicesmarshalcopy-virtualprotect-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
@@ -53,6 +54,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-stringscab54552-deea-4691-817e-ed4a4d1afc72-aadced64-746c-4633-a97c-d61349046527-1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (1)](#unsupported-keyword-fileextentropy-constraint--1)
+      1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (1)](#unsupported-argument-types-class-eqlastfield-1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-type-class-eqlastfunctioncall-1)
@@ -138,12 +140,13 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported rule type: new_terms (19)
+### Unsupported rule type: new_terms (21)
 
-19 rules:
+21 rules:
 
 * Abnormal Process ID or Lock File Created
 * Cron Job Created or Changed by Previously Unknown Process
+* Enumeration of Kernel Modules
 * First Time Seen AWS Secret Value Accessed in Secrets Manager
 * First Time Seen Commonly Abused Remote Access Tool Execution
 * First Time Seen Driver Loaded
@@ -157,6 +160,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Potential Persistence Through Run Control Detected
 * Potential Persistence Through init.d Detected
 * Potential Shadow File Read via Command Line Utilities
+* Potential Suspicious Clipboard Activity Detected
 * Shared Object Created or Changed by Previously Unknown Process
 * Suspicious Microsoft 365 Mail Access by ClientAppId
 * Suspicious Network Activity to the Internet by Previously Unknown Executable
@@ -267,6 +271,14 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Potential Successful Linux RDP Brute Force Attack Detected
 * Suspicious File Changes Activity Detected
 
+### Root with too many branches (limit: 10000) (4)
+
+4 rules:
+* Execution from Unusual Directory - Command Line
+* Potential Pspy Process Monitoring Detected
+* Potential Reverse Shell via Suspicious Binary
+* Startup or Run Key Registry Modification
+
 ### Field type solver: match_only_text (3)
 
 3 rules:
@@ -274,12 +286,11 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Kerberos Pre-authentication Disabled for User
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
-### Root with too many branches (limit: 10000) (3)
+### Unsolvable constraints: event.category & event.type (empty intersection) (2)
 
-3 rules:
-* Execution from Unusual Directory - Command Line
-* Potential Reverse Shell via Suspicious Binary
-* Startup or Run Key Registry Modification
+2 rules:
+* Potential Sudo Hijacking Detected
+* Suspicious File Creation in /etc for Persistence
 
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)
 
@@ -307,11 +318,6 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 1 rules:
 * Process Discovery via Built-In Applications
-
-### Unsolvable constraints: event.category & event.type (empty intersection) (1)
-
-1 rules:
-* Suspicious File Creation in /etc for Persistence
 
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)
 
@@ -398,6 +404,11 @@ Curious about the inner workings? Read [here](signals_generation.md).
 1 rules:
 * Potential Antimalware Scan Interface Bypass via PowerShell
 
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)
+
+1 rules:
+* PowerShell Script with Webcam Video Capture Capabilities
+
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)
 
 1 rules:
@@ -452,6 +463,11 @@ Curious about the inner workings? Read [here](signals_generation.md).
 
 1 rules:
 * Suspicious HTML File Creation
+
+### Unsupported &keyword 'user.id' constraint: >= (1)
+
+1 rules:
+* Potential Privilege Escalation via UID INT_MAX Bug Detected
 
 ### Unsupported argument type(s): <class 'eql.ast.Field'> (1)
 
