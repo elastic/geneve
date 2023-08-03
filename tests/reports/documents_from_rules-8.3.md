@@ -17,7 +17,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (5)](#unsupported-lhs-type-class-eqlastfunctioncall-5)
       1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Root with too many branches: 38016 (limit: 10000) (1)](#root-with-too-many-branches-38016-limit-10000-1)
+      1. [Root with too many branches (limit: 10000) (1)](#root-with-too-many-branches-limit-10000-1)
       1. [Root without branches (1)](#root-without-branches-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdumpcreds-dumpcerts-1)
@@ -216,7 +216,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
 
-### Root with too many branches: 38016 (limit: 10000) (1)
+### Root with too many branches (limit: 10000) (1)
 
 1 rules:
 * Execution from Unusual Directory - Command Line

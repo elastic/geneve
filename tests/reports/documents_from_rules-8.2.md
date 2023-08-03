@@ -16,7 +16,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
       1. [Unsupported function: match (6)](#unsupported-function-match-6)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (4)](#unsupported-lhs-type-class-eqlastfunctioncall-4)
       1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
-      1. [Root with too many branches: 114048 (limit: 10000) (1)](#root-with-too-many-branches-114048-limit-10000-1)
+      1. [Root with too many branches (limit: 10000) (1)](#root-with-too-many-branches-limit-10000-1)
       1. [Root without branches (1)](#root-without-branches-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdumpcreds-dumpcerts-1)
@@ -199,7 +199,7 @@ Curious about the inner workings? Read [here](signals_generation.md).
 * Kerberos Pre-authentication Disabled for User
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
-### Root with too many branches: 114048 (limit: 10000) (1)
+### Root with too many branches (limit: 10000) (1)
 
 1 rules:
 * Execution from Unusual Directory - Command Line
