@@ -505,12 +505,6 @@ class SignalsTestCase:
         with self.nb.chapter(f"## {title} ({len(rule_ids)})") as cells:
             for rule in rules:
                 if rule["id"] in rule_ids:
-                    docs = self.check_docs(rule)
-                    t0 = None
-                    for doc in docs:
-                        t0 = t0 or datetime.fromisoformat(docs[0]["@timestamp"])
-                        t = datetime.fromisoformat(doc["@timestamp"])
-                        doc["@timestamp"] = int((t - t0) / timedelta(milliseconds=1))
                     descr = [
                         f"### {rule['name']}",
                         "",
@@ -529,7 +523,7 @@ class SignalsTestCase:
                         descr.append(f'Index: {rule["index"][0]}')
                     cells.append(jupyter.Markdown("\n".join(descr)))
                     if self.multiplying_factor == 1:
-                        cells.append(self.query_cell(rule["query"], docs if docs_cell else None))
+                        cells.append(self.query_cell(rule["query"], None))
 
     def debug_rules(self, rules, rule_ids):
         lines = []
