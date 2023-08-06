@@ -20,7 +20,7 @@ geneve/solver/datasets/*
 
 scripts/generate-alerts.sh
 scripts/generate-network-events.sh
-scripts/update-reports.sh
+scripts/test-stacks.sh
 
 tests/deployment.json
 tests/data/config_elastic-package.yaml
