@@ -82,13 +82,13 @@ def lookup(stack_ref):
 
     import string
 
-    if type(stack_ref) is int and stack_ref >= 0:
+    if isinstance(stack_ref, int) and stack_ref >= 0:
         return load_from_config(configurations()[stack_ref])
-    if type(stack_ref) is str and len(stack_ref) == 1:
+    if isinstance(stack_ref, str) and len(stack_ref) == 1:
         pos = string.ascii_letters.find(stack_ref)
         if pos >= 0:
             return discover()[pos]
-    if type(stack_ref) is str and len(stack_ref) > 1:
+    if isinstance(stack_ref, str) and len(stack_ref) > 1:
         for config in configurations():
             if config["name"] == stack_ref:
                 return load_from_config(config)

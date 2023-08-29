@@ -181,7 +181,7 @@ def load_rules(uri, paths=None, basedir=None, *, timeout=17, tries=3):
 
         if paths is None:
             paths = "kibana/security_rule/*.json" if is_package else "rules/**/*.toml"
-        if type(paths) == str:
+        if isinstance(paths, str):
             paths = (paths,)
 
         if is_package:

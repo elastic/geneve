@@ -25,7 +25,7 @@ from . import Field, solver
 
 
 def match_nets(values, nets):
-    if type(values) != list:
+    if not isinstance(values, list):
         values = [values]
     return any(v in net for v in values for net in nets)
 
@@ -50,7 +50,7 @@ class IPField(Field):
                     pass
                 else:
                     if self.is_array:
-                        self.value.extend(v if type(v) == list else [v])
+                        self.value.extend(v if isinstance(v, list) else [v])
                     elif self.value is None or self.value == v:
                         self.value = v
                     else:
@@ -72,14 +72,14 @@ class IPField(Field):
                 except ValueError:
                     raise ValueError(f"Not an IP address or network: {v}")
             elif k == "in":
-                values = [v] if type(v) == str else v
+                values = [v] if isinstance(v, str) else v
                 for v in values:
                     try:
                         self.include_nets.add(ipaddress.ip_network(str(v)))
                     except ValueError:
                         raise ValueError(f"Not an IP network: {str(v)}")
             elif k == "not in":
-                values = [v] if type(v) == str else v
+                values = [v] if isinstance(v, str) else v
                 for v in values:
                     try:
                         self.exclude_nets.add(ipaddress.ip_network(str(v)))
@@ -92,7 +92,7 @@ class IPField(Field):
         if (
             self.value is not None
             and self.exclude_addrs
-            and set(self.value if type(self.value) == list else [self.value]) & self.exclude_addrs
+            and set(self.value if isinstance(self.value, list) else [self.value]) & self.exclude_addrs
         ):
             if len(self.exclude_addrs) == 1:
                 raise ConflictError(f"cannot be {self.exclude_addrs.pop()}", field)
