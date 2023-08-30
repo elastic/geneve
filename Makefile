@@ -1,4 +1,5 @@
-PYTEST_VERBOSE := $(if $(filter-out 0,$(V)),$(if $(filter-out 1,$(V)),$(if $(filter-out 2,$(V)),-vvv,-vv),-v),-q)
+PYTEST_VERBOSE := $(if $(filter-out 0,$(V)),$(if $(filter-out 1,$(V)),$(if $(filter-out 2,$(V)),-vvv,-vv),-v) -r aP,-qq)
+GO_VERBOSE := $(if $(filter-out 0,$(V)),,-q)
 
 ifeq ($(VENV),)
 	ACTIVATE :=
@@ -44,10 +45,10 @@ license-check:
 	bash scripts/license_check.sh
 
 tests: tests/*.py
-	$(PYTHON) -m pytest -raP $(PYTEST_VERBOSE) tests/test_*.py
+	$(PYTHON) -m pytest $(PYTEST_VERBOSE) tests/test_*.py
 
 online-tests: tests/*.py
-	$(PYTHON) -m pytest -raP $(PYTEST_VERBOSE) --maxfail=1 tests/test_emitter_*.py
+	$(PYTHON) -m pytest $(PYTEST_VERBOSE) tests/test_emitter_*.py
 
 up:
 	@$(call print_server_version,ES,ELASTICSEARCH)
@@ -78,11 +79,11 @@ cli-lint:
 
 cli-test:
 	$(embed-python)
-	go test $(GO_TAGS) -race ./...
+	go test $(strip $(GO_VERBOSE) $(GO_TAGS)) -race ./...
 
 cli-bench:
 	$(embed-python)
-	go test $(GO_TAGS) -bench=. ./cmd/geneve/source
+	go test $(strip $(GO_VERBOSE) $(GO_TAGS)) -bench=. ./cmd/geneve/source
 
 clean:
 	go clean -cache -testcache
