@@ -94,7 +94,7 @@ def to_file(filename, cells):
 
 
 def to_multiline(lines):
-    if type(lines) == str:
+    if isinstance(lines, str):
         lines = [line for line in textwrap.dedent(lines).split("\n")]
     lines = [f"{line}\n" for line in lines]
     while lines and lines[0] == "\n":

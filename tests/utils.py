@@ -206,7 +206,7 @@ class QueryTestCase:
     def query_cell(cls, query, output, count=1, **kwargs):
         count = "" if count == 1 else f", count={count}"
         source = "emit('''\n    " + query.strip() + f"\n'''{count})"
-        if type(output) != str:
+        if not isinstance(output, str):
             output = "[[" + "],\n [".join(",\n  ".join(str(doc) for doc in branch) for branch in output) + "]]"
         return jupyter.Code(source, output, **kwargs)
 
@@ -496,7 +496,7 @@ class SignalsTestCase:
     def query_cell(cls, query, docs, **kwargs):
         source = textwrap.dedent(query.strip())
         if docs:
-            output = docs if type(docs) == str else "[" + ",\n ".join(str(doc) for doc in docs) + "]"
+            output = docs if isinstance(docs, str) else "[" + ",\n ".join(str(doc) for doc in docs) + "]"
         else:
             output = None
         return jupyter.Code(source, output, **kwargs)
@@ -505,12 +505,6 @@ class SignalsTestCase:
         with self.nb.chapter(f"## {title} ({len(rule_ids)})") as cells:
             for rule in rules:
                 if rule["id"] in rule_ids:
-                    docs = self.check_docs(rule)
-                    t0 = None
-                    for doc in docs:
-                        t0 = t0 or datetime.fromisoformat(docs[0]["@timestamp"])
-                        t = datetime.fromisoformat(doc["@timestamp"])
-                        doc["@timestamp"] = int((t - t0) / timedelta(milliseconds=1))
                     descr = [
                         f"### {rule['name']}",
                         "",
@@ -529,18 +523,23 @@ class SignalsTestCase:
                         descr.append(f'Index: {rule["index"][0]}')
                     cells.append(jupyter.Markdown("\n".join(descr)))
                     if self.multiplying_factor == 1:
-                        cells.append(self.query_cell(rule["query"], docs if docs_cell else None))
+                        cells.append(self.query_cell(rule["query"], None))
 
     def debug_rules(self, rules, rule_ids):
         lines = []
         for rule in rules:
             if rule["id"] in rule_ids:
                 docs = self.check_docs(rule)
+                t0 = None
+                for doc in docs:
+                    t0 = t0 or datetime.fromisoformat(docs[0]["@timestamp"])
+                    t = datetime.fromisoformat(doc["@timestamp"])
+                    doc["@timestamp"] = int((t - t0) / timedelta(milliseconds=1))
                 lines.append("")
                 lines.append("{:s}: {:s}".format(rule["id"], rule["name"]))
                 lines.append(rule["query"].strip())
                 lines.extend(json.dumps(doc, sort_keys=True) for doc in docs)
-                if type(rule_ids) == dict:
+                if isinstance(rule_ids, dict):
                     lines.extend(rule_ids[rule["id"]].split("\n"))
         return "\n" + "\n".join(lines)
 

@@ -351,6 +351,17 @@ mono_branch_multi_doc = {
             {"event": {"category": ["process"]}, "process": {"name": "pEGA.dll", "parent": {"name": "QfHxGuOAe.exe"}}},
         ]
     ],
+    """sequence
+        [process where process.name : "*.exe"] with runs=2
+        [process where process.pid < 10] with runs=2
+    """: [
+        [
+            {"event": {"category": ["process"]}, "process": {"name": "GDkziCQDEu.exe"}},
+            {"event": {"category": ["process"]}, "process": {"name": "enLIHTLSCD.exe"}},
+            {"event": {"category": ["process"]}, "process": {"pid": 4}},
+            {"event": {"category": ["process"]}, "process": {"pid": 8}},
+        ]
+    ],
 }
 
 multi_branch_multi_doc = {

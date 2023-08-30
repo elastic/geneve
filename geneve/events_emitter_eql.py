@@ -102,21 +102,21 @@ def cc_not(node: eql.ast.Not, negate: bool, max_branches: int) -> Root:
 
 @traverser(eql.ast.IsNull)
 def cc_is_null(node: eql.ast.IsNull, negate: bool, max_branches: int) -> Root:
-    if type(node.expr) != eql.ast.Field:
+    if not isinstance(node.expr, eql.ast.Field):
         raise NotImplementedError(f"Unsupported expression type: {type(node.expr)}")
     return cc_field(node.expr, None, negate, max_branches)
 
 
 @traverser(eql.ast.IsNotNull)
 def cc_is_not_null(node: eql.ast.IsNotNull, negate: bool, max_branches: int) -> Root:
-    if type(node.expr) != eql.ast.Field:
+    if not isinstance(node.expr, eql.ast.Field):
         raise NotImplementedError(f"Unsupported expression type: {type(node.expr)}")
     return cc_field(node.expr, None, not negate, max_branches)
 
 
 @traverser(eql.ast.InSet)
 def cc_in_set(node: eql.ast.InSet, negate: bool, max_branches: int) -> Root:
-    if type(node.expression) != eql.ast.Field:
+    if not isinstance(node.expression, eql.ast.Field):
         raise NotImplementedError(f"Unsupported expression type: {type(node.expression)}")
     branches = []
     if negate:
@@ -133,7 +133,7 @@ def cc_in_set(node: eql.ast.InSet, negate: bool, max_branches: int) -> Root:
 
 @traverser(eql.ast.Comparison)
 def cc_comparison(node: eql.ast.Comparison, negate: bool, max_branches: int) -> Root:
-    if type(node.left) != eql.ast.Field:
+    if not isinstance(node.left, eql.ast.Field):
         raise NotImplementedError(f"Unsupported LHS type: {type(node.left)}")
     doc = Document(node.left.render(), _nope(node.comparator, negate), node.right.value)
     return Root([Branch([doc])])
@@ -143,7 +143,7 @@ def cc_comparison(node: eql.ast.Comparison, negate: bool, max_branches: int) -> 
 def cc_event_query(node: eql.ast.EventQuery, negate: bool, max_branches: int) -> Root:
     if negate:
         raise NotImplementedError(f"Negation of {type(node)} is not supported")
-    if type(node.event_type) != str:
+    if not isinstance(node.event_type, str):
         raise NotImplementedError(f"Unsupported event_type type: {type(node.event_type)}")
     root = collect_constraints(node.query, negate, max_branches)
     if node.event_type != "any":
@@ -164,7 +164,7 @@ def cc_piped_query(node: eql.ast.PipedQuery, negate: bool, max_branches: int) ->
 def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool, max_branches: int) -> List[Tuple[Document, List[str]]]:
     if negate:
         raise NotImplementedError(f"Negation of {type(node)} is not supported")
-    if any(type(value) != eql.ast.Field for value in node.join_values):
+    if any(not isinstance(value, eql.ast.Field) for value in node.join_values):
         raise NotImplementedError(f"Unsupported join values: {node.join_values}")
     if node.fork:
         raise NotImplementedError(f"Unsupported fork: {node.fork}")

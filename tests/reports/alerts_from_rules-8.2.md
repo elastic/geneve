@@ -22,11 +22,6 @@ Index: geneve-ut-122
 event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Invite external user" and azure.auditlogs.properties.target_resources.*.display_name:guest and event.outcome:(Success or success)
 ```
 
-```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'operation_name': 'Invite external user', 'properties': {'target_resources': {'kN': {'display_name': 'guest'}}}}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'operation_name': 'Invite external user', 'properties': {'target_resources': {'IL': {'display_name': 'guest'}}}}}, '@timestamp': 1}]
-```
-
 
 
 ### Azure Full Network Packet Capture Detected
@@ -45,15 +40,6 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:
 event.outcome:(Success or success)
 ```
 
-```python
-[{'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/yyFjSvI/STARTPACKETCAPTURE/ACTION'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/swuEEXpWqNV/STARTPACKETCAPTURE/ACTION'}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/mEEwVP/VPNCONNECTIONS/STARTPACKETCAPTURE/ACTION'}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/EU/VPNCONNECTIONS/STARTPACKETCAPTURE/ACTION'}}, '@timestamp': 3},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'Success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/vWCiMZOfHaTD/PACKETCAPTURES/WRITE'}}, '@timestamp': 4},
- {'event': {'dataset': 'azure.activitylogs', 'outcome': 'success'}, 'azure': {'activitylogs': {'operation_name': 'MICROSOFT.NETWORK/RJiLSjoGrmyw/PACKETCAPTURES/WRITE'}}, '@timestamp': 5}]
-```
-
 
 
 ### Azure Global Administrator Role Addition to PIM User
@@ -68,13 +54,6 @@ event.dataset:azure.auditlogs and azure.auditlogs.properties.category:RoleManage
                                     "Add member to role in PIM completed (timebound)") and
     azure.auditlogs.properties.target_resources.*.display_name:"Global Administrator" and
     event.outcome:(Success or success)
-```
-
-```python
-[{'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'y': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add eligible member to role in PIM completed (permanent)'}}, '@timestamp': 0},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'TFl': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add eligible member to role in PIM completed (permanent)'}}, '@timestamp': 1},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'Success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'Bn': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add member to role in PIM completed (timebound)'}}, '@timestamp': 2},
- {'event': {'dataset': 'azure.auditlogs', 'outcome': 'success'}, 'azure': {'auditlogs': {'properties': {'category': 'RoleManagement', 'target_resources': {'R': {'display_name': 'Global Administrator'}}}, 'operation_name': 'Add member to role in PIM completed (timebound)'}}, '@timestamp': 3}]
 ```
 
 
@@ -93,93 +72,6 @@ Failure message(s):
 event.category:process and event.type:(start or process_started) and
 process.name:(bash or dash or ash or zsh or "python*" or "perl*" or "php*") and
 process.parent.name:("apache" or "nginx" or "www" or "apache2" or "httpd" or "www-data")
-```
-
-```python
-[{'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'bash', 'parent': {'name': 'apache'}}, '@timestamp': 0},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'bash', 'parent': {'name': 'nginx'}}, '@timestamp': 1},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'bash', 'parent': {'name': 'www'}}, '@timestamp': 2},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'bash', 'parent': {'name': 'apache2'}}, '@timestamp': 3},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'bash', 'parent': {'name': 'httpd'}}, '@timestamp': 4},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'bash', 'parent': {'name': 'www-data'}}, '@timestamp': 5},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dash', 'parent': {'name': 'apache'}}, '@timestamp': 6},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dash', 'parent': {'name': 'nginx'}}, '@timestamp': 7},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dash', 'parent': {'name': 'www'}}, '@timestamp': 8},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dash', 'parent': {'name': 'apache2'}}, '@timestamp': 9},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dash', 'parent': {'name': 'httpd'}}, '@timestamp': 10},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'dash', 'parent': {'name': 'www-data'}}, '@timestamp': 11},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'ash', 'parent': {'name': 'apache'}}, '@timestamp': 12},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'ash', 'parent': {'name': 'nginx'}}, '@timestamp': 13},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'ash', 'parent': {'name': 'www'}}, '@timestamp': 14},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'ash', 'parent': {'name': 'apache2'}}, '@timestamp': 15},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'ash', 'parent': {'name': 'httpd'}}, '@timestamp': 16},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'ash', 'parent': {'name': 'www-data'}}, '@timestamp': 17},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'zsh', 'parent': {'name': 'apache'}}, '@timestamp': 18},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'zsh', 'parent': {'name': 'nginx'}}, '@timestamp': 19},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'zsh', 'parent': {'name': 'www'}}, '@timestamp': 20},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'zsh', 'parent': {'name': 'apache2'}}, '@timestamp': 21},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'zsh', 'parent': {'name': 'httpd'}}, '@timestamp': 22},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'zsh', 'parent': {'name': 'www-data'}}, '@timestamp': 23},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'pythonrZjeyLuZ', 'parent': {'name': 'apache'}}, '@timestamp': 24},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'pythoniEGgavKEIp', 'parent': {'name': 'nginx'}}, '@timestamp': 25},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'pythonxXcxFEiZBT', 'parent': {'name': 'www'}}, '@timestamp': 26},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'pythonAolIYARLb', 'parent': {'name': 'apache2'}}, '@timestamp': 27},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'pythonYsrf', 'parent': {'name': 'httpd'}}, '@timestamp': 28},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'pythonag', 'parent': {'name': 'www-data'}}, '@timestamp': 29},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'perlMsSbdCDnOTSs', 'parent': {'name': 'apache'}}, '@timestamp': 30},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'perlmyjbr', 'parent': {'name': 'nginx'}}, '@timestamp': 31},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'perlKupiyd', 'parent': {'name': 'www'}}, '@timestamp': 32},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'perlyQm', 'parent': {'name': 'apache2'}}, '@timestamp': 33},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'perlDxPJQRLAC', 'parent': {'name': 'httpd'}}, '@timestamp': 34},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'perlIHLkNn', 'parent': {'name': 'www-data'}}, '@timestamp': 35},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'phpDy', 'parent': {'name': 'apache'}}, '@timestamp': 36},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'phpVlZbnM', 'parent': {'name': 'nginx'}}, '@timestamp': 37},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'phpMBnjM', 'parent': {'name': 'www'}}, '@timestamp': 38},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'phpXLhvNEhRrd', 'parent': {'name': 'apache2'}}, '@timestamp': 39},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'phpBfony', 'parent': {'name': 'httpd'}}, '@timestamp': 40},
- {'event': {'category': ['process'], 'type': ['start']}, 'process': {'name': 'phpZ', 'parent': {'name': 'www-data'}}, '@timestamp': 41},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'bash', 'parent': {'name': 'apache'}}, '@timestamp': 42},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'bash', 'parent': {'name': 'nginx'}}, '@timestamp': 43},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'bash', 'parent': {'name': 'www'}}, '@timestamp': 44},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'bash', 'parent': {'name': 'apache2'}}, '@timestamp': 45},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'bash', 'parent': {'name': 'httpd'}}, '@timestamp': 46},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'bash', 'parent': {'name': 'www-data'}}, '@timestamp': 47},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dash', 'parent': {'name': 'apache'}}, '@timestamp': 48},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dash', 'parent': {'name': 'nginx'}}, '@timestamp': 49},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dash', 'parent': {'name': 'www'}}, '@timestamp': 50},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dash', 'parent': {'name': 'apache2'}}, '@timestamp': 51},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dash', 'parent': {'name': 'httpd'}}, '@timestamp': 52},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'dash', 'parent': {'name': 'www-data'}}, '@timestamp': 53},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'ash', 'parent': {'name': 'apache'}}, '@timestamp': 54},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'ash', 'parent': {'name': 'nginx'}}, '@timestamp': 55},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'ash', 'parent': {'name': 'www'}}, '@timestamp': 56},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'ash', 'parent': {'name': 'apache2'}}, '@timestamp': 57},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'ash', 'parent': {'name': 'httpd'}}, '@timestamp': 58},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'ash', 'parent': {'name': 'www-data'}}, '@timestamp': 59},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'zsh', 'parent': {'name': 'apache'}}, '@timestamp': 60},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'zsh', 'parent': {'name': 'nginx'}}, '@timestamp': 61},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'zsh', 'parent': {'name': 'www'}}, '@timestamp': 62},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'zsh', 'parent': {'name': 'apache2'}}, '@timestamp': 63},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'zsh', 'parent': {'name': 'httpd'}}, '@timestamp': 64},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'zsh', 'parent': {'name': 'www-data'}}, '@timestamp': 65},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'pythonSvMjy', 'parent': {'name': 'apache'}}, '@timestamp': 66},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'pythoncKyCLM', 'parent': {'name': 'nginx'}}, '@timestamp': 67},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'pythonBWb', 'parent': {'name': 'www'}}, '@timestamp': 68},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'pythongMRIVWe', 'parent': {'name': 'apache2'}}, '@timestamp': 69},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'pythonV', 'parent': {'name': 'httpd'}}, '@timestamp': 70},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'pythonYhbqjoFZ', 'parent': {'name': 'www-data'}}, '@timestamp': 71},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'perlvXzF', 'parent': {'name': 'apache'}}, '@timestamp': 72},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'perlTfay', 'parent': {'name': 'nginx'}}, '@timestamp': 73},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'perlV', 'parent': {'name': 'www'}}, '@timestamp': 74},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'perltM', 'parent': {'name': 'apache2'}}, '@timestamp': 75},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'perlBzmewQ', 'parent': {'name': 'httpd'}}, '@timestamp': 76},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'perldKiarCQM', 'parent': {'name': 'www-data'}}, '@timestamp': 77},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'phpifkVoSo', 'parent': {'name': 'apache'}}, '@timestamp': 78},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'phplUMFs', 'parent': {'name': 'nginx'}}, '@timestamp': 79},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'phpTGhCSBIevWDF', 'parent': {'name': 'www'}}, '@timestamp': 80},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'phpNwZvplGKnmJx', 'parent': {'name': 'apache2'}}, '@timestamp': 81},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'phpbdwNVNg', 'parent': {'name': 'httpd'}}, '@timestamp': 82},
- {'event': {'category': ['process'], 'type': ['process_started']}, 'process': {'name': 'phpOaLXjF', 'parent': {'name': 'www-data'}}, '@timestamp': 83}]
 ```
 
 
