@@ -157,6 +157,7 @@ def load_integration_schema(name, kibana_version):
 
 @functools.lru_cache
 def load_rules(uri, paths=None, basedir=None, *, timeout=17, tries=3):
+    version = None
     uri_parts = urlparse(uri)
     if uri_parts.hostname == "epr.elastic.co" and uri_parts.path == "/search":
         import requests
@@ -175,6 +176,7 @@ def load_rules(uri, paths=None, basedir=None, *, timeout=17, tries=3):
             raise ValueError(f"Wrong number of packages: {len(res)}")
         uri_parts = uri_parts._replace(path=res[0]["download"], query="")
         uri = urlunparse(uri_parts)
+        version = res[0]["version"]
 
     with resource(uri, basedir=basedir, cachedir=dirs.cache) as resource_dir:
         is_package = (resource_dir / "manifest.yml").exists()
@@ -210,7 +212,7 @@ def load_rules(uri, paths=None, basedir=None, *, timeout=17, tries=3):
                     rule = pytoml.load(f)["rule"]
             rule["path"] = Path(".").joinpath(*Path(filename).relative_to(resource_dir).parts[1:])
             rules.append(SimpleNamespace(**rule))
-    return rules
+    return version, rules
 
 
 def deep_merge(a, b, path=None):
