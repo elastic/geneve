@@ -197,7 +197,10 @@ jobs:
 
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
         if: always()
-        run: make down
+        run: |
+          docker logs geneve-test-es-1 >es.log
+          docker logs geneve-test-kbn-1 >kbn.log
+          make down
 
       - name: Stop Geneve server
         if: always()
@@ -215,6 +218,15 @@ jobs:
         with:
           name: geneve-log-${{ matrix.stack-version }}
           path: gnv.log
+
+      - name: Upload stack logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: stack-logs-${{ matrix.stack-version }}
+          path: |
+            es.log
+            kbn.log
 
       - name: Upload reports
         if: always()
