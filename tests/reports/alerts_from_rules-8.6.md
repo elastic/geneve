@@ -5,6 +5,8 @@ learn what rules are supported and what not and why.
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
+Rules version: 8.6.10
+
 ## Table of contents
    1. [Rules with no signals (4)](#rules-with-no-signals-4)
    1. [Rules with too few signals (9)](#rules-with-too-few-signals-9)

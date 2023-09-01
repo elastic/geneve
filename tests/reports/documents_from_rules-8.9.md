@@ -5,6 +5,8 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
+Rules version: 8.9.4
+
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (47)](#unsupported-rule-type-machine_learning-47)
