@@ -71,7 +71,7 @@ def guess_from_query(query):
         return (line, column)
 
     lang, error = sorted(exceptions, key=rank)[-1]
-    raise ValueError(f"{lang} query error: {error}")
+    raise ValueError(f"{lang} query error: {error}") from error
 
 
 def ast_from_rule(rule):
