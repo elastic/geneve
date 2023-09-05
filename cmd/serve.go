@@ -23,10 +23,10 @@ import (
 	"runtime"
 
 	"github.com/elastic/geneve/cmd/geneve"
-	_ "github.com/elastic/geneve/cmd/geneve/flow"
-	_ "github.com/elastic/geneve/cmd/geneve/schema"
-	_ "github.com/elastic/geneve/cmd/geneve/sink"
-	_ "github.com/elastic/geneve/cmd/geneve/source"
+	"github.com/elastic/geneve/cmd/geneve/flow"
+	"github.com/elastic/geneve/cmd/geneve/schema"
+	"github.com/elastic/geneve/cmd/geneve/sink"
+	"github.com/elastic/geneve/cmd/geneve/source"
 	"github.com/elastic/geneve/cmd/grasp"
 	"github.com/elastic/geneve/cmd/internal/control"
 	"github.com/elastic/geneve/cmd/internal/python"
@@ -49,6 +49,11 @@ var serveCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 			log.SetOutput(file)
+			flow.ReopenLogger(file)
+			grasp.ReopenLogger(file)
+			schema.ReopenLogger(file)
+			sink.ReopenLogger(file)
+			source.ReopenLogger(file)
 		}
 
 		reflections := make(chan *grasp.Reflection, 3)

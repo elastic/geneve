@@ -117,7 +117,7 @@ jobs:
     env:
       TEST_ELASTICSEARCH_URL: "http://elastic:changeme@localhost:29650"
       TEST_KIBANA_URL: "http://elastic:changeme@localhost:65290"
-      TEST_GENEVE_LOG: "gnv.log"
+      TEST_GENEVE_LOG: "gnv-${{ matrix.stack-version }}.log"
 
     steps:
       - name: Checkout code
@@ -142,7 +142,7 @@ jobs:
 
       - name: Start Geneve server
         run: |
-          ./gnv serve -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG 2>>gnv.log &
+          ./gnv serve -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG &
           curl -s --retry 3 --retry-connrefused http://localhost:9256/api/status
           curl -s -XPOST -H "Content-Type: application/yaml" http://localhost:9256/api/grasp/ignore --data-binary '@tests/grasp-ignore.yaml'
 
@@ -198,8 +198,8 @@ jobs:
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
         if: always()
         run: |
-          docker logs geneve-test-es-1 >es.log
-          docker logs geneve-test-kbn-1 >kbn.log
+          docker logs geneve-test-es-1 >es-${{ matrix.stack-version }}.log
+          docker logs geneve-test-kbn-1 >kbn-${{ matrix.stack-version }}.log
           make down
 
       - name: Stop Geneve server
@@ -212,21 +212,15 @@ jobs:
           killall gnv
           if grep "WARNING: DATA RACE" $TEST_GENEVE_LOG; then awk '/WARNING: DATA RACE/{found=1} found' $TEST_GENEVE_LOG; false; fi
 
-      - name: Upload Geneve logs
+      - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: geneve-log-${{ matrix.stack-version }}
-          path: gnv.log
-
-      - name: Upload stack logs
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: stack-logs-${{ matrix.stack-version }}
+          name: logs-${{ matrix.stack-version }}
           path: |
-            es.log
-            kbn.log
+            es-*.log
+            kbn-*.log
+            gnv-*.log
 
       - name: Upload reports
         if: always()

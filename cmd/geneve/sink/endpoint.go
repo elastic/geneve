@@ -19,6 +19,7 @@ package sink
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -28,7 +29,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var logger = log.New(log.Writer(), "datagen ", log.LstdFlags|log.Lmsgprefix)
+var logger *log.Logger
+
+func ReopenLogger(w io.Writer) {
+	logger = log.New(w, "datagen ", log.LstdFlags|log.Lmsgprefix)
+}
 
 func getSink(w http.ResponseWriter, req *http.Request) {
 	parts := strings.Split(req.URL.Path, "/")
@@ -107,5 +112,6 @@ func deleteSink(w http.ResponseWriter, req *http.Request) {
 }
 
 func init() {
+	ReopenLogger(log.Writer())
 	control.Handle("/api/sink/", &control.Handler{GET: getSink, PUT: putSink, DELETE: deleteSink})
 }
