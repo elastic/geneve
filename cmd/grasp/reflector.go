@@ -18,6 +18,7 @@
 package grasp
 
 import (
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -26,7 +27,11 @@ import (
 	"github.com/elastic/geneve/cmd/geneve/sink"
 )
 
-var logger = log.New(log.Writer(), "reflect ", log.LstdFlags|log.Lmsgprefix)
+var logger *log.Logger
+
+func ReopenLogger(w io.Writer) {
+	logger = log.New(w, "reflect ", log.LstdFlags|log.Lmsgprefix)
+}
 
 func StartReflector(addr, remote string, reflections chan<- *Reflection) error {
 	log.Printf("Remote: %s", remote)
@@ -81,4 +86,8 @@ func StartReflector(addr, remote string, reflections chan<- *Reflection) error {
 		log.Fatal(http.Serve(listener, mux))
 	}()
 	return nil
+}
+
+func init() {
+	ReopenLogger(log.Writer())
 }

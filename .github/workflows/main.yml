@@ -142,7 +142,7 @@ jobs:
 
       - name: Start Geneve server
         run: |
-          ./gnv serve -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG 2>>gnv.log &
+          ./gnv serve -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG &
           curl -s --retry 3 --retry-connrefused http://localhost:9256/api/status
           curl -s -XPOST -H "Content-Type: application/yaml" http://localhost:9256/api/grasp/ignore --data-binary '@tests/grasp-ignore.yaml'
 
