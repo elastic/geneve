@@ -31,7 +31,7 @@ class Kibana:
 
     exceptions = requests.exceptions
 
-    def __init__(self, url=None, cloud_id=None, basic_auth=None, ca_certs=None):
+    def __init__(self, url=None, cloud_id=None, basic_auth=None, api_key=None, ca_certs=None):
         if not (url or cloud_id):
             raise ValueError("Either `url` or `cloud_id` must be defined")
 
@@ -39,9 +39,11 @@ class Kibana:
         self.session = requests.Session()
         self.session.headers.update({"Content-Type": "application/json", "kbn-xsrf": str(uuid.uuid4())})
 
-        if basic_auth is not None:
+        if api_key:
+            self.session.headers["Authorization"] = f"ApiKey {api_key}"
+        if basic_auth:
             self.session.auth = requests.auth.HTTPBasicAuth(*basic_auth)
-        if ca_certs is not None:
+        if ca_certs:
             self.session.verify = ca_certs
 
         if cloud_id:

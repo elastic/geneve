@@ -27,9 +27,11 @@ class GeneveTestEnvStack(ElasticStack):
             "name": "geneve-test-env",
             "elasticsearch": {
                 "hosts": "$TEST_ELASTICSEARCH_URL",
+                "api_key": "${TEST_API_KEY:-}",
             },
             "kibana": {
                 "url": "$TEST_KIBANA_URL",
+                "api_key": "${TEST_API_KEY:-}",
             },
         }
         super().__init__(config)
