@@ -863,7 +863,7 @@ class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCas
                     "description": "Test rule {:03d}".format(i),
                     "name": "Rule {:03d}".format(i),
                     "index": [index_name],
-                    "interval": "3s",
+                    "interval": "90s",
                     "from": "now-2h",
                     "severity": "low",
                     "type": guess.type,
