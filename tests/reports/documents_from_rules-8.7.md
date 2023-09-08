@@ -5,7 +5,7 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.7.11
+Rules version: 8.7.12
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
@@ -15,16 +15,17 @@ Rules version: 8.7.11
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: wildcard (50)](#field-type-solver-wildcard-50)
+      1. [Field type solver: wildcard (53)](#field-type-solver-wildcard-53)
+      1. [Root with too many branches (limit: 10000) (8)](#root-with-too-many-branches-limit-10000-8)
       1. [Unsupported function: match (8)](#unsupported-function-match-8)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)](#unsupported-lhs-type-class-eqlastfunctioncall-6)
-      1. [Pipes are unsupported (4)](#pipes-are-unsupported-4)
-      1. [Root with too many branches (limit: 10000) (4)](#root-with-too-many-branches-limit-10000-4)
       1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
+      1. [Root without branches (3)](#root-without-branches-3)
+      1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Root without branches (1)](#root-without-branches-1)
+      1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
       1. [Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)](#unsolvable-constraints-dnsquestionname-excluded-by-stringscdndiscordappcom-cdndiscordappcom-1)
       1. [Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)](#unsolvable-constraints-eventaction-excluded-by-stringsexec-exec-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
@@ -38,6 +39,8 @@ Rules version: 8.7.11
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Eventing.Reader.EventLogSession'}): ('.ClearLog')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringseventingreadereventlogsession-clearlog-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-ItemProperty'}): ('-Path')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsget-itemproperty--path-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'IO.Compression.ZipFile'}): ('CompressionLevel')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsiocompressionzipfile-compressionlevel-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Invoke-WmiMethod'}): ('ComputerName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsinvoke-wmimethod-computername-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'LsaCallAuthenticationPackage'}): ('KerbRetrieveEncodedTicketMessage')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringslsacallauthenticationpackage-kerbretrieveencodedticketmessage-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstartupinfoex-updateprocthreadattribute-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookA'}): ('GetForegroundWindow')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssetwindowshooka-getforegroundwindow-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'System.IO.Compression.DeflateStream'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemiocompressiondeflatestream-frombase64string-1)
@@ -45,6 +48,7 @@ Rules version: 8.7.11
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswindowsclipboard-gettext-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Runtime.InteropServices.Marshal]::Copy'}): ('VirtualProtect')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemruntimeinteropservicesmarshalcopy-virtualprotect-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
@@ -59,7 +63,6 @@ Rules version: 8.7.11
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (1)](#unsupported-argument-types-class-eqlastfield-1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
-      1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-type-class-eqlastfunctioncall-1)
 
 ## Skipped rules
 
@@ -189,9 +192,9 @@ Rules version: 8.7.11
 
 ## Generation errors
 
-### Field type solver: wildcard (50)
+### Field type solver: wildcard (53)
 
-50 rules:
+53 rules:
 * Adding Hidden File Attribute via Attrib
 * Apple Scripting Execution with Administrator Privileges
 * Attempt to Mount SMB Share via Command Line
@@ -213,6 +216,7 @@ Rules version: 8.7.11
 * Modification of AmsiEnable Registry Key
 * Modification of WDigest Security Provider
 * Network Logon Provider Registry Modification
+* Network-Level Authentication (NLA) Disabled
 * Persistence via WMI Standard Registry Provider
 * Potential Persistence via Time Provider Modification
 * Potential Port Monitor or Print Processor Registration Abuse
@@ -227,8 +231,10 @@ Rules version: 8.7.11
 * SIP Provider Modification
 * SUNBURST Command and Control Activity
 * Scheduled Tasks AT Command Enabled
+* Service Disabled via Registry Modification
 * SolarWinds Process Disabling Services via Registry
 * Suspicious Browser Child Process
+* Suspicious Communication App Child Process
 * Suspicious Content Extracted or Decompressed via Funzip
 * Suspicious Execution via Windows Subsystem for Linux
 * Suspicious ImagePath Service Creation
@@ -242,6 +248,18 @@ Rules version: 8.7.11
 * Virtual Private Network Connection Attempt
 * Windows Defender Disabled via Registry Modification
 * Windows Subsystem for Linux Enabled via Dism Utility
+
+### Root with too many branches (limit: 10000) (8)
+
+8 rules:
+* Execution from Unusual Directory - Command Line
+* Potential Linux Ransomware Note Creation Detected
+* Potential Masquerading as System32 DLL
+* Potential Masquerading as System32 Executable
+* Potential Pspy Process Monitoring Detected
+* Potential Reverse Shell via Suspicious Binary
+* Startup or Run Key Registry Modification
+* Suspicious File Changes Activity Detected
 
 ### Unsupported function: match (8)
 
@@ -265,28 +283,25 @@ Rules version: 8.7.11
 * Renamed Utility Executed with Short Program Name
 * Suspicious Process Access via Direct System Call
 
-### Pipes are unsupported (4)
-
-4 rules:
-* Potential Linux Ransomware Note Creation Detected
-* Potential Successful Linux FTP Brute Force Attack Detected
-* Potential Successful Linux RDP Brute Force Attack Detected
-* Suspicious File Changes Activity Detected
-
-### Root with too many branches (limit: 10000) (4)
-
-4 rules:
-* Execution from Unusual Directory - Command Line
-* Potential Pspy Process Monitoring Detected
-* Potential Reverse Shell via Suspicious Binary
-* Startup or Run Key Registry Modification
-
 ### Field type solver: match_only_text (3)
 
 3 rules:
 * Account Configured with Never-Expiring Password
 * Kerberos Pre-authentication Disabled for User
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
+
+### Root without branches (3)
+
+3 rules:
+* Linux init (PID 1) Secret Dump via GDB
+* Potential Protocol Tunneling via Chisel Server
+* Suspicious Data Encryption via OpenSSL Utility
+
+### Pipes are unsupported (2)
+
+2 rules:
+* Potential Successful Linux FTP Brute Force Attack Detected
+* Potential Successful Linux RDP Brute Force Attack Detected
 
 ### Unsolvable constraints: event.category & event.type (empty intersection) (2)
 
@@ -306,10 +321,11 @@ Rules version: 8.7.11
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
 
-### Root without branches (1)
+### Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)
 
-1 rules:
-* Suspicious Data Encryption via OpenSSL Utility
+2 rules:
+* Unsigned DLL Loaded by a Trusted Process
+* Unsigned DLL Side-Loading from a Suspicious Folder
 
 ### Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)
 
@@ -376,6 +392,16 @@ Rules version: 8.7.11
 1 rules:
 * PowerShell Script with Archive Compression Capabilities
 
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Invoke-WmiMethod'}): ('ComputerName')) (1)
+
+1 rules:
+* PowerShell Script with Remote Execution Capabilities via WinRM
+
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'LsaCallAuthenticationPackage'}): ('KerbRetrieveEncodedTicketMessage')) (1)
+
+1 rules:
+* PowerShell Kerberos Ticket Dump
+
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)
 
 1 rules:
@@ -410,6 +436,11 @@ Rules version: 8.7.11
 
 1 rules:
 * PowerShell Script with Webcam Video Capture Capabilities
+
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)
+
+1 rules:
+* PowerShell Script with Password Policy Discovery Capabilities
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)
 
@@ -480,8 +511,3 @@ Rules version: 8.7.11
 
 1 rules:
 * Remote Computer Account DnsHostName Update
-
-### Unsupported argument type: <class 'eql.ast.FunctionCall'> (1)
-
-1 rules:
-* Unsigned DLL Side-Loading from a Suspicious Folder
