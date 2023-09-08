@@ -63,15 +63,9 @@ class Kibana:
     def close(self):
         self.session.close()
 
-    def task_manager_health(self):
-        url = f"{self.url}/api/task_manager/_health"
-        res = self.session.get(url)
-        res.raise_for_status()
-        return res.json()
-
     def ping(self):
         try:
-            self.task_manager_health()
+            self.status()
             return True
         except requests.exceptions.ConnectionError:
             return False
