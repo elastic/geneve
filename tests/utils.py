@@ -259,8 +259,14 @@ class OnlineTestCase:
             if e.response.status_code != 404:
                 raise
 
+        build_flavor = cls.es.info()["version"].get("build_flavor")
+        cls.serverless = build_flavor == "serverless"
+
         if verbose > 1:
-            print(f"Stack version: {cls.get_version()}")
+            if build_flavor:
+                print(f"Stack version: {cls.get_version()} ({build_flavor})")
+            else:
+                print(f"Stack version: {cls.get_version()}")
 
     @classmethod
     def tearDownClass(cls):
@@ -329,8 +335,6 @@ class SignalsTestCase:
     def load_rules_and_docs(self, rules, asts, batch_size=200):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
 
-        ret = self.es.cluster.health(level="cluster")
-
         kwargs = {
             "name": self.index_template,
             "template": {
@@ -343,14 +347,15 @@ class SignalsTestCase:
             "name": self.index_template,
             "index_patterns": [f"{self.index_template}-*"],
             "composed_of": [self.index_template],
-            "template": {
-                "settings": {
+        }
+        if not self.serverless:
+            kwargs.setdefault("template", {}).setdefault("settings", {}).update(
+                {
                     "number_of_shards": 1,
                     "number_of_replicas": 0,
                     "max_result_window": 50000,
-                },
-            },
-        }
+                }
+            )
         self.es.indices.put_index_template(**kwargs)
 
         with self.nb.chapter("## Rejected documents") as cells:
