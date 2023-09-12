@@ -861,7 +861,7 @@ class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCas
                     "rule_id": "test_{:03d}".format(i),
                     "risk_score": 17,
                     "description": "Test rule {:03d}".format(i),
-                    "name": "Rule {:03d}".format(i),
+                    "name": "Geneve: Rule {:03d}".format(i),
                     "index": [index_name],
                     "interval": "90s",
                     "from": "now-2h",

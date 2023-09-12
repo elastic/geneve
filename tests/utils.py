@@ -507,11 +507,16 @@ class SignalsTestCase:
         return jupyter.Code(source, output, **kwargs)
 
     def report_rules(self, rules, rule_ids, title, *, docs_cell=True):
+        prefix = "Geneve: "
+        prefix_len = len(prefix)
         with self.nb.chapter(f"## {title} ({len(rule_ids)})") as cells:
             for rule in rules:
                 if rule["id"] in rule_ids:
+                    rule_name = rule["name"]
+                    if rule_name.startswith(prefix):
+                        rule_name = rule_name[prefix_len:]
                     descr = [
-                        f"### {rule['name']}",
+                        f"### {rule_name}",
                         "",
                         f"Branch count: {rule['.test_private']['branch_count']}  ",
                         f"Document count: {rule['.test_private']['doc_count']}  ",
