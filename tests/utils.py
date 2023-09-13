@@ -259,8 +259,14 @@ class OnlineTestCase:
             if e.response.status_code != 404:
                 raise
 
+        build_flavor = cls.es.info()["version"].get("build_flavor")
+        cls.serverless = build_flavor == "serverless"
+
         if verbose > 1:
-            print(f"Stack version: {cls.get_version()}")
+            if build_flavor:
+                print(f"Stack version: {cls.get_version()} ({build_flavor})")
+            else:
+                print(f"Stack version: {cls.get_version()}")
 
     @classmethod
     def tearDownClass(cls):
@@ -329,8 +335,6 @@ class SignalsTestCase:
     def load_rules_and_docs(self, rules, asts, batch_size=200):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
 
-        ret = self.es.cluster.health(level="cluster")
-
         kwargs = {
             "name": self.index_template,
             "template": {
@@ -343,14 +347,15 @@ class SignalsTestCase:
             "name": self.index_template,
             "index_patterns": [f"{self.index_template}-*"],
             "composed_of": [self.index_template],
-            "template": {
-                "settings": {
+        }
+        if not self.serverless:
+            kwargs.setdefault("template", {}).setdefault("settings", {}).update(
+                {
                     "number_of_shards": 1,
                     "number_of_replicas": 0,
                     "max_result_window": 50000,
-                },
-            },
-        }
+                }
+            )
         self.es.indices.put_index_template(**kwargs)
 
         with self.nb.chapter("## Rejected documents") as cells:
@@ -502,11 +507,16 @@ class SignalsTestCase:
         return jupyter.Code(source, output, **kwargs)
 
     def report_rules(self, rules, rule_ids, title, *, docs_cell=True):
+        prefix = "Geneve: "
+        prefix_len = len(prefix)
         with self.nb.chapter(f"## {title} ({len(rule_ids)})") as cells:
             for rule in rules:
                 if rule["id"] in rule_ids:
+                    rule_name = rule["name"]
+                    if rule_name.startswith(prefix):
+                        rule_name = rule_name[prefix_len:]
                     descr = [
-                        f"### {rule['name']}",
+                        f"### {rule_name}",
                         "",
                         f"Branch count: {rule['.test_private']['branch_count']}  ",
                         f"Document count: {rule['.test_private']['doc_count']}  ",
