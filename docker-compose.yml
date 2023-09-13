@@ -8,7 +8,6 @@ services:
       - node.name=es
       - cluster.name=geneve-test
       - discovery.type=single-node
-      - action.destructive_requires_name=false
       - xpack.security.enabled=true
       - xpack.security.authc.api_key.enabled=true
       - ELASTIC_USERNAME=elastic

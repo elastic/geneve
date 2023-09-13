@@ -285,12 +285,11 @@ class OnlineTestCase:
         if self.es.indices.exists_index_template(name=self.index_template):
             self.es.indices.delete_index_template(name=self.index_template)
 
-        self.es.indices.delete(index=f"{self.index_template}-*")
+        kwargs = {
+            "index": self.siem_index_name,
+            "query": {"match_all": {}},
+        }
         try:
-            kwargs = {
-                "index": self.siem_index_name,
-                "query": {"match_all": {}},
-            }
             self.es.delete_by_query(**kwargs)
         except exceptions.NotFoundError:
             pass
@@ -335,6 +334,9 @@ class SignalsTestCase:
 
     def load_rules_and_docs(self, rules, asts, chunk_size=200):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
+
+        for rule in rules:
+            self.es.indices.delete(index=rule["index"], ignore_unavailable=True)
 
         kwargs = {
             "name": self.index_template,
