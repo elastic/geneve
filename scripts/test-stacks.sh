@@ -7,7 +7,7 @@ TEST_ELASTICSEARCH_URL="http://elastic:changeme@localhost:29650"
 TEST_KIBANA_URL="http://elastic:changeme@localhost:65290"
 TEST_API_KEY=
 
-DEFAULT_STACK_VERSIONS="8.9 8.8 8.7 8.6 8.5 8.4 8.3 8.2"
+DEFAULT_STACK_VERSIONS="8.10 8.9 8.8 8.7 8.6 8.5 8.4 8.3 8.2"
 STACK_VERSIONS=
 
 DEFAULT_TESTS="tests/test_emitter_*.py"
