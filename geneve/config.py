@@ -37,13 +37,14 @@ To keep the code simple the following conditions apply:
 """
 
 from functools import lru_cache
+from pathlib import Path
 
 
 def set_path(path):
     """Set the configuraton file path and force load() to reload the configuration"""
 
     global _path
-    _path = path
+    _path = Path(path) if path else path
     load.cache_clear()
 
 
