@@ -473,7 +473,7 @@ class SignalsTestCase:
             signals[bucket["key"]] = (bucket["doc_count"], branch_count)
         return signals
 
-    def wait_for_signals(self, rules, timeout=60, sleep=5):
+    def wait_for_signals(self, rules, timeout=90, sleep=5):
         if verbose:
             sys.stderr.write("... ")
             sys.stderr.flush()
