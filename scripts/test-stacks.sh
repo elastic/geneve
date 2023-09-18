@@ -2,11 +2,6 @@
 
 PYTHON=${PYTHON:-python3}
 
-TEST_ELASTICSEARCH_PROXY=
-TEST_ELASTICSEARCH_URL="http://elastic:changeme@localhost:29650"
-TEST_KIBANA_URL="http://elastic:changeme@localhost:65290"
-TEST_API_KEY=
-
 DEFAULT_STACK_VERSIONS="8.10 8.9 8.8 8.7 8.6 8.5 8.4 8.3 8.2"
 STACK_VERSIONS=
 
@@ -63,7 +58,7 @@ while [ -n "$1" ]; do
 			exit 0
 			;;
 		-v|--verbose)
-			VERBOSE_UT=-v
+			VERBOSE_UT="$VERBOSE_UT -v"
 			;;
 		-*)
 			echo "Unknown switch: $1" >/dev/stderr
@@ -120,17 +115,31 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 
 	ITERATION_FAILURE=0
 	for MAJOR_MINOR in ${STACK_VERSIONS:-$DEFAULT_STACK_VERSIONS}; do
-		TEST_STACK_VERSION=$MAJOR_MINOR.0
-		TEST_SCHEMA_URI=`ls etc/ecs-v$MAJOR_MINOR.*.tar.gz`
-		TEST_DETECTION_RULES_URI="https://epr.elastic.co/search?package=security_detection_engine&kibana.version=$TEST_STACK_VERSION"
-		echo TEST_STACK_VERSION: $TEST_STACK_VERSION
+		if [ "$MAJOR_MINOR" == "custom" ]; then
+			echo TEST_ELASTICSEARCH_URL: $TEST_ELASTICSEARCH_URL
+			echo TEST_KIBANA_URL: $TEST_KIBANA_URL
+		else
+			TEST_STACK_VERSION=$MAJOR_MINOR.0
+			TEST_SCHEMA_URI=`ls etc/ecs-v$MAJOR_MINOR.*.tar.gz`
+			TEST_DETECTION_RULES_URI="https://epr.elastic.co/search?package=security_detection_engine&kibana.version=$TEST_STACK_VERSION"
+
+			TEST_ELASTICSEARCH_PROXY=
+			TEST_ELASTICSEARCH_URL="http://elastic:changeme@localhost:29650"
+			TEST_KIBANA_URL="http://elastic:changeme@localhost:65290"
+			TEST_API_KEY=
+
+			echo TEST_STACK_VERSION: $TEST_STACK_VERSION
+		fi
+
 		echo TEST_SCHEMA_URI: $TEST_SCHEMA_URI
 		echo TEST_DETECTION_RULES_URI: $TEST_DETECTION_RULES_URI
 
 		if [ "$ONLINE_TESTS" = "1" ]; then
 			TEST_SIGNALS_QUERIES=1
 			TEST_SIGNALS_RULES=1
-			make down up
+			if [ "$MAJOR_MINOR" != "custom" ]; then
+				make down up
+			fi
 		fi
 
 		if $PYTHON -m unittest $VERBOSE_UT ${TESTS:-$DEFAULT_TESTS} 2> >(tee $TMP_LOG >&2); then
