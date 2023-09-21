@@ -32,7 +32,7 @@ from functools import partial
 from pathlib import Path
 
 from geneve.events_emitter import SourceEvents
-from geneve.utils import load_rules, load_schema, random
+from geneve.utils import batched, load_rules, load_schema, random
 
 from . import jupyter
 
@@ -300,6 +300,7 @@ class SignalsTestCase:
     """Generate documents, load rules and documents, check triggered signals in unit tests."""
 
     multiplying_factor = int(os.getenv("TEST_SIGNALS_MULTI") or 0) or 1
+    test_tags = ["Geneve"]
 
     def generate_docs_and_mappings(self, rules, asts):
         schema = load_test_schema()
@@ -373,12 +374,13 @@ class SignalsTestCase:
                             sys.stderr.flush()
                 pos += batch_size
 
-        ret = self.kbn.create_detection_engine_rules(filter_out_test_data(rules))
         pending = {}
-        for rule, rule_id in zip(rules, ret):
-            rule["id"] = rule_id
-            if rule["enabled"]:
-                pending[rule_id] = ret[rule_id]
+        for chunk in batched(rules, 100):
+            ret = self.kbn.create_detection_engine_rules(filter_out_test_data(chunk))
+            for rule, rule_id in zip(chunk, ret):
+                rule["id"] = rule_id
+                if rule["enabled"]:
+                    pending[rule_id] = ret[rule_id]
         return pending
 
     def wait_for_rules(self, pending, timeout=300, sleep=5):
