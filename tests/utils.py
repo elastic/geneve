@@ -422,6 +422,9 @@ class SignalsTestCase:
             if current_status["last_success_at"]:
                 self.handle_rule_success(rule_id, pending, successful, failed)
             elif current_status["last_failure_at"]:
+                if verbose > 1:
+                    sys.stderr.write(f"{rule_id}: {current_status['last_failure_message']}")
+                    sys.stderr.flush()
                 self.handle_rule_failure(rule_id, failed, current_status["last_failure_message"])
 
     def handle_rule_success(self, rule_id, pending, successful, failed):
