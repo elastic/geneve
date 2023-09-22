@@ -333,7 +333,7 @@ class SignalsTestCase:
                 rule[".test_private"]["doc_count"] = doc_count
         return (bulk, se.mappings())
 
-    def load_rules_and_docs(self, rules, asts, batch_size=200):
+    def load_rules_and_docs(self, rules, asts, chunk_size=200):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
 
         kwargs = {
@@ -360,10 +360,9 @@ class SignalsTestCase:
         self.es.indices.put_index_template(**kwargs)
 
         with self.nb.chapter("## Rejected documents") as cells:
-            pos = 0
-            while docs[pos : pos + batch_size]:
+            for chunk in batched(docs, chunk_size):
                 kwargs = {
-                    "operations": "\n".join(docs[pos : pos + batch_size]),
+                    "operations": "\n".join(chunk),
                 }
                 ret = self.es.options(request_timeout=30).bulk(**kwargs)
                 for i, item in enumerate(ret["items"]):
@@ -372,7 +371,6 @@ class SignalsTestCase:
                         if verbose > 1:
                             sys.stderr.write(f"{str(item['create'])}\n")
                             sys.stderr.flush()
-                pos += batch_size
 
         pending = {}
         for chunk in batched(rules, 100):
