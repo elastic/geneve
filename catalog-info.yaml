@@ -16,3 +16,19 @@ spec:
   type: service
   owner: User:cavokz
   lifecycle: experimental
+---
+apiVersion: buildkite.elastic.dev/v1
+kind: Pipeline
+metadata:
+  name: geneve-security-serverless-quality-gate
+  description: 'Geneve - Security serverless quality gate testing'
+spec:
+  pipeline_file: .buildkite/security-serverless-quality-gate/pipeline.yml
+  repository: elastic/geneve
+  provider_settings:
+    build_branches: true
+    trigger_mode: none
+  teams:
+    security-engineering-productivity: {}
+    everyone:
+      access_level: READ_ONLY
