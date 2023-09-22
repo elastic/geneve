@@ -20,6 +20,7 @@
 import functools
 import json
 import shutil
+import sys
 from contextlib import contextmanager
 from pathlib import Path
 from random import Random
@@ -272,3 +273,14 @@ class TreeTraverser:
 
 def split_path(field):
     return list(p[1:-1] if len(p) > 1 and p.startswith("`") and p.endswith("`") else p for p in field.split("."))
+
+
+if sys.version_info >= (3, 12):
+    from itertools import batched
+else:
+    from itertools import islice
+
+    def batched(iterable, chunk_size):
+        iterator = iter(iterable)
+        while chunk := type(iterable)(islice(iterator, chunk_size)):
+            yield chunk

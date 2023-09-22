@@ -32,7 +32,7 @@ from functools import partial
 from pathlib import Path
 
 from geneve.events_emitter import SourceEvents
-from geneve.utils import load_rules, load_schema, random
+from geneve.utils import batched, load_rules, load_schema, random
 
 from . import jupyter
 
@@ -300,6 +300,7 @@ class SignalsTestCase:
     """Generate documents, load rules and documents, check triggered signals in unit tests."""
 
     multiplying_factor = int(os.getenv("TEST_SIGNALS_MULTI") or 0) or 1
+    test_tags = ["Geneve"]
 
     def generate_docs_and_mappings(self, rules, asts):
         schema = load_test_schema()
@@ -332,7 +333,7 @@ class SignalsTestCase:
                 rule[".test_private"]["doc_count"] = doc_count
         return (bulk, se.mappings())
 
-    def load_rules_and_docs(self, rules, asts, batch_size=200):
+    def load_rules_and_docs(self, rules, asts, chunk_size=200):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
 
         kwargs = {
@@ -359,10 +360,9 @@ class SignalsTestCase:
         self.es.indices.put_index_template(**kwargs)
 
         with self.nb.chapter("## Rejected documents") as cells:
-            pos = 0
-            while docs[pos : pos + batch_size]:
+            for chunk in batched(docs, chunk_size):
                 kwargs = {
-                    "operations": "\n".join(docs[pos : pos + batch_size]),
+                    "operations": "\n".join(chunk),
                 }
                 ret = self.es.options(request_timeout=30).bulk(**kwargs)
                 for i, item in enumerate(ret["items"]):
@@ -371,14 +371,14 @@ class SignalsTestCase:
                         if verbose > 1:
                             sys.stderr.write(f"{str(item['create'])}\n")
                             sys.stderr.flush()
-                pos += batch_size
 
-        ret = self.kbn.create_detection_engine_rules(filter_out_test_data(rules))
         pending = {}
-        for rule, rule_id in zip(rules, ret):
-            rule["id"] = rule_id
-            if rule["enabled"]:
-                pending[rule_id] = ret[rule_id]
+        for chunk in batched(rules, 100):
+            ret = self.kbn.create_detection_engine_rules(filter_out_test_data(chunk))
+            for rule, rule_id in zip(chunk, ret):
+                rule["id"] = rule_id
+                if rule["enabled"]:
+                    pending[rule_id] = ret[rule_id]
         return pending
 
     def wait_for_rules(self, pending, timeout=300, sleep=5):

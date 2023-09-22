@@ -869,6 +869,7 @@ class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCas
                     "type": guess.type,
                     "query": query,
                     "language": guess.language,
+                    "tags": self.test_tags,
                     "max_signals": 200,
                     "enabled": True,
                     ".test_private": {},  # private test data, not sent to Kibana
