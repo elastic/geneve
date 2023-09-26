@@ -19,8 +19,8 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-  name: geneve-security-serverless-quality-gate
-  description: "Geneve - Security serverless quality gate testing"
+  name: geneve-serverless-security-quality-gate
+  description: "Geneve - Serverless Security quality gate testing"
 spec:
   type: buildkite-pipeline
   owner: group:security-engineering-productivity
@@ -29,10 +29,10 @@ spec:
     apiVersion: buildkite.elastic.dev/v1
     kind: Pipeline
     metadata:
-      name: geneve-security-serverless-quality-gate
+      name: geneve-serverless-security-quality-gate
     spec:
       repository: elastic/geneve
-      pipeline_file: .buildkite/security-serverless-quality-gate/pipeline.yml
+      pipeline_file: .buildkite/serverless-security-quality-gate/pipeline.yml
       provider_settings:
         build_branches: true
         trigger_mode: none
