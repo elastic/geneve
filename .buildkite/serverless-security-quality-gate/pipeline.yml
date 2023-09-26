@@ -3,7 +3,7 @@ steps:
     key: schema_and_detection_rules
     command:
       - random_seed=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 17; echo)
-      - kb_status=$(curl -H "kbn-xsrf: $random_seed" -H "Authorization: ApiKey $TEST_API_KEY" "$TEST_KIBANA_URL/api/status"
+      - kb_status=$(curl -H "kbn-xsrf: $random_seed" -H "Authorization: ApiKey $TEST_API_KEY" "$TEST_KIBANA_URL/api/status")
       - kb_version=$(echo "$kb_status" | jq -r ".version.number")
       - buildkite-agent env set TEST_DETECTION_RULES_URI="https://epr.elastic.co/search?package=security_detection_engine&kibana.version=$kb_version"
       - buildkite-agent env set TEST_SCHEMA_URI="./etc/ecs-v8.10.0.tar.gz"
