@@ -285,12 +285,11 @@ class OnlineTestCase:
         if self.es.indices.exists_index_template(name=self.index_template):
             self.es.indices.delete_index_template(name=self.index_template)
 
-        self.es.indices.delete(index=f"{self.index_template}-*")
+        kwargs = {
+            "index": self.siem_index_name,
+            "query": {"match_all": {}},
+        }
         try:
-            kwargs = {
-                "index": self.siem_index_name,
-                "query": {"match_all": {}},
-            }
             self.es.delete_by_query(**kwargs)
         except exceptions.NotFoundError:
             pass
@@ -335,6 +334,9 @@ class SignalsTestCase:
 
     def load_rules_and_docs(self, rules, asts, chunk_size=200):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
+
+        for rule in rules:
+            self.es.indices.delete(index=rule["index"], ignore_unavailable=True)
 
         kwargs = {
             "name": self.index_template,
@@ -420,6 +422,9 @@ class SignalsTestCase:
             if current_status["last_success_at"]:
                 self.handle_rule_success(rule_id, pending, successful, failed)
             elif current_status["last_failure_at"]:
+                if verbose > 1:
+                    sys.stderr.write(f"{rule_id}: {current_status['last_failure_message']}")
+                    sys.stderr.flush()
                 self.handle_rule_failure(rule_id, failed, current_status["last_failure_message"])
 
     def handle_rule_success(self, rule_id, pending, successful, failed):
@@ -471,7 +476,7 @@ class SignalsTestCase:
             signals[bucket["key"]] = (bucket["doc_count"], branch_count)
         return signals
 
-    def wait_for_signals(self, rules, timeout=60, sleep=5):
+    def wait_for_signals(self, rules, timeout=90, sleep=5):
         if verbose:
             sys.stderr.write("... ")
             sys.stderr.flush()

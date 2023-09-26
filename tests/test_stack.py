@@ -79,7 +79,7 @@ class TestStack(unittest.TestCase):
             config.save()
             assertIdenticalFiles(self, self.config_file_expected, self.config_file)
 
-    def test_elastic_pacakge(self):
+    def test_elastic_package(self):
         self.config_file_expected = Path(__file__).parent / "data" / "config_elastic-package.yaml"
         self.config_file = self.config_file_expected.with_suffix(".new")
         self.config_file.unlink(missing_ok=True)
