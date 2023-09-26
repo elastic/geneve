@@ -12,4 +12,6 @@ steps:
   - label: Geneve testing quality gate
     depends_on:
       - schema_and_detection_rules
-    command: ./scripts/test-stacks.sh --online -v --queries custom
+    command:
+      - python3 -m pip install -r requirements.txt
+      - ./scripts/test-stacks.sh --online -v --queries custom
