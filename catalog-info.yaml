@@ -1,10 +1,9 @@
-# Declare a Backstage Component that represents the Geneve service.
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: geneve
-  description: Generate source events using languages and schemas
+  description: "Generate source events using languages and schemas"
   annotations:
     backstage.io/source-location: url:https://github.com/elastic/geneve
     github.com/project-slug: elastic/geneve
@@ -13,22 +12,31 @@ metadata:
     - go
     - python
 spec:
-  type: service
-  owner: User:cavokz
+  type: tool
+  owner: group:security-engineering-productivity
   lifecycle: experimental
 ---
-apiVersion: buildkite.elastic.dev/v1
-kind: Pipeline
+apiVersion: backstage.io/v1alpha1
+kind: Resource
 metadata:
   name: geneve-security-serverless-quality-gate
-  description: 'Geneve - Security serverless quality gate testing'
+  description: "Geneve - Security serverless quality gate testing"
 spec:
-  pipeline_file: .buildkite/security-serverless-quality-gate/pipeline.yml
-  repository: elastic/geneve
-  provider_settings:
-    build_branches: true
-    trigger_mode: none
-  teams:
-    security-engineering-productivity: {}
-    everyone:
-      access_level: READ_ONLY
+  type: buildkite-pipeline
+  owner: group:security-engineering-productivity
+  system: buildkite
+  implementation:
+    apiVersion: buildkite.elastic.dev/v1
+    kind: Pipeline
+    metadata:
+      name: geneve-security-serverless-quality-gate
+    spec:
+      repository: elastic/geneve
+      pipeline_file: .buildkite/security-serverless-quality-gate/pipeline.yml
+      provider_settings:
+        build_branches: true
+        trigger_mode: none
+      teams:
+        security-engineering-productivity: {}
+        everyone:
+          access_level: READ_ONLY
