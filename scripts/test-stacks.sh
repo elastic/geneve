@@ -30,6 +30,8 @@ Options:
                     if N > 0: N is the maximum number of failed tests
                     if N < 0: -N is the maximum number of failed iterations
   --online          execute the online tests
+  --queries         use the unit test queries
+  --rules           use the Elastic prebuilt detection rules
   -v, --verbose     more verbose output
 
 Example:
