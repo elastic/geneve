@@ -1,3 +1,17 @@
 steps:
+  - label: Identify schema and detection rules
+    key: schema_and_detection_rules
+    command:
+      - random_seed=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 17; echo)
+      - kb_status=$(curl -H "kbn-xsrf: $random_seed" -H "Authorization: ApiKey $TEST_API_KEY" "$TEST_KIBANA_URL/api/status"
+      - kb_version=$(echo "$kb_status" | jq -r ".version.number")
+      - buildkite-agent env set TEST_DETECTION_RULES_URI="https://epr.elastic.co/search?package=security_detection_engine&kibana.version=$kb_version"
+      - buildkite-agent env set TEST_SCHEMA_URI="./etc/ecs-v8.10.0.tar.gz"
+      - buildkite-agent env set TEST_STACK_VERSION="$kb_version"
+
   - label: Geneve testing quality gate
-    command: ./scripts/test-stacks.sh --online -v --queries custom
+    depends_on:
+      - schema_and_detection_rules
+    command:
+      - python3 -m pip install -r requirements.txt
+      - ./scripts/test-stacks.sh --online -v --queries custom
