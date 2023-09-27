@@ -94,6 +94,16 @@ iteration_banner()
 	fi
 }
 
+export TEST_ELASTICSEARCH_URL
+export TEST_KIBANA_URL
+export TEST_API_KEY
+export TEST_DETECTION_RULES_URI
+export TEST_SCHEMA_URI
+export TEST_STACK_VERSION
+export TEST_ELASTICSEARCH_PROXY
+export TEST_SIGNALS_QUERIES
+export TEST_SIGNALS_RULES
+
 TMP_LOG=$(mktemp)
 trap "iteration_banner; rm $TMP_LOG" EXIT
 rm -rf tests/reports/*.new.md
