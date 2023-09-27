@@ -120,6 +120,20 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 		if [ "$MAJOR_MINOR" == "custom" ]; then
 			echo TEST_ELASTICSEARCH_URL: $TEST_ELASTICSEARCH_URL
 			echo TEST_KIBANA_URL: $TEST_KIBANA_URL
+
+			if [ -z "$TEST_STACK_VERSION" ]; then
+				if [ -n "$TEST_API_KEY" ]; then
+					TEST_STACK_VERSION=$(curl -s -H "kbn-xsrf: $RANDOM" -H "Authorization: ApiKey $TEST_API_KEY" "$TEST_KIBANA_URL/api/status" | jq -r ".version.number")
+				else
+					TEST_STACK_VERSION=$(curl -s -H "kbn-xsrf: $RANDOM" "$TEST_KIBANA_URL/api/status" | jq -r ".version.number")
+				fi
+			fi
+			if [ -z "$TEST_SCHEMA_URI" ]; then
+				TEST_SCHEMA_URI=`ls ./etc/ecs-v$(echo $TEST_STACK_VERSION | cut -d. -f1,2).*.tar.gz`
+			fi
+			if [ -z "$TEST_DETECTION_RULES_URI" ]; then
+				TEST_DETECTION_RULES_URI="https://epr.elastic.co/search?package=security_detection_engine&kibana.version=$TEST_STACK_VERSION"
+			fi
 		else
 			TEST_STACK_VERSION=$MAJOR_MINOR.0
 			TEST_SCHEMA_URI=`ls etc/ecs-v$MAJOR_MINOR.*.tar.gz`
@@ -129,10 +143,9 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 			TEST_ELASTICSEARCH_URL="http://elastic:changeme@localhost:29650"
 			TEST_KIBANA_URL="http://elastic:changeme@localhost:65290"
 			TEST_API_KEY=
-
-			echo TEST_STACK_VERSION: $TEST_STACK_VERSION
 		fi
 
+		echo TEST_STACK_VERSION: $TEST_STACK_VERSION
 		echo TEST_SCHEMA_URI: $TEST_SCHEMA_URI
 		echo TEST_DETECTION_RULES_URI: $TEST_DETECTION_RULES_URI
 
@@ -172,6 +185,6 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 	ITERATION=$(($ITERATION + 1))
 done
 
-if [ "$ONLINE_TESTS" = "1" ]; then
+if [ "$ONLINE_TESTS" = "1" ] && [ "$MAJOR_MINOR" != "custom" ]; then
 	make down
 fi
