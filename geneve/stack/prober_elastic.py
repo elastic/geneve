@@ -22,6 +22,7 @@ from pathlib import Path
 
 from elasticsearch import AuthenticationException, Elasticsearch
 
+from ..utils import str_to_bool
 from ..utils.kibana import Kibana
 from ..utils.shelllib import shell_expand
 
@@ -79,11 +80,16 @@ class ElasticStack:
         basic_auth = None
 
         # drop empty vars
-        for var in ("api_key", "ca_certs"):
+        for var in ("api_key", "ca_certs", "verify_certs"):
             if not es_args.get(var):
                 es_args.pop(var, None)
             if not kb_args.get(var):
                 kb_args.pop(var, None)
+
+        if "verify_certs" in es_args:
+            es_args["verify_certs"] = str_to_bool(es_args["verify_certs"])
+        if "verify_certs" in kb_args:
+            kb_args["verify_certs"] = str_to_bool(kb_args["verify_certs"])
 
         try:
             es = Elasticsearch(**es_args)
@@ -104,6 +110,7 @@ class ElasticStack:
 
         if not kb_args:
             kb_args["cloud_id"] = es_args.get("cloud_id")
+            kb_args["verify_certs"] = es_args.get("verify_certs")
             kb_args["ca_certs"] = es_args.get("ca_certs")
             kb_args["basic_auth"] = basic_auth or es_args.get("basic_auth")
 
