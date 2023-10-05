@@ -78,6 +78,13 @@ class ElasticStack:
         kb_args = shell_expand(self.kb_args) or {}
         basic_auth = None
 
+        # drop empty vars
+        for var in ("api_key", "ca_certs"):
+            if not es_args.get(var):
+                es_args.pop(var, None)
+            if not kb_args.get(var):
+                kb_args.pop(var, None)
+
         try:
             es = Elasticsearch(**es_args)
             es.info()

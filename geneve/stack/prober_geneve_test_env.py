@@ -28,10 +28,12 @@ class GeneveTestEnvStack(ElasticStack):
             "elasticsearch": {
                 "hosts": "$TEST_ELASTICSEARCH_URL",
                 "api_key": "${TEST_API_KEY:-}",
+                "ca_certs": "${TEST_CA_CERTS:-}",
             },
             "kibana": {
                 "url": "$TEST_KIBANA_URL",
                 "api_key": "${TEST_API_KEY:-}",
+                "ca_certs": "${TEST_CA_CERTS:-}",
             },
         }
         super().__init__(config)
