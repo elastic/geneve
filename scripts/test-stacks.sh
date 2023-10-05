@@ -2,7 +2,7 @@
 
 PYTHON=${PYTHON:-python3}
 
-DEFAULT_STACK_VERSIONS="8.10 8.9 8.8 8.7 8.6 8.5 8.4 8.3 8.2"
+DEFAULT_STACK_VERSIONS="8.10.1 8.9 8.8 8.7 8.6 8.5 8.4 8.3 8.2"
 STACK_VERSIONS=
 
 DEFAULT_TESTS="tests/test_emitter_*.py"
@@ -145,8 +145,8 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 				TEST_DETECTION_RULES_URI="https://epr.elastic.co/search?package=security_detection_engine&kibana.version=$TEST_STACK_VERSION"
 			fi
 		else
-			TEST_STACK_VERSION=$MAJOR_MINOR.0
-			TEST_SCHEMA_URI=`ls etc/ecs-v$MAJOR_MINOR.*.tar.gz`
+			TEST_STACK_VERSION=$(echo $MAJOR_MINOR.0 | cut -d. -f1-3)
+			TEST_SCHEMA_URI=`ls etc/ecs-v$(echo $TEST_STACK_VERSION | cut -d. -f1,2).*.tar.gz`
 			TEST_DETECTION_RULES_URI="https://epr.elastic.co/search?package=security_detection_engine&kibana.version=$TEST_STACK_VERSION"
 
 			TEST_ELASTICSEARCH_PROXY=
