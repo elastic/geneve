@@ -20,6 +20,7 @@
 import hashlib
 import itertools
 import json
+import math
 import os
 import subprocess
 import sys
@@ -335,8 +336,17 @@ class SignalsTestCase:
     def load_rules_and_docs(self, rules, asts, chunk_size=200):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
 
-        for rule in rules:
+        if verbose:
+            sys.stderr.write("\n  Deleting any unit-test indices: ")
+            sys.stderr.flush()
+        for i, rule in enumerate(rules):
+            if verbose and i % 100 == 0 and not i == len(rules) - 1:
+                sys.stderr.write(f"{len(rules) - i} ")
+                sys.stderr.flush()
             self.es.indices.delete(index=rule["index"], ignore_unavailable=True)
+        if verbose:
+            sys.stderr.write("0")
+            sys.stderr.flush()
 
         kwargs = {
             "name": self.index_template,
@@ -362,18 +372,35 @@ class SignalsTestCase:
         self.es.indices.put_index_template(**kwargs)
 
         with self.nb.chapter("## Rejected documents") as cells:
-            for chunk in batched(docs, chunk_size):
+            if verbose:
+                docs_to_go = len(docs)
+                sys.stderr.write(f"\n  Loading documents: {docs_to_go} ")
+                sys.stderr.flush()
+                num_chunks = math.ceil(len(docs) / chunk_size)
+                prev_report_chunk = 0
+            for i, chunk in enumerate(batched(docs, chunk_size)):
                 kwargs = {
                     "operations": "\n".join(chunk),
                 }
                 ret = self.es.options(request_timeout=30).bulk(**kwargs)
-                for i, item in enumerate(ret["items"]):
+                for item in ret["items"]:
                     if item["create"]["status"] != 201:
                         cells.append(jupyter.Markdown(str(item["create"])))
                         if verbose > 1:
                             sys.stderr.write(f"{str(item['create'])}\n")
                             sys.stderr.flush()
+                if verbose:
+                    docs_to_go -= len(chunk)
+                    nth_chunk = int(i / num_chunks * 14)  # 14 is just an arbitray number to give enough updates
+                    if nth_chunk != prev_report_chunk or i == num_chunks - 1:
+                        prev_report_chunk = nth_chunk
+                        sys.stderr.write(f"{docs_to_go} ")
+                        sys.stderr.flush()
 
+        if verbose:
+            rules_to_go = len(rules)
+            sys.stderr.write(f"\n  Loading rules: {rules_to_go} ")
+            sys.stderr.flush()
         pending = {}
         for chunk in batched(rules, 100):
             ret = self.kbn.create_detection_engine_rules(filter_out_test_data(chunk))
@@ -381,12 +408,19 @@ class SignalsTestCase:
                 rule["id"] = rule_id
                 if rule["enabled"]:
                     pending[rule_id] = ret[rule_id]
+            if verbose:
+                rules_to_go -= len(chunk)
+                sys.stderr.write(f"{rules_to_go} ")
+                sys.stderr.flush()
         return pending
 
     def wait_for_rules(self, pending, timeout=300, sleep=5):
         start = time.time()
         successful = {}
         failed = {}
+        if verbose:
+            sys.stderr.write("\n  Waiting for rules execution: ")
+            sys.stderr.flush()
         while (time.time() - start) < timeout:
             if verbose:
                 sys.stderr.write(f"{len(pending)} ")
@@ -478,7 +512,7 @@ class SignalsTestCase:
 
     def wait_for_signals(self, rules, timeout=90, sleep=5):
         if verbose:
-            sys.stderr.write("... ")
+            sys.stderr.write("\n  Waiting for signals generation: ")
             sys.stderr.flush()
         total_count = sum(rule[".test_private"]["branch_count"] for rule in rules if rule["enabled"])
         partial_count = 0
