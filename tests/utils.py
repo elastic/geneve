@@ -242,29 +242,30 @@ class OnlineTestCase:
 
         stack = GeneveTestEnvStack()
         stack.connect()
-        cls.es = stack.es
-        cls.kb = stack.kb
 
-        if not cls.es.ping():
-            raise unittest.SkipTest(f"Could not reach Elasticsearch: {cls.es}")
-        if not cls.kb.ping():
-            raise unittest.SkipTest(f"Could not reach Kibana: {cls.kb}")
+        if not stack.es.ping():
+            raise unittest.SkipTest(f"Could not reach Elasticsearch: {stack.es}")
+        if not stack.kb.ping():
+            raise unittest.SkipTest(f"Could not reach Kibana: {stack.kb}")
 
         if verbose:
             print("\n".join(stack.info()))
 
-        cls.kb.create_siem_index()
-        cls.siem_index_name = cls.kb.get_siem_index()["name"]
+        stack.kb.create_siem_index()
+        cls.siem_index_name = stack.kb.get_siem_index()["name"]
 
         try:
-            cls.kb.find_detection_engine_rules_statuses({})
+            stack.kb.find_detection_engine_rules_statuses({})
             cls.check_rules = cls.check_rules_legacy
-        except cls.kb.exceptions.HTTPError as e:
+        except stack.kb.exceptions.HTTPError as e:
             if e.response.status_code != 404:
                 raise
 
-        build_flavor = cls.es.info()["version"].get("build_flavor")
+        build_flavor = stack.es.info()["version"].get("build_flavor")
         cls.serverless = build_flavor == "serverless"
+
+        cls.es = stack.es
+        cls.kb = stack.kb
 
     @classmethod
     def tearDownClass(cls):
