@@ -17,6 +17,7 @@
 
 """Implement the Elastic stack base"""
 
+from datetime import datetime
 from pathlib import Path
 
 from elasticsearch import AuthenticationException, Elasticsearch
@@ -119,9 +120,27 @@ class ElasticStack:
         self.kb = kb
 
     def info(self):
+        def normalize_date(d):
+            if not d:
+                return "0000-00-00 00:00:00"
+            if (dot := d.find(".")) != -1:
+                d = d[:dot]
+            return datetime.fromisoformat(d).strftime("%Y-%m-%d %H:%M%:%S")
+
+        es_info = self.es.info()
+        es_version = es_info["version"].get("number")
+        es_build_date = normalize_date(es_info["version"].get("build_date"))
+        es_build_hash = es_info["version"].get("build_hash", "00000000")[:8]
+        es_build_flavor = es_info["version"].get("build_flavor")
+
+        kb_info = self.kb.status()
+        kb_version = kb_info["version"].get("number")
+        kb_build_date = normalize_date(kb_info["version"].get("build_date"))
+        kb_build_hash = kb_info["version"].get("build_hash", "00000000")[:8]
+
         return [
-            f"ES: {self.es.info()['version']['number']}",
-            f"KB: {self.kb.status()['version']['number']}",
+            f"ES: {es_version} {es_build_date} {es_build_hash} ({es_build_flavor})",
+            f"KB: {kb_version} {kb_build_date} {kb_build_hash}",
         ]
 
     def update_config(self, config):

@@ -250,6 +250,9 @@ class OnlineTestCase:
         if not cls.kb.ping():
             raise unittest.SkipTest(f"Could not reach Kibana: {cls.kb}")
 
+        if verbose:
+            print("\n".join(stack.info()))
+
         cls.kb.create_siem_index()
         cls.siem_index_name = cls.kb.get_siem_index()["name"]
 
@@ -262,12 +265,6 @@ class OnlineTestCase:
 
         build_flavor = cls.es.info()["version"].get("build_flavor")
         cls.serverless = build_flavor == "serverless"
-
-        if verbose > 1:
-            if build_flavor:
-                print(f"Stack version: {cls.get_version()} ({build_flavor})")
-            else:
-                print(f"Stack version: {cls.get_version()}")
 
     @classmethod
     def tearDownClass(cls):
