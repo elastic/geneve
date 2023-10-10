@@ -402,10 +402,10 @@ class SignalsTestCase:
         pending = {}
         for chunk in batched(rules, 100):
             ret = self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
-            for rule, rule_id in zip(chunk, ret):
+            for rule, (rule_id, created_rule) in zip(chunk, ret):
                 rule["id"] = rule_id
                 if rule["enabled"]:
-                    pending[rule_id] = ret[rule_id]
+                    pending[rule_id] = created_rule
             if verbose:
                 rules_to_go -= len(chunk)
                 sys.stderr.write(f"{rules_to_go} ")
