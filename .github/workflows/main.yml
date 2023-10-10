@@ -33,7 +33,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Setup Go
         uses: actions/setup-go@v4
@@ -56,7 +56,7 @@ jobs:
       matrix:
         stack-version: ["8.2.0"]
         schema-uri: ["./etc/ecs-v8.2.1.tar.gz"]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         os: ["ubuntu-latest", "macos-latest"]
 
     steps:
@@ -240,7 +240,7 @@ jobs:
       fail-fast: false
       matrix:
         go-version: ["1.18", "1.19", "1.20"]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         os: ["ubuntu-latest", "macos-latest"]
 
     steps:
@@ -277,7 +277,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         os: ["ubuntu-latest", "macos-latest"]
 
     steps:
@@ -309,7 +309,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         os: ["ubuntu-latest", "macos-latest"]
 
     steps:
