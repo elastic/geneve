@@ -104,8 +104,16 @@ export TEST_ELASTICSEARCH_PROXY
 export TEST_SIGNALS_QUERIES
 export TEST_SIGNALS_RULES
 
-TMP_LOG=$(mktemp)
-trap "iteration_banner; rm $TMP_LOG" EXIT
+cleanup()
+{
+	# must be first so to color the banner in base of the exit status
+	iteration_banner
+	rm -r "$TMP_DIR"
+}
+
+TMP_DIR=$(mktemp -d)
+TMP_LOG=$TMP_DIR/log
+trap cleanup EXIT
 rm -rf tests/reports/*.new.md
 
 if [ $MAX_FAILURES -gt 0 ]; then

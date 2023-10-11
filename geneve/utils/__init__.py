@@ -284,3 +284,12 @@ else:
         iterator = iter(iterable)
         while chunk := type(iterable)(islice(iterator, chunk_size)):
             yield chunk
+
+
+def str_to_bool(s):
+    ls = s.lower()
+    if ls in ("true", "yes", "on", "1"):
+        return True
+    if ls in ("false", "no", "off", "0"):
+        return False
+    raise ValueError(f"Invalid boolean string: {s}")

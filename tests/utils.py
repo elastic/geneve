@@ -242,38 +242,36 @@ class OnlineTestCase:
 
         stack = GeneveTestEnvStack()
         stack.connect()
-        cls.es = stack.es
-        cls.kbn = stack.kb
 
-        if not cls.es.ping():
-            raise unittest.SkipTest(f"Could not reach Elasticsearch: {cls.es}")
-        if not cls.kbn.ping():
-            raise unittest.SkipTest(f"Could not reach Kibana: {cls.kbn}")
+        if not stack.es.ping():
+            raise unittest.SkipTest(f"Could not reach Elasticsearch: {stack.es}")
+        if not stack.kb.ping():
+            raise unittest.SkipTest(f"Could not reach Kibana: {stack.kb}")
 
-        cls.kbn.create_siem_index()
-        cls.siem_index_name = cls.kbn.get_siem_index()["name"]
+        if verbose:
+            print("\n".join(stack.info()))
+
+        stack.kb.create_siem_index()
+        cls.siem_index_name = stack.kb.get_siem_index()["name"]
 
         try:
-            cls.kbn.find_detection_engine_rules_statuses({})
+            stack.kb.find_detection_engine_rules_statuses({})
             cls.check_rules = cls.check_rules_legacy
-        except cls.kbn.exceptions.HTTPError as e:
+        except stack.kb.exceptions.HTTPError as e:
             if e.response.status_code != 404:
                 raise
 
-        build_flavor = cls.es.info()["version"].get("build_flavor")
+        build_flavor = stack.es.info()["version"].get("build_flavor")
         cls.serverless = build_flavor == "serverless"
 
-        if verbose > 1:
-            if build_flavor:
-                print(f"Stack version: {cls.get_version()} ({build_flavor})")
-            else:
-                print(f"Stack version: {cls.get_version()}")
+        cls.es = stack.es
+        cls.kb = stack.kb
 
     @classmethod
     def tearDownClass(cls):
         super(OnlineTestCase, cls).tearDownClass()
 
-        cls.kbn.close()
+        cls.kb.close()
         cls.es.close()
 
     def setUp(self):
@@ -281,7 +279,7 @@ class OnlineTestCase:
 
         from elasticsearch import exceptions
 
-        self.kbn.delete_detection_engine_rules()
+        self.kb.delete_detection_engine_rules()
 
         if self.es.indices.exists_index_template(name=self.index_template):
             self.es.indices.delete_index_template(name=self.index_template)
@@ -403,7 +401,7 @@ class SignalsTestCase:
             sys.stderr.flush()
         pending = {}
         for chunk in batched(rules, 100):
-            ret = self.kbn.create_detection_engine_rules(filter_out_test_data(chunk))
+            ret = self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
             for rule, rule_id in zip(chunk, ret):
                 rule["id"] = rule_id
                 if rule["enabled"]:
@@ -436,7 +434,7 @@ class SignalsTestCase:
         return successful, failed
 
     def check_rules(self, pending, successful, failed):
-        rules = self.kbn.find_detection_engine_rules()
+        rules = self.kb.find_detection_engine_rules()
         for rule_id, rule in rules.items():
             if "execution_summary" not in rule:
                 continue
@@ -450,7 +448,7 @@ class SignalsTestCase:
                 self.handle_rule_failure(rule_id, failed, last_execution["message"])
 
     def check_rules_legacy(self, pending, successful, failed):
-        statuses = self.kbn.find_detection_engine_rules_statuses(pending)
+        statuses = self.kb.find_detection_engine_rules_statuses(pending)
         for rule_id, rule_status in statuses.items():
             current_status = rule_status["current_status"]
             if current_status["last_success_at"]:
@@ -503,7 +501,7 @@ class SignalsTestCase:
                 }
             },
         }
-        ret = self.kbn.search_detection_engine_signals(body)
+        ret = self.kb.search_detection_engine_signals(body)
         signals = {}
         for bucket in ret["aggregations"]["signals_per_rule"]["buckets"]:
             branch_count = get_rule_test_data(rules, bucket["key"])["branch_count"]

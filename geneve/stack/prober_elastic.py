@@ -17,10 +17,12 @@
 
 """Implement the Elastic stack base"""
 
+from datetime import datetime
 from pathlib import Path
 
 from elasticsearch import AuthenticationException, Elasticsearch
 
+from ..utils import str_to_bool
 from ..utils.kibana import Kibana
 from ..utils.shelllib import shell_expand
 
@@ -77,6 +79,18 @@ class ElasticStack:
         kb_args = shell_expand(self.kb_args) or {}
         basic_auth = None
 
+        # drop empty vars
+        for var in ("api_key", "ca_certs", "verify_certs"):
+            if not es_args.get(var):
+                es_args.pop(var, None)
+            if not kb_args.get(var):
+                kb_args.pop(var, None)
+
+        if "verify_certs" in es_args:
+            es_args["verify_certs"] = str_to_bool(es_args["verify_certs"])
+        if "verify_certs" in kb_args:
+            kb_args["verify_certs"] = str_to_bool(kb_args["verify_certs"])
+
         try:
             es = Elasticsearch(**es_args)
             es.info()
@@ -96,6 +110,7 @@ class ElasticStack:
 
         if not kb_args:
             kb_args["cloud_id"] = es_args.get("cloud_id")
+            kb_args["verify_certs"] = es_args.get("verify_certs")
             kb_args["ca_certs"] = es_args.get("ca_certs")
             kb_args["basic_auth"] = basic_auth or es_args.get("basic_auth")
 
@@ -119,9 +134,27 @@ class ElasticStack:
         self.kb = kb
 
     def info(self):
+        def normalize_date(d):
+            if not d:
+                return "0000-00-00 00:00:00"
+            if (dot := d.find(".")) != -1:
+                d = d[:dot]
+            return datetime.fromisoformat(d).strftime("%Y-%m-%d %H:%M%:%S")
+
+        es_info = self.es.info()
+        es_version = es_info["version"].get("number")
+        es_build_date = normalize_date(es_info["version"].get("build_date"))
+        es_build_hash = es_info["version"].get("build_hash", "00000000")[:8]
+        es_build_flavor = es_info["version"].get("build_flavor")
+
+        kb_info = self.kb.status()
+        kb_version = kb_info["version"].get("number")
+        kb_build_date = normalize_date(kb_info["version"].get("build_date"))
+        kb_build_hash = kb_info["version"].get("build_hash", "00000000")[:8]
+
         return [
-            f"ES: {self.es.info()['version']['number']}",
-            f"KB: {self.kb.status()['version']['number']}",
+            f"ES: {es_version} {es_build_date} {es_build_hash} ({es_build_flavor})",
+            f"KB: {kb_version} {kb_build_date} {kb_build_hash}",
         ]
 
     def update_config(self, config):
