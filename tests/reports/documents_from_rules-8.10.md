@@ -5,27 +5,27 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.10.3
+Rules version: 8.10.4
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: machine_learning (47)](#unsupported-rule-type-machine_learning-47)
+      1. [Unsupported rule type: machine_learning (58)](#unsupported-rule-type-machine_learning-58)
+      1. [Unsupported rule type: new_terms (32)](#unsupported-rule-type-new_terms-32)
       1. [Unsupported rule type: threshold (22)](#unsupported-rule-type-threshold-22)
-      1. [Unsupported rule type: new_terms (21)](#unsupported-rule-type-new_terms-21)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
       1. [Field type solver: wildcard (53)](#field-type-solver-wildcard-53)
       1. [Root with too many branches (limit: 10000) (8)](#root-with-too-many-branches-limit-10000-8)
       1. [Unsupported function: match (8)](#unsupported-function-match-8)
-      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)](#unsupported-lhs-type-class-eqlastfunctioncall-6)
+      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (7)](#unsupported-lhs-type-class-eqlastfunctioncall-7)
       1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
       1. [Root without branches (3)](#root-without-branches-3)
+      1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
       1. [<class 'eql.ast.Sample'> (2)](#class-eqlastsample-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
-      1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
       1. [Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)](#unsolvable-constraints-dnsquestionname-excluded-by-stringscdndiscordappcom-cdndiscordappcom-1)
@@ -54,6 +54,7 @@ Rules version: 8.10.3
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
       1. [Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)](#unsolvable-constraints-processparentargs-excluded-by-stringswdisystemhost-wdisystemhost-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'dllhost.exe'}): ('dllhost.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsdllhostexe-dllhostexe-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsrundll32exe-rundll32exe-1)
@@ -69,15 +70,18 @@ Rules version: 8.10.3
 
 ## Skipped rules
 
-### Unsupported rule type: machine_learning (47)
+### Unsupported rule type: machine_learning (58)
 
-47 rules:
+58 rules:
 
 * Anomalous Linux Compiler Activity
 * Anomalous Process For a Linux Population
 * Anomalous Process For a Windows Population
 * Anomalous Windows Process Creation
 * DNS Tunneling
+* High Mean of Process Arguments in an RDP Session
+* High Mean of RDP Session Duration
+* High Variance in RDP Session Duration
 * Network Traffic to Rare Destination Country
 * Rare AWS Error Code
 * Rare User Logon
@@ -87,6 +91,10 @@ Rules version: 8.10.3
 * Spike in Logon Events
 * Spike in Network Traffic
 * Spike in Network Traffic To a Country
+* Spike in Number of Connections Made from a Source IP
+* Spike in Number of Connections Made to a Destination IP
+* Spike in Number of Processes in an RDP Session
+* Spike in Remote File Transfers
 * Spike in Successful Logon Events from a Source IP
 * Suspicious Powershell Script
 * Unusual AWS Command for a User
@@ -108,8 +116,12 @@ Rules version: 8.10.3
 * Unusual Network Destination Domain Name
 * Unusual Process For a Linux Host
 * Unusual Process For a Windows Host
+* Unusual Remote File Directory
+* Unusual Remote File Extension
+* Unusual Remote File Size
 * Unusual Source IP for a User to Logon from
 * Unusual Sudo Activity
+* Unusual Time or Day for an RDP Session
 * Unusual Web Request
 * Unusual Web User Agent
 * Unusual Windows Network Activity
@@ -120,6 +132,43 @@ Rules version: 8.10.3
 * Unusual Windows User Calling the Metadata Service
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
+
+### Unsupported rule type: new_terms (32)
+
+32 rules:
+
+* Abnormal Process ID or Lock File Created
+* Cron Job Created or Changed by Previously Unknown Process
+* Discovery of Internet Capabilities via Built-in Tools
+* Enumeration of Kernel Modules
+* Enumeration of Privileged Local Groups Membership
+* Execution of an Unsigned Service
+* First Time Seen AWS Secret Value Accessed in Secrets Manager
+* First Time Seen Commonly Abused Remote Access Tool Execution
+* First Time Seen Driver Loaded
+* First Time Seen Google Workspace OAuth Login from Third-Party Application
+* First Time Seen Removable Device
+* FirstTime Seen Account Performing DCSync
+* Microsoft Build Engine Started an Unusual Process
+* Microsoft Build Engine Started by a Script Process
+* New Systemd Service Created by Previously Unknown Process
+* New Systemd Timer Created
+* Potential Pass-the-Hash (PtH) Attempt
+* Potential Persistence Through MOTD File Creation Detected
+* Potential Persistence Through Run Control Detected
+* Potential Persistence Through init.d Detected
+* Potential Shadow File Read via Command Line Utilities
+* Potential Suspicious Clipboard Activity Detected
+* Query Registry using Built-in Tools
+* Shared Object Created or Changed by Previously Unknown Process
+* Suspicious Microsoft 365 Mail Access by ClientAppId
+* Suspicious Network Activity to the Internet by Previously Unknown Executable
+* Suspicious PowerShell Engine ImageLoad
+* Suspicious System Commands Executed by Previously Unknown Executable
+* Svchost spawning Cmd
+* Unusual Discovery Activity by User
+* Unusual Discovery Signal Alert with Unusual Process Command Line
+* Unusual Discovery Signal Alert with Unusual Process Executable
 
 ### Unsupported rule type: threshold (22)
 
@@ -147,32 +196,6 @@ Rules version: 8.10.3
 * Potential macOS SSH Brute Force Detected
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
-
-### Unsupported rule type: new_terms (21)
-
-21 rules:
-
-* Abnormal Process ID or Lock File Created
-* Cron Job Created or Changed by Previously Unknown Process
-* Enumeration of Kernel Modules
-* First Time Seen AWS Secret Value Accessed in Secrets Manager
-* First Time Seen Commonly Abused Remote Access Tool Execution
-* First Time Seen Driver Loaded
-* First Time Seen Google Workspace OAuth Login from Third-Party Application
-* First Time Seen Removable Device
-* FirstTime Seen Account Performing DCSync
-* New Systemd Service Created by Previously Unknown Process
-* New Systemd Timer Created
-* Potential Pass-the-Hash (PtH) Attempt
-* Potential Persistence Through MOTD File Creation Detected
-* Potential Persistence Through Run Control Detected
-* Potential Persistence Through init.d Detected
-* Potential Shadow File Read via Command Line Utilities
-* Potential Suspicious Clipboard Activity Detected
-* Shared Object Created or Changed by Previously Unknown Process
-* Suspicious Microsoft 365 Mail Access by ClientAppId
-* Suspicious Network Activity to the Internet by Previously Unknown Executable
-* Suspicious System Commands Executed by Previously Unknown Executable
 
 ### Unsupported query language: lucene (5)
 
@@ -276,13 +299,14 @@ Rules version: 8.10.3
 * Suspicious Execution via Microsoft Office Add-Ins
 * Suspicious Service was Installed in the System
 
-### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)
+### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (7)
 
-6 rules:
+7 rules:
 * AdminSDHolder SDProp Exclusion Added
 * Image File Execution Options Injection
 * Ingress Transfer via Windows BITS
 * NullSessionPipe Registry Modification
+* Potential curl CVE-2023-38545 Exploitation
 * Renamed Utility Executed with Short Program Name
 * Suspicious Process Access via Direct System Call
 
@@ -299,6 +323,13 @@ Rules version: 8.10.3
 * Linux init (PID 1) Secret Dump via GDB
 * Potential Protocol Tunneling via Chisel Server
 * Suspicious Data Encryption via OpenSSL Utility
+
+### Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)
+
+3 rules:
+* Downloaded Shortcut Files
+* Downloaded URL Files
+* File with Suspicious Extension Downloaded
 
 ### <class 'eql.ast.Sample'> (2)
 
@@ -323,12 +354,6 @@ Rules version: 8.10.3
 2 rules:
 * RPC (Remote Procedure Call) from the Internet
 * RPC (Remote Procedure Call) to the Internet
-
-### Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)
-
-2 rules:
-* Downloaded Shortcut Files
-* Downloaded URL Files
 
 ### Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)
 
@@ -471,6 +496,11 @@ Rules version: 8.10.3
 
 1 rules:
 * Suspicious Microsoft Diagnostics Wizard Execution
+
+### Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)
+
+1 rules:
+* Enumeration Command Spawned via WMIPrvSE
 
 ### Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)
 
