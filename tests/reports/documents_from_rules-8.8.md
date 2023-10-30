@@ -5,35 +5,37 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.8.12
+Rules version: 8.8.13
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (47)](#unsupported-rule-type-machine_learning-47)
-      1. [Unsupported rule type: new_terms (32)](#unsupported-rule-type-new_terms-32)
-      1. [Unsupported rule type: threshold (22)](#unsupported-rule-type-threshold-22)
+      1. [Unsupported rule type: new_terms (43)](#unsupported-rule-type-new_terms-43)
+      1. [Unsupported rule type: threshold (23)](#unsupported-rule-type-threshold-23)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: wildcard (53)](#field-type-solver-wildcard-53)
-      1. [Root with too many branches (limit: 10000) (8)](#root-with-too-many-branches-limit-10000-8)
+      1. [Field type solver: wildcard (57)](#field-type-solver-wildcard-57)
+      1. [Root with too many branches (limit: 10000) (9)](#root-with-too-many-branches-limit-10000-9)
+      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (9)](#unsupported-lhs-type-class-eqlastfunctioncall-9)
       1. [Unsupported function: match (8)](#unsupported-function-match-8)
-      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (7)](#unsupported-lhs-type-class-eqlastfunctioncall-7)
-      1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
+      1. [Field type solver: match_only_text (4)](#field-type-solver-match_only_text-4)
       1. [Root without branches (3)](#root-without-branches-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
       1. [<class 'eql.ast.Sample'> (2)](#class-eqlastsample-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
-      1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
+      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (2)](#unsupported-argument-types-class-eqlastfield-2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
       1. [Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)](#unsolvable-constraints-dnsquestionname-excluded-by-stringscdndiscordappcom-cdndiscordappcom-1)
       1. [Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)](#unsolvable-constraints-eventaction-excluded-by-stringsexec-exec-1)
+      1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smb')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmb-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smtp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmtp-1)
+      1. [Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)](#unsolvable-constraints-fileextheader_bytes-excluded-by-strings504b0304-504b0304-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
@@ -53,7 +55,10 @@ Rules version: 8.8.12
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsedgewebview2exe-msedgewebview2exe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
       1. [Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)](#unsolvable-constraints-processparentargs-excluded-by-stringswdisystemhost-wdisystemhost-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'dllhost.exe'}): ('dllhost.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsdllhostexe-dllhostexe-1)
@@ -65,7 +70,6 @@ Rules version: 8.8.12
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (1)](#unsupported-keyword-fileextentropy-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
-      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (1)](#unsupported-argument-types-class-eqlastfield-1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
 
 ## Skipped rules
@@ -122,16 +126,18 @@ Rules version: 8.8.12
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (32)
+### Unsupported rule type: new_terms (43)
 
-32 rules:
+43 rules:
 
 * Abnormal Process ID or Lock File Created
 * Cron Job Created or Changed by Previously Unknown Process
 * Discovery of Internet Capabilities via Built-in Tools
 * Enumeration of Kernel Modules
+* Enumeration of Kernel Modules via Proc
 * Enumeration of Privileged Local Groups Membership
 * Execution of an Unsigned Service
+* File Permission Modification in Writable Directory
 * First Time Seen AWS Secret Value Accessed in Secrets Manager
 * First Time Seen Commonly Abused Remote Access Tool Execution
 * First Time Seen Driver Loaded
@@ -140,6 +146,8 @@ Rules version: 8.8.12
 * FirstTime Seen Account Performing DCSync
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
+* Modification of Dynamic Linker Preload Shared Object
+* Modification of Standard Authentication Module or Configuration
 * New Systemd Service Created by Previously Unknown Process
 * New Systemd Timer Created
 * Potential Pass-the-Hash (PtH) Attempt
@@ -147,21 +155,28 @@ Rules version: 8.8.12
 * Potential Persistence Through Run Control Detected
 * Potential Persistence Through init.d Detected
 * Potential Shadow File Read via Command Line Utilities
+* Potential Sudo Hijacking Detected
 * Potential Suspicious Clipboard Activity Detected
 * Query Registry using Built-in Tools
+* SSH Authorized Keys File Modification
+* Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
+* Sudoers File Modification
+* Suspicious JAVA Child Process
 * Suspicious Microsoft 365 Mail Access by ClientAppId
+* Suspicious Modprobe File Event
 * Suspicious Network Activity to the Internet by Previously Unknown Executable
 * Suspicious PowerShell Engine ImageLoad
+* Suspicious Sysctl File Event
 * Suspicious System Commands Executed by Previously Unknown Executable
 * Svchost spawning Cmd
 * Unusual Discovery Activity by User
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 
-### Unsupported rule type: threshold (22)
+### Unsupported rule type: threshold (23)
 
-22 rules:
+23 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
@@ -179,6 +194,7 @@ Rules version: 8.8.12
 * Potential DNS Tunneling via NsLookup
 * Potential LSASS Memory Dump via PssCaptureSnapShot
 * Potential Network Scan Detected
+* Potential Network Scan Executed From Host
 * Potential Network Sweep Detected
 * Potential Password Spraying of Microsoft 365 User Accounts
 * Potential SYN-Based Network Scan Detected
@@ -207,9 +223,9 @@ Rules version: 8.8.12
 
 ## Generation errors
 
-### Field type solver: wildcard (53)
+### Field type solver: wildcard (57)
 
-53 rules:
+57 rules:
 * Adding Hidden File Attribute via Attrib
 * Apple Scripting Execution with Administrator Privileges
 * Attempt to Mount SMB Share via Command Line
@@ -220,8 +236,10 @@ Rules version: 8.8.12
 * Control Panel Process with Unusual Arguments
 * Creation of Hidden Login Item via Apple Script
 * DNS-over-HTTPS Enabled via Registry
+* Delayed Execution via Ping
 * Disabling User Account Control via Registry Modification
 * Encoded Executable Stored in the Registry
+* Execution via Microsoft DotNet ClickOnce Host
 * Exporting Exchange Mailbox via PowerShell
 * Full User-Mode Dumps Enabled System-Wide
 * Host Files System Changes via Windows Subsystem for Linux
@@ -246,6 +264,7 @@ Rules version: 8.8.12
 * SIP Provider Modification
 * SUNBURST Command and Control Activity
 * Scheduled Tasks AT Command Enabled
+* Security Software Discovery via Grep
 * Service Disabled via Registry Modification
 * SolarWinds Process Disabling Services via Registry
 * Suspicious Browser Child Process
@@ -262,19 +281,34 @@ Rules version: 8.8.12
 * Unusual Print Spooler Child Process
 * Virtual Private Network Connection Attempt
 * Windows Defender Disabled via Registry Modification
+* Windows Installer with Suspicious Properties
 * Windows Subsystem for Linux Enabled via Dism Utility
 
-### Root with too many branches (limit: 10000) (8)
+### Root with too many branches (limit: 10000) (9)
 
-8 rules:
+9 rules:
 * Execution from Unusual Directory - Command Line
 * Potential Linux Ransomware Note Creation Detected
 * Potential Masquerading as System32 DLL
 * Potential Masquerading as System32 Executable
 * Potential Pspy Process Monitoring Detected
 * Potential Reverse Shell via Suspicious Binary
+* Potential Reverse Shell via Suspicious Child Process
 * Startup or Run Key Registry Modification
 * Suspicious File Changes Activity Detected
+
+### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (9)
+
+9 rules:
+* AdminSDHolder SDProp Exclusion Added
+* Image File Execution Options Injection
+* Ingress Transfer via Windows BITS
+* Memory Dump File with Unusual Extension
+* NullSessionPipe Registry Modification
+* Potential curl CVE-2023-38545 Exploitation
+* Renamed Utility Executed with Short Program Name
+* Suspicious Execution via MSIEXEC
+* Suspicious Process Access via Direct System Call
 
 ### Unsupported function: match (8)
 
@@ -288,22 +322,12 @@ Rules version: 8.8.12
 * Suspicious Execution via Microsoft Office Add-Ins
 * Suspicious Service was Installed in the System
 
-### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (7)
+### Field type solver: match_only_text (4)
 
-7 rules:
-* AdminSDHolder SDProp Exclusion Added
-* Image File Execution Options Injection
-* Ingress Transfer via Windows BITS
-* NullSessionPipe Registry Modification
-* Potential curl CVE-2023-38545 Exploitation
-* Renamed Utility Executed with Short Program Name
-* Suspicious Process Access via Direct System Call
-
-### Field type solver: match_only_text (3)
-
-3 rules:
+4 rules:
 * Account Configured with Never-Expiring Password
 * Kerberos Pre-authentication Disabled for User
+* Tainted Kernel Module Load
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Root without branches (3)
@@ -332,12 +356,6 @@ Rules version: 8.8.12
 * Potential Successful Linux FTP Brute Force Attack Detected
 * Potential Successful Linux RDP Brute Force Attack Detected
 
-### Unsolvable constraints: event.category & event.type (empty intersection) (2)
-
-2 rules:
-* Potential Sudo Hijacking Detected
-* Suspicious File Creation in /etc for Persistence
-
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)
 
 2 rules:
@@ -349,6 +367,12 @@ Rules version: 8.8.12
 2 rules:
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
+
+### Unsupported argument type(s): <class 'eql.ast.Field'> (2)
+
+2 rules:
+* External User Added to Google Workspace Group
+* Image Loaded with Invalid Signature
 
 ### Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)
 
@@ -365,6 +389,11 @@ Rules version: 8.8.12
 
 1 rules:
 * Process Discovery via Built-In Applications
+
+### Unsolvable constraints: event.category & event.type (empty intersection) (1)
+
+1 rules:
+* Suspicious File Creation in /etc for Persistence
 
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)
 
@@ -385,6 +414,11 @@ Rules version: 8.8.12
 
 1 rules:
 * SMTP on Port 26/TCP
+
+### Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)
+
+1 rules:
+* Archive File with Unusual Extension
 
 ### Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)
 
@@ -481,10 +515,25 @@ Rules version: 8.8.12
 1 rules:
 * PowerShell Suspicious Script with Audio Capture Capabilities
 
+### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (1)
+
+1 rules:
+* Execution via MS VisualStudio Pre/Post Build Events
+
+### Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)
+
+1 rules:
+* Potential Privilege Escalation via InstallerFileTakeOver
+
 ### Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)
 
 1 rules:
 * Suspicious Microsoft Diagnostics Wizard Execution
+
+### Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)
+
+1 rules:
+* Potential Masquerading as Browser Process
 
 ### Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)
 
@@ -540,11 +589,6 @@ Rules version: 8.8.12
 
 1 rules:
 * Potential Privilege Escalation via UID INT_MAX Bug Detected
-
-### Unsupported argument type(s): <class 'eql.ast.Field'> (1)
-
-1 rules:
-* External User Added to Google Workspace Group
 
 ### Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)
 
