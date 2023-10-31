@@ -210,18 +210,18 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         },
         "8.8": {
             "ack_no_signals": 4,
-            "ack_too_few_signals": 11,
-            "ack_unsuccessful_with_signals": 10,
+            "ack_too_few_signals": 10,
+            "ack_unsuccessful_with_signals": 9,
         },
         "8.9": {
             "ack_no_signals": 2,
-            "ack_too_few_signals": 11,
-            "ack_unsuccessful_with_signals": 10,
+            "ack_too_few_signals": 10,
+            "ack_unsuccessful_with_signals": 9,
         },
         "8.10": {
             "ack_no_signals": 2,
-            "ack_too_few_signals": 11,
-            "ack_unsuccessful_with_signals": 10,
+            "ack_too_few_signals": 10,
+            "ack_unsuccessful_with_signals": 9,
         },
     }
 
