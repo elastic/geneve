@@ -33,7 +33,7 @@ func GetVersion(Py py.Py) (string, error) {
 	}
 
 	var s_version string
-	err = Py.Go_FromObject(o_version, &s_version)
+	err = Py.GoFromObject(o_version, &s_version)
 	if err != nil {
 		return "", err
 	}
@@ -54,6 +54,6 @@ func GetPaths(Py py.Py) (paths map[string]string, err error) {
 		return nil, err
 	}
 
-	err = Py.Go_FromObject(o_paths, &paths)
+	err = Py.GoFromObject(o_paths, &paths)
 	return
 }

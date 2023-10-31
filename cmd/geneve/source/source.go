@@ -108,7 +108,7 @@ func (source *Source) AddRules(rule_params []RuleParams) (num int, e error) {
 				o_root, err := source.se.AddRule(rule, len(source.rules))
 				defer Py.DecRef(o_root)
 				if err != nil {
-					var py_err py.Error
+					var py_err py.GoError
 					if errors.As(err, &py_err) {
 						if py_err.Type == "NotImplementedError" || py_err.Value == "Root without branches" {
 							logger.Printf("Ignoring rule: %s: %s", rule.RuleId, py_err.Value)
@@ -146,7 +146,7 @@ func (source *Source) Mappings() (mappings string, e error) {
 			return
 		}
 
-		e = Py.Go_FromObject(o_mappings_json, &mappings)
+		e = Py.GoFromObject(o_mappings_json, &mappings)
 	}
 	<-done
 	return
@@ -164,7 +164,13 @@ func (source *Source) Emit(count int) (docs []Document, e error) {
 			return
 		}
 
-		docs = make([]Document, 0, Py.Object_Length(o_docs))
+		docs_count, err := Py.Object_Length(o_docs)
+		if err != nil {
+			e = err
+			return
+		}
+
+		docs = make([]Document, 0, docs_count)
 		for i := 0; i < cap(docs); i++ {
 			o_event, err := Py.Sequence_GetItem(o_docs, i)
 			defer Py.DecRef(o_event)
@@ -191,7 +197,7 @@ func (source *Source) Emit(count int) (docs []Document, e error) {
 				return
 			}
 			var s_doc string
-			err = Py.Go_FromObject(o_doc_json, &s_doc)
+			err = Py.GoFromObject(o_doc_json, &s_doc)
 			if err != nil {
 				e = err
 				return
@@ -199,7 +205,7 @@ func (source *Source) Emit(count int) (docs []Document, e error) {
 			var rule *geneve.Rule
 			if o_meta != py.None {
 				var index int
-				err = Py.Go_FromObject(o_meta, &index)
+				err = Py.GoFromObject(o_meta, &index)
 				if err != nil {
 					e = err
 					return
