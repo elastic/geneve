@@ -27,8 +27,7 @@ def depth_first_keys(d, path=None):
     for k, v in d.items():
         p = path + (k,)
         if isinstance(v, dict):
-            for k in depth_first_keys(v, p):
-                yield k
+            yield from depth_first_keys(v, p)
         else:
             yield ".".join(p)
 
@@ -38,8 +37,7 @@ def depth_first_items(d, path=None):
     for k, v in d.items():
         p = path + (k,)
         if isinstance(v, dict):
-            for k, v in depth_first_items(v, p):
-                yield k, v
+            yield from depth_first_items(v, p)
         else:
             yield ".".join(p), v
 
