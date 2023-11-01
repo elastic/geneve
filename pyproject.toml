@@ -21,7 +21,7 @@ classifiers = [
 requires-python = ">=3.8"
 dependencies = [
   "elasticsearch>=8.2.0",
-  "eql>=0.9.18",
+  "eql==0.9.19",
   "faker",
   "faker-datasets",
   "infinite-sets",
