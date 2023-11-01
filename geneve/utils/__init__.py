@@ -140,8 +140,7 @@ def load_integration_schema(name, kibana_version):
             except KeyError:
                 fields = tree["field"]
             for tree in fields:
-                for field, schema in field_schema(tree, path):
-                    yield field, schema
+                yield from field_schema(tree, path)
         else:
             schema = {"type": tree["type"]}
             if is_array(tree):
