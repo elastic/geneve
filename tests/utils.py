@@ -331,7 +331,7 @@ class SignalsTestCase:
                 rule[".test_private"]["doc_count"] = doc_count
         return (bulk, se.mappings())
 
-    def load_rules_and_docs(self, rules, asts, chunk_size=200):
+    def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=200, rules_chunk_size=50):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)
 
         if verbose:
@@ -374,9 +374,9 @@ class SignalsTestCase:
                 docs_to_go = len(docs)
                 sys.stderr.write(f"\n  Loading documents: {docs_to_go} ")
                 sys.stderr.flush()
-                num_chunks = math.ceil(len(docs) / chunk_size)
+                num_chunks = math.ceil(len(docs) / docs_chunk_size)
                 prev_report_chunk = 0
-            for i, chunk in enumerate(batched(docs, chunk_size)):
+            for i, chunk in enumerate(batched(docs, docs_chunk_size)):
                 kwargs = {
                     "operations": "\n".join(chunk),
                 }
@@ -400,12 +400,12 @@ class SignalsTestCase:
             sys.stderr.write(f"\n  Loading rules: {rules_to_go} ")
             sys.stderr.flush()
         pending = {}
-        for chunk in batched(rules, 100):
+        for chunk in batched(rules, rules_chunk_size):
             ret = self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
-            for rule, rule_id in zip(chunk, ret):
+            for rule, (rule_id, created_rule) in zip(chunk, ret):
                 rule["id"] = rule_id
                 if rule["enabled"]:
-                    pending[rule_id] = ret[rule_id]
+                    pending[rule_id] = created_rule
             if verbose:
                 rules_to_go -= len(chunk)
                 sys.stderr.write(f"{rules_to_go} ")
