@@ -48,6 +48,15 @@ class Kibana:
         elif ca_certs:
             self.session.verify = ca_certs
 
+        retry_strategy = requests.packages.urllib3.util.retry.Retry(
+            total=3,
+            allowed_methods=["HEAD", "GET", "OPTIONS"],
+        )
+
+        adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
+        self.session.mount("https://", adapter)
+        self.session.mount("http://", adapter)
+
         if cloud_id:
             import base64
 
