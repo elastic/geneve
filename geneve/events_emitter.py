@@ -44,7 +44,7 @@ Event = namedtuple("Event", ["meta", "doc"])
 def ast_from_eql_query(query):
     import eql
 
-    with eql.parser.elasticsearch_syntax, eql.parser.ignore_missing_functions, eql.parser.allow_runs, eql.parser.allow_sample:
+    with eql.parser.allow_negation, eql.parser.allow_runs, eql.parser.allow_sample, eql.parser.elasticsearch_syntax, eql.parser.ignore_missing_functions:  # noqa: E501
         return eql.parse_query(query)
 
 

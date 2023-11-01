@@ -166,8 +166,11 @@ def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool, max_branches: int) ->
         raise NotImplementedError(f"Negation of {type(node)} is not supported")
     if any(not isinstance(value, eql.ast.Field) for value in node.join_values):
         raise NotImplementedError(f"Unsupported join values: {node.join_values}")
-    if node.fork:
-        raise NotImplementedError(f"Unsupported fork: {node.fork}")
+    if node.data:
+        if node.data.get("fork", False):
+            raise NotImplementedError(f"Unsupported fork: {node.data}")
+        if node.data.get("is_negated", False):
+            raise NotImplementedError(f"Unsupported is_negated: {node.data}")
     join_fields = [field.render() for field in node.join_values]
     return [[(doc, join_fields) for doc in branch] for branch in collect_constraints(node.query, negate, max_branches)]
 
