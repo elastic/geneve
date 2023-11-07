@@ -91,6 +91,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - stack-version: 8.11.0
+            schema-uri: "./etc/ecs-v8.11.0.tar.gz"
           - stack-version: 8.10.1
             schema-uri: "./etc/ecs-v8.10.0.tar.gz"
           - stack-version: 8.9.0
