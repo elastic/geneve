@@ -5,13 +5,13 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.11.3
+Rules version: 8.11.4
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (44)](#unsupported-rule-type-new_terms-44)
-      1. [Unsupported rule type: threshold (22)](#unsupported-rule-type-threshold-22)
+      1. [Unsupported rule type: new_terms (46)](#unsupported-rule-type-new_terms-46)
+      1. [Unsupported rule type: threshold (26)](#unsupported-rule-type-threshold-26)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
@@ -28,6 +28,7 @@ Rules version: 8.11.3
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (2)](#unsupported-argument-types-class-eqlastfield-2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
+      1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)](#unsolvable-constraints-eventaction-excluded-by-stringsexec-exec-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
@@ -153,9 +154,9 @@ Rules version: 8.11.3
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (44)
+### Unsupported rule type: new_terms (46)
 
-44 rules:
+46 rules:
 
 * Abnormal Process ID or Lock File Created
 * Cron Job Created or Changed by Previously Unknown Process
@@ -165,10 +166,12 @@ Rules version: 8.11.3
 * Enumeration of Privileged Local Groups Membership
 * Execution of an Unsigned Service
 * File Permission Modification in Writable Directory
+* First Occurrence of Okta User Session Started via Proxy
 * First Time Seen AWS Secret Value Accessed in Secrets Manager
 * First Time Seen Commonly Abused Remote Access Tool Execution
 * First Time Seen Driver Loaded
 * First Time Seen Google Workspace OAuth Login from Third-Party Application
+* First Time Seen NewCredentials Logon Process
 * First Time Seen Removable Device
 * FirstTime Seen Account Performing DCSync
 * Microsoft Build Engine Started an Unusual Process
@@ -202,9 +205,9 @@ Rules version: 8.11.3
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 
-### Unsupported rule type: threshold (22)
+### Unsupported rule type: threshold (26)
 
-22 rules:
+26 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
@@ -216,9 +219,13 @@ Rules version: 8.11.3
 * High Number of Process and/or Service Terminations
 * Multiple Alerts Involving a User
 * Multiple Alerts in Different ATT&CK Tactics on a Single Host
+* Multiple Okta Client Addresses for a Single User Session
+* Multiple Okta Sessions Detected for a Single User
+* Multiple Okta Users with the Same Device Token Hash
 * My First Rule
 * O365 Excessive Single Sign-On Logon Errors
 * Okta Brute Force or Password Spraying Attack
+* Okta User Sessions Started from Different Geolocations
 * Potential LSASS Memory Dump via PssCaptureSnapShot
 * Potential Network Scan Detected
 * Potential Network Scan Executed From Host
@@ -409,6 +416,11 @@ Rules version: 8.11.3
 2 rules:
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
+
+### <class 'eql.ast.SubqueryBy'> (1)
+
+1 rules:
+* Potential Okta MFA Bombing via Push Notifications
 
 ### Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)
 
