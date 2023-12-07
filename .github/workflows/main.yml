@@ -172,7 +172,7 @@ jobs:
       - name: Start Elastic Stack ${{ matrix.stack-version }}
         env:
           TEST_STACK_VERSION: ${{ matrix.stack-version }}
-          # TEST_ELASTICSEARCH_PROXY: "http://host.docker.internal:9280"
+          TEST_ELASTICSEARCH_PROXY: "http://host.docker.internal:9280"
         run: make up
 
       - name: Run online tests
