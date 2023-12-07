@@ -65,7 +65,7 @@ func del(name string) bool {
 func fieldSchemaToObject(Py py.Py, a interface{}) (py.Object, error) {
 	f, ok := a.(FieldSchema)
 	if !ok {
-		return py.Object{}, Py.Go_ErrorConvToObject(a)
+		return py.Object{}, Py.GoErrorConvToObject(a, py.TypeObject{})
 	}
 	o_dict, err := Py.Dict_New()
 	defer Py.DecRef(o_dict)
@@ -88,7 +88,7 @@ func fieldSchemaToObject(Py py.Py, a interface{}) (py.Object, error) {
 }
 
 func init() {
-	c := py.ConvConf{
+	c := py.GoConvConf{
 		TypeOf:   FieldSchema{},
 		ToObject: fieldSchemaToObject,
 	}

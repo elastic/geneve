@@ -78,7 +78,7 @@ func (se *SourceEvents) AddRule(rule Rule, meta any) (py.Object, error) {
 	if meta == nil {
 		meta = se.py.NewRef(py.None)
 	}
-	return se.py.Object_Call(o_add_rule, py.Args{rule}, py.KwArgs{"meta": meta})
+	return se.py.Object_Call(o_add_rule, py.GoArgs{rule}, py.GoKwArgs{"meta": meta})
 }
 
 func (se *SourceEvents) Mappings() (py.Object, error) {
@@ -91,11 +91,11 @@ func (se *SourceEvents) Emit(count int) (py.Object, error) {
 	if err != nil {
 		return py.Object{}, err
 	}
-	return se.py.Object_Call(o_emit, py.Args{}, py.KwArgs{"count": count})
+	return se.py.Object_Call(o_emit, py.GoArgs{}, py.GoKwArgs{"count": count})
 }
 
 func (se *SourceEvents) JsonDumps(o_doc py.Object, sortKeys bool) (py.Object, error) {
-	return se.py.Object_Call(se.o_json_dumps, py.Args{o_doc}, py.KwArgs{"sort_keys": true})
+	return se.py.Object_Call(se.o_json_dumps, py.GoArgs{o_doc}, py.GoKwArgs{"sort_keys": true})
 }
 
 type Rule struct {
@@ -152,7 +152,7 @@ func ImportModule(Py py.Py) (py.Object, error) {
 	}
 
 	var first string
-	err = Py.Go_FromObject(o_first, &first)
+	err = Py.GoFromObject(o_first, &first)
 	if err != nil {
 		return py.Object{}, err
 	}
@@ -177,7 +177,7 @@ func ImportModule(Py py.Py) (py.Object, error) {
 	}
 
 	var module_version string
-	err = Py.Go_FromObject(o_geneve_version, &module_version)
+	err = Py.GoFromObject(o_geneve_version, &module_version)
 	if err != nil {
 		return py.Object{}, err
 	}
@@ -217,7 +217,7 @@ func ModuleCheck() (e error) {
 }
 
 func init() {
-	c := py.ConvConf{
+	c := py.GoConvConf{
 		TypeOf:   Rule{},
 		ToObject: ruleToObject,
 	}

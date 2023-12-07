@@ -18,31 +18,30 @@
 package python
 
 import (
-	"fmt"
-
 	"gitlab.com/pygolo/py"
 )
 
 var Monitor chan<- func(py.Py)
 
 func StartMonitor() error {
-	Py := py.Py{}
+	ret := make(chan error)
 
-	// fail if there is already one interpreter (only one at time is possible)
-	if Py.IsInitialized() {
-		return fmt.Errorf("The Python interpreter is already initialized")
-	}
-
-	// we'll not call Py_Finalize() at the end, it often hangs
-	Py.Initialize()
-
-	requests := make(chan func(py.Py))
 	go func() {
+		Py, err := py.GoEmbed()
+		defer Py.Close()
+		if err != nil {
+			ret <- err
+			return
+		}
+
+		requests := make(chan func(py.Py))
+		Monitor = requests
+		ret <- nil
+
 		for req := range requests {
 			req(Py)
 		}
 	}()
 
-	Monitor = requests
-	return nil
+	return <-ret
 }

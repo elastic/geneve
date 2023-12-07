@@ -40,8 +40,8 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Show various version related info",
 	Run: func(cmd *cobra.Command, args []string) {
-		Py := py.Py{}
-		Py.Initialize()
+		Py, err := py.GoEmbed()
+		exitIfError(err)
 
 		fmt.Printf("Geneve:\n  version: %s\n\n", geneve.Version)
 		fmt.Println("Geneve Python module:")
@@ -57,7 +57,7 @@ var versionCmd = &cobra.Command{
 			defer Py.DecRef(o_geneve_version)
 			exitIfError(err)
 			var s_geneve_version string
-			err = Py.Go_FromObject(o_geneve_version, &s_geneve_version)
+			err = Py.GoFromObject(o_geneve_version, &s_geneve_version)
 			exitIfError(err)
 			fmt.Printf("  version: %s\n", s_geneve_version)
 
@@ -65,7 +65,7 @@ var versionCmd = &cobra.Command{
 			defer Py.DecRef(o_geneve_path)
 			exitIfError(err)
 			var s_geneve_path string
-			err = Py.Go_FromObject(o_geneve_path, &s_geneve_path)
+			err = Py.GoFromObject(o_geneve_path, &s_geneve_path)
 			exitIfError(err)
 			fmt.Printf("  path: %s\n", filepath.Dir(s_geneve_path))
 
