@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.11.4
+Rules version: 8.11.5
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (46)](#unsupported-rule-type-new_terms-46)
+      1. [Unsupported rule type: new_terms (49)](#unsupported-rule-type-new_terms-49)
       1. [Unsupported rule type: threshold (26)](#unsupported-rule-type-threshold-26)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
@@ -18,17 +18,18 @@ Rules version: 8.11.4
       1. [Field type solver: wildcard (57)](#field-type-solver-wildcard-57)
       1. [Root with too many branches (limit: 10000) (11)](#root-with-too-many-branches-limit-10000-11)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (9)](#unsupported-lhs-type-class-eqlastfunctioncall-9)
-      1. [Unsupported function: match (8)](#unsupported-function-match-8)
-      1. [Field type solver: match_only_text (5)](#field-type-solver-match_only_text-5)
+      1. [Unsupported function: match (9)](#unsupported-function-match-9)
+      1. [Field type solver: match_only_text (6)](#field-type-solver-match_only_text-6)
       1. [Root without branches (3)](#root-without-branches-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
+      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (3)](#unsupported-argument-types-class-eqlastfield-3)
       1. [<class 'eql.ast.Sample'> (2)](#class-eqlastsample-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (2)](#unsupported-argument-types-class-eqlastfield-2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
+      1. [Not an IP network: localhost (1)](#not-an-ip-network-localhost-1)
       1. [Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)](#unsolvable-constraints-eventaction-excluded-by-stringsexec-exec-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
@@ -154,9 +155,9 @@ Rules version: 8.11.4
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (46)
+### Unsupported rule type: new_terms (49)
 
-46 rules:
+49 rules:
 
 * Abnormal Process ID or Lock File Created
 * Cron Job Created or Changed by Previously Unknown Process
@@ -184,11 +185,13 @@ Rules version: 8.11.4
 * Potential Pass-the-Hash (PtH) Attempt
 * Potential Persistence Through MOTD File Creation Detected
 * Potential Persistence Through Run Control Detected
+* Potential Persistence Through Systemd-udevd
 * Potential Persistence Through init.d Detected
 * Potential Shadow File Read via Command Line Utilities
 * Potential Sudo Hijacking Detected
 * Potential Suspicious Clipboard Activity Detected
 * Query Registry using Built-in Tools
+* Rare SMB Connection to the Internet
 * SSH Authorized Keys File Modification
 * Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
@@ -201,6 +204,7 @@ Rules version: 8.11.4
 * Suspicious Sysctl File Event
 * Suspicious System Commands Executed by Previously Unknown Executable
 * Svchost spawning Cmd
+* UID Elevation from Previously Unknown Executable
 * Unusual Discovery Activity by User
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
@@ -221,7 +225,7 @@ Rules version: 8.11.4
 * Multiple Alerts in Different ATT&CK Tactics on a Single Host
 * Multiple Okta Client Addresses for a Single User Session
 * Multiple Okta Sessions Detected for a Single User
-* Multiple Okta Users with the Same Device Token Hash
+* Multiple Okta User Auth Events with Same Device Token Hash Behind a Proxy
 * My First Rule
 * O365 Excessive Single Sign-On Logon Errors
 * Okta Brute Force or Password Spraying Attack
@@ -346,25 +350,27 @@ Rules version: 8.11.4
 * Suspicious Execution via MSIEXEC
 * Suspicious Process Access via Direct System Call
 
-### Unsupported function: match (8)
+### Unsupported function: match (9)
 
-8 rules:
+9 rules:
 * Creation of Hidden Files and Directories via CommandLine
 * Executable File Creation with Multiple Extensions
 * Masquerading Space After Filename
 * Potential Credential Access via Windows Utilities
 * Potential Exploitation of an Unquoted Service Path Vulnerability
+* Process Created with a Duplicated Token
 * Process Started from Process ID (PID) File
 * Suspicious Execution via Microsoft Office Add-Ins
 * Suspicious Service was Installed in the System
 
-### Field type solver: match_only_text (5)
+### Field type solver: match_only_text (6)
 
-5 rules:
+6 rules:
 * Account Configured with Never-Expiring Password
 * Kerberos Pre-authentication Disabled for User
 * Segfault Detected
 * Tainted Kernel Module Load
+* Tainted Out-Of-Tree Kernel Module Load
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Root without branches (3)
@@ -380,6 +386,13 @@ Rules version: 8.11.4
 * Downloaded Shortcut Files
 * Downloaded URL Files
 * File with Suspicious Extension Downloaded
+
+### Unsupported argument type(s): <class 'eql.ast.Field'> (3)
+
+3 rules:
+* External User Added to Google Workspace Group
+* Image Loaded with Invalid Signature
+* Interactive Logon by an Unusual Process
 
 ### <class 'eql.ast.Sample'> (2)
 
@@ -405,12 +418,6 @@ Rules version: 8.11.4
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
 
-### Unsupported argument type(s): <class 'eql.ast.Field'> (2)
-
-2 rules:
-* External User Added to Google Workspace Group
-* Image Loaded with Invalid Signature
-
 ### Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)
 
 2 rules:
@@ -421,6 +428,11 @@ Rules version: 8.11.4
 
 1 rules:
 * Potential Okta MFA Bombing via Push Notifications
+
+### Not an IP network: localhost (1)
+
+1 rules:
+* MsBuild Making Network Connections
 
 ### Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)
 
