@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.8.14
+Rules version: 8.8.15
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (47)](#unsupported-rule-type-machine_learning-47)
-      1. [Unsupported rule type: new_terms (44)](#unsupported-rule-type-new_terms-44)
+      1. [Unsupported rule type: new_terms (45)](#unsupported-rule-type-new_terms-45)
       1. [Unsupported rule type: threshold (22)](#unsupported-rule-type-threshold-22)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
@@ -126,9 +126,9 @@ Rules version: 8.8.14
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (44)
+### Unsupported rule type: new_terms (45)
 
-44 rules:
+45 rules:
 
 * Abnormal Process ID or Lock File Created
 * Cron Job Created or Changed by Previously Unknown Process
@@ -142,6 +142,7 @@ Rules version: 8.8.14
 * First Time Seen Commonly Abused Remote Access Tool Execution
 * First Time Seen Driver Loaded
 * First Time Seen Google Workspace OAuth Login from Third-Party Application
+* First Time Seen NewCredentials Logon Process
 * First Time Seen Removable Device
 * FirstTime Seen Account Performing DCSync
 * Microsoft Build Engine Started an Unusual Process
