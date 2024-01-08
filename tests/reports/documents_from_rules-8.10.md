@@ -5,7 +5,7 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.10.8
+Rules version: 8.10.9
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
@@ -24,11 +24,11 @@ Rules version: 8.10.8
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (3)](#unsupported-argument-types-class-eqlastfield-3)
       1. [<class 'eql.ast.Sample'> (2)](#class-eqlastsample-2)
+      1. [<class 'eql.ast.SubqueryBy'> (2)](#class-eqlastsubqueryby-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
-      1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Not an IP network: localhost (1)](#not-an-ip-network-localhost-1)
       1. [Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)](#unsolvable-constraints-eventaction-excluded-by-stringsexec-exec-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
@@ -75,6 +75,7 @@ Rules version: 8.10.8
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
+      1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
 
@@ -400,6 +401,12 @@ Rules version: 8.10.8
 * Potential Meterpreter Reverse Shell
 * Potential Reverse Shell via UDP
 
+### <class 'eql.ast.SubqueryBy'> (2)
+
+2 rules:
+* Direct Outbound SMB Connection
+* Potential Okta MFA Bombing via Push Notifications
+
 ### Pipes are unsupported (2)
 
 2 rules:
@@ -423,11 +430,6 @@ Rules version: 8.10.8
 2 rules:
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
-
-### <class 'eql.ast.SubqueryBy'> (1)
-
-1 rules:
-* Potential Okta MFA Bombing via Push Notifications
 
 ### Not an IP network: localhost (1)
 
@@ -658,3 +660,8 @@ Rules version: 8.10.8
 
 1 rules:
 * Remote Computer Account DnsHostName Update
+
+### Unsupported is_negated: {'is_negated': True} (1)
+
+1 rules:
+* MFA Deactivation with no Re-Activation for Okta User Account
