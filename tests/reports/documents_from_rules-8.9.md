@@ -5,7 +5,7 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.9.11
+Rules version: 8.9.12
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
@@ -28,6 +28,7 @@ Rules version: 8.9.11
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
+      1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Not an IP network: localhost (1)](#not-an-ip-network-localhost-1)
       1. [Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)](#unsolvable-constraints-eventaction-excluded-by-stringsexec-exec-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
@@ -417,6 +418,11 @@ Rules version: 8.9.11
 2 rules:
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
+
+### <class 'eql.ast.SubqueryBy'> (1)
+
+1 rules:
+* Direct Outbound SMB Connection
 
 ### Not an IP network: localhost (1)
 
