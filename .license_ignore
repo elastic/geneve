@@ -9,6 +9,7 @@
 *.zip
 .gitignore
 .license_ignore
+
 LICENSE.txt
 Makefile
 catalog-info.yaml
@@ -21,6 +22,7 @@ geneve/solver/datasets/*
 scripts/generate-alerts.sh
 scripts/generate-network-events.sh
 scripts/test-stacks.sh
+scripts/test-qaf-stack.sh
 
 tests/deployment.json
 tests/data/config_elastic-package.yaml
