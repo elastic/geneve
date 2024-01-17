@@ -233,6 +233,12 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
             "ack_too_few_signals": 8,
             "ack_unsuccessful_with_signals": 7,
         },
+        "8.13": {
+            "ack_failed": 1,
+            "ack_no_signals": 2,
+            "ack_too_few_signals": 7,
+            "ack_unsuccessful_with_signals": 6,
+        },
     }
 
     def test_rules(self):
