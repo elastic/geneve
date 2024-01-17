@@ -232,7 +232,7 @@ class OnlineTestCase:
     def get_version(cls):
         import semver
 
-        return semver.VersionInfo.parse(cls.es.info()["version"]["number"])
+        return semver.VersionInfo.parse(cls.kb.status()["version"]["number"])
 
     @classmethod
     def setUpClass(cls):
