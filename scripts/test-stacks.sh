@@ -135,6 +135,21 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 
 	ITERATION_FAILURE=0
 	for MAJOR_MINOR in ${STACK_VERSIONS:-$DEFAULT_STACK_VERSIONS}; do
+		if [ "$MAJOR_MINOR" == "qaf" ]; then
+			PROJECT=`qaf elastic-cloud projects describe --show-credentials --as-json`
+
+			TEST_API_KEY=`echo $PROJECT | jq -r '.credentials.api_key'`
+			TEST_ELASTICSEARCH_URL=`echo $PROJECT | jq -r '.elasticsearch.url'`
+			TEST_KIBANA_URL=`echo $PROJECT | jq -r '.kibana.url'`
+
+			TEST_STACK_VERSION=
+			TEST_SCHEMA_URI=
+			TEST_DETECTION_RULES_URI=
+			TEST_ELASTICSEARCH_PROXY=
+
+			MAJOR_MINOR=custom
+		fi
+
 		if [ "$MAJOR_MINOR" == "custom" ]; then
 			echo TEST_ELASTICSEARCH_URL: $TEST_ELASTICSEARCH_URL
 			echo TEST_KIBANA_URL: $TEST_KIBANA_URL
