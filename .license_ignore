@@ -17,6 +17,7 @@ requirements.txt
 runtime.txt
 setup.cfg
 
+docs/on-the-rocks/**/*.log
 geneve/solver/datasets/*
 
 scripts/generate-alerts.sh

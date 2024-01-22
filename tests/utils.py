@@ -232,7 +232,7 @@ class OnlineTestCase:
     def get_version(cls):
         import semver
 
-        return semver.VersionInfo.parse(cls.es.info()["version"]["number"])
+        return semver.VersionInfo.parse(cls.kb.status()["version"]["number"])
 
     @classmethod
     def setUpClass(cls):
@@ -305,8 +305,17 @@ class SignalsTestCase:
         se = SourceEvents(schema)
         se.stack_version = self.get_version()
 
+        if verbose and verbose <= 2:
+            sys.stderr.write("\n  Parsing rules and creating documents: ")
+            sys.stderr.flush()
+
+        ok_rules = 0
         bulk = []
         for rule, ast in zip(rules, asts):
+            if verbose and verbose <= 2 and ok_rules % 100 == 0:
+                sys.stderr.write(f"{ok_rules}/{len(bulk)} ")
+                sys.stderr.flush()
+
             with self.subTest(rule["query"]):
                 try:
                     root = se.add_ast(ast, meta={"index": rule["index"][0]})
@@ -317,6 +326,7 @@ class SignalsTestCase:
                         sys.stderr.write(f"{str(e)}\n")
                         sys.stderr.flush()
                     continue
+                ok_rules += 1
 
                 doc_count = 0
                 for event in itertools.chain(*events):
@@ -329,6 +339,11 @@ class SignalsTestCase:
 
                 rule[".test_private"]["branch_count"] = len(root) * self.multiplying_factor
                 rule[".test_private"]["doc_count"] = doc_count
+
+        if verbose and verbose <= 2:
+            sys.stderr.write(f"{ok_rules}/{len(bulk)} ")
+            sys.stderr.flush()
+
         return (bulk, se.mappings())
 
     def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=200, rules_chunk_size=50):
