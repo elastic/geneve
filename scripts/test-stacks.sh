@@ -86,7 +86,7 @@ iteration_banner()
 	fi
 
 	if [ $ITERATIONS -lt 0 ] || [ $ITERATIONS -gt 1 ]; then
-		if [ $EXIT_STATUS -eq 0 ]; then
+		if [ $EXIT_STATUS -eq 0 ] && [ $ITERATION_FAILURE -eq 0 ]; then
 			echo "[32m========================================[0m - $STATS - [32m========================================[0m"
 		else
 			echo "[31m>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[0m - $STATS - [31m<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<[0m"
@@ -128,6 +128,7 @@ echo TESTS: ${TESTS:-$DEFAULT_TESTS}
 echo
 
 ITERATION=0
+ITERATION_FAILURE=0
 TOTAL_FAILURES=0
 FAILED_ITERATIONS=0
 while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
@@ -204,6 +205,7 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 		fi
 
 		for NEW_MD in `find tests/reports -name \*.new.md`; do
+			cp $NEW_MD ${NEW_MD/.new.md/-$ITERATION.md}
 			mv $NEW_MD ${NEW_MD/.new.md/.md}
 		done
 
