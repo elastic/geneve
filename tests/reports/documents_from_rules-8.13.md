@@ -5,18 +5,18 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.12.2
+Rules version: 8.12.3
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (49)](#unsupported-rule-type-new_terms-49)
-      1. [Unsupported rule type: threshold (26)](#unsupported-rule-type-threshold-26)
+      1. [Unsupported rule type: new_terms (60)](#unsupported-rule-type-new_terms-60)
+      1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: wildcard (57)](#field-type-solver-wildcard-57)
-      1. [Root with too many branches (limit: 10000) (11)](#root-with-too-many-branches-limit-10000-11)
+      1. [Field type solver: wildcard (61)](#field-type-solver-wildcard-61)
+      1. [Root with too many branches (limit: 10000) (13)](#root-with-too-many-branches-limit-10000-13)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (9)](#unsupported-lhs-type-class-eqlastfunctioncall-9)
       1. [Unsupported function: match (9)](#unsupported-function-match-9)
       1. [Field type solver: match_only_text (6)](#field-type-solver-match_only_text-6)
@@ -27,9 +27,9 @@ Rules version: 8.12.2
       1. [<class 'eql.ast.SubqueryBy'> (2)](#class-eqlastsubqueryby-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
-      1. [Not an IP network: localhost (1)](#not-an-ip-network-localhost-1)
       1. [Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)](#unsolvable-constraints-eventaction-excluded-by-stringsexec-exec-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
@@ -56,15 +56,15 @@ Rules version: 8.12.2
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsedgewebview2exe-msedgewebview2exe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-1)
       1. [Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)](#unsolvable-constraints-processparentargs-excluded-by-stringswdisystemhost-wdisystemhost-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'dllhost.exe'}): ('dllhost.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsdllhostexe-dllhostexe-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsrundll32exe-rundll32exe-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'winword.exe'}): ('winword.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringswinwordexe-winwordexe-1)
+      1. [Unsolvable constraints: process.parent.name (excluded by Strings({'wscript.exe'}): ('wscript.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringswscriptexe-wscriptexe-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings42b5faae-6536-11d2-ae5a-0000f87571e3-40b66650-4972-11d1-a7ca-0000f87571e3-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-stringscab54552-deea-4691-817e-ed4a4d1afc72-aadced64-746c-4633-a97c-d61349046527-1)
@@ -156,11 +156,12 @@ Rules version: 8.12.2
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (49)
+### Unsupported rule type: new_terms (60)
 
-49 rules:
+60 rules:
 
 * Abnormal Process ID or Lock File Created
+* CAP_SYS_ADMIN Assigned to Binary
 * Cron Job Created or Changed by Previously Unknown Process
 * Discovery of Internet Capabilities via Built-in Tools
 * Enumeration of Kernel Modules
@@ -168,7 +169,16 @@ Rules version: 8.12.2
 * Enumeration of Privileged Local Groups Membership
 * Execution of an Unsigned Service
 * File Permission Modification in Writable Directory
+* First Occurrence GitHub Event for a Personal Access Token (PAT)
+* First Occurrence of GitHub Repo Interaction From a New IP
+* First Occurrence of GitHub User Interaction with Private Repo
+* First Occurrence of IP Address For GitHub Personal Access Token (PAT)
+* First Occurrence of IP Address For GitHub User
 * First Occurrence of Okta User Session Started via Proxy
+* First Occurrence of Personal Access Token (PAT) Use For a GitHub User
+* First Occurrence of Private Repo Event from Specific GitHub Personal Access Token (PAT)
+* First Occurrence of User Agent For a GitHub Personal Access Token (PAT)
+* First Occurrence of User-Agent For a GitHub User
 * First Time Seen AWS Secret Value Accessed in Secrets Manager
 * First Time Seen Commonly Abused Remote Access Tool Execution
 * First Time Seen Driver Loaded
@@ -181,6 +191,7 @@ Rules version: 8.12.2
 * Modification of Dynamic Linker Preload Shared Object
 * Modification of Standard Authentication Module or Configuration
 * Network Activity Detected via Kworker
+* Network Traffic Capture via CAP_NET_RAW
 * New Systemd Service Created by Previously Unknown Process
 * New Systemd Timer Created
 * Potential Pass-the-Hash (PtH) Attempt
@@ -210,15 +221,17 @@ Rules version: 8.12.2
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 
-### Unsupported rule type: threshold (26)
+### Unsupported rule type: threshold (29)
 
-26 rules:
+29 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
 * Agent Spoofing - Multiple Hosts Using Same Agent
 * Attempts to Brute Force a Microsoft 365 User Account
 * Attempts to Brute Force an Okta User Account
+* GitHub UEBA - Multiple Alerts from a GitHub Account
+* High Number of Cloned GitHub Repos From PAT
 * High Number of Okta User Password Reset or Unlock Attempts
 * High Number of Process Terminations
 * High Number of Process and/or Service Terminations
@@ -231,6 +244,7 @@ Rules version: 8.12.2
 * O365 Excessive Single Sign-On Logon Errors
 * Okta Brute Force or Password Spraying Attack
 * Okta User Sessions Started from Different Geolocations
+* Potential Buffer Overflow Attack Detected
 * Potential LSASS Memory Dump via PssCaptureSnapShot
 * Potential Network Scan Detected
 * Potential Network Scan Executed From Host
@@ -262,22 +276,23 @@ Rules version: 8.12.2
 
 ## Generation errors
 
-### Field type solver: wildcard (57)
+### Field type solver: wildcard (61)
 
-57 rules:
+61 rules:
 * Adding Hidden File Attribute via Attrib
 * Apple Scripting Execution with Administrator Privileges
 * Attempt to Mount SMB Share via Command Line
 * Attempt to Remove File Quarantine Attribute
+* Binary Executed from Shared Memory Directory
 * Code Signing Policy Modification Through Registry
 * Command Shell Activity Started via RunDLL32
-* Component Object Model Hijacking
 * Control Panel Process with Unusual Arguments
 * Creation of Hidden Login Item via Apple Script
 * DNS-over-HTTPS Enabled via Registry
 * Delayed Execution via Ping
 * Disabling User Account Control via Registry Modification
 * Encoded Executable Stored in the Registry
+* Enumeration Command Spawned via WMIPrvSE
 * Execution via Microsoft DotNet ClickOnce Host
 * Exporting Exchange Mailbox via PowerShell
 * Full User-Mode Dumps Enabled System-Wide
@@ -287,15 +302,18 @@ Rules version: 8.12.2
 * Microsoft Windows Defender Tampering
 * Modification of AmsiEnable Registry Key
 * Modification of WDigest Security Provider
+* NTDS or SAM Database File Copied
 * Network Logon Provider Registry Modification
 * Network-Level Authentication (NLA) Disabled
 * Persistence via WMI Standard Registry Provider
 * Potential Persistence via Time Provider Modification
 * Potential Port Monitor or Print Processor Registration Abuse
 * Potential Privacy Control Bypass via Localhost Secure Copy
+* Potential Privilege Escalation via Linux DAC permissions
 * Potential Reverse Shell Activity via Terminal
 * Potential SharpRDP Behavior
 * PowerShell Script Block Logging Disabled
+* Privilege Escalation via CAP_CHOWN/CAP_FOWNER Capabilities
 * Privilege Escalation via Windir Environment Variable
 * Prompt for Credentials with OSASCRIPT
 * RDP Enabled via Registry
@@ -323,12 +341,14 @@ Rules version: 8.12.2
 * Windows Installer with Suspicious Properties
 * Windows Subsystem for Linux Enabled via Dism Utility
 
-### Root with too many branches (limit: 10000) (11)
+### Root with too many branches (limit: 10000) (13)
 
-11 rules:
+13 rules:
+* Component Object Model Hijacking
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
 * Potential DNS Tunneling via NsLookup
+* Potential Evasion via Windows Filtering Platform
 * Potential Linux Ransomware Note Creation Detected
 * Potential Masquerading as System32 DLL
 * Potential Masquerading as System32 Executable
@@ -419,6 +439,12 @@ Rules version: 8.12.2
 * RPC (Remote Procedure Call) from the Internet
 * RPC (Remote Procedure Call) to the Internet
 
+### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (2)
+
+2 rules:
+* Execution via MS VisualStudio Pre/Post Build Events
+* Web Shell Detection: Script Process Child of Common Web Processes
+
 ### Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)
 
 2 rules:
@@ -430,11 +456,6 @@ Rules version: 8.12.2
 2 rules:
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
-
-### Not an IP network: localhost (1)
-
-1 rules:
-* MsBuild Making Network Connections
 
 ### Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)
 
@@ -566,11 +587,6 @@ Rules version: 8.12.2
 1 rules:
 * PowerShell Suspicious Script with Audio Capture Capabilities
 
-### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (1)
-
-1 rules:
-* Execution via MS VisualStudio Pre/Post Build Events
-
 ### Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)
 
 1 rules:
@@ -586,10 +602,10 @@ Rules version: 8.12.2
 1 rules:
 * Potential Masquerading as Browser Process
 
-### Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)
+### Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)
 
 1 rules:
-* Enumeration Command Spawned via WMIPrvSE
+* Suspicious MS Office Child Process
 
 ### Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)
 
@@ -610,6 +626,11 @@ Rules version: 8.12.2
 
 1 rules:
 * Suspicious Process Creation CallTrace
+
+### Unsolvable constraints: process.parent.name (excluded by Strings({'wscript.exe'}): ('wscript.exe')) (1)
+
+1 rules:
+* Windows Script Executing PowerShell
 
 ### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)
 
