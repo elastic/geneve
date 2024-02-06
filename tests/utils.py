@@ -384,6 +384,22 @@ class SignalsTestCase:
             )
         self.es.indices.put_index_template(**kwargs)
 
+        if verbose:
+            rules_to_go = len(rules)
+            sys.stderr.write(f"\n  Loading rules: {rules_to_go} ")
+            sys.stderr.flush()
+        pending = {}
+        for chunk in batched(rules, rules_chunk_size):
+            ret = self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
+            for rule, (rule_id, created_rule) in zip(chunk, ret):
+                rule["id"] = rule_id
+                if rule["enabled"]:
+                    pending[rule_id] = created_rule
+            if verbose:
+                rules_to_go -= len(chunk)
+                sys.stderr.write(f"{rules_to_go} ")
+                sys.stderr.flush()
+
         with self.nb.chapter("## Rejected documents") as cells:
             if verbose:
                 docs_to_go = len(docs)
@@ -410,21 +426,6 @@ class SignalsTestCase:
                         sys.stderr.write(f"{docs_to_go} ")
                         sys.stderr.flush()
 
-        if verbose:
-            rules_to_go = len(rules)
-            sys.stderr.write(f"\n  Loading rules: {rules_to_go} ")
-            sys.stderr.flush()
-        pending = {}
-        for chunk in batched(rules, rules_chunk_size):
-            ret = self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
-            for rule, (rule_id, created_rule) in zip(chunk, ret):
-                rule["id"] = rule_id
-                if rule["enabled"]:
-                    pending[rule_id] = created_rule
-            if verbose:
-                rules_to_go -= len(chunk)
-                sys.stderr.write(f"{rules_to_go} ")
-                sys.stderr.flush()
         return pending
 
     def wait_for_rules(self, pending, timeout=300, sleep=5):
