@@ -5,7 +5,7 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.12.3
+Rules version: 8.12.4
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
@@ -15,8 +15,8 @@ Rules version: 8.12.3
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: wildcard (61)](#field-type-solver-wildcard-61)
-      1. [Root with too many branches (limit: 10000) (13)](#root-with-too-many-branches-limit-10000-13)
+      1. [Field type solver: wildcard (62)](#field-type-solver-wildcard-62)
+      1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (9)](#unsupported-lhs-type-class-eqlastfunctioncall-9)
       1. [Unsupported function: match (9)](#unsupported-function-match-9)
       1. [Field type solver: match_only_text (6)](#field-type-solver-match_only_text-6)
@@ -276,9 +276,9 @@ Rules version: 8.12.3
 
 ## Generation errors
 
-### Field type solver: wildcard (61)
+### Field type solver: wildcard (62)
 
-61 rules:
+62 rules:
 * Adding Hidden File Attribute via Attrib
 * Apple Scripting Execution with Administrator Privileges
 * Attempt to Mount SMB Share via Command Line
@@ -328,6 +328,7 @@ Rules version: 8.12.3
 * Suspicious Communication App Child Process
 * Suspicious Content Extracted or Decompressed via Funzip
 * Suspicious Execution via Windows Subsystem for Linux
+* Suspicious File Downloaded from Google Drive
 * Suspicious ImagePath Service Creation
 * Suspicious Print Spooler Point and Print DLL
 * Suspicious Startup Shell Folder Modification
@@ -341,12 +342,13 @@ Rules version: 8.12.3
 * Windows Installer with Suspicious Properties
 * Windows Subsystem for Linux Enabled via Dism Utility
 
-### Root with too many branches (limit: 10000) (13)
+### Root with too many branches (limit: 10000) (14)
 
-13 rules:
+14 rules:
 * Component Object Model Hijacking
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
+* File Compressed or Archived into Common Format
 * Potential DNS Tunneling via NsLookup
 * Potential Evasion via Windows Filtering Platform
 * Potential Linux Ransomware Note Creation Detected
