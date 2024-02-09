@@ -70,6 +70,9 @@ while [ -n "$1" ]; do
 			;;
 		*)
 			STACK_VERSIONS="$STACK_VERSIONS $1"
+			if [ $1 == "qaf" ]; then
+				QAF_PROJECT=`qaf elastic-cloud projects describe --show-credentials --as-json`
+			fi
 			;;
 	esac
 
@@ -137,11 +140,9 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 	ITERATION_FAILURE=0
 	for MAJOR_MINOR in ${STACK_VERSIONS:-$DEFAULT_STACK_VERSIONS}; do
 		if [ "$MAJOR_MINOR" == "qaf" ]; then
-			PROJECT=`qaf elastic-cloud projects describe --show-credentials --as-json`
-
-			TEST_API_KEY=`echo $PROJECT | jq -r '.credentials.api_key'`
-			TEST_ELASTICSEARCH_URL=`echo $PROJECT | jq -r '.elasticsearch.url'`
-			TEST_KIBANA_URL=`echo $PROJECT | jq -r '.kibana.url'`
+			TEST_API_KEY=`echo $QAF_PROJECT | jq -r '.credentials.api_key'`
+			TEST_ELASTICSEARCH_URL=`echo $QAF_PROJECT | jq -r '.elasticsearch.url'`
+			TEST_KIBANA_URL=`echo $QAF_PROJECT | jq -r '.kibana.url'`
 
 			TEST_STACK_VERSION=
 			TEST_SCHEMA_URI=
