@@ -81,46 +81,49 @@ class Kibana:
         except requests.exceptions.ConnectionError:
             return False
 
+    def raise_for_status(self, res):
+        res.raise_for_status()
+
     def status(self):
         url = f"{self.url}/api/status"
         res = self.session.get(url)
-        res.raise_for_status()
+        self.raise_for_status(res)
         return res.json()
 
     def create_siem_index(self):
         url = f"{self.url}/api/detection_engine/index"
         res = self.session.post(url)
-        res.raise_for_status()
+        self.raise_for_status(res)
         return res.json()
 
     def get_siem_index(self):
         url = f"{self.url}/api/detection_engine/index"
         res = self.session.get(url)
-        res.raise_for_status()
+        self.raise_for_status(res)
         return res.json()
 
     def create_detection_engine_rule(self, rule):
         url = f"{self.url}/api/detection_engine/rules"
         res = self.session.post(url, data=json.dumps(rule))
-        res.raise_for_status()
+        self.raise_for_status(res)
         return res.json()
 
     def delete_detection_engine_rule(self, rule):
         url = f"{self.url}/api/detection_engine/rules?id={rule['id']}"
         res = self.session.delete(url)
-        res.raise_for_status()
+        self.raise_for_status(res)
         return res.json()
 
     def find_detection_engine_rules(self):
         url = f"{self.url}/api/detection_engine/rules/_find?per_page=1000"
         res = self.session.get(url)
-        res.raise_for_status()
+        self.raise_for_status(res)
         return {rule["id"]: rule for rule in res.json()["data"]}
 
     def create_detection_engine_rules(self, rules):
         url = f"{self.url}/api/detection_engine/rules/_bulk_create"
         res = self.session.post(url, data=json.dumps(rules))
-        res.raise_for_status()
+        self.raise_for_status(res)
         for i, rule in enumerate(res.json()):
             if "error" in rule:
                 raise ValueError(f"{rule['error']['message']}: {rules[i]}")
@@ -132,7 +135,7 @@ class Kibana:
         rules = [{"id": rule} for rule in rules]
         url = f"{self.url}/api/detection_engine/rules/_bulk_delete"
         res = self.session.delete(url, data=json.dumps(rules))
-        res.raise_for_status()
+        self.raise_for_status(res)
         return res.json()
 
     def find_detection_engine_rules_statuses(self, rules=None):
@@ -141,11 +144,11 @@ class Kibana:
         rules = {"ids": list(rules)}
         url = f"{self.url}/api/detection_engine/rules/_find_statuses?per_page=1000"
         res = self.session.post(url, data=json.dumps(rules))
-        res.raise_for_status()
+        self.raise_for_status(res)
         return res.json()
 
     def search_detection_engine_signals(self, body):
         url = f"{self.url}/api/detection_engine/signals/search"
         res = self.session.post(url, data=json.dumps(body))
-        res.raise_for_status()
+        self.raise_for_status(res)
         return res.json()
