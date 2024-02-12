@@ -30,6 +30,7 @@ class GeneveTestEnvStack(ElasticStack):
                 "api_key": "${TEST_API_KEY:-}",
                 "ca_certs": "${TEST_CA_CERTS:-}",
                 "verify_certs": "${TEST_VERIFY_CERTS:-}",
+                "request_timeout": 30,
             },
             "kibana": {
                 "url": "$TEST_KIBANA_URL",
