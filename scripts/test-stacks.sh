@@ -15,6 +15,11 @@ VERBOSE_UT=
 
 usage()
 {
+	if [ -n "$1" ]; then
+		echo "$1" >/dev/stderr
+		echo "" >/dev/stderr
+	fi
+
 	cat - >/dev/stderr <<EOF
 Usage: $(basename $0) [options] [stack version...]
 
@@ -63,16 +68,11 @@ while [ -n "$1" ]; do
 			VERBOSE_UT="$VERBOSE_UT -v"
 			;;
 		-*)
-			echo "Unknown switch: $1" >/dev/stderr
-			echo "" >/dev/stderr
-			usage
+			usage "Unknown switch: $1"
 			exit 1
 			;;
 		*)
 			STACK_VERSIONS="$STACK_VERSIONS $1"
-			if [ $1 == "qaf" ]; then
-				QAF_PROJECT=`qaf elastic-cloud projects describe --show-credentials --as-json`
-			fi
 			;;
 	esac
 
@@ -96,6 +96,10 @@ iteration_banner()
 		fi
 	fi
 }
+
+if [[ "$STACK_VERSIONS" =~ (^| )qaf( |$) ]]; then
+	QAF_PROJECT=`qaf elastic-cloud projects describe --show-credentials --as-json`
+fi
 
 export TEST_ELASTICSEARCH_URL
 export TEST_KIBANA_URL

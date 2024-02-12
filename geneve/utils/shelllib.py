@@ -75,6 +75,5 @@ def shell_expand(value):
         return tuple(shell_expand(v) for v in value)
     elif isinstance(value, str):
         return _shell_expand_str(value)
-    elif value is None:
-        return None
-    raise NotImplementedError(f"Type not supported: {type(value)}")
+    else:
+        return value
