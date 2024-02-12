@@ -12,6 +12,7 @@ MAX_FAILURES=0
 ONLINE_TESTS=0
 ITERATIONS=1
 VERBOSE_UT=
+REST_TIME=0
 
 usage()
 {
@@ -31,6 +32,7 @@ Options:
                     if N < 0: -N is the maximum number of failed iterations
   --online          execute the online tests
   --queries         use the unit test queries
+  --rest SEC        wait SEC seconds between iterations
   --rules           use the Elastic prebuilt detection rules
   -v, --verbose     more verbose output
 
@@ -52,6 +54,15 @@ while [ -n "$1" ]; do
 			;;
 		--queries)
 			TESTS="$TESTS tests/test_emitter_queries.py"
+			;;
+		--rest)
+			re='^[0-9]+$'
+			if ! [[ "$2" =~ $re  ]] || ! [ "$2" -gt 0 ]; then
+				usage "SEC is not a positive number: $2"
+				exit 1
+			fi
+			REST_TIME=$2
+			shift
 			;;
 		--rules)
 			TESTS="$TESTS tests/test_emitter_rules.py"
@@ -143,6 +154,11 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 
 	ITERATION_FAILURE=0
 	for MAJOR_MINOR in ${STACK_VERSIONS:-$DEFAULT_STACK_VERSIONS}; do
+		if [ $ITERATION -gt 0 ] && [ $REST_TIME -gt 0 ]; then
+			echo "Resting for $REST_TIME seconds..."
+			sleep $REST_TIME
+		fi
+
 		if [ "$MAJOR_MINOR" == "qaf" ]; then
 			TEST_API_KEY=`echo $QAF_PROJECT | jq -r '.credentials.api_key'`
 			TEST_ELASTICSEARCH_URL=`echo $QAF_PROJECT | jq -r '.elasticsearch.url'`
