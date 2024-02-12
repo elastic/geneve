@@ -73,9 +73,6 @@ while [ -n "$1" ]; do
 			;;
 		*)
 			STACK_VERSIONS="$STACK_VERSIONS $1"
-			if [ $1 == "qaf" ]; then
-				QAF_PROJECT=`qaf elastic-cloud projects describe --show-credentials --as-json`
-			fi
 			;;
 	esac
 
@@ -99,6 +96,10 @@ iteration_banner()
 		fi
 	fi
 }
+
+if [[ "$STACK_VERSIONS" =~ (^| )qaf( |$) ]]; then
+	QAF_PROJECT=`qaf elastic-cloud projects describe --show-credentials --as-json`
+fi
 
 export TEST_ELASTICSEARCH_URL
 export TEST_KIBANA_URL
