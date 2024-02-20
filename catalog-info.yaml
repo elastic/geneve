@@ -1,26 +1,15 @@
+# Declare your Buildkite pipelines below
 ---
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: geneve
-  description: "Generate source events using languages and schemas"
-  annotations:
-    backstage.io/source-location: url:https://github.com/elastic/geneve
-    github.com/project-slug: elastic/geneve
-    github.com/team-slug: elastic/security-engineering-productivity
-  tags:
-    - go
-    - python
-spec:
-  type: tool
-  owner: group:security-engineering-productivity
-  lifecycle: experimental
----
+# yaml-language-server: $schema=https://gist.githubusercontent.com/elasticmachine/988b80dae436cafea07d9a4a460a011d/raw/rre.schema.json
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-  name: geneve-serverless-security-quality-gate
-  description: "Geneve - Serverless Security quality gate testing"
+  name: buildkite-pipeline-geneve
+  description: Buildkite Pipeline for geneve
+  links:
+    - title: Pipeline
+      url: https://buildkite.com/elastic/geneve
+
 spec:
   type: buildkite-pipeline
   owner: group:security-engineering-productivity
@@ -29,14 +18,13 @@ spec:
     apiVersion: buildkite.elastic.dev/v1
     kind: Pipeline
     metadata:
-      name: geneve-serverless-security-quality-gate
+      name: geneve
+      description: 
     spec:
       repository: elastic/geneve
-      pipeline_file: .buildkite/serverless-security-quality-gate/pipeline.yml
-      provider_settings:
-        build_branches: true
-        trigger_mode: none
+      pipeline_file: ".buildkite/pipeline.yml"
       teams:
-        security-engineering-productivity: {}
+        security-engineering-productivity:
+          access_level: MANAGE_BUILD_AND_READ
         everyone:
           access_level: READ_ONLY
