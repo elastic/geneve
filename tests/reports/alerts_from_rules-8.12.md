@@ -5,7 +5,7 @@ learn what rules are supported and what not and why.
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.12.5
+Rules version: 8.12.6
 
 ## Table of contents
    1. [Unsuccessful rules with signals (7)](#unsuccessful-rules-with-signals-7)
@@ -1538,13 +1538,13 @@ process where host.os.type == "windows" and event.type == "start" and process.na
 
 ### Attempt to Clear Kernel Ring Buffer
 
-Branch count: 3  
-Document count: 3  
+Branch count: 4  
+Document count: 4  
 Index: geneve-ut-088
 
 ```python
-process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed") and
-event.type == "start" and process.name == "dmesg" and process.args : "-c"
+process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed", "process_started") and
+event.type == "start" and process.name == "dmesg" and process.args == "-c"
 ```
 
 
@@ -2360,13 +2360,14 @@ process where host.os.type == "linux" and event.type != "end" and process.execut
 
 ### Base16 or Base32 Encoding/Decoding Activity
 
-Branch count: 8  
-Document count: 8  
+Branch count: 16  
+Document count: 16  
 Index: geneve-ut-152
 
 ```python
-process where host.os.type == "linux" and event.type in ("start", "process_started") and
-process.name in ("base16", "base32", "base32plain", "base32hex") and not process.args in ("--help", "--version")
+process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed", "process_started") and
+event.type == "start" and process.name in ("base16", "base32", "base32plain", "base32hex") and
+not process.args in ("--help", "--version")
 ```
 
 
@@ -3138,13 +3139,14 @@ process.args in ("vmdk", "vmx", "vmxf", "vmsd", "vmsn", "vswp", "vmss", "nvram",
 
 ### ESXI Timestomping using Touch Command
 
-Branch count: 9  
-Document count: 9  
+Branch count: 12  
+Document count: 12  
 Index: geneve-ut-218
 
 ```python
-process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "executed")
-and process.name : "touch" and process.args : "-r" and process.args : ("/etc/vmware/*", "/usr/lib/vmware/*", "/vmfs/*")
+process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed", "process_started") and
+event.type == "start" and process.name == "touch" and process.args == "-r" and
+process.args : ("/etc/vmware/*", "/usr/lib/vmware/*", "/vmfs/*")
 ```
 
 
@@ -5406,11 +5408,26 @@ sequence by host.id with maxspan=1m
 
 
 
+### Linux Process Hooking via GDB
+
+Branch count: 8  
+Document count: 8  
+Index: geneve-ut-405
+
+```python
+process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed", "process_started") and
+event.type == "start" and process.name == "gdb" and process.args in ("--pid", "-p") and 
+/* Covered by d4ff2f53-c802-4d2e-9fb9-9ecc08356c3f */
+process.args != "1"
+```
+
+
+
 ### Linux Restricted Shell Breakout via Linux Binary(s)
 
 Branch count: 609  
 Document count: 609  
-Index: geneve-ut-405
+Index: geneve-ut-406
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -5464,21 +5481,6 @@ process where host.os.type == "linux" and event.type == "start" and
   (process.parent.name == "mysql" and process.parent.args == "-e" and process.parent.args : "\\!*sh") or
   (process.parent.name == "ssh" and process.parent.args == "-o" and process.parent.args : "ProxyCommand=;*sh 0<&2 1>&2")
 )
-```
-
-
-
-### Linux Secret Dumping via GDB
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-406
-
-```python
-process where host.os.type == "linux" and event.action == "exec" and event.type == "start" and 
-process.name == "gdb" and process.args in ("--pid", "-p") and 
-/* Covered by d4ff2f53-c802-4d2e-9fb9-9ecc08356c3f */
-process.args != "1"
 ```
 
 
@@ -7560,13 +7562,13 @@ process where host.os.type == "linux" and event.action in ("exec", "exec_event")
 
 ### Potential Disabling of AppArmor
 
-Branch count: 6  
-Document count: 6  
+Branch count: 8  
+Document count: 8  
 Index: geneve-ut-578
 
 ```python
-process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed") and event.type == "start"
-and (
+process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed", "process_started") and
+event.type == "start" and (
   (process.name == "systemctl" and process.args == "disable" and process.args == "apparmor") or
   (process.name == "ln" and process.args : "/etc/apparmor.d/*" and process.args == "/etc/apparmor.d/disable/")
 )
@@ -7576,13 +7578,13 @@ and (
 
 ### Potential Disabling of SELinux
 
-Branch count: 2  
-Document count: 2  
+Branch count: 4  
+Document count: 4  
 Index: geneve-ut-579
 
 ```python
-process where host.os.type == "linux" and event.type in ("start", "process_started") and
-process.name == "setenforce" and process.args == "0"
+process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed", "process_started") and
+event.type == "start" and process.name == "setenforce" and process.args == "0"
 ```
 
 
@@ -7664,13 +7666,14 @@ event.category:process and host.os.type:macos and event.type:(start or process_s
 
 ### Potential Hidden Process via Mount Hidepid
 
-Branch count: 3  
-Document count: 3  
+Branch count: 4  
+Document count: 4  
 Index: geneve-ut-587
 
 ```python
-process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed") and event.type == "start" 
-and process.name == "mount" and process.args == "/proc" and process.args == "-o" and process.args : "*hidepid=2*"
+process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed", "process_started") and
+event.type == "start" and process.name == "mount" and process.args == "/proc" and process.args == "-o" and
+process.args : "*hidepid=2*"
 ```
 
 
@@ -9213,12 +9216,12 @@ sequence by okta.actor.id with maxspan=10m
 
 ### Potentially Suspicious Process Started via tmux or screen
 
-Branch count: 40  
-Document count: 40  
+Branch count: 80  
+Document count: 80  
 Index: geneve-ut-693
 
 ```python
-process where host.os.type == "linux" and event.action == "exec" and event.type == "start" and 
+process where host.os.type == "linux" and event.action in ("exec", "exec_event") and event.type == "start" and 
 process.parent.name in ("screen", "tmux") and process.name : (
   "nmap", "nc", "ncat", "netcat", "socat", "nc.openbsd", "ngrok", "ping", "java", "python*", "php*", "perl", "ruby",
   "lua*", "openssl", "telnet", "awk", "wget", "curl", "id"
@@ -9765,12 +9768,13 @@ process where host.os.type == "windows" and event.type == "start" and
 
 ### ProxyChains Activity
 
-Branch count: 1  
-Document count: 1  
+Branch count: 4  
+Document count: 4  
 Index: geneve-ut-741
 
 ```python
-process where host.os.type == "linux" and event.action == "exec" and event.type == "start" and process.name == "proxychains"
+process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed", "process_started") and
+event.type == "start" and process.name == "proxychains"
 ```
 
 
@@ -11905,12 +11909,12 @@ process where host.os.type == "windows" and event.action == "start" and
 
 ### Suspicious Utility Launched via ProxyChains
 
-Branch count: 102  
-Document count: 102  
+Branch count: 136  
+Document count: 136  
 Index: geneve-ut-919
 
 ```python
-process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed") and
+process where host.os.type == "linux" and event.action in ("exec", "exec_event", "executed", "process_started") and
 event.type == "start" and process.name == "proxychains" and process.args : (
   "ssh", "sshd", "sshuttle", "socat", "iodine", "iodined", "dnscat", "hans", "hans-ubuntu", "ptunnel-ng",
   "ssf", "3proxy", "ngrok", "gost", "pivotnacci", "chisel*", "nmap", "ping", "python*", "php*", "perl", "ruby",
@@ -12028,13 +12032,14 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 ### Suspicious which Enumeration
 
-Branch count: 1  
-Document count: 1  
+Branch count: 2  
+Document count: 2  
 Index: geneve-ut-929
 
 ```python
-process where host.os.type == "linux" and event.action == "exec" and event.type == "start" and 
-process.name == "which" and process.args_count >= 10 and not process.parent.name == "jem"
+process where host.os.type == "linux" and event.action in ("exec", "exec_event") and event.type == "start" and 
+process.name == "which" and process.args_count >= 10 and not process.parent.name == "jem" and 
+not process.args == "--tty-only"
 
 /* potential tuning if rule would turn out to be noisy
 and process.args in ("nmap", "nc", "ncat", "netcat", nc.traditional", "gcc", "g++", "socat") and 
