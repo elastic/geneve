@@ -5,37 +5,35 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.12.6
+Rules version: 8.12.7
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (60)](#unsupported-rule-type-new_terms-60)
+      1. [Unsupported rule type: new_terms (62)](#unsupported-rule-type-new_terms-62)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: wildcard (62)](#field-type-solver-wildcard-62)
-      1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
-      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (9)](#unsupported-lhs-type-class-eqlastfunctioncall-9)
+      1. [Field type solver: wildcard (60)](#field-type-solver-wildcard-60)
+      1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
+      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (10)](#unsupported-lhs-type-class-eqlastfunctioncall-10)
       1. [Unsupported function: match (9)](#unsupported-function-match-9)
       1. [Field type solver: match_only_text (6)](#field-type-solver-match_only_text-6)
+      1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Root without branches (3)](#root-without-branches-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (3)](#unsupported-argument-types-class-eqlastfield-3)
-      1. [<class 'eql.ast.Sample'> (2)](#class-eqlastsample-2)
       1. [<class 'eql.ast.SubqueryBy'> (2)](#class-eqlastsubqueryby-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
-      1. [Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)](#unsolvable-constraints-eventaction-excluded-by-stringsexec-exec-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smb')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmb-1)
-      1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smtp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmtp-1)
       1. [Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)](#unsolvable-constraints-fileextheader_bytes-excluded-by-strings504b0304-504b0304-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
@@ -52,6 +50,7 @@ Rules version: 8.12.6
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'VirtualAlloc'}): ('WriteProcessMemory')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsvirtualalloc-writeprocessmemory-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswindowsclipboard-gettext-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Runtime.InteropServices.Marshal]::Copy'}): ('VirtualProtect')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemruntimeinteropservicesmarshalcopy-virtualprotect-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[dbo].[Credentials]'}): ('Veeam')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdbocredentials-veeam-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
@@ -75,6 +74,7 @@ Rules version: 8.12.6
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
+      1. [Unsupported function: startsWith (1)](#unsupported-function-startswith-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -156,9 +156,9 @@ Rules version: 8.12.6
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (60)
+### Unsupported rule type: new_terms (62)
 
-60 rules:
+62 rules:
 
 * Abnormal Process ID or Lock File Created
 * CAP_SYS_ADMIN Assigned to Binary
@@ -199,6 +199,7 @@ Rules version: 8.12.6
 * Potential Persistence Through Run Control Detected
 * Potential Persistence Through Systemd-udevd
 * Potential Persistence Through init.d Detected
+* Potential Privilege Escalation via Linux DAC permissions
 * Potential Shadow File Read via Command Line Utilities
 * Potential Sudo Hijacking Detected
 * Potential Suspicious Clipboard Activity Detected
@@ -217,6 +218,7 @@ Rules version: 8.12.6
 * Suspicious System Commands Executed by Previously Unknown Executable
 * Svchost spawning Cmd
 * UID Elevation from Previously Unknown Executable
+* Unknown Execution of Binary with RWX Memory Region
 * Unusual Discovery Activity by User
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
@@ -276,9 +278,9 @@ Rules version: 8.12.6
 
 ## Generation errors
 
-### Field type solver: wildcard (62)
+### Field type solver: wildcard (60)
 
-62 rules:
+60 rules:
 * Adding Hidden File Attribute via Attrib
 * Apple Scripting Execution with Administrator Privileges
 * Attempt to Mount SMB Share via Command Line
@@ -309,7 +311,6 @@ Rules version: 8.12.6
 * Potential Persistence via Time Provider Modification
 * Potential Port Monitor or Print Processor Registration Abuse
 * Potential Privacy Control Bypass via Localhost Secure Copy
-* Potential Privilege Escalation via Linux DAC permissions
 * Potential Reverse Shell Activity via Terminal
 * Potential SharpRDP Behavior
 * PowerShell Script Block Logging Disabled
@@ -334,7 +335,6 @@ Rules version: 8.12.6
 * Suspicious Startup Shell Folder Modification
 * Suspicious WMIC XSL Script Execution
 * Symbolic Link to Shadow Copy Created
-* Uncommon Registry Persistence Change
 * Unusual Persistence via Services Registry
 * Unusual Print Spooler Child Process
 * Virtual Private Network Connection Attempt
@@ -342,9 +342,9 @@ Rules version: 8.12.6
 * Windows Installer with Suspicious Properties
 * Windows Subsystem for Linux Enabled via Dism Utility
 
-### Root with too many branches (limit: 10000) (14)
+### Root with too many branches (limit: 10000) (15)
 
-14 rules:
+15 rules:
 * Component Object Model Hijacking
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
@@ -355,14 +355,15 @@ Rules version: 8.12.6
 * Potential Masquerading as System32 DLL
 * Potential Masquerading as System32 Executable
 * Potential Pspy Process Monitoring Detected
+* Potential Remote Code Execution via Web Server
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
 * Startup or Run Key Registry Modification
 * Suspicious File Changes Activity Detected
 
-### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (9)
+### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (10)
 
-9 rules:
+10 rules:
 * AdminSDHolder SDProp Exclusion Added
 * Image File Execution Options Injection
 * Ingress Transfer via Windows BITS
@@ -372,6 +373,7 @@ Rules version: 8.12.6
 * Renamed Utility Executed with Short Program Name
 * Suspicious Execution via MSIEXEC
 * Suspicious Process Access via Direct System Call
+* Uncommon Registry Persistence Change
 
 ### Unsupported function: match (9)
 
@@ -396,6 +398,13 @@ Rules version: 8.12.6
 * Tainted Out-Of-Tree Kernel Module Load
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
+### <class 'eql.ast.Sample'> (3)
+
+3 rules:
+* Network Connection from Binary with RWX Memory Region
+* Potential Meterpreter Reverse Shell
+* Potential Reverse Shell via UDP
+
 ### Root without branches (3)
 
 3 rules:
@@ -416,12 +425,6 @@ Rules version: 8.12.6
 * External User Added to Google Workspace Group
 * Image Loaded with Invalid Signature
 * Interactive Logon by an Unusual Process
-
-### <class 'eql.ast.Sample'> (2)
-
-2 rules:
-* Potential Meterpreter Reverse Shell
-* Potential Reverse Shell via UDP
 
 ### <class 'eql.ast.SubqueryBy'> (2)
 
@@ -459,11 +462,6 @@ Rules version: 8.12.6
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
 
-### Unsolvable constraints: event.action (excluded by Strings({'exec'}): ('exec')) (1)
-
-1 rules:
-* Process Discovery via Built-In Applications
-
 ### Unsolvable constraints: event.category & event.type (empty intersection) (1)
 
 1 rules:
@@ -483,11 +481,6 @@ Rules version: 8.12.6
 
 1 rules:
 * SMB (Windows File Sharing) Activity to the Internet
-
-### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smtp')) (1)
-
-1 rules:
-* SMTP on Port 26/TCP
 
 ### Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)
 
@@ -568,6 +561,11 @@ Rules version: 8.12.6
 
 1 rules:
 * Potential Antimalware Scan Interface Bypass via PowerShell
+
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[dbo].[Credentials]'}): ('Veeam')) (1)
+
+1 rules:
+* PowerShell Script with Veeam Credential Access Capabilities
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)
 
@@ -683,6 +681,11 @@ Rules version: 8.12.6
 
 1 rules:
 * Remote Computer Account DnsHostName Update
+
+### Unsupported function: startsWith (1)
+
+1 rules:
+* Persistent Scripts in the Startup Directory
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 
