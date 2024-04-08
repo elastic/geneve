@@ -5,7 +5,7 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.12.7
+Rules version: 8.12.8
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
@@ -17,19 +17,20 @@ Rules version: 8.12.7
    1. [Generation errors](#generation-errors)
       1. [Field type solver: wildcard (60)](#field-type-solver-wildcard-60)
       1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
-      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (10)](#unsupported-lhs-type-class-eqlastfunctioncall-10)
+      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Unsupported function: match (9)](#unsupported-function-match-9)
       1. [Field type solver: match_only_text (6)](#field-type-solver-match_only_text-6)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Root without branches (3)](#root-without-branches-3)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (3)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (3)](#unsupported-argument-types-class-eqlastfield-3)
       1. [<class 'eql.ast.SubqueryBy'> (2)](#class-eqlastsubqueryby-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
+      1. [Unsupported function: startsWith (2)](#unsupported-function-startswith-2)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
@@ -44,6 +45,7 @@ Rules version: 8.12.7
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'IO.Compression.ZipFile'}): ('CompressionLevel')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsiocompressionzipfile-compressionlevel-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Invoke-WmiMethod'}): ('ComputerName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsinvoke-wmimethod-computername-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'LsaCallAuthenticationPackage'}): ('KerbRetrieveEncodedTicketMessage')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringslsacallauthenticationpackage-kerbretrieveencodedticketmessage-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NTLMSSPNegotiate'}): ('NegotiateSMB')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsntlmsspnegotiate-negotiatesmb-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstartupinfoex-updateprocthreadattribute-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookA'}): ('GetForegroundWindow')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssetwindowshooka-getforegroundwindow-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'System.IO.Compression.DeflateStream'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemiocompressiondeflatestream-frombase64string-1)
@@ -74,7 +76,6 @@ Rules version: 8.12.7
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
-      1. [Unsupported function: startsWith (1)](#unsupported-function-startswith-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -361,9 +362,9 @@ Rules version: 8.12.7
 * Startup or Run Key Registry Modification
 * Suspicious File Changes Activity Detected
 
-### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (10)
+### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)
 
-10 rules:
+11 rules:
 * AdminSDHolder SDProp Exclusion Added
 * Image File Execution Options Injection
 * Ingress Transfer via Windows BITS
@@ -371,6 +372,7 @@ Rules version: 8.12.7
 * NullSessionPipe Registry Modification
 * Potential curl CVE-2023-38545 Exploitation
 * Renamed Utility Executed with Short Program Name
+* Suspicious Access to LDAP Attributes
 * Suspicious Execution via MSIEXEC
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
@@ -412,6 +414,13 @@ Rules version: 8.12.7
 * Potential Protocol Tunneling via Chisel Server
 * Suspicious Data Encryption via OpenSSL Utility
 
+### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (3)
+
+3 rules:
+* Execution via MS VisualStudio Pre/Post Build Events
+* Suspicious JetBrains TeamCity Child Process
+* Web Shell Detection: Script Process Child of Common Web Processes
+
 ### Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)
 
 3 rules:
@@ -444,12 +453,6 @@ Rules version: 8.12.7
 * RPC (Remote Procedure Call) from the Internet
 * RPC (Remote Procedure Call) to the Internet
 
-### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (2)
-
-2 rules:
-* Execution via MS VisualStudio Pre/Post Build Events
-* Web Shell Detection: Script Process Child of Common Web Processes
-
 ### Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)
 
 2 rules:
@@ -461,6 +464,12 @@ Rules version: 8.12.7
 2 rules:
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
+
+### Unsupported function: startsWith (2)
+
+2 rules:
+* Persistent Scripts in the Startup Directory
+* Potential ADIDNS Poisoning via Wildcard Record Creation
 
 ### Unsolvable constraints: event.category & event.type (empty intersection) (1)
 
@@ -531,6 +540,11 @@ Rules version: 8.12.7
 
 1 rules:
 * PowerShell Kerberos Ticket Dump
+
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NTLMSSPNegotiate'}): ('NegotiateSMB')) (1)
+
+1 rules:
+* Potential PowerShell Pass-the-Hash/Relay Script
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)
 
@@ -681,11 +695,6 @@ Rules version: 8.12.7
 
 1 rules:
 * Remote Computer Account DnsHostName Update
-
-### Unsupported function: startsWith (1)
-
-1 rules:
-* Persistent Scripts in the Startup Directory
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 
