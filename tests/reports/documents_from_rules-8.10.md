@@ -5,7 +5,7 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.10.15
+Rules version: 8.10.16
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
@@ -15,8 +15,8 @@ Rules version: 8.10.15
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: wildcard (59)](#field-type-solver-wildcard-59)
-      1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
+      1. [Field type solver: wildcard (61)](#field-type-solver-wildcard-61)
+      1. [Root with too many branches (limit: 10000) (16)](#root-with-too-many-branches-limit-10000-16)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Unsupported function: match (9)](#unsupported-function-match-9)
       1. [Field type solver: match_only_text (6)](#field-type-solver-match_only_text-6)
@@ -57,6 +57,7 @@ Rules version: 8.10.15
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsarpexe-arpexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsedgewebview2exe-msedgewebview2exe-1)
@@ -69,6 +70,7 @@ Rules version: 8.10.15
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings42b5faae-6536-11d2-ae5a-0000f87571e3-40b66650-4972-11d1-a7ca-0000f87571e3-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-stringscab54552-deea-4691-817e-ed4a4d1afc72-aadced64-746c-4633-a97c-d61349046527-1)
+      1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: < (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (1)](#unsupported-keyword-fileextentropy-constraint--1)
       1. [Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)](#unsupported-keyword-ml_is_dgamalicious_probability-constraint--1)
@@ -276,9 +278,9 @@ Rules version: 8.10.15
 
 ## Generation errors
 
-### Field type solver: wildcard (59)
+### Field type solver: wildcard (61)
 
-59 rules:
+61 rules:
 * Adding Hidden File Attribute via Attrib
 * Apple Scripting Execution with Administrator Privileges
 * Attempt to Mount SMB Share via Command Line
@@ -334,17 +336,20 @@ Rules version: 8.10.15
 * Symbolic Link to Shadow Copy Created
 * Unusual Persistence via Services Registry
 * Unusual Print Spooler Child Process
+* Unusual Process For MSSQL Service Accounts
 * Virtual Private Network Connection Attempt
 * Windows Defender Disabled via Registry Modification
 * Windows Installer with Suspicious Properties
+* Windows Network Enumeration
 * Windows Subsystem for Linux Enabled via Dism Utility
 
-### Root with too many branches (limit: 10000) (15)
+### Root with too many branches (limit: 10000) (16)
 
-15 rules:
+16 rules:
 * Component Object Model Hijacking
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
+* External IP Lookup from Non-Browser Process
 * File Compressed or Archived into Common Format
 * Potential DNS Tunneling via NsLookup
 * Potential Evasion via Windows Filtering Platform
@@ -597,6 +602,11 @@ Rules version: 8.10.15
 1 rules:
 * PowerShell Suspicious Script with Audio Capture Capabilities
 
+### Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)
+
+1 rules:
+* Remote System Discovery Commands
+
 ### Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)
 
 1 rules:
@@ -656,6 +666,11 @@ Rules version: 8.10.15
 
 1 rules:
 * Scheduled Task Execution at Scale via GPO
+
+### Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: < (1)
+
+1 rules:
+* Potential Windows Session Hijacking via CcmExec
 
 ### Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)
 
