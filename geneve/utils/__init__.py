@@ -110,7 +110,7 @@ def resource(uri, basedir=None, cachedir=None, cachefile=None, validate=None):
 def load_schema(uri, path, basedir=None):
     from ruamel.yaml import YAML
 
-    with resource(uri, basedir=basedir) as resource_dir:
+    with resource(uri, basedir=basedir, cachedir=dirs.cache) as resource_dir:
         with open(resource_dir / path) as f:
             yaml = YAML(typ="safe")
             return yaml.load(f)
