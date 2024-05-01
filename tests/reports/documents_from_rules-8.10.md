@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.10.16
+Rules version: 8.10.17
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (59)](#unsupported-rule-type-new_terms-59)
+      1. [Unsupported rule type: new_terms (60)](#unsupported-rule-type-new_terms-60)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
@@ -159,9 +159,9 @@ Rules version: 8.10.16
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (59)
+### Unsupported rule type: new_terms (60)
 
-59 rules:
+60 rules:
 
 * Abnormal Process ID or Lock File Created
 * Cron Job Created or Changed by Previously Unknown Process
@@ -208,6 +208,7 @@ Rules version: 8.10.16
 * SSH Authorized Keys File Modification
 * Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
+* Shell Configuration Modification
 * Sudoers File Modification
 * Suspicious JAVA Child Process
 * Suspicious Microsoft 365 Mail Access by ClientAppId
