@@ -90,9 +90,9 @@ class LongField(Field):
 
     def solve(self, left_attempts, environment):
         value = self.value
-        history_values = {v["value"] for v in self.get_history(environment)}
+        history_values = self.get_history(environment)
         exclude_values = self.exclude_values | history_values
         while left_attempts and (value is None or value in exclude_values):
             value = random.randint(self.min_value, self.max_value)
             left_attempts -= 1
-        return {"value": value, "min": self.min_value, "max": self.max_value, "left_attempts": left_attempts}
+        return {"value": value, "left_attempts": left_attempts}

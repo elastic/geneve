@@ -198,8 +198,8 @@ class Field:
 
     def get_history(self, environment):
         if not self.cardinality:
-            return []
-        return environment.setdefault("fields_history", {}).setdefault(self.field, [])
+            return set()
+        return environment.setdefault("fields_history", {}).setdefault(self.field, set())
 
     def __call__(self, join_doc, environment):
         history = self.get_history(environment)
@@ -208,10 +208,9 @@ class Field:
             value = join_doc
             for part in self.join_field_parts:
                 value = value[part]
-            value = {"value": value}
             if self.cardinality:
-                history.append(value)
-            return value
+                history.add(value)
+            return {"value": value}
 
         if not self.cardinality or len(history) < self.cardinality:
             value = self.solve(self.max_attempts + 1, environment)
@@ -219,9 +218,9 @@ class Field:
                 raise ConflictError(f"attempts exausted: {self.max_attempts}", self.field)
             del value["left_attempts"]
             if self.cardinality:
-                history.append(value)
+                history.add(value["value"])
         else:
-            value = random.choice(history[: self.cardinality])
+            value = {"value": random.choice(list(history)[: self.cardinality])}
 
         return value
 
