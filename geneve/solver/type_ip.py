@@ -110,7 +110,7 @@ class IPField(Field):
 
     def solve(self, left_attempts, environment):
         value = self.value
-        history_addrs = {ipaddress.ip_address(v["value"]) for v in self.get_history(environment)}
+        history_addrs = {v["value"] for v in self.get_history(environment)}
         exclude_addrs = self.exclude_addrs | history_addrs
         while left_attempts and (
             value in (None, [])
