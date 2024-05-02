@@ -12,6 +12,7 @@ MAX_FAILURES=0
 ONLINE_TESTS=0
 ITERATIONS=1
 VERBOSE_UT=
+KEEP=0
 
 usage()
 {
@@ -26,6 +27,7 @@ Usage: $(basename $0) [options] [stack version...]
 Options:
   -h, --help        print this help message
   --iterations N    test the stack(s) N times  (default: 1)
+  --keep            do not destroy the stack at the end of the test
   --max-failures N  fail maximum N times  (default: 0)
                     if N > 0: N is the maximum number of failed tests
                     if N < 0: -N is the maximum number of failed iterations
@@ -59,6 +61,9 @@ while [ -n "$1" ]; do
 		--max-failures)
 			MAX_FAILURES=$2
 			shift
+			;;
+		--keep)
+			KEEP=1
 			;;
 		-h|--help)
 			usage
@@ -225,6 +230,6 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 	ITERATION=$(($ITERATION + 1))
 done
 
-if [ "$ONLINE_TESTS" = "1" ] && [ "$MAJOR_MINOR" != "custom" ]; then
+if [ "$ONLINE_TESTS" = "1" ] && [ "$MAJOR_MINOR" != "custom" ] && [ "$KEEP" = "0" ]; then
 	make down
 fi
