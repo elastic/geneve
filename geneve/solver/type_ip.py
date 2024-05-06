@@ -110,8 +110,8 @@ class IPField(Field):
 
     def solve(self, left_attempts, environment):
         value = self.value
-        history_addrs = {ipaddress.ip_address(v["value"]) for v in self.get_history(environment)}
-        exclude_addrs = self.exclude_addrs | history_addrs
+        history_addrs = self.get_history(environment)
+        exclude_addrs = self.exclude_addrs | set(history_addrs)
         while left_attempts and (
             value in (None, [])
             or set(value if self.is_array else [value]) & exclude_addrs  # noqa: W503

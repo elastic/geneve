@@ -90,7 +90,7 @@ class KeywordField(Field):
 
     def solve(self, left_attempts, environment):
         value = self.value
-        hist = {v["value"] for v in self.get_history(environment)}
+        hist = self.get_history(environment)
         value = [(v - hist).generate(alphabet=self.alphabet, max_attempts=left_attempts - 1)[0] for v in value]
         if not self.is_array:
             value = value[0]

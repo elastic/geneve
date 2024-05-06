@@ -21,167 +21,166 @@ import unittest
 
 import tests.utils as tu
 from geneve.constraints import Branch, Document
-from geneve.solver.type_long import LongLimits
 
 constraints_long = [
-    ([], {"value": -447795966606097183, "min": LongLimits.MIN, "max": LongLimits.MAX}),
-    ([], {"value": -447795966606097183, "min": LongLimits.MIN, "max": LongLimits.MAX}),
+    ([], {"value": -447795966606097183}),
+    ([], {"value": -447795966606097183}),
     (
         [
             ("!=", 0),
         ],
-        {"value": -447795966606097183, "min": LongLimits.MIN, "max": LongLimits.MAX},
+        {"value": -447795966606097183},
     ),
     (
         [
             ("!=", 0),
             ("!=", 0),
         ],
-        {"value": -447795966606097183, "min": LongLimits.MIN, "max": LongLimits.MAX},
+        {"value": -447795966606097183},
     ),
     (
         [
             ("!=", -447795966606097183),
         ],
-        {"value": -391848440526208070, "min": LongLimits.MIN, "max": LongLimits.MAX},
+        {"value": -391848440526208070},
     ),
     (
         [
             ("!=", -447795966606097183),
             ("!=", -391848440526208070),
         ],
-        {"value": -5754650716556900295, "min": LongLimits.MIN, "max": LongLimits.MAX},
+        {"value": -5754650716556900295},
     ),
     (
         [
             ("==", 0),
         ],
-        {"value": 0, "min": LongLimits.MIN, "max": LongLimits.MAX},
+        {"value": 0},
     ),
     (
         [
             ("==", 0),
             ("==", 0),
         ],
-        {"value": 0, "min": LongLimits.MIN, "max": LongLimits.MAX},
+        {"value": 0},
     ),
     (
         [
             (">=", 0),
             ("<=", 0),
         ],
-        {"value": 0, "min": 0, "max": 0},
+        {"value": 0},
     ),
     (
         [
             (">", -1),
             ("<", 1),
         ],
-        {"value": 0, "min": 0, "max": 0},
+        {"value": 0},
     ),
     (
         [
             (">=", 10),
         ],
-        {"value": 8255703960756213835, "min": 10, "max": LongLimits.MAX},
+        {"value": 8255703960756213835},
     ),
     (
         [
             (">=", 10000),
         ],
-        {"value": 8255703960756223825, "min": 10000, "max": LongLimits.MAX},
+        {"value": 8255703960756223825},
     ),
     (
         [
             (">=", 10000),
             (">=", 10),
         ],
-        {"value": 8255703960756223825, "min": 10000, "max": LongLimits.MAX},
+        {"value": 8255703960756223825},
     ),
     (
         [
             (">=", 10),
             (">=", 10000),
         ],
-        {"value": 8255703960756223825, "min": 10000, "max": LongLimits.MAX},
+        {"value": 8255703960756223825},
     ),
     (
         [
             (">", 20),
         ],
-        {"value": 8255703960756213846, "min": 21, "max": LongLimits.MAX},
+        {"value": 8255703960756213846},
     ),
     (
         [
             (">", 20000),
         ],
-        {"value": 8255703960756233826, "min": 20001, "max": LongLimits.MAX},
+        {"value": 8255703960756233826},
     ),
     (
         [
             (">", 20000),
             (">", 20),
         ],
-        {"value": 8255703960756233826, "min": 20001, "max": LongLimits.MAX},
+        {"value": 8255703960756233826},
     ),
     (
         [
             (">", 20),
             (">", 20000),
         ],
-        {"value": 8255703960756233826, "min": 20001, "max": LongLimits.MAX},
+        {"value": 8255703960756233826},
     ),
     (
         [
             ("<=", 40),
         ],
-        {"value": -1504411726168646672, "min": LongLimits.MIN, "max": 40},
+        {"value": -1504411726168646672},
     ),
     (
         [
             ("<=", 40000),
         ],
-        {"value": -1504411726168646672, "min": LongLimits.MIN, "max": 40000},
+        {"value": -1504411726168646672},
     ),
     (
         [
             ("<=", 40000),
             ("<=", 40),
         ],
-        {"value": -1504411726168646672, "min": LongLimits.MIN, "max": 40},
+        {"value": -1504411726168646672},
     ),
     (
         [
             ("<=", 40),
             ("<=", 40000),
         ],
-        {"value": -1504411726168646672, "min": LongLimits.MIN, "max": 40},
+        {"value": -1504411726168646672},
     ),
     (
         [
             ("<", 80),
         ],
-        {"value": -1504411726168646672, "min": LongLimits.MIN, "max": 79},
+        {"value": -1504411726168646672},
     ),
     (
         [
             ("<", 80000),
         ],
-        {"value": -1504411726168646672, "min": LongLimits.MIN, "max": 79999},
+        {"value": -1504411726168646672},
     ),
     (
         [
             ("<", 80000),
             ("<", 80),
         ],
-        {"value": -1504411726168646672, "min": LongLimits.MIN, "max": 79},
+        {"value": -1504411726168646672},
     ),
     (
         [
             ("<", 80),
             ("<", 80000),
         ],
-        {"value": -1504411726168646672, "min": LongLimits.MIN, "max": 79},
+        {"value": -1504411726168646672},
     ),
     (
         [
@@ -189,7 +188,7 @@ constraints_long = [
             ("<=", 100),
         ]
         + [("!=", x) for x in range(1, 100)],
-        {"value": 100, "min": 100, "max": 100},
+        {"value": 100},
     ),
     (
         [
@@ -197,7 +196,7 @@ constraints_long = [
             ("<", 100),
         ]
         + [("!=", x) for x in range(1, 100)],
-        {"value": 0, "min": 0, "max": 0},
+        {"value": 0},
     ),
     (
         [
@@ -205,7 +204,7 @@ constraints_long = [
             ("<=", 100000),
         ]
         + [("!=", x) for x in range(1, 100000)],
-        {"value": 0, "min": 0, "max": 100000},
+        {"value": 0},
     ),
 ]
 
@@ -216,9 +215,9 @@ constraints_long_cardinality = [
             ("<=", "10"),
         ],
         [
-            {"max": 10, "min": 0, "value": 9},
-            {"max": 10, "min": 0, "value": 7},
-            {"max": 10, "min": 0, "value": 6},
+            {"value": 9},
+            {"value": 7},
+            {"value": 6},
         ],
     ),
     (
@@ -228,9 +227,9 @@ constraints_long_cardinality = [
             ("cardinality", 0),
         ],
         [
-            {"max": 10, "min": 0, "value": 9},
-            {"max": 10, "min": 0, "value": 7},
-            {"max": 10, "min": 0, "value": 6},
+            {"value": 9},
+            {"value": 7},
+            {"value": 6},
         ],
     ),
     (
@@ -240,9 +239,9 @@ constraints_long_cardinality = [
             ("cardinality", 1),
         ],
         [
-            {"max": 10, "min": 0, "value": 9},
-            {"max": 10, "min": 0, "value": 9},
-            {"max": 10, "min": 0, "value": 9},
+            {"value": 9},
+            {"value": 9},
+            {"value": 9},
         ],
     ),
     (
@@ -252,11 +251,11 @@ constraints_long_cardinality = [
             ("cardinality", 2),
         ],
         [
-            {"max": 10, "min": 0, "value": 9},
-            {"max": 10, "min": 0, "value": 7},
-            {"max": 10, "min": 0, "value": 7},
-            {"max": 10, "min": 0, "value": 9},
-            {"max": 10, "min": 0, "value": 7},
+            {"value": 9},
+            {"value": 7},
+            {"value": 7},
+            {"value": 9},
+            {"value": 7},
         ],
     ),
     (
@@ -266,13 +265,13 @@ constraints_long_cardinality = [
             ("cardinality", 3),
         ],
         [
-            {"max": 10, "min": 0, "value": 9},
-            {"max": 10, "min": 0, "value": 7},
-            {"max": 10, "min": 0, "value": 6},
-            {"max": 10, "min": 0, "value": 6},
-            {"max": 10, "min": 0, "value": 6},
-            {"max": 10, "min": 0, "value": 9},
-            {"max": 10, "min": 0, "value": 7},
+            {"value": 9},
+            {"value": 7},
+            {"value": 6},
+            {"value": 6},
+            {"value": 6},
+            {"value": 9},
+            {"value": 7},
         ],
     ),
 ]
