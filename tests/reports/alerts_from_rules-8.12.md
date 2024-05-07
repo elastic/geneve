@@ -5,7 +5,7 @@ learn what rules are supported and what not and why.
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.12.10
+Rules version: 8.12.11
 
 ## Table of contents
    1. [Unsuccessful rules with signals (6)](#unsuccessful-rules-with-signals-6)
