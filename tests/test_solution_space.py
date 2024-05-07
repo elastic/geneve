@@ -30,6 +30,7 @@ class TestStrings(tu.SeededTestCase, unittest.TestCase):
     def test_contains(self):
         testcases = [
             ("a", "a", True),
+            ("a", "A", True),
             ("aa", "a", False),
             ("a", "aa", False),
             ("a?", "a?", True),

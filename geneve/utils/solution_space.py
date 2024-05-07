@@ -77,11 +77,16 @@ class Strings:
     def __contains__(self, item):
         if self.__exclude and item in self.__exclude:
             return False
-        return (
-            self.__set == everything()
-            or any(item == value for value, _ in self.__set)
-            or any(fnmatchcase(str(item).lower(), str(value).lower()) for value, _ in self.__set)
-        )
+        if self.__set == everything():
+            return True
+        item = str(item).lower()
+        for value, wc in self.__set:
+            value = str(value).lower()
+            if item == value:
+                return True
+            if wc and fnmatchcase(item, value):
+                return True
+        return False
 
     def __and__(self, other):
         ss = self.__copy__()

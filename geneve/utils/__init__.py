@@ -19,6 +19,7 @@
 
 import functools
 import json
+import re
 import shutil
 import sys
 from contextlib import contextmanager
@@ -32,12 +33,12 @@ from warnings import warn
 from . import dirs, epr
 
 random = Random()
+wc_re = re.compile(r"\*|\?")
 
 
 def has_wildcards(s):
-    if not isinstance(s, str):
-        return False
-    return s.find("?") + s.find("*") > -2
+    if isinstance(s, str):
+        return bool(wc_re.search(s))
 
 
 def expand_wildcards(s, alphabet, min_star_len, max_star_len):
