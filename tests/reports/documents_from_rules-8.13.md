@@ -5,13 +5,14 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.13.5
+Rules version: 8.13.6
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
       1. [Unsupported rule type: new_terms (63)](#unsupported-rule-type-new_terms-63)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
+      1. [Unsupported rule type: esql (6)](#unsupported-rule-type-esql-6)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
@@ -260,6 +261,17 @@ Rules version: 8.13.5
 * Potential macOS SSH Brute Force Detected
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
+
+### Unsupported rule type: esql (6)
+
+6 rules:
+
+* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
+* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
+* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
+* AWS S3 Bucket Enumeration or Brute Force
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Unusual High Confidence Misconduct Blocks Detected
 
 ### Unsupported query language: lucene (5)
 
