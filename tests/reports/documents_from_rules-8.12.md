@@ -5,20 +5,20 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.12.11
+Rules version: 8.12.12
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (63)](#unsupported-rule-type-new_terms-63)
-      1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
+      1. [Unsupported rule type: new_terms (64)](#unsupported-rule-type-new_terms-64)
+      1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: wildcard (62)](#field-type-solver-wildcard-62)
-      1. [Root with too many branches (limit: 10000) (16)](#root-with-too-many-branches-limit-10000-16)
+      1. [Field type solver: wildcard (64)](#field-type-solver-wildcard-64)
+      1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
-      1. [Unsupported function: match (9)](#unsupported-function-match-9)
+      1. [Unsupported function: match (10)](#unsupported-function-match-10)
       1. [Field type solver: match_only_text (6)](#field-type-solver-match_only_text-6)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Root without branches (3)](#root-without-branches-3)
@@ -31,6 +31,7 @@ Rules version: 8.12.11
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
       1. [Unsupported function: startsWith (2)](#unsupported-function-startswith-2)
+      1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
@@ -78,6 +79,7 @@ Rules version: 8.12.11
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
+      1. [Unsupported function: endswith (1)](#unsupported-function-endswith-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -159,10 +161,11 @@ Rules version: 8.12.11
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (63)
+### Unsupported rule type: new_terms (64)
 
-63 rules:
+64 rules:
 
+* AWS EC2 Admin Credential Fetch via Assumed Role
 * Abnormal Process ID or Lock File Created
 * CAP_SYS_ADMIN Assigned to Binary
 * Cron Job Created or Changed by Previously Unknown Process
@@ -227,9 +230,9 @@ Rules version: 8.12.11
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 
-### Unsupported rule type: threshold (29)
+### Unsupported rule type: threshold (30)
 
-29 rules:
+30 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
@@ -256,6 +259,7 @@ Rules version: 8.12.11
 * Potential Network Scan Executed From Host
 * Potential Network Sweep Detected
 * Potential Password Spraying of Microsoft 365 User Accounts
+* Potential Ransomware Behavior - High count of Readme files by System
 * Potential SYN-Based Network Scan Detected
 * Potential macOS SSH Brute Force Detected
 * Sudo Heap-Based Buffer Overflow Attempt
@@ -282,16 +286,16 @@ Rules version: 8.12.11
 
 ## Generation errors
 
-### Field type solver: wildcard (62)
+### Field type solver: wildcard (64)
 
-62 rules:
+64 rules:
 * Adding Hidden File Attribute via Attrib
 * Apple Scripting Execution with Administrator Privileges
 * Attempt to Mount SMB Share via Command Line
-* Attempt to Remove File Quarantine Attribute
 * Binary Executed from Shared Memory Directory
 * Code Signing Policy Modification Through Registry
 * Command Shell Activity Started via RunDLL32
+* Component Object Model Hijacking
 * Control Panel Process with Unusual Arguments
 * Creation of Hidden Login Item via Apple Script
 * DNS-over-HTTPS Enabled via Registry
@@ -303,6 +307,7 @@ Rules version: 8.12.11
 * Exporting Exchange Mailbox via PowerShell
 * Full User-Mode Dumps Enabled System-Wide
 * Host Files System Changes via Windows Subsystem for Linux
+* Keychain Password Retrieval via Command Line
 * Local Account TokenFilter Policy Disabled
 * MS Office Macro Security Registry Modifications
 * Microsoft Windows Defender Tampering
@@ -338,6 +343,7 @@ Rules version: 8.12.11
 * Suspicious Print Spooler Point and Print DLL
 * Suspicious Startup Shell Folder Modification
 * Suspicious WMIC XSL Script Execution
+* Suspicious macOS MS Office Child Process
 * Symbolic Link to Shadow Copy Created
 * Unusual Persistence via Services Registry
 * Unusual Print Spooler Child Process
@@ -348,10 +354,9 @@ Rules version: 8.12.11
 * Windows Network Enumeration
 * Windows Subsystem for Linux Enabled via Dism Utility
 
-### Root with too many branches (limit: 10000) (16)
+### Root with too many branches (limit: 10000) (17)
 
-16 rules:
-* Component Object Model Hijacking
+17 rules:
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
 * External IP Lookup from Non-Browser Process
@@ -362,11 +367,13 @@ Rules version: 8.12.11
 * Potential Masquerading as System32 DLL
 * Potential Masquerading as System32 Executable
 * Potential Pspy Process Monitoring Detected
+* Potential Ransomware Note File Dropped via SMB
 * Potential Remote Code Execution via Web Server
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
 * Startup or Run Key Registry Modification
 * Suspicious File Changes Activity Detected
+* Suspicious File Renamed via SMB
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)
 
@@ -383,9 +390,10 @@ Rules version: 8.12.11
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
 
-### Unsupported function: match (9)
+### Unsupported function: match (10)
 
-9 rules:
+10 rules:
+* Alternate Data Stream Creation/Execution at Volume Root Directory
 * Creation of Hidden Files and Directories via CommandLine
 * Executable File Creation with Multiple Extensions
 * Masquerading Space After Filename
@@ -476,6 +484,11 @@ Rules version: 8.12.11
 2 rules:
 * Persistent Scripts in the Startup Directory
 * Potential ADIDNS Poisoning via Wildcard Record Creation
+
+### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)
+
+1 rules:
+* EC2 AMI Shared with Another Account
 
 ### Unsolvable constraints: event.category & event.type (empty intersection) (1)
 
@@ -711,6 +724,11 @@ Rules version: 8.12.11
 
 1 rules:
 * Remote Computer Account DnsHostName Update
+
+### Unsupported function: endswith (1)
+
+1 rules:
+* Unusual Execution via Microsoft Common Console File
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 

@@ -5,20 +5,21 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.13.3
+Rules version: 8.14.1
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (62)](#unsupported-rule-type-new_terms-62)
-      1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
+      1. [Unsupported rule type: new_terms (64)](#unsupported-rule-type-new_terms-64)
+      1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
+      1. [Unsupported rule type: esql (7)](#unsupported-rule-type-esql-7)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: wildcard (60)](#field-type-solver-wildcard-60)
-      1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
+      1. [Field type solver: wildcard (64)](#field-type-solver-wildcard-64)
+      1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
-      1. [Unsupported function: match (9)](#unsupported-function-match-9)
+      1. [Unsupported function: match (10)](#unsupported-function-match-10)
       1. [Field type solver: match_only_text (6)](#field-type-solver-match_only_text-6)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Root without branches (3)](#root-without-branches-3)
@@ -31,6 +32,7 @@ Rules version: 8.13.3
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
       1. [Unsupported function: startsWith (2)](#unsupported-function-startswith-2)
+      1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
@@ -57,6 +59,7 @@ Rules version: 8.13.3
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsarpexe-arpexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsedgewebview2exe-msedgewebview2exe-1)
@@ -69,6 +72,7 @@ Rules version: 8.13.3
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings42b5faae-6536-11d2-ae5a-0000f87571e3-40b66650-4972-11d1-a7ca-0000f87571e3-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-stringscab54552-deea-4691-817e-ed4a4d1afc72-aadced64-746c-4633-a97c-d61349046527-1)
+      1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: < (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (1)](#unsupported-keyword-fileextentropy-constraint--1)
       1. [Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)](#unsupported-keyword-ml_is_dgamalicious_probability-constraint--1)
@@ -76,6 +80,7 @@ Rules version: 8.13.3
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
+      1. [Unsupported function: endswith (1)](#unsupported-function-endswith-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -157,10 +162,11 @@ Rules version: 8.13.3
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (62)
+### Unsupported rule type: new_terms (64)
 
-62 rules:
+64 rules:
 
+* AWS EC2 Admin Credential Fetch via Assumed Role
 * Abnormal Process ID or Lock File Created
 * CAP_SYS_ADMIN Assigned to Binary
 * Cron Job Created or Changed by Previously Unknown Process
@@ -209,6 +215,7 @@ Rules version: 8.13.3
 * SSH Authorized Keys File Modification
 * Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
+* Shell Configuration Modification
 * Sudoers File Modification
 * Suspicious JAVA Child Process
 * Suspicious Microsoft 365 Mail Access by ClientAppId
@@ -224,9 +231,9 @@ Rules version: 8.13.3
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 
-### Unsupported rule type: threshold (29)
+### Unsupported rule type: threshold (30)
 
-29 rules:
+30 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
@@ -253,10 +260,23 @@ Rules version: 8.13.3
 * Potential Network Scan Executed From Host
 * Potential Network Sweep Detected
 * Potential Password Spraying of Microsoft 365 User Accounts
+* Potential Ransomware Behavior - High count of Readme files by System
 * Potential SYN-Based Network Scan Detected
 * Potential macOS SSH Brute Force Detected
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
+
+### Unsupported rule type: esql (7)
+
+7 rules:
+
+* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
+* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
+* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
+* AWS S3 Bucket Enumeration or Brute Force
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Widespread Malware Infection Across Multiple Hosts
+* Unusual High Confidence Misconduct Blocks Detected
 
 ### Unsupported query language: lucene (5)
 
@@ -279,16 +299,16 @@ Rules version: 8.13.3
 
 ## Generation errors
 
-### Field type solver: wildcard (60)
+### Field type solver: wildcard (64)
 
-60 rules:
+64 rules:
 * Adding Hidden File Attribute via Attrib
 * Apple Scripting Execution with Administrator Privileges
 * Attempt to Mount SMB Share via Command Line
-* Attempt to Remove File Quarantine Attribute
 * Binary Executed from Shared Memory Directory
 * Code Signing Policy Modification Through Registry
 * Command Shell Activity Started via RunDLL32
+* Component Object Model Hijacking
 * Control Panel Process with Unusual Arguments
 * Creation of Hidden Login Item via Apple Script
 * DNS-over-HTTPS Enabled via Registry
@@ -300,6 +320,7 @@ Rules version: 8.13.3
 * Exporting Exchange Mailbox via PowerShell
 * Full User-Mode Dumps Enabled System-Wide
 * Host Files System Changes via Windows Subsystem for Linux
+* Keychain Password Retrieval via Command Line
 * Local Account TokenFilter Policy Disabled
 * MS Office Macro Security Registry Modifications
 * Microsoft Windows Defender Tampering
@@ -335,20 +356,23 @@ Rules version: 8.13.3
 * Suspicious Print Spooler Point and Print DLL
 * Suspicious Startup Shell Folder Modification
 * Suspicious WMIC XSL Script Execution
+* Suspicious macOS MS Office Child Process
 * Symbolic Link to Shadow Copy Created
 * Unusual Persistence via Services Registry
 * Unusual Print Spooler Child Process
+* Unusual Process For MSSQL Service Accounts
 * Virtual Private Network Connection Attempt
 * Windows Defender Disabled via Registry Modification
 * Windows Installer with Suspicious Properties
+* Windows Network Enumeration
 * Windows Subsystem for Linux Enabled via Dism Utility
 
-### Root with too many branches (limit: 10000) (15)
+### Root with too many branches (limit: 10000) (17)
 
-15 rules:
-* Component Object Model Hijacking
+17 rules:
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
+* External IP Lookup from Non-Browser Process
 * File Compressed or Archived into Common Format
 * Potential DNS Tunneling via NsLookup
 * Potential Evasion via Windows Filtering Platform
@@ -356,11 +380,13 @@ Rules version: 8.13.3
 * Potential Masquerading as System32 DLL
 * Potential Masquerading as System32 Executable
 * Potential Pspy Process Monitoring Detected
+* Potential Ransomware Note File Dropped via SMB
 * Potential Remote Code Execution via Web Server
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
 * Startup or Run Key Registry Modification
 * Suspicious File Changes Activity Detected
+* Suspicious File Renamed via SMB
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)
 
@@ -377,9 +403,10 @@ Rules version: 8.13.3
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
 
-### Unsupported function: match (9)
+### Unsupported function: match (10)
 
-9 rules:
+10 rules:
+* Alternate Data Stream Creation/Execution at Volume Root Directory
 * Creation of Hidden Files and Directories via CommandLine
 * Executable File Creation with Multiple Extensions
 * Masquerading Space After Filename
@@ -470,6 +497,11 @@ Rules version: 8.13.3
 2 rules:
 * Persistent Scripts in the Startup Directory
 * Potential ADIDNS Poisoning via Wildcard Record Creation
+
+### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)
+
+1 rules:
+* EC2 AMI Shared with Another Account
 
 ### Unsolvable constraints: event.category & event.type (empty intersection) (1)
 
@@ -601,6 +633,11 @@ Rules version: 8.13.3
 1 rules:
 * PowerShell Suspicious Script with Audio Capture Capabilities
 
+### Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)
+
+1 rules:
+* Remote System Discovery Commands
+
 ### Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)
 
 1 rules:
@@ -661,6 +698,11 @@ Rules version: 8.13.3
 1 rules:
 * Scheduled Task Execution at Scale via GPO
 
+### Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: < (1)
+
+1 rules:
+* Potential Windows Session Hijacking via CcmExec
+
 ### Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)
 
 1 rules:
@@ -695,6 +737,11 @@ Rules version: 8.13.3
 
 1 rules:
 * Remote Computer Account DnsHostName Update
+
+### Unsupported function: endswith (1)
+
+1 rules:
+* Unusual Execution via Microsoft Common Console File
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 

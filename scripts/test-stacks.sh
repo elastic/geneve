@@ -127,6 +127,7 @@ TMP_DIR=$(mktemp -d)
 TMP_LOG=$TMP_DIR/log
 trap cleanup EXIT
 rm -rf tests/reports/*.new.md
+rm -rf tests/reports/*.#*.md
 
 if [ $MAX_FAILURES -gt 0 ]; then
 	echo "MAX_FAILURES: $MAX_FAILURES (tests)"
@@ -215,7 +216,7 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 		fi
 
 		for NEW_MD in `find tests/reports -name \*.new.md`; do
-			cp $NEW_MD ${NEW_MD/.new.md/-$ITERATION.md}
+			cp $NEW_MD ${NEW_MD/.new.md/.#$ITERATION.md}
 			mv $NEW_MD ${NEW_MD/.new.md/.md}
 		done
 
