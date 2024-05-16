@@ -15,7 +15,6 @@ Rules version: 8.11.16
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: wildcard (64)](#field-type-solver-wildcard-64)
       1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Unsupported function: match (10)](#unsupported-function-match-10)
@@ -37,6 +36,7 @@ Rules version: 8.11.16
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smb')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmb-1)
       1. [Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)](#unsolvable-constraints-fileextheader_bytes-excluded-by-strings504b0304-504b0304-1)
+      1. [Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringsswipuploadashx-post-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
@@ -58,11 +58,15 @@ Rules version: 8.11.16
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsdrivegooglecom-exportdownload-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsarpexe-arpexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsedgewebview2exe-msedgewebview2exe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringspowershellexe-powershellexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh')) (1)](#unsolvable-constraints-processname-excluded-by-stringssh-sh-1)
       1. [Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)](#unsolvable-constraints-processparentargs-excluded-by-stringswdisystemhost-wdisystemhost-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'dllhost.exe'}): ('dllhost.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsdllhostexe-dllhostexe-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsrundll32exe-rundll32exe-1)
@@ -286,74 +290,6 @@ Rules version: 8.11.16
 
 ## Generation errors
 
-### Field type solver: wildcard (64)
-
-64 rules:
-* Adding Hidden File Attribute via Attrib
-* Apple Scripting Execution with Administrator Privileges
-* Attempt to Mount SMB Share via Command Line
-* Binary Executed from Shared Memory Directory
-* Code Signing Policy Modification Through Registry
-* Command Shell Activity Started via RunDLL32
-* Component Object Model Hijacking
-* Control Panel Process with Unusual Arguments
-* Creation of Hidden Login Item via Apple Script
-* DNS-over-HTTPS Enabled via Registry
-* Delayed Execution via Ping
-* Disabling User Account Control via Registry Modification
-* Encoded Executable Stored in the Registry
-* Enumeration Command Spawned via WMIPrvSE
-* Execution via Microsoft DotNet ClickOnce Host
-* Exporting Exchange Mailbox via PowerShell
-* Full User-Mode Dumps Enabled System-Wide
-* Host Files System Changes via Windows Subsystem for Linux
-* Keychain Password Retrieval via Command Line
-* Local Account TokenFilter Policy Disabled
-* MS Office Macro Security Registry Modifications
-* Microsoft Windows Defender Tampering
-* Modification of AmsiEnable Registry Key
-* Modification of WDigest Security Provider
-* NTDS or SAM Database File Copied
-* Network Logon Provider Registry Modification
-* Network-Level Authentication (NLA) Disabled
-* Persistence via WMI Standard Registry Provider
-* Potential Persistence via Time Provider Modification
-* Potential Port Monitor or Print Processor Registration Abuse
-* Potential Privacy Control Bypass via Localhost Secure Copy
-* Potential Reverse Shell Activity via Terminal
-* Potential SharpRDP Behavior
-* PowerShell Script Block Logging Disabled
-* Privilege Escalation via CAP_CHOWN/CAP_FOWNER Capabilities
-* Privilege Escalation via Windir Environment Variable
-* Prompt for Credentials with OSASCRIPT
-* RDP Enabled via Registry
-* Roshal Archive (RAR) or PowerShell File Downloaded from the Internet
-* SIP Provider Modification
-* SUNBURST Command and Control Activity
-* Scheduled Tasks AT Command Enabled
-* Security Software Discovery via Grep
-* Service Disabled via Registry Modification
-* SolarWinds Process Disabling Services via Registry
-* Suspicious Browser Child Process
-* Suspicious Communication App Child Process
-* Suspicious Content Extracted or Decompressed via Funzip
-* Suspicious Execution via Windows Subsystem for Linux
-* Suspicious File Downloaded from Google Drive
-* Suspicious ImagePath Service Creation
-* Suspicious Print Spooler Point and Print DLL
-* Suspicious Startup Shell Folder Modification
-* Suspicious WMIC XSL Script Execution
-* Suspicious macOS MS Office Child Process
-* Symbolic Link to Shadow Copy Created
-* Unusual Persistence via Services Registry
-* Unusual Print Spooler Child Process
-* Unusual Process For MSSQL Service Accounts
-* Virtual Private Network Connection Attempt
-* Windows Defender Disabled via Registry Modification
-* Windows Installer with Suspicious Properties
-* Windows Network Enumeration
-* Windows Subsystem for Linux Enabled via Dism Utility
-
 ### Root with too many branches (limit: 10000) (17)
 
 17 rules:
@@ -515,6 +451,11 @@ Rules version: 8.11.16
 1 rules:
 * Archive File with Unusual Extension
 
+### Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)
+
+1 rules:
+* SUNBURST Command and Control Activity
+
 ### Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)
 
 1 rules:
@@ -620,6 +561,11 @@ Rules version: 8.11.16
 1 rules:
 * PowerShell Suspicious Script with Audio Capture Capabilities
 
+### Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)
+
+1 rules:
+* Suspicious File Downloaded from Google Drive
+
 ### Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)
 
 1 rules:
@@ -640,10 +586,25 @@ Rules version: 8.11.16
 1 rules:
 * Potential Masquerading as Browser Process
 
+### Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (1)
+
+1 rules:
+* Delayed Execution via Ping
+
 ### Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)
 
 1 rules:
 * Suspicious MS Office Child Process
+
+### Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)
+
+1 rules:
+* Enumeration Command Spawned via WMIPrvSE
+
+### Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh')) (1)
+
+1 rules:
+* Suspicious macOS MS Office Child Process
 
 ### Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)
 

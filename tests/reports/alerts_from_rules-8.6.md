@@ -10,7 +10,7 @@ Rules version: 8.6.10
 ## Table of contents
    1. [Rules with no signals (4)](#rules-with-no-signals-4)
    1. [Rules with too few signals (9)](#rules-with-too-few-signals-9)
-   1. [Rules with the correct signals (619)](#rules-with-the-correct-signals-619)
+   1. [Rules with the correct signals (667)](#rules-with-the-correct-signals-667)
 
 ## Rules with no signals (4)
 
@@ -327,7 +327,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
-## Rules with the correct signals (619)
+## Rules with the correct signals (667)
 
 ### A scheduled task was created
 
@@ -1228,6 +1228,23 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Adding Hidden File Attribute via Attrib
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-067
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  (process.name : "attrib.exe" or process.pe.original_file_name == "ATTRIB.EXE") and process.args : "+h" and
+  not
+  (process.parent.name: "cmd.exe" and
+    process.command_line: "attrib  +R +H +S +A *.cui" and
+    process.parent.command_line: "?:\\WINDOWS\\system32\\cmd.exe /c \"?:\\WINDOWS\\system32\\*.bat\"")
+```
+
+
+
 ### AdminSDHolder Backdoor
 
 Branch count: 1  
@@ -1319,6 +1336,19 @@ sequence by host.id, process.entity_id with maxspan=30s
     "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24", "192.31.196.0/24",
     "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10", "192.175.48.0/24",
     "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10", "FF00::/8")]
+```
+
+
+
+### Apple Scripting Execution with Administrator Privileges
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-081
+
+```python
+process where host.os.type == "macos" and event.type in ("start", "process_started") and process.name : "osascript" and
+  process.command_line : "osascript*with administrator privileges"
 ```
 
 
@@ -1617,6 +1647,43 @@ Index: geneve-ut-103
 
 ```python
 event.dataset:okta.system and event.action:policy.rule.update
+```
+
+
+
+### Attempt to Mount SMB Share via Command Line
+
+Branch count: 8  
+Document count: 8  
+Index: geneve-ut-104
+
+```python
+process where host.os.type == "macos" and event.type in ("start", "process_started") and
+  (
+    process.name : "mount_smbfs" or
+    (process.name : "open" and process.args : "smb://*") or
+    (process.name : "mount" and process.args : "smbfs") or
+    (process.name : "osascript" and process.command_line : "osascript*mount volume*smb://*")
+  ) and
+  not process.parent.executable : "/Applications/Google Drive.app/Contents/MacOS/Google Drive"
+```
+
+
+
+### Attempt to Remove File Quarantine Attribute
+
+Branch count: 12  
+Document count: 12  
+Index: geneve-ut-105
+
+```python
+process where host.os.type == "macos" and event.type in ("start", "process_started") and
+  process.name : "xattr" and
+  (
+    (process.args : "com.apple.quarantine" and process.args : ("-d", "-w")) or
+    (process.args : "-c") or
+    (process.command_line : ("/bin/bash -c xattr -c *", "/bin/zsh -c xattr -c *", "/bin/sh -c xattr -c *"))
+  ) and not process.args_count > 12
 ```
 
 
@@ -2267,6 +2334,23 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Code Signing Policy Modification Through Registry
+
+Branch count: 8  
+Document count: 8  
+Index: geneve-ut-156
+
+```python
+registry where host.os.type == "windows" and event.type : ("creation", "change") and
+(
+  registry.path : "HKEY_USERS\\*\\Software\\Policies\\Microsoft\\Windows NT\\Driver Signing\\BehaviorOnFailedVerify" and
+  registry.value: "BehaviorOnFailedVerify" and
+  registry.data.strings : ("0", "0x00000000", "1", "0x00000001")
+)
+```
+
+
+
 ### Command Execution via SolarWinds Process
 
 Branch count: 12  
@@ -2303,6 +2387,75 @@ sequence by process.entity_id
                                   "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10", "192.175.48.0/24",
                                   "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
                                   "FE80::/10", "FF00::/8")]
+```
+
+
+
+### Command Shell Activity Started via RunDLL32
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-159
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+ process.name : ("cmd.exe", "powershell.exe") and
+  process.parent.name : "rundll32.exe" and process.parent.command_line != null and
+  /* common FPs can be added here */
+  not process.parent.args : ("C:\\Windows\\System32\\SHELL32.dll,RunAsNewUser_RunDLL",
+                             "C:\\WINDOWS\\*.tmp,zzzzInvokeManagedCustomActionOutOfProc")
+```
+
+
+
+### Component Object Model Hijacking
+
+Branch count: 56  
+Document count: 56  
+Index: geneve-ut-160
+
+```python
+registry where host.os.type == "windows" and
+  /* not necessary but good for filtering privileged installations */
+  user.domain != "NT AUTHORITY" and
+  (
+    (
+      registry.path : ("HK*\\InprocServer32\\", "\\REGISTRY\\*\\InprocServer32\\") and
+      registry.data.strings: ("scrobj.dll", "C:\\*\\scrobj.dll") and
+      not registry.path : "*\\{06290BD*-48AA-11D2-8432-006008C3FBFC}\\*"
+    ) or
+
+    /* in general COM Registry changes on Users Hive is less noisy and worth alerting */
+    (registry.path : (
+        "HKEY_USERS\\*\\InprocServer32\\",
+        "HKEY_USERS\\*\\LocalServer32\\",
+        "HKEY_USERS\\*\\DelegateExecute*",
+        "HKEY_USERS\\*\\TreatAs*",
+        "HKEY_USERS\\*\\ScriptletURL*",
+        "\\REGISTRY\\USER\\*\\InprocServer32\\",
+        "\\REGISTRY\\USER\\*\\LocalServer32\\",
+        "\\REGISTRY\\USER\\*\\DelegateExecute*",
+        "\\REGISTRY\\USER\\*\\TreatAs*", 
+        "\\REGISTRY\\USER\\*\\ScriptletURL*"
+    ) and not 
+    (
+      process.executable : "?:\\Program Files*\\Veeam\\Backup and Replication\\Console\\veeam.backup.shell.exe" and
+        registry.path : (
+          "HKEY_USERS\\S-1-*_Classes\\CLSID\\*\\LocalServer32\\",
+          "\\REGISTRY\\USER\\S-1-*_Classes\\CLSID\\*\\LocalServer32\\"))
+    ) or
+
+    (
+      registry.path : ("HKLM\\*\\InProcServer32\\*", "\\REGISTRY\\MACHINE\\*\\InProcServer32\\*") and
+        registry.data.strings : ("*\\Users\\*", "*\\ProgramData\\*")
+    )
+  ) and
+
+  /* removes false-positives generated by OneDrive and Teams */
+  not process.name: ("OneDrive.exe", "OneDriveSetup.exe", "FileSyncConfig.exe", "Teams.exe") and
+
+  /* Teams DLL loaded by regsvr */
+  not (process.name: "regsvr32.exe" and registry.data.strings : "*Microsoft.Teams.*.dll")
 ```
 
 
@@ -2392,6 +2545,32 @@ sequence by process.entity_id
 
 
 
+### Control Panel Process with Unusual Arguments
+
+Branch count: 24  
+Document count: 24  
+Index: geneve-ut-167
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+ process.executable : ("?:\\Windows\\SysWOW64\\control.exe", "?:\\Windows\\System32\\control.exe") and
+ process.command_line :
+          ("*.jpg*",
+           "*.png*",
+           "*.gif*",
+           "*.bmp*",
+           "*.jpeg*",
+           "*.TIFF*",
+           "*.inf*",
+           "*.cpl:*/*",
+           "*../../..*",
+           "*/AppData/Local/*",
+           "*:\\Users\\Public\\*",
+           "*\\AppData\\Local\\*")
+```
+
+
+
 ### Creation of Hidden Launch Agent or Daemon
 
 Branch count: 5  
@@ -2408,6 +2587,19 @@ file where host.os.type == "macos" and event.type != "deletion" and
     "/System/Library/LaunchDaemons/.*.plist",
     "/Library/LaunchDaemons/.*.plist"
   )
+```
+
+
+
+### Creation of Hidden Login Item via Apple Script
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-170
+
+```python
+process where host.os.type == "macos" and event.type in ("start", "process_started") and process.name : "osascript" and
+ process.command_line : "osascript*login item*hidden:true*"
 ```
 
 
@@ -2589,6 +2781,24 @@ event.dataset:cyberarkpas.audit and
 
 
 
+### DNS-over-HTTPS Enabled via Registry
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-185
+
+```python
+registry where host.os.type == "windows" and event.type in ("creation", "change") and
+  (registry.path : "*\\SOFTWARE\\Policies\\Microsoft\\Edge\\BuiltInDnsClientEnabled" and
+  registry.data.strings : "1") or
+  (registry.path : "*\\SOFTWARE\\Google\\Chrome\\DnsOverHttpsMode" and
+  registry.data.strings : "secure") or
+  (registry.path : "*\\SOFTWARE\\Policies\\Mozilla\\Firefox\\DNSOverHTTPS" and
+  registry.data.strings : "1")
+```
+
+
+
 ### Default Cobalt Strike Team Server Certificate
 
 Branch count: 3  
@@ -2693,6 +2903,28 @@ process where host.os.type == "windows" and event.type == "start" and
     (process.args : "disable" and process.args : "firewall" and process.args : "set") or
     (process.args : "advfirewall" and process.args : "off" and process.args : "state")
   )
+```
+
+
+
+### Disabling User Account Control via Registry Modification
+
+Branch count: 12  
+Document count: 12  
+Index: geneve-ut-192
+
+```python
+registry where host.os.type == "windows" and event.type == "change" and
+  registry.path :
+    (
+      "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\EnableLUA",
+      "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\ConsentPromptBehaviorAdmin",
+      "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\PromptOnSecureDesktop",
+      "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\EnableLUA",
+      "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\ConsentPromptBehaviorAdmin",
+      "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\PromptOnSecureDesktop"
+    ) and
+  registry.data.strings : ("0", "0x00000000")
 ```
 
 
@@ -2869,6 +3101,20 @@ Index: geneve-ut-204
 process where host.os.type == "windows" and event.type == "start" and
 process.name : "netsh.exe" and
 process.args : ("firewall", "advfirewall") and process.args : "group=Network Discovery" and process.args : "enable=Yes"
+```
+
+
+
+### Encoded Executable Stored in the Registry
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-205
+
+```python
+registry where host.os.type == "windows" and
+/* update here with encoding combinations */
+ registry.data.strings : "TVqQAAMAAAAEAAAA*"
 ```
 
 
@@ -3374,6 +3620,20 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 
 
 
+### Exporting Exchange Mailbox via PowerShell
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-233
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.name: ("powershell.exe", "pwsh.exe", "powershell_ise.exe") and 
+  process.command_line : ("*MailboxExportRequest*", "*-Mailbox*-ContentFilter*")
+```
+
+
+
 ### External Alerts
 
 Branch count: 1  
@@ -3591,6 +3851,20 @@ Index: geneve-ut-250
 
 ```python
 event.dataset: google_workspace.alert
+```
+
+
+
+### Full User-Mode Dumps Enabled System-Wide
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-251
+
+```python
+registry where host.os.type == "windows" and registry.path : "HKLM\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\LocalDumps\\DumpType" and
+    registry.data.strings : ("2", "0x00000002") and
+    not (process.executable : "?:\\Windows\\system32\\svchost.exe" and user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20"))
 ```
 
 
@@ -4107,6 +4381,23 @@ Index: geneve-ut-292
 ```python
 process where host.os.type == "windows" and event.type == "start" and
 (process.name: "gpresult.exe" or process.pe.original_file_name == "gprslt.exe") and process.args: ("/z", "/v", "/r", "/x")
+```
+
+
+
+### Host Files System Changes via Windows Subsystem for Linux
+
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-297
+
+```python
+sequence by process.entity_id with maxspan=5m
+ [process where host.os.type == "windows" and event.type == "start" and
+  process.name : "dllhost.exe" and 
+   /* Plan9FileSystem CLSID - WSL Host File System Worker */
+  process.command_line : "*{DFB65C4C-B34F-435D-AFE9-A86218684AA8}*"]
+ [file where host.os.type == "windows" and process.name : "dllhost.exe" and not file.path : "?:\\Users\\*\\Downloads\\*"]
 ```
 
 
@@ -4883,6 +5174,21 @@ process.args in ("root", "admin", "wheel", "staff", "sudo",
 
 
 
+### Local Account TokenFilter Policy Disabled
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-346
+
+```python
+registry where host.os.type == "windows" and registry.path : (
+  "HKLM\\*\\LocalAccountTokenFilterPolicy",
+  "\\REGISTRY\\MACHINE\\*\\LocalAccountTokenFilterPolicy") and
+  registry.data.strings : ("1", "0x00000001")
+```
+
+
+
 ### Local Scheduled Task Creation
 
 Branch count: 600  
@@ -4916,6 +5222,30 @@ Index: geneve-ut-348
 
 ```python
 event.dataset:google_workspace.admin and event.provider:admin and event.category:iam and event.action:(ENFORCE_STRONG_AUTHENTICATION or ALLOW_STRONG_AUTHENTICATION) and google_workspace.admin.new_value:false
+```
+
+
+
+### MS Office Macro Security Registry Modifications
+
+Branch count: 96  
+Document count: 96  
+Index: geneve-ut-349
+
+```python
+registry where host.os.type == "windows" and event.type == "change" and
+    registry.path : (
+        "HKU\\S-1-5-21-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\AccessVBOM",
+        "HKU\\S-1-5-21-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\VbaWarnings",
+        "HKU\\S-1-12-1-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\AccessVBOM",
+        "HKU\\S-1-12-1-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\VbaWarnings",
+        "\\REGISTRY\\USER\\S-1-5-21-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\AccessVBOM",
+        "\\REGISTRY\\USER\\S-1-5-21-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\VbaWarnings",
+        "\\REGISTRY\\USER\\S-1-12-1-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\AccessVBOM",
+        "\\REGISTRY\\USER\\S-1-12-1-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\VbaWarnings"
+        ) and
+    registry.data.strings : ("0x00000001", "1") and
+    process.name : ("cscript.exe", "wscript.exe", "mshta.exe", "mshta.exe", "winword.exe", "excel.exe")
 ```
 
 
@@ -5383,6 +5713,46 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Microsoft Windows Defender Tampering
+
+Branch count: 30  
+Document count: 30  
+Index: geneve-ut-384
+
+```python
+registry where host.os.type == "windows" and event.type in ("creation", "change") and
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\PUAProtection" and
+  registry.data.strings : ("0", "0x00000000")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender Security Center\\App and Browser protection\\DisallowExploitProtectionOverride" and
+  registry.data.strings : ("0", "0x00000000")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\DisableAntiSpyware" and
+  registry.data.strings : ("1", "0x00000001")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Features\\TamperProtection" and
+  registry.data.strings : ("0", "0x00000000")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection\\DisableRealtimeMonitoring" and
+  registry.data.strings : ("1", "0x00000001")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection\\DisableIntrusionPreventionSystem" and
+  registry.data.strings : ("1", "0x00000001")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection\\DisableScriptScanning" and
+  registry.data.strings : ("1", "0x00000001")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Windows Defender Exploit Guard\\Controlled Folder Access\\EnableControlledFolderAccess" and
+  registry.data.strings : ("0", "0x00000000")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection\\DisableIOAVProtection" and
+  registry.data.strings : ("1", "0x00000001")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Reporting\\DisableEnhancedNotifications" and
+  registry.data.strings : ("1", "0x00000001")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\SpyNet\\DisableBlockAtFirstSeen" and
+  registry.data.strings : ("1", "0x00000001")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\SpyNet\\SpynetReporting" and
+  registry.data.strings : ("0", "0x00000000")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\SpyNet\\SubmitSamplesConsent" and
+  registry.data.strings : ("0", "0x00000000")) or
+  (registry.path : "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection\\DisableBehaviorMonitoring" and
+  registry.data.strings : ("1", "0x00000001"))
+```
+
+
+
 ### Mimikatz Memssp Log File Detected
 
 Branch count: 1  
@@ -5391,6 +5761,24 @@ Index: geneve-ut-385
 
 ```python
 file where host.os.type == "windows" and file.name : "mimilsa.log" and process.name : "lsass.exe"
+```
+
+
+
+### Modification of AmsiEnable Registry Key
+
+Branch count: 12  
+Document count: 12  
+Index: geneve-ut-386
+
+```python
+registry where host.os.type == "windows" and event.type in ("creation", "change") and
+  registry.path : (
+    "HKEY_USERS\\*\\Software\\Microsoft\\Windows Script\\Settings\\AmsiEnable",
+    "HKU\\*\\Software\\Microsoft\\Windows Script\\Settings\\AmsiEnable",
+    "\\REGISTRY\\USER\\*\\Software\\Microsoft\\Windows Script\\Settings\\AmsiEnable"
+  ) and
+  registry.data.strings: ("0", "0x00000000")
 ```
 
 
@@ -5526,6 +5914,23 @@ event.category:file and event.type:change and
            /private/var/folders/*/T/com.apple.fileprovider.ArchiveService/TemporaryItems/*/lib/security/pam_*.so or
            /tmp/newroot/usr/lib64/security/pam_*.so
          )
+```
+
+
+
+### Modification of WDigest Security Provider
+
+Branch count: 16  
+Document count: 16  
+Index: geneve-ut-393
+
+```python
+registry where host.os.type == "windows" and event.type : ("creation", "change") and
+    registry.path : (
+        "HKLM\\SYSTEM\\*ControlSet*\\Control\\SecurityProviders\\WDigest\\UseLogonCredential",
+        "\\REGISTRY\\MACHINE\\SYSTEM\\*ControlSet*\\Control\\SecurityProviders\\WDigest\\UseLogonCredential"
+    ) and registry.data.strings : ("1", "0x00000001") and
+    not (process.executable : "?:\\Windows\\System32\\svchost.exe" and user.id : "S-1-5-18")
 ```
 
 
@@ -5830,6 +6235,29 @@ sequence by process.entity_id
       "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24", "192.31.196.0/24",
       "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10", "192.175.48.0/24",
       "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10", "FF00::/8")]
+```
+
+
+
+### Network Logon Provider Registry Modification
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-412
+
+```python
+registry where host.os.type == "windows" and registry.data.strings != null and
+ registry.path : (
+    "HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\NetworkProvider\\ProviderPath",
+    "\\REGISTRY\\MACHINE\\SYSTEM\\*ControlSet*\\Services\\*\\NetworkProvider\\ProviderPath"
+ ) and
+ /* Excluding default NetworkProviders RDPNP, LanmanWorkstation and webclient. */
+ not ( user.id : "S-1-5-18" and
+       registry.data.strings in
+                ("%SystemRoot%\\System32\\ntlanman.dll",
+                 "%SystemRoot%\\System32\\drprov.dll",
+                 "%SystemRoot%\\System32\\davclnt.dll")
+      )
 ```
 
 
@@ -6250,6 +6678,69 @@ process where host.os.type == "windows" and event.type == "start" and
   (process.name : "wmic.exe" or process.pe.original_file_name == "wmic.exe") and
   process.args : "create" and
   process.args : ("ActiveScriptEventConsumer", "CommandLineEventConsumer")
+```
+
+
+
+### Persistence via WMI Standard Registry Provider
+
+Branch count: 48  
+Document count: 48  
+Index: geneve-ut-447
+
+```python
+registry where host.os.type == "windows" and
+ registry.data.strings != null and process.name : "WmiPrvSe.exe" and
+ registry.path : (
+                  "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+                  "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+                  "HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+                  "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+                  "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+                  "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+                  "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\*",
+                  "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+                  "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\*",
+                  "HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\ServiceDLL",
+                  "HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\ImagePath",
+                  "HKEY_USERS\\*\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell\\*",
+                  "HKEY_USERS\\*\\Environment\\UserInitMprLogonScript",
+                  "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Load",
+                  "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell",
+                  "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Shell",
+                  "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logoff\\Script",
+                  "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logon\\Script",
+                  "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Shutdown\\Script",
+                  "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Startup\\Script",
+                  "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Ctf\\LangBarAddin\\*\\FilePath",
+                  "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Exec",
+                  "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Script",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Microsoft\\Command Processor\\Autorun",
+                  "\\REGISTRY\\USER\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+                  "\\REGISTRY\\MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+                  "\\REGISTRY\\MACHINE\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+                  "\\REGISTRY\\USER\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+                  "\\REGISTRY\\MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+                  "\\REGISTRY\\MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+                  "\\REGISTRY\\MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\*",
+                  "\\REGISTRY\\USER\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+                  "\\REGISTRY\\USER\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\*",
+                  "\\REGISTRY\\MACHINE\\SYSTEM\\*ControlSet*\\Services\\*\\ServiceDLL",
+                  "\\REGISTRY\\MACHINE\\SYSTEM\\*ControlSet*\\Services\\*\\ImagePath",
+                  "\\REGISTRY\\USER\\*\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell\\*",
+                  "\\REGISTRY\\USER\\*\\Environment\\UserInitMprLogonScript",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Load",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Shell",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logoff\\Script",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logon\\Script",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Shutdown\\Script",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Startup\\Script",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Microsoft\\Ctf\\LangBarAddin\\*\\FilePath",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Exec",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Script",
+                  "\\REGISTRY\\USER\\*\\SOFTWARE\\Microsoft\\Command Processor\\Autorun"
+                  )
 ```
 
 
@@ -7092,6 +7583,43 @@ event.category:file and host.os.type:macos and not event.type:"deletion" and
 
 
 
+### Potential Persistence via Time Provider Modification
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-511
+
+```python
+registry where host.os.type == "windows" and event.type:"change" and
+  registry.path: (
+    "HKLM\\SYSTEM\\*ControlSet*\\Services\\W32Time\\TimeProviders\\*",
+    "\\REGISTRY\\MACHINE\\SYSTEM\\*ControlSet*\\Services\\W32Time\\TimeProviders\\*"
+  ) and
+  registry.data.strings:"*.dll"
+```
+
+
+
+### Potential Port Monitor or Print Processor Registration Abuse
+
+Branch count: 8  
+Document count: 8  
+Index: geneve-ut-512
+
+```python
+registry where host.os.type == "windows" and event.type in ("creation", "change") and
+  registry.path : (
+      "HKLM\\SYSTEM\\*ControlSet*\\Control\\Print\\Monitors\\*",
+      "HKLM\\SYSTEM\\*ControlSet*\\Control\\Print\\Environments\\Windows*\\Print Processors\\*",
+      "\\REGISTRY\\MACHINE\\SYSTEM\\*ControlSet*\\Control\\Print\\Monitors\\*",
+      "\\REGISTRY\\MACHINE\\SYSTEM\\*ControlSet*\\Control\\Print\\Environments\\Windows*\\Print Processors\\*"
+  ) and registry.data.strings : "*.dll" and
+  /* exclude SYSTEM SID - look for changes by non-SYSTEM user */
+  not user.id : "S-1-5-18"
+```
+
+
+
 ### Potential PowerShell HackTool Script by Function Names
 
 Branch count: 696  
@@ -7280,6 +7808,22 @@ event.category:process and host.os.type:windows and
   and not powershell.file.script_block_text : (
     "sentinelbreakpoints" and "Set-PSBreakpoint"
   )
+```
+
+
+
+### Potential Privacy Control Bypass via Localhost Secure Copy
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-514
+
+```python
+process where host.os.type == "macos" and event.type in ("start", "process_started") and
+ process.name:"scp" and
+ process.args:"StrictHostKeyChecking=no" and
+ process.command_line:("scp *localhost:/*", "scp *127.0.0.1:/*") and
+ not process.args:"vagrant@*127.0.0.1*"
 ```
 
 
@@ -7505,6 +8049,25 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Potential Reverse Shell Activity via Terminal
+
+Branch count: 80  
+Document count: 80  
+Index: geneve-ut-532
+
+```python
+process where event.type in ("start", "process_started") and
+  process.name in ("sh", "bash", "zsh", "dash", "zmodload") and
+  process.args : ("*/dev/tcp/*", "*/dev/udp/*", "*zsh/net/tcp*", "*zsh/net/udp*") and
+
+  /* noisy FPs */
+  not (process.parent.name : "timeout" and process.executable : "/var/lib/docker/overlay*") and
+  not process.command_line : ("*/dev/tcp/sirh_db/*", "*/dev/tcp/remoteiot.com/*", "*dev/tcp/elk.stag.one/*", "*dev/tcp/kafka/*", "*/dev/tcp/$0/$1*", "*/dev/tcp/127.*", "*/dev/udp/127.*", "*/dev/tcp/localhost/*") and
+  not process.parent.command_line : "runc init"
+```
+
+
+
 ### Potential Reverse Shell via Java
 
 Branch count: 32  
@@ -7545,6 +8108,34 @@ Index: geneve-ut-540
 event.action:"Directory Service Changes" and event.code:"5136" and
  winlog.event_data.AttributeLDAPDisplayName:"msDS-KeyCredentialLink" and winlog.event_data.AttributeValue :B\:828* and
  not winlog.event_data.SubjectUserName: MSOL_*
+```
+
+
+
+### Potential SharpRDP Behavior
+
+Branch count: 32  
+Document count: 96  
+Index: geneve-ut-542
+
+```python
+/* Incoming RDP followed by a new RunMRU string value set to cmd, powershell, taskmgr or tsclient, followed by process execution within 1m */
+
+sequence by host.id with maxspan=1m
+  [network where host.os.type == "windows" and event.type == "start" and process.name : "svchost.exe" and destination.port == 3389 and
+   network.direction : ("incoming", "ingress") and network.transport == "tcp" and
+   source.ip != "127.0.0.1" and source.ip != "::1"
+  ]
+
+  [registry where host.os.type == "windows" and process.name : "explorer.exe" and
+   registry.path : ("HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU\\*") and
+   registry.data.strings : ("cmd.exe*", "powershell.exe*", "taskmgr*", "\\\\tsclient\\*.exe\\*")
+  ]
+
+  [process where host.os.type == "windows" and event.type == "start" and
+   (process.parent.name : ("cmd.exe", "powershell.exe", "taskmgr.exe") or process.args : ("\\\\tsclient\\*.exe")) and
+   not process.name : "conhost.exe"
+   ]
 ```
 
 
@@ -7696,6 +8287,22 @@ event.category:process and host.os.type:windows and
 
 
 
+### PowerShell Script Block Logging Disabled
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-554
+
+```python
+registry where host.os.type == "windows" and event.type == "change" and
+    registry.path : (
+        "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging\\EnableScriptBlockLogging",
+        "\\REGISTRY\\MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging\\EnableScriptBlockLogging"
+    ) and registry.data.strings : ("0", "0x00000000")
+```
+
+
+
 ### PowerShell Suspicious Discovery Related Windows API Functions
 
 Branch count: 24  
@@ -7772,6 +8379,24 @@ Index: geneve-ut-568
 ```python
 event.category:file and host.os.type:macos and not event.type:deletion and
  file.path:/private/var/at/tabs/root and not process.executable:/usr/bin/crontab
+```
+
+
+
+### Privilege Escalation via Windir Environment Variable
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-569
+
+```python
+registry where host.os.type == "windows" and registry.path : (
+    "HKEY_USERS\\*\\Environment\\windir",
+    "HKEY_USERS\\*\\Environment\\systemroot",
+    "\\REGISTRY\\USER\\*\\Environment\\windir",
+    "\\REGISTRY\\USER\\*\\Environment\\systemroot"
+    ) and
+ not registry.data.strings : ("C:\\windows", "%SystemRoot%")
 ```
 
 
@@ -8035,6 +8660,19 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Prompt for Credentials with OSASCRIPT
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-584
+
+```python
+process where host.os.type == "macos" and event.type in ("start", "process_started") and process.name : "osascript" and
+ process.command_line : "osascript*display dialog*password*"
+```
+
+
+
 ### PsExec Network Connection
 
 Branch count: 1  
@@ -8078,6 +8716,27 @@ process where host.os.type == "windows" and event.type == "start" and
       process.args : ("*HKLM*", "*HKCU*", "*HKEY_LOCAL_MACHINE*", "*HKEY_CURRENT_USER*", "*Registry::*"))
   )
 ) and not user.id : "S-1-5-18"
+```
+
+
+
+### RDP Enabled via Registry
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-588
+
+```python
+registry where host.os.type == "windows" and 
+ event.type in ("creation", "change") and
+  registry.path : "HKLM\\SYSTEM\\*ControlSet*\\Control\\Terminal Server\\fDenyTSConnections" and
+  registry.data.strings : ("0", "0x00000000") and
+  not process.executable : ("?:\\Windows\\System32\\SystemPropertiesRemote.exe", 
+                            "?:\\Windows\\System32\\SystemPropertiesComputerName.exe", 
+                            "?:\\Windows\\System32\\SystemPropertiesAdvanced.exe", 
+                            "?:\\Windows\\System32\\SystemSettingsAdminFlows.exe", 
+                            "?:\\Windows\\WinSxS\\*\\TiWorker.exe", 
+                            "?:\\Windows\\system32\\svchost.exe")
 ```
 
 
@@ -8439,6 +9098,71 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Roshal Archive (RAR) or PowerShell File Downloaded from the Internet
+
+Branch count: 24  
+Document count: 24  
+Index: geneve-ut-614
+
+```python
+event.dataset: (network_traffic.http or network_traffic.tls) and
+  (url.extension:(ps1 or rar) or url.path:(*.ps1 or *.rar)) and
+    not destination.ip:(
+      10.0.0.0/8 or
+      127.0.0.0/8 or
+      169.254.0.0/16 or
+      172.16.0.0/12 or
+      192.0.0.0/24 or
+      192.0.0.0/29 or
+      192.0.0.8/32 or
+      192.0.0.9/32 or
+      192.0.0.10/32 or
+      192.0.0.170/32 or
+      192.0.0.171/32 or
+      192.0.2.0/24 or
+      192.31.196.0/24 or
+      192.52.193.0/24 or
+      192.168.0.0/16 or
+      192.88.99.0/24 or
+      224.0.0.0/4 or
+      100.64.0.0/10 or
+      192.175.48.0/24 or
+      198.18.0.0/15 or
+      198.51.100.0/24 or
+      203.0.113.0/24 or
+      240.0.0.0/4 or
+      "::1" or
+      "FE80::/10" or
+      "FF00::/8"
+    ) and
+    source.ip:(
+      10.0.0.0/8 or
+      172.16.0.0/12 or
+      192.168.0.0/16
+    )
+```
+
+
+
+### SIP Provider Modification
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-615
+
+```python
+registry where host.os.type == "windows" and event.type:"change" and
+  registry.path: (
+    "*\\SOFTWARE\\Microsoft\\Cryptography\\OID\\EncodingType 0\\CryptSIPDllPutSignedDataMsg\\{*}\\Dll",
+    "*\\SOFTWARE\\WOW6432Node\\Microsoft\\Cryptography\\OID\\EncodingType 0\\CryptSIPDllPutSignedDataMsg\\{*}\\Dll",
+    "*\\SOFTWARE\\Microsoft\\Cryptography\\Providers\\Trust\\FinalPolicy\\{*}\\$Dll",
+    "*\\SOFTWARE\\WOW6432Node\\Microsoft\\Cryptography\\Providers\\Trust\\FinalPolicy\\{*}\\$Dll"
+    ) and
+  registry.data.strings:"*.dll"
+```
+
+
+
 ### SSH Authorized Keys File Modification
 
 Branch count: 8  
@@ -8480,6 +9204,22 @@ sequence by host.id with maxspan = 30s
   [registry where host.os.type == "windows" and registry.path : (
     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\*\\Actions",
     "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\*\\Actions")]
+```
+
+
+
+### Scheduled Tasks AT Command Enabled
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-622
+
+```python
+registry where host.os.type == "windows" and
+  registry.path : (
+    "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\Configuration\\EnableAt",
+    "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\Configuration\\EnableAt"
+  ) and registry.data.strings : ("1", "0x00000001")
 ```
 
 
@@ -8804,6 +9544,30 @@ event.category:process and host.os.type:macos and event.type:(start or process_s
 
 
 
+### SolarWinds Process Disabling Services via Registry
+
+Branch count: 28  
+Document count: 28  
+Index: geneve-ut-639
+
+```python
+registry where host.os.type == "windows" and registry.path : (
+    "HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\Start",
+    "\\REGISTRY\\MACHINE\\SYSTEM\\*ControlSet*\\Services\\*\\Start"
+  ) and
+  registry.data.strings : ("4", "0x00000004") and
+  process.name : (
+      "SolarWinds.BusinessLayerHost*.exe",
+      "ConfigurationWizard*.exe",
+      "NetflowDatabaseMaintenance*.exe",
+      "NetFlowService*.exe",
+      "SolarWinds.Administration*.exe",
+      "SolarWinds.Collector.Service*.exe",
+      "SolarwindsDiagnostics*.exe")
+```
+
+
+
 ### Startup Folder Persistence via Unsigned Process
 
 Branch count: 12  
@@ -8977,6 +9741,36 @@ sequence by host.id with maxspan=30s
 
 
 
+### Suspicious Browser Child Process
+
+Branch count: 182  
+Document count: 182  
+Index: geneve-ut-659
+
+```python
+process where host.os.type == "macos" and event.type in ("start", "process_started") and
+  process.parent.name : ("Google Chrome", "Google Chrome Helper*", "firefox", "Opera", "Safari", "com.apple.WebKit.WebContent", "Microsoft Edge") and
+  process.name : ("sh", "bash", "dash", "ksh", "tcsh", "zsh", "curl", "wget", "python*", "perl*", "php*", "osascript", "pwsh") and
+  process.command_line != null and
+  not process.command_line : "*/Library/Application Support/Microsoft/MAU*/Microsoft AutoUpdate.app/Contents/MacOS/msupdate*" and
+  not process.args :
+    (
+      "hw.model",
+      "IOPlatformExpertDevice",
+      "/Volumes/Google Chrome/Google Chrome.app/Contents/Frameworks/*/Resources/install.sh",
+      "--defaults-torrc",
+      "*Chrome.app",
+      "Framework.framework/Versions/*/Resources/keystone_promote_preflight.sh",
+      "/Users/*/Library/Application Support/Google/Chrome/recovery/*/ChromeRecovery",
+      "$DISPLAY",
+      "*GIO_LAUNCHED_DESKTOP_FILE_PID=$$*",
+      "/opt/homebrew/*",
+      "/usr/local/*brew*"
+    )
+```
+
+
+
 ### Suspicious Calendar File Modification
 
 Branch count: 1  
@@ -9048,6 +9842,22 @@ Index: geneve-ut-663
 process where host.os.type == "windows" and event.type == "start" and
  process.parent.name : "WmiPrvSE.exe" and process.name : "cmd.exe" and
  process.args : "\\\\127.0.0.1\\*" and process.args : ("2>&1", "1>")
+```
+
+
+
+### Suspicious Content Extracted or Decompressed via Funzip
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-664
+
+```python
+process where host.os.type == "linux" and event.action in ("exec", "exec_event") and
+((process.args == "tail" and process.args == "-c" and process.args == "funzip")) and
+not process.args : "/var/log/messages" and 
+not process.parent.executable : ("/usr/bin/dracut", "/sbin/dracut", "/usr/bin/xargs") and
+not (process.parent.name in ("sh", "sudo") and process.parent.command_line : "*nessus_su*")
 ```
 
 
@@ -9169,6 +9979,26 @@ process where host.os.type == "windows" and event.type == "start" and process.ex
 
 
 
+### Suspicious Execution via Windows Subsystem for Linux
+
+Branch count: 14  
+Document count: 14  
+Index: geneve-ut-673
+
+```python
+process where host.os.type == "windows" and event.type : "start" and
+ (
+  ((process.executable : "?:\\Windows\\System32\\bash.exe" or process.pe.original_file_name == "Bash.exe") and 
+  not process.command_line : ("bash", "bash.exe")) or 
+  process.executable : "?:\\Users\\*\\AppData\\Local\\Packages\\*\\rootfs\\usr\\bin\\bash" or 
+  (process.parent.name : "wsl.exe" and process.parent.command_line : "bash*" and not process.name : "wslhost.exe") or 
+  (process.name : "wsl.exe" and process.args : ("curl", "/etc/shadow", "/etc/passwd", "cat","--system", "root", "-e", "--exec", "bash", "/mnt/c/*"))
+  ) and 
+  not process.parent.executable : ("?:\\Program Files\\Docker\\*.exe", "?:\\Program Files (x86)\\Docker\\*.exe")
+```
+
+
+
 ### Suspicious Explorer Child Process
 
 Branch count: 14  
@@ -9217,6 +10047,23 @@ any where host.os.type == "windows" and
  (event.category : ("library", "driver") or (event.category == "process" and event.action : "Image loaded*")) and
   process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB.EXE", "MSACCESS.EXE") and
   (dll.name : "taskschd.dll" or file.name : "taskschd.dll")
+```
+
+
+
+### Suspicious ImagePath Service Creation
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-680
+
+```python
+registry where host.os.type == "windows" and registry.path : (
+    "HKLM\\SYSTEM\\ControlSet*\\Services\\*\\ImagePath",
+    "\\REGISTRY\\MACHINE\\SYSTEM\\ControlSet*\\Services\\*\\ImagePath"
+    ) and
+ /* add suspicious registry ImagePath values here */
+    registry.data.strings : ("%COMSPEC%*", "*\\.\\pipe\\*")
 ```
 
 
@@ -9574,6 +10421,30 @@ file where host.os.type == "windows" and event.type : "deletion" and
 
 
 
+### Suspicious Print Spooler Point and Print DLL
+
+Branch count: 4  
+Document count: 8  
+Index: geneve-ut-700
+
+```python
+sequence by host.id with maxspan=30s
+[registry where host.os.type == "windows" and
+ registry.path : (
+    "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Print\\Printers\\*\\SpoolDirectory",
+    "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Print\\Printers\\*\\SpoolDirectory"
+    ) and
+ registry.data.strings : "C:\\Windows\\System32\\spool\\drivers\\x64\\4"]
+[registry where host.os.type == "windows" and
+ registry.path : (
+    "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Print\\Printers\\*\\CopyFiles\\Payload\\Module",
+    "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Print\\Printers\\*\\CopyFiles\\Payload\\Module"
+    ) and
+ registry.data.strings : "C:\\Windows\\System32\\spool\\drivers\\x64\\4\\*"]
+```
+
+
+
 ### Suspicious Print Spooler SPL File Created
 
 Branch count: 1  
@@ -9786,6 +10657,36 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Suspicious Startup Shell Folder Modification
+
+Branch count: 8  
+Document count: 8  
+Index: geneve-ut-715
+
+```python
+registry where host.os.type == "windows" and
+ registry.path : (
+     "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\Common Startup",
+     "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\Common Startup",
+     "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\Startup",
+     "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\Startup",
+     "\\REGISTRY\\MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\Common Startup",
+     "\\REGISTRY\\MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\Common Startup",
+     "\\REGISTRY\\USER\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\Startup",
+     "\\REGISTRY\\USER\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\Startup"
+     ) and
+  registry.data.strings != null and
+  /* Normal Startup Folder Paths */
+  not registry.data.strings : (
+           "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup",
+           "%ProgramData%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup",
+           "%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup",
+           "C:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
+           )
+```
+
+
+
 ### Suspicious Sysctl File Event
 
 Branch count: 9  
@@ -9823,6 +10724,24 @@ any where host.os.type == "windows" and
  (event.category : ("library", "driver") or (event.category == "process" and event.action : "Image loaded*")) and
   process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB.EXE", "MSACCESS.EXE") and
   (dll.name : "wmiutils.dll" or file.name : "wmiutils.dll")
+```
+
+
+
+### Suspicious WMIC XSL Script Execution
+
+Branch count: 48  
+Document count: 96  
+Index: geneve-ut-720
+
+```python
+sequence by process.entity_id with maxspan = 2m
+[process where host.os.type == "windows" and event.type == "start" and
+   (process.name : "WMIC.exe" or process.pe.original_file_name : "wmic.exe") and
+   process.args : ("format*:*", "/format*:*", "*-format*:*") and
+   not process.command_line : "* /format:table *"]
+[any where host.os.type == "windows" and (event.category == "library" or (event.category == "process" and event.action : "Image loaded*")) and
+ (dll.name : ("jscript.dll", "vbscript.dll") or file.name : ("jscript.dll", "vbscript.dll"))]
 ```
 
 
@@ -9933,6 +10852,22 @@ process where host.os.type == "windows" and event.type == "start" and
 
    /* very noisy pattern - bat or cmd script executed via scheduled tasks */
   not (process.parent.args : "netsvcs" and process.args : ("?:\\*.bat", "?:\\*.cmd"))
+```
+
+
+
+### Symbolic Link to Shadow Copy Created
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-725
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+ process.pe.original_file_name in ("Cmd.Exe","PowerShell.EXE") and
+
+ /* Create Symbolic Link to Shadow Copies */
+ process.args : ("*mklink*", "*SymbolicLink*") and process.command_line : ("*HarddiskVolumeShadowCopy*")
 ```
 
 
@@ -10652,6 +11587,61 @@ process.parent.name != null and
 
 
 
+### Unusual Persistence via Services Registry
+
+Branch count: 8  
+Document count: 8  
+Index: geneve-ut-785
+
+```python
+registry where host.os.type == "windows" and
+  registry.path : (
+      "HKLM\\SYSTEM\\ControlSet*\\Services\\*\\ServiceDLL",
+      "HKLM\\SYSTEM\\ControlSet*\\Services\\*\\ImagePath",
+      "\\REGISTRY\\MACHINE\\SYSTEM\\ControlSet*\\Services\\*\\ServiceDLL",
+      "\\REGISTRY\\MACHINE\\SYSTEM\\ControlSet*\\Services\\*\\ImagePath"
+  ) and not registry.data.strings : (
+      "?:\\windows\\system32\\Drivers\\*.sys",
+      "\\SystemRoot\\System32\\drivers\\*.sys",
+      "\\??\\?:\\Windows\\system32\\Drivers\\*.SYS",
+      "system32\\DRIVERS\\USBSTOR") and
+  not (process.name : "procexp??.exe" and registry.data.strings : "?:\\*\\procexp*.sys") and
+  not process.executable : (
+      "?:\\Program Files\\*.exe",
+      "?:\\Program Files (x86)\\*.exe",
+      "?:\\Windows\\System32\\svchost.exe",
+      "?:\\Windows\\winsxs\\*\\TiWorker.exe",
+      "?:\\Windows\\System32\\drvinst.exe",
+      "?:\\Windows\\System32\\services.exe",
+      "?:\\Windows\\System32\\msiexec.exe",
+      "?:\\Windows\\System32\\regsvr32.exe")
+```
+
+
+
+### Unusual Print Spooler Child Process
+
+Branch count: 32  
+Document count: 32  
+Index: geneve-ut-786
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+ process.parent.name : "spoolsv.exe" and
+ (?process.Ext.token.integrity_level_name : "System" or
+ ?winlog.event_data.IntegrityLevel : "System") and
+
+ /* exclusions for FP control below */
+ not process.name : ("splwow64.exe", "PDFCreator.exe", "acrodist.exe", "spoolsv.exe", "msiexec.exe", "route.exe", "WerFault.exe") and
+ not process.command_line : "*\\WINDOWS\\system32\\spool\\DRIVERS*" and
+ not (process.name : "net.exe" and process.command_line : ("*stop*", "*start*")) and
+ not (process.name : ("cmd.exe", "powershell.exe") and process.command_line : ("*.spl*", "*\\program files*", "*route add*")) and
+ not (process.name : "netsh.exe" and process.command_line : ("*add portopening*", "*rule name*")) and
+ not (process.name : "regsvr32.exe" and process.command_line : "*PrintConfig.dll*")
+```
+
+
+
 ### Unusual Process Execution Path - Alternate Data Stream
 
 Branch count: 1  
@@ -10898,6 +11888,23 @@ process where event.type == "start" and
 
 
 
+### Virtual Private Network Connection Attempt
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-813
+
+```python
+process where host.os.type == "macos" and event.type in ("start", "process_started") and
+  (
+    (process.name : "networksetup" and process.args : "-connectpppoeservice") or
+    (process.name : "scutil" and process.args : "--nc" and process.args : "start") or
+    (process.name : "osascript" and process.command_line : "osascript*set VPN to service*")
+  )
+```
+
+
+
 ### Volume Shadow Copy Deleted or Resized via VssAdmin
 
 Branch count: 4  
@@ -11120,6 +12127,39 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Windows Defender Disabled via Registry Modification
+
+Branch count: 24  
+Document count: 24  
+Index: geneve-ut-827
+
+```python
+registry where host.os.type == "windows" and event.type in ("creation", "change") and
+  (
+    (
+      registry.path: (
+        "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\DisableAntiSpyware",
+        "\\REGISTRY\\MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\DisableAntiSpyware"
+      ) and
+      registry.data.strings: ("1", "0x00000001")
+   ) or
+   (
+      registry.path: (
+        "HKLM\\System\\*ControlSet*\\Services\\WinDefend\\Start",
+        "\\REGISTRY\\MACHINE\\System\\*ControlSet*\\Services\\WinDefend\\Start"
+      ) and
+      registry.data.strings in ("3", "4", "0x00000003", "0x00000004")
+   )
+  ) and
+
+  not process.executable :
+           ("?:\\WINDOWS\\system32\\services.exe",
+            "?:\\Windows\\System32\\svchost.exe",
+            "?:\\Program Files (x86)\\Trend Micro\\Security Agent\\NTRmv.exe")
+```
+
+
+
 ### Windows Defender Exclusions Added via PowerShell
 
 Branch count: 12  
@@ -11280,6 +12320,20 @@ registry where host.os.type == "windows" and
  registry.path : 
        ("HK*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Lxss\\*\\PackageFamilyName",
         "\\REGISTRY\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Lxss\\*\\PackageFamilyName")
+```
+
+
+
+### Windows Subsystem for Linux Enabled via Dism Utility
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-837
+
+```python
+process where host.os.type == "windows" and event.type : "start" and
+ (process.name : "Dism.exe" or process.pe.original_file_name == "DISM.EXE") and 
+ process.command_line : "*Microsoft-Windows-Subsystem-Linux*"
 ```
 
 

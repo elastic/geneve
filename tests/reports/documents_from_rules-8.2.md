@@ -14,12 +14,13 @@ Rules version: 8.2.1
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (2)](#unsupported-rule-type-threat_match-2)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: wildcard (44)](#field-type-solver-wildcard-44)
       1. [Unsupported function: match (6)](#unsupported-function-match-6)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (4)](#unsupported-lhs-type-class-eqlastfunctioncall-4)
       1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
       1. [Root with too many branches (limit: 10000) (1)](#root-with-too-many-branches-limit-10000-1)
       1. [Root without branches (1)](#root-without-branches-1)
+      1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
+      1. [Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringsswipuploadashx-post-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdumpcreds-dumpcerts-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookA'}): ('GetForegroundWindow')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssetwindowshooka-getforegroundwindow-1)
@@ -29,6 +30,7 @@ Rules version: 8.2.1
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
       1. [Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)](#unsolvable-constraints-processparentargs-excluded-by-stringswdisystemhost-wdisystemhost-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'winword.exe'}): ('winword.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringswinwordexe-winwordexe-1)
+      1. [Unsolvable constraints: registry.path (excluded by Strings({'HKLM\SOFTWARE\Microsoft\Internet Explorer\Extensions\*\Script'}): ('*\Software\Microsoft\Internet Explorer\Extensions\*\Script')) (1)](#unsolvable-constraints-registrypath-excluded-by-stringshklmsoftwaremicrosoftinternet-explorerextensionsscript-softwaremicrosoftinternet-explorerextensionsscript-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings42b5faae-6536-11d2-ae5a-0000f87571e3-40b66650-4972-11d1-a7ca-0000f87571e3-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-stringscab54552-deea-4691-817e-ed4a4d1afc72-aadced64-746c-4633-a97c-d61349046527-1)
@@ -128,54 +130,6 @@ Rules version: 8.2.1
 
 ## Generation errors
 
-### Field type solver: wildcard (44)
-
-44 rules:
-* Apple Scripting Execution with Administrator Privileges
-* Attempt to Mount SMB Share via Command Line
-* Attempt to Remove File Quarantine Attribute
-* Command Shell Activity Started via RunDLL32
-* Component Object Model Hijacking
-* Control Panel Process with Unusual Arguments
-* Creation of Hidden Login Item via Apple Script
-* DNS-over-HTTPS Enabled via Registry
-* Disabling User Account Control via Registry Modification
-* Encoded Executable Stored in the Registry
-* MS Office Macro Security Registry Modifications
-* Microsoft Windows Defender Tampering
-* Modification of AmsiEnable Registry Key
-* Modification of WDigest Security Provider
-* Network Logon Provider Registry Modification
-* NullSessionPipe Registry Modification
-* Persistence via WMI Standard Registry Provider
-* Potential Persistence via Time Provider Modification
-* Potential Port Monitor or Print Processor Registration Abuse
-* Potential Privacy Control Bypass via Localhost Secure Copy
-* Potential Reverse Shell Activity via Terminal
-* Potential SharpRDP Behavior
-* PowerShell Script Block Logging Disabled
-* Privilege Escalation via Windir Environment Variable
-* Prompt for Credentials with OSASCRIPT
-* RDP Enabled via Registry
-* Roshal Archive (RAR) or PowerShell File Downloaded from the Internet
-* SIP Provider Modification
-* SUNBURST Command and Control Activity
-* Scheduled Tasks AT Command Enabled
-* SolarWinds Process Disabling Services via Registry
-* Startup or Run Key Registry Modification
-* Suspicious Browser Child Process
-* Suspicious ImagePath Service Creation
-* Suspicious Print Spooler Point and Print DLL
-* Suspicious Startup Shell Folder Modification
-* Suspicious WMIC XSL Script Execution
-* Symbolic Link to Shadow Copy Created
-* Uncommon Registry Persistence Change
-* Unusual Persistence via Services Registry
-* Unusual Print Spooler Child Process
-* Virtual Private Network Connection Attempt
-* Web Application Suspicious Activity: No User Agent
-* Windows Defender Disabled via Registry Modification
-
 ### Unsupported function: match (6)
 
 6 rules:
@@ -210,6 +164,16 @@ Rules version: 8.2.1
 
 1 rules:
 * Persistence via Login or Logout Hook
+
+### Unsolvable constraints: event.category & event.type (empty intersection) (1)
+
+1 rules:
+* Symbolic Link to Shadow Copy Created
+
+### Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)
+
+1 rules:
+* SUNBURST Command and Control Activity
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)
 
@@ -255,6 +219,11 @@ Rules version: 8.2.1
 
 1 rules:
 * Suspicious Process Creation CallTrace
+
+### Unsolvable constraints: registry.path (excluded by Strings({'HKLM\SOFTWARE\Microsoft\Internet Explorer\Extensions\*\Script'}): ('*\Software\Microsoft\Internet Explorer\Extensions\*\Script')) (1)
+
+1 rules:
+* Uncommon Registry Persistence Change
 
 ### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)
 
