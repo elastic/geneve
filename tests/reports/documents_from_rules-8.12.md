@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.12.12
+Rules version: 8.12.13
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (64)](#unsupported-rule-type-new_terms-64)
+      1. [Unsupported rule type: new_terms (66)](#unsupported-rule-type-new_terms-66)
       1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
@@ -30,6 +30,8 @@ Rules version: 8.12.12
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
       1. [Unsupported function: startsWith (2)](#unsupported-function-startswith-2)
+      1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
+      1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*attribute=userData*'}): ('*instanceId*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsattributeuserdata-instanceid-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
@@ -165,9 +167,9 @@ Rules version: 8.12.12
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (64)
+### Unsupported rule type: new_terms (66)
 
-64 rules:
+66 rules:
 
 * AWS EC2 Admin Credential Fetch via Assumed Role
 * Abnormal Process ID or Lock File Created
@@ -216,6 +218,7 @@ Rules version: 8.12.12
 * Query Registry using Built-in Tools
 * Rare SMB Connection to the Internet
 * SSH Authorized Keys File Modification
+* SSM Session Started to EC2 Instance
 * Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
 * Shell Configuration Modification
@@ -228,6 +231,7 @@ Rules version: 8.12.12
 * Suspicious Sysctl File Event
 * Suspicious System Commands Executed by Previously Unknown Executable
 * Svchost spawning Cmd
+* Systemd Service Started by Unusual Parent Process
 * UID Elevation from Previously Unknown Executable
 * Unknown Execution of Binary with RWX Memory Region
 * Unusual Discovery Activity by User
@@ -420,6 +424,16 @@ Rules version: 8.12.12
 2 rules:
 * Persistent Scripts in the Startup Directory
 * Potential ADIDNS Poisoning via Wildcard Record Creation
+
+### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)
+
+1 rules:
+* AWS S3 Bucket Expiration Lifecycle Configuration Added
+
+### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*attribute=userData*'}): ('*instanceId*')) (1)
+
+1 rules:
+* Attempt to Retrieve User Data from AWS EC2 Instance
 
 ### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)
 
