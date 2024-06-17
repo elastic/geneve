@@ -5,13 +5,13 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.11.17
+Rules version: 8.11.18
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (66)](#unsupported-rule-type-new_terms-66)
-      1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
+      1. [Unsupported rule type: new_terms (62)](#unsupported-rule-type-new_terms-62)
+      1. [Unsupported rule type: threshold (31)](#unsupported-rule-type-threshold-31)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
    1. [Generation errors](#generation-errors)
@@ -33,11 +33,13 @@ Rules version: 8.11.17
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*attribute=userData*'}): ('*instanceId*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsattributeuserdata-instanceid-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
+      1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smb')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmb-1)
       1. [Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)](#unsolvable-constraints-fileextheader_bytes-excluded-by-strings504b0304-504b0304-1)
+      1. [Unsolvable constraints: file.extension (cannot be non-null) (1)](#unsolvable-constraints-fileextension-cannot-be-non-null-1)
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringsswipuploadashx-post-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
@@ -86,6 +88,7 @@ Rules version: 8.11.17
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
       1. [Unsupported function: endswith (1)](#unsupported-function-endswith-1)
+      1. [Unsupported function: stringContains (1)](#unsupported-function-stringcontains-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -167,14 +170,16 @@ Rules version: 8.11.17
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (66)
+### Unsupported rule type: new_terms (62)
 
-66 rules:
+62 rules:
 
 * AWS EC2 Admin Credential Fetch via Assumed Role
+* AWS STS GetCallerIdentity API Called for the First Time
+* AWS Systems Manager SecureString Parameter Request with Decryption Flag
 * Abnormal Process ID or Lock File Created
+* Authentication via Unusual PAM Grantor
 * CAP_SYS_ADMIN Assigned to Binary
-* Cron Job Created or Changed by Previously Unknown Process
 * Discovery of Internet Capabilities via Built-in Tools
 * Enumeration of Kernel Modules
 * Enumeration of Kernel Modules via Proc
@@ -204,16 +209,11 @@ Rules version: 8.11.17
 * Modification of Standard Authentication Module or Configuration
 * Network Activity Detected via Kworker
 * Network Traffic Capture via CAP_NET_RAW
-* New Systemd Service Created by Previously Unknown Process
-* New Systemd Timer Created
 * Potential Pass-the-Hash (PtH) Attempt
-* Potential Persistence Through MOTD File Creation Detected
 * Potential Persistence Through Run Control Detected
-* Potential Persistence Through Systemd-udevd
 * Potential Persistence Through init.d Detected
 * Potential Privilege Escalation via Linux DAC permissions
 * Potential Shadow File Read via Command Line Utilities
-* Potential Sudo Hijacking Detected
 * Potential Suspicious Clipboard Activity Detected
 * Query Registry using Built-in Tools
 * Rare SMB Connection to the Internet
@@ -221,7 +221,6 @@ Rules version: 8.11.17
 * SSM Session Started to EC2 Instance
 * Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
-* Shell Configuration Modification
 * Sudoers File Modification
 * Suspicious JAVA Child Process
 * Suspicious Microsoft 365 Mail Access by ClientAppId
@@ -238,9 +237,9 @@ Rules version: 8.11.17
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 
-### Unsupported rule type: threshold (30)
+### Unsupported rule type: threshold (31)
 
-30 rules:
+31 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
@@ -270,6 +269,7 @@ Rules version: 8.11.17
 * Potential Ransomware Behavior - High count of Readme files by System
 * Potential SYN-Based Network Scan Detected
 * Potential macOS SSH Brute Force Detected
+* Rapid Secret Retrieval Attempts from AWS SecretsManager
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
@@ -440,6 +440,11 @@ Rules version: 8.11.17
 1 rules:
 * EC2 AMI Shared with Another Account
 
+### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)
+
+1 rules:
+* AWS Lambda Function Policy Updated to Allow Public Invocation
+
 ### Unsolvable constraints: event.category & event.type (empty intersection) (1)
 
 1 rules:
@@ -464,6 +469,11 @@ Rules version: 8.11.17
 
 1 rules:
 * Archive File with Unusual Extension
+
+### Unsolvable constraints: file.extension (cannot be non-null) (1)
+
+1 rules:
+* Creation or Modification of Pluggable Authentication Module or Configuration
 
 ### Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)
 
@@ -704,6 +714,11 @@ Rules version: 8.11.17
 
 1 rules:
 * Unusual Execution via Microsoft Common Console File
+
+### Unsupported function: stringContains (1)
+
+1 rules:
+* AWS S3 Bucket Policy Added to Share with External Account
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 
