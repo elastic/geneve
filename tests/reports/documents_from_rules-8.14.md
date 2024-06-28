@@ -5,16 +5,16 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.14.3
+Rules version: 8.14.4
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
       1. [Unsupported rule type: new_terms (62)](#unsupported-rule-type-new_terms-62)
-      1. [Unsupported rule type: threshold (31)](#unsupported-rule-type-threshold-31)
-      1. [Unsupported rule type: esql (12)](#unsupported-rule-type-esql-12)
+      1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
+      1. [Unsupported rule type: esql (17)](#unsupported-rule-type-esql-17)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
-      1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
+      1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
@@ -27,6 +27,7 @@ Rules version: 8.14.3
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (3)](#unsupported-argument-types-class-eqlastfield-3)
       1. [<class 'eql.ast.SubqueryBy'> (2)](#class-eqlastsubqueryby-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
+      1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
@@ -35,7 +36,6 @@ Rules version: 8.14.3
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*attribute=userData*'}): ('*instanceId*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsattributeuserdata-instanceid-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
-      1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smb')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmb-1)
@@ -238,9 +238,9 @@ Rules version: 8.14.3
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 
-### Unsupported rule type: threshold (31)
+### Unsupported rule type: threshold (30)
 
-31 rules:
+30 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
@@ -260,7 +260,6 @@ Rules version: 8.14.3
 * My First Rule
 * O365 Excessive Single Sign-On Logon Errors
 * Okta Brute Force or Password Spraying Attack
-* Okta User Sessions Started from Different Geolocations
 * Potential Buffer Overflow Attack Detected
 * Potential LSASS Memory Dump via PssCaptureSnapShot
 * Potential Network Scan Detected
@@ -274,9 +273,9 @@ Rules version: 8.14.3
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported rule type: esql (12)
+### Unsupported rule type: esql (17)
 
-12 rules:
+17 rules:
 
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
@@ -285,7 +284,12 @@ Rules version: 8.14.3
 * AWS IAM AdministratorAccess Policy Attached to Group
 * AWS IAM AdministratorAccess Policy Attached to Role
 * AWS IAM AdministratorAccess Policy Attached to User
+* AWS IAM User Created Access Keys For Another User
 * AWS S3 Bucket Enumeration or Brute Force
+* High Number of Okta Device Token Cookies Generated for Authentication
+* Multiple Okta User Authentication Events with Client Address
+* Multiple Okta User Authentication Events with Same Device Token Hash
+* Okta User Sessions Started from Different Geolocations
 * Potential AWS S3 Bucket Ransomware Note Uploaded
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
 * Potential Widespread Malware Infection Across Multiple Hosts
@@ -301,10 +305,11 @@ Rules version: 8.14.3
 * Possible FIN7 DGA Command and Control Behavior
 * Setuid / Setgid Bit Set via chmod
 
-### Unsupported rule type: threat_match (4)
+### Unsupported rule type: threat_match (5)
 
-4 rules:
+5 rules:
 
+* Rapid7 Threat Command CVEs Correlation
 * Threat Intel Hash Indicator Match
 * Threat Intel IP Address Indicator Match
 * Threat Intel URL Indicator Match
@@ -419,6 +424,12 @@ Rules version: 8.14.3
 * Potential Successful Linux FTP Brute Force Attack Detected
 * Potential Successful Linux RDP Brute Force Attack Detected
 
+### Unsolvable constraints: event.category & event.type (empty intersection) (2)
+
+2 rules:
+* Suspicious File Creation in /etc for Persistence
+* Unsigned DLL loaded by DNS Service
+
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)
 
 2 rules:
@@ -462,11 +473,6 @@ Rules version: 8.14.3
 
 1 rules:
 * AWS Lambda Function Policy Updated to Allow Public Invocation
-
-### Unsolvable constraints: event.category & event.type (empty intersection) (1)
-
-1 rules:
-* Suspicious File Creation in /etc for Persistence
 
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)
 
