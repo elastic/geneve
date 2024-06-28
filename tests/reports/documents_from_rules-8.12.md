@@ -5,7 +5,7 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.12.14
+Rules version: 8.12.15
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
@@ -13,7 +13,7 @@ Rules version: 8.12.14
       1. [Unsupported rule type: new_terms (62)](#unsupported-rule-type-new_terms-62)
       1. [Unsupported rule type: threshold (31)](#unsupported-rule-type-threshold-31)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
-      1. [Unsupported rule type: threat_match (4)](#unsupported-rule-type-threat_match-4)
+      1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
@@ -26,6 +26,7 @@ Rules version: 8.12.14
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (3)](#unsupported-argument-types-class-eqlastfield-3)
       1. [<class 'eql.ast.SubqueryBy'> (2)](#class-eqlastsubqueryby-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
+      1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
@@ -34,7 +35,6 @@ Rules version: 8.12.14
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*attribute=userData*'}): ('*instanceId*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsattributeuserdata-instanceid-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
-      1. [Unsolvable constraints: event.category & event.type (empty intersection) (1)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smb')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmb-1)
@@ -283,10 +283,11 @@ Rules version: 8.12.14
 * Possible FIN7 DGA Command and Control Behavior
 * Setuid / Setgid Bit Set via chmod
 
-### Unsupported rule type: threat_match (4)
+### Unsupported rule type: threat_match (5)
 
-4 rules:
+5 rules:
 
+* Rapid7 Threat Command CVEs Correlation
 * Threat Intel Hash Indicator Match
 * Threat Intel IP Address Indicator Match
 * Threat Intel URL Indicator Match
@@ -401,6 +402,12 @@ Rules version: 8.12.14
 * Potential Successful Linux FTP Brute Force Attack Detected
 * Potential Successful Linux RDP Brute Force Attack Detected
 
+### Unsolvable constraints: event.category & event.type (empty intersection) (2)
+
+2 rules:
+* Suspicious File Creation in /etc for Persistence
+* Unsigned DLL loaded by DNS Service
+
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)
 
 2 rules:
@@ -444,11 +451,6 @@ Rules version: 8.12.14
 
 1 rules:
 * AWS Lambda Function Policy Updated to Allow Public Invocation
-
-### Unsolvable constraints: event.category & event.type (empty intersection) (1)
-
-1 rules:
-* Suspicious File Creation in /etc for Persistence
 
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)
 
