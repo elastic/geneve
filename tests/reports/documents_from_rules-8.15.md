@@ -5,21 +5,21 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.14.4
+Rules version: 8.14.5
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (62)](#unsupported-rule-type-new_terms-62)
+      1. [Unsupported rule type: new_terms (60)](#unsupported-rule-type-new_terms-60)
       1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
       1. [Unsupported rule type: esql (17)](#unsupported-rule-type-esql-17)
-      1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
+      1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
-      1. [Unsupported function: match (10)](#unsupported-function-match-10)
-      1. [Field type solver: match_only_text (6)](#field-type-solver-match_only_text-6)
+      1. [Unsupported function: match (11)](#unsupported-function-match-11)
+      1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Root without branches (3)](#root-without-branches-3)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (3)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-3)
@@ -171,9 +171,9 @@ Rules version: 8.14.4
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (62)
+### Unsupported rule type: new_terms (60)
 
-62 rules:
+60 rules:
 
 * AWS EC2 Admin Credential Fetch via Assumed Role
 * AWS STS GetCallerIdentity API Called for the First Time
@@ -211,8 +211,6 @@ Rules version: 8.14.4
 * Network Activity Detected via Kworker
 * Network Traffic Capture via CAP_NET_RAW
 * Potential Pass-the-Hash (PtH) Attempt
-* Potential Persistence Through Run Control Detected
-* Potential Persistence Through init.d Detected
 * Potential Privilege Escalation via Linux DAC permissions
 * Potential Shadow File Read via Command Line Utilities
 * Potential Suspicious Clipboard Activity Detected
@@ -295,16 +293,6 @@ Rules version: 8.14.4
 * Potential Widespread Malware Infection Across Multiple Hosts
 * Unusual High Confidence Misconduct Blocks Detected
 
-### Unsupported query language: lucene (5)
-
-5 rules:
-
-* Cobalt Strike Command and Control Beacon
-* Halfbaked Command and Control Beacon
-* Inbound Connection to an Unsecure Elasticsearch Node
-* Possible FIN7 DGA Command and Control Behavior
-* Setuid / Setgid Bit Set via chmod
-
 ### Unsupported rule type: threat_match (5)
 
 5 rules:
@@ -314,6 +302,15 @@ Rules version: 8.14.4
 * Threat Intel IP Address Indicator Match
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
+
+### Unsupported query language: lucene (4)
+
+4 rules:
+
+* Cobalt Strike Command and Control Beacon
+* Halfbaked Command and Control Beacon
+* Inbound Connection to an Unsecure Elasticsearch Node
+* Possible FIN7 DGA Command and Control Behavior
 
 ## Generation errors
 
@@ -353,9 +350,9 @@ Rules version: 8.14.4
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
 
-### Unsupported function: match (10)
+### Unsupported function: match (11)
 
-10 rules:
+11 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * Creation of Hidden Files and Directories via CommandLine
 * Executable File Creation with Multiple Extensions
@@ -364,15 +361,17 @@ Rules version: 8.14.4
 * Potential Exploitation of an Unquoted Service Path Vulnerability
 * Process Created with a Duplicated Token
 * Process Started from Process ID (PID) File
+* SUID/SGID Bit Set
 * Suspicious Execution via Microsoft Office Add-Ins
 * Suspicious Service was Installed in the System
 
-### Field type solver: match_only_text (6)
+### Field type solver: match_only_text (7)
 
-6 rules:
+7 rules:
 * Account Configured with Never-Expiring Password
 * Kerberos Pre-authentication Disabled for User
 * Segfault Detected
+* Suspicious rc.local Error Message
 * Tainted Kernel Module Load
 * Tainted Out-Of-Tree Kernel Module Load
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
