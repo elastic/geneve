@@ -495,6 +495,9 @@ exceptions = {
         [process where process.name == null]
         [process where process.name : "powershell.exe"]
     """: "Unsolvable constraints: process.name (cannot be non-null)",
+    """sequence
+        [process where process.name in ("cmd.exe", "powershell.exe")] with runs=10000
+    """: "Root with too many branches (limit: 10000)",
 }
 
 cardinality = [
