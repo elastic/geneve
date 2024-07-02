@@ -221,7 +221,7 @@ func init() {
 		TypeOf:   Rule{},
 		ToObject: ruleToObject,
 	}
-	if err := c.Register(); err != nil {
+	if err := py.GoRegisterConversions(c); err != nil {
 		panic(err)
 	}
 }

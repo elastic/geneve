@@ -92,7 +92,7 @@ func init() {
 		TypeOf:   FieldSchema{},
 		ToObject: fieldSchemaToObject,
 	}
-	if err := c.Register(); err != nil {
+	if err := py.GoRegisterConversions(c); err != nil {
 		panic(err)
 	}
 }
