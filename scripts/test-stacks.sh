@@ -123,6 +123,15 @@ cleanup()
 	rm -r "$TMP_DIR"
 }
 
+get_ecs_tarball()
+{
+	(
+		ls -1 etc/ecs-v*.tar.gz | sort -V
+		# ensure that the specified version, if present, is always last
+		ls etc/ecs-v$(echo $1 | cut -d. -f1,2).*.tar.gz 2>/dev/null | sort -V
+	) | tail -1
+}
+
 TMP_DIR=$(mktemp -d)
 TMP_LOG=$TMP_DIR/log
 trap cleanup EXIT
@@ -174,14 +183,14 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 				fi
 			fi
 			if [ -z "$TEST_SCHEMA_URI" ]; then
-				TEST_SCHEMA_URI=`ls ./etc/ecs-v$(echo $TEST_STACK_VERSION | cut -d. -f1,2).*.tar.gz`
+				TEST_SCHEMA_URI=`get_ecs_tarball $TEST_STACK_VERSION`
 			fi
 			if [ -z "$TEST_DETECTION_RULES_URI" ]; then
 				TEST_DETECTION_RULES_URI="https://epr.elastic.co/search?package=security_detection_engine&kibana.version=$TEST_STACK_VERSION"
 			fi
 		else
 			TEST_STACK_VERSION=$(echo $MAJOR_MINOR.0 | cut -d. -f1-3)
-			TEST_SCHEMA_URI=`ls etc/ecs-v$(echo $TEST_STACK_VERSION | cut -d. -f1,2).*.tar.gz`
+			TEST_SCHEMA_URI=`get_ecs_tarball $TEST_STACK_VERSION`
 			TEST_DETECTION_RULES_URI="https://epr.elastic.co/search?package=security_detection_engine&kibana.version=$TEST_STACK_VERSION"
 
 			TEST_ELASTICSEARCH_PROXY=
