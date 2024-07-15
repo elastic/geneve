@@ -5,26 +5,27 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.13.11
+Rules version: 8.13.12
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
       1. [Unsupported rule type: new_terms (60)](#unsupported-rule-type-new_terms-60)
-      1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
-      1. [Unsupported rule type: esql (17)](#unsupported-rule-type-esql-17)
+      1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
+      1. [Unsupported rule type: esql (20)](#unsupported-rule-type-esql-20)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
+      1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Unsupported function: match (11)](#unsupported-function-match-11)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
+      1. [Unsupported function: stringContains (6)](#unsupported-function-stringcontains-6)
+      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (5)](#unsupported-argument-types-class-eqlastfield-5)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Root without branches (3)](#root-without-branches-3)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (3)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
-      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (3)](#unsupported-argument-types-class-eqlastfield-3)
       1. [<class 'eql.ast.SubqueryBy'> (2)](#class-eqlastsubqueryby-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
@@ -59,6 +60,7 @@ Rules version: 8.13.11
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswindowsclipboard-gettext-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Runtime.InteropServices.Marshal]::Copy'}): ('VirtualProtect')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemruntimeinteropservicesmarshalcopy-virtualprotect-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[dbo].[Credentials]'}): ('Veeam')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdbocredentials-veeam-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[string]::join'}): ('$pSHoMe[')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstringjoin-pshome-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
@@ -89,7 +91,6 @@ Rules version: 8.13.11
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
       1. [Unsupported function: endswith (1)](#unsupported-function-endswith-1)
-      1. [Unsupported function: stringContains (1)](#unsupported-function-stringcontains-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -236,14 +237,13 @@ Rules version: 8.13.11
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 
-### Unsupported rule type: threshold (30)
+### Unsupported rule type: threshold (28)
 
-30 rules:
+28 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
 * Agent Spoofing - Multiple Hosts Using Same Agent
-* Attempts to Brute Force a Microsoft 365 User Account
 * Attempts to Brute Force an Okta User Account
 * GitHub UEBA - Multiple Alerts from a GitHub Account
 * High Number of Cloned GitHub Repos From PAT
@@ -252,7 +252,6 @@ Rules version: 8.13.11
 * High Number of Process and/or Service Terminations
 * Multiple Alerts Involving a User
 * Multiple Alerts in Different ATT&CK Tactics on a Single Host
-* Multiple Okta Client Addresses for a Single User Session
 * Multiple Okta Sessions Detected for a Single User
 * Multiple Okta User Auth Events with Same Device Token Hash Behind a Proxy
 * My First Rule
@@ -271,9 +270,9 @@ Rules version: 8.13.11
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported rule type: esql (17)
+### Unsupported rule type: esql (20)
 
-17 rules:
+20 rules:
 
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
@@ -284,7 +283,10 @@ Rules version: 8.13.11
 * AWS IAM AdministratorAccess Policy Attached to User
 * AWS IAM User Created Access Keys For Another User
 * AWS S3 Bucket Enumeration or Brute Force
+* AWS S3 Object Encryption Using External KMS Key
+* Attempts to Brute Force a Microsoft 365 User Account
 * High Number of Okta Device Token Cookies Generated for Authentication
+* Multiple Device Token Hashes for Single Okta Session
 * Multiple Okta User Authentication Events with Client Address
 * Multiple Okta User Authentication Events with Same Device Token Hash
 * Okta User Sessions Started from Different Geolocations
@@ -314,9 +316,9 @@ Rules version: 8.13.11
 
 ## Generation errors
 
-### Root with too many branches (limit: 10000) (17)
+### Root with too many branches (limit: 10000) (15)
 
-17 rules:
+15 rules:
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
 * External IP Lookup from Non-Browser Process
@@ -327,13 +329,11 @@ Rules version: 8.13.11
 * Potential Masquerading as System32 DLL
 * Potential Masquerading as System32 Executable
 * Potential Pspy Process Monitoring Detected
-* Potential Ransomware Note File Dropped via SMB
 * Potential Remote Code Execution via Web Server
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
 * Startup or Run Key Registry Modification
 * Suspicious File Changes Activity Detected
-* Suspicious File Renamed via SMB
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)
 
@@ -376,6 +376,25 @@ Rules version: 8.13.11
 * Tainted Out-Of-Tree Kernel Module Load
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
+### Unsupported function: stringContains (6)
+
+6 rules:
+* AWS RDS DB Instance Made Public
+* AWS RDS DB Instance or Cluster Deletion Protection Disabled
+* AWS RDS DB Instance or Cluster Password Modified
+* AWS RDS DB Snapshot Shared with Another Account
+* AWS RDS Snapshot Deleted
+* AWS S3 Bucket Policy Added to Share with External Account
+
+### Unsupported argument type(s): <class 'eql.ast.Field'> (5)
+
+5 rules:
+* External User Added to Google Workspace Group
+* Image Loaded with Invalid Signature
+* Interactive Logon by an Unusual Process
+* Potential Ransomware Note File Dropped via SMB
+* Suspicious File Renamed via SMB
+
 ### <class 'eql.ast.Sample'> (3)
 
 3 rules:
@@ -403,13 +422,6 @@ Rules version: 8.13.11
 * Downloaded Shortcut Files
 * Downloaded URL Files
 * File with Suspicious Extension Downloaded
-
-### Unsupported argument type(s): <class 'eql.ast.Field'> (3)
-
-3 rules:
-* External User Added to Google Workspace Group
-* Image Loaded with Invalid Signature
-* Interactive Logon by an Unusual Process
 
 ### <class 'eql.ast.SubqueryBy'> (2)
 
@@ -588,6 +600,11 @@ Rules version: 8.13.11
 1 rules:
 * PowerShell Script with Veeam Credential Access Capabilities
 
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[string]::join'}): ('$pSHoMe[')) (1)
+
+1 rules:
+* Potential PowerShell Obfuscated Script
+
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)
 
 1 rules:
@@ -737,11 +754,6 @@ Rules version: 8.13.11
 
 1 rules:
 * Unusual Execution via Microsoft Common Console File
-
-### Unsupported function: stringContains (1)
-
-1 rules:
-* AWS S3 Bucket Policy Added to Share with External Account
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 
