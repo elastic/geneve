@@ -5,25 +5,25 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.12.17
+Rules version: 8.12.19
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (60)](#unsupported-rule-type-new_terms-60)
+      1. [Unsupported rule type: new_terms (64)](#unsupported-rule-type-new_terms-64)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
       1. [Unsupported rule type: esql (1)](#unsupported-rule-type-esql-1)
    1. [Generation errors](#generation-errors)
-      1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
-      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
+      1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
+      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
+      1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
       1. [Unsupported function: match (11)](#unsupported-function-match-11)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
-      1. [Unsupported function: stringContains (6)](#unsupported-function-stringcontains-6)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (5)](#unsupported-argument-types-class-eqlastfield-5)
+      1. [Root without branches (4)](#root-without-branches-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
-      1. [Root without branches (3)](#root-without-branches-3)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (3)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
       1. [<class 'eql.ast.SubqueryBy'> (2)](#class-eqlastsubqueryby-2)
@@ -32,6 +32,7 @@ Rules version: 8.12.17
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
+      1. [Unsupported function: endswith (2)](#unsupported-function-endswith-2)
       1. [Unsupported function: startsWith (2)](#unsupported-function-startswith-2)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*attribute=userData*'}): ('*instanceId*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsattributeuserdata-instanceid-1)
@@ -44,6 +45,7 @@ Rules version: 8.12.17
       1. [Unsolvable constraints: file.extension (cannot be non-null) (1)](#unsolvable-constraints-fileextension-cannot-be-non-null-1)
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringsswipuploadashx-post-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (excluded by Strings({'DsGetSiteName'}): ('DsGetSiteName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-excluded-by-stringsdsgetsitename-dsgetsitename-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdumpcreds-dumpcerts-1)
@@ -79,6 +81,7 @@ Rules version: 8.12.17
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsrundll32exe-rundll32exe-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'winword.exe'}): ('winword.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringswinwordexe-winwordexe-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'wscript.exe'}): ('wscript.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringswscriptexe-wscriptexe-1)
+      1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings1131f6ad-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1131f6aa-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings42b5faae-6536-11d2-ae5a-0000f87571e3-40b66650-4972-11d1-a7ca-0000f87571e3-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-stringscab54552-deea-4691-817e-ed4a4d1afc72-aadced64-746c-4633-a97c-d61349046527-1)
@@ -90,7 +93,6 @@ Rules version: 8.12.17
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
-      1. [Unsupported function: endswith (1)](#unsupported-function-endswith-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -172,9 +174,9 @@ Rules version: 8.12.17
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (60)
+### Unsupported rule type: new_terms (64)
 
-60 rules:
+64 rules:
 
 * AWS EC2 Admin Credential Fetch via Assumed Role
 * AWS STS GetCallerIdentity API Called for the First Time
@@ -182,6 +184,7 @@ Rules version: 8.12.17
 * Abnormal Process ID or Lock File Created
 * Authentication via Unusual PAM Grantor
 * CAP_SYS_ADMIN Assigned to Binary
+* DPKG Package Installed by Unusual Parent Process
 * Discovery of Internet Capabilities via Built-in Tools
 * Enumeration of Kernel Modules
 * Enumeration of Kernel Modules via Proc
@@ -198,6 +201,7 @@ Rules version: 8.12.17
 * First Occurrence of Private Repo Event from Specific GitHub Personal Access Token (PAT)
 * First Occurrence of User Agent For a GitHub Personal Access Token (PAT)
 * First Occurrence of User-Agent For a GitHub User
+* First Time AWS Cloudformation Stack Creation by User
 * First Time Seen AWS Secret Value Accessed in Secrets Manager
 * First Time Seen Commonly Abused Remote Access Tool Execution
 * First Time Seen Driver Loaded
@@ -215,7 +219,9 @@ Rules version: 8.12.17
 * Potential Privilege Escalation via Linux DAC permissions
 * Potential Shadow File Read via Command Line Utilities
 * Potential Suspicious Clipboard Activity Detected
+* Privileged Docker Container Creation
 * Query Registry using Built-in Tools
+* RPM Package Installed by Unusual Parent Process
 * Rare SMB Connection to the Internet
 * SSH Authorized Keys File Modification
 * SSM Session Started to EC2 Instance
@@ -298,9 +304,9 @@ Rules version: 8.12.17
 
 ## Generation errors
 
-### Root with too many branches (limit: 10000) (15)
+### Root with too many branches (limit: 10000) (14)
 
-15 rules:
+14 rules:
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
 * External IP Lookup from Non-Browser Process
@@ -315,22 +321,38 @@ Rules version: 8.12.17
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
 * Startup or Run Key Registry Modification
-* Suspicious File Changes Activity Detected
 
-### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)
+### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)
 
-11 rules:
+12 rules:
 * AdminSDHolder SDProp Exclusion Added
 * Image File Execution Options Injection
 * Ingress Transfer via Windows BITS
 * Memory Dump File with Unusual Extension
 * NullSessionPipe Registry Modification
+* Persistence via Hidden Run Key Detected
 * Potential curl CVE-2023-38545 Exploitation
 * Renamed Utility Executed with Short Program Name
 * Suspicious Access to LDAP Attributes
 * Suspicious Execution via MSIEXEC
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
+
+### Unsupported function: stringContains (12)
+
+12 rules:
+* AWS EC2 Instance Console Login via Assumed Role
+* AWS EC2 Instance Interaction with IAM Service
+* AWS IAM CompromisedKeyQuarantine Policy Attached to User
+* AWS RDS DB Instance Made Public
+* AWS RDS DB Instance or Cluster Deletion Protection Disabled
+* AWS RDS DB Instance or Cluster Password Modified
+* AWS RDS DB Snapshot Shared with Another Account
+* AWS RDS Snapshot Deleted
+* AWS S3 Bucket Policy Added to Share with External Account
+* AWS S3 Bucket Replicated to Another Account
+* AWS S3 Bucket Server Access Logging Disabled
+* AWS S3 Object Versioning Suspended
 
 ### Unsupported function: match (11)
 
@@ -358,16 +380,6 @@ Rules version: 8.12.17
 * Tainted Out-Of-Tree Kernel Module Load
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
-### Unsupported function: stringContains (6)
-
-6 rules:
-* AWS RDS DB Instance Made Public
-* AWS RDS DB Instance or Cluster Deletion Protection Disabled
-* AWS RDS DB Instance or Cluster Password Modified
-* AWS RDS DB Snapshot Shared with Another Account
-* AWS RDS Snapshot Deleted
-* AWS S3 Bucket Policy Added to Share with External Account
-
 ### Unsupported argument type(s): <class 'eql.ast.Field'> (5)
 
 5 rules:
@@ -377,19 +389,20 @@ Rules version: 8.12.17
 * Potential Ransomware Note File Dropped via SMB
 * Suspicious File Renamed via SMB
 
+### Root without branches (4)
+
+4 rules:
+* Docker Escape via Nsenter
+* Linux init (PID 1) Secret Dump via GDB
+* Potential Protocol Tunneling via Chisel Server
+* Suspicious Data Encryption via OpenSSL Utility
+
 ### <class 'eql.ast.Sample'> (3)
 
 3 rules:
 * Network Connection from Binary with RWX Memory Region
 * Potential Meterpreter Reverse Shell
 * Potential Reverse Shell via UDP
-
-### Root without branches (3)
-
-3 rules:
-* Linux init (PID 1) Secret Dump via GDB
-* Potential Protocol Tunneling via Chisel Server
-* Suspicious Data Encryption via OpenSSL Utility
 
 ### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (3)
 
@@ -440,6 +453,12 @@ Rules version: 8.12.17
 2 rules:
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
+
+### Unsupported function: endswith (2)
+
+2 rules:
+* Potential Relay Attack against a Domain Controller
+* Unusual Execution via Microsoft Common Console File
 
 ### Unsupported function: startsWith (2)
 
@@ -501,6 +520,11 @@ Rules version: 8.12.17
 
 1 rules:
 * Kubernetes Container Created with Excessive Linux Capabilities
+
+### Unsolvable constraints: powershell.file.script_block_text (excluded by Strings({'DsGetSiteName'}): ('DsGetSiteName')) (1)
+
+1 rules:
+* PowerShell Suspicious Discovery Related Windows API Functions
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)
 
@@ -677,6 +701,11 @@ Rules version: 8.12.17
 1 rules:
 * Windows Script Executing PowerShell
 
+### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)
+
+1 rules:
+* Potential Active Directory Replication Account Backdoor
+
 ### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)
 
 1 rules:
@@ -731,11 +760,6 @@ Rules version: 8.12.17
 
 1 rules:
 * Remote Computer Account DnsHostName Update
-
-### Unsupported function: endswith (1)
-
-1 rules:
-* Unusual Execution via Microsoft Common Console File
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 
