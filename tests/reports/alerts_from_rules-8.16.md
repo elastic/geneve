@@ -5,15 +5,42 @@ learn what rules are supported and what not and why.
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.13.14
+Rules version: 8.15.2
 
 ## Table of contents
-   1. [Unsuccessful rules with signals (6)](#unsuccessful-rules-with-signals-6)
+   1. [Failed rules (1)](#failed-rules-1)
+   1. [Unsuccessful rules with signals (5)](#unsuccessful-rules-with-signals-5)
    1. [Rules with no signals (3)](#rules-with-no-signals-3)
-   1. [Rules with too few signals (9)](#rules-with-too-few-signals-9)
+   1. [Rules with too few signals (8)](#rules-with-too-few-signals-8)
    1. [Rules with the correct signals (836)](#rules-with-the-correct-signals-836)
 
-## Unsuccessful rules with signals (6)
+## Failed rules (1)
+
+### Potential Successful SSH Brute Force Attack
+
+Branch count: 2048  
+Document count: 22528  
+Index: geneve-ut-754  
+Failure message(s):  
+  SDE says:
+> search_phase_execution_exception
+	Caused by:
+		illegal_argument_exception: Result window is too large, from + size must be less than or equal to: [10000] but was [11000]. See the scroll api for a more efficient way to request large data sets. This limit can be set by changing the [index.max_result_window] index level setting.
+	Root causes:
+		illegal_argument_exception: Result window is too large, from + size must be less than or equal to: [10000] but was [11000]. See the scroll api for a more efficient way to request large data sets. This limit can be set by changing the [index.max_result_window] index level setting.  
+
+```python
+sequence by host.id, source.ip, user.name with maxspan=15s
+  [authentication where host.os.type == "linux" and event.action  in ("ssh_login", "user_login") and
+   event.outcome == "failure" and source.ip != null and source.ip != "0.0.0.0" and source.ip != "::" ] with runs=10
+
+  [authentication where host.os.type == "linux" and event.action  in ("ssh_login", "user_login") and
+   event.outcome == "success" and source.ip != null and source.ip != "0.0.0.0" and source.ip != "::" ]
+```
+
+
+
+## Unsuccessful rules with signals (5)
 
 ### File Creation, Execution and Self-Deletion in Suspicious Directory
 
@@ -134,23 +161,6 @@ registry where host.os.type == "windows" and event.type == "change" and process.
 
 
 
-### Potential Successful SSH Brute Force Attack
-
-Branch count: 2048  
-Document count: 22528  
-Index: geneve-ut-754
-
-```python
-sequence by host.id, source.ip, user.name with maxspan=15s
-  [authentication where host.os.type == "linux" and event.action  in ("ssh_login", "user_login") and
-   event.outcome == "failure" and source.ip != null and source.ip != "0.0.0.0" and source.ip != "::" ] with runs=10
-
-  [authentication where host.os.type == "linux" and event.action  in ("ssh_login", "user_login") and
-   event.outcome == "success" and source.ip != null and source.ip != "0.0.0.0" and source.ip != "::" ]
-```
-
-
-
 ### Suspicious Execution via Scheduled Task
 
 Branch count: 4608  
@@ -246,7 +256,7 @@ sequence by user.name, source.port, source.ip with maxspan=15s
 
 
 
-## Rules with too few signals (9)
+## Rules with too few signals (8)
 
 ### File Creation, Execution and Self-Deletion in Suspicious Directory
 
@@ -388,25 +398,6 @@ registry where host.os.type == "windows" and event.type == "change" and process.
             "*\\wscript.exe"
         )
   )
-```
-
-
-
-### Potential Successful SSH Brute Force Attack
-
-Branch count: 2048  
-Document count: 22528  
-Index: geneve-ut-754  
-Failure message(s):  
-  got 1000 signals, expected 2048  
-
-```python
-sequence by host.id, source.ip, user.name with maxspan=15s
-  [authentication where host.os.type == "linux" and event.action  in ("ssh_login", "user_login") and
-   event.outcome == "failure" and source.ip != null and source.ip != "0.0.0.0" and source.ip != "::" ] with runs=10
-
-  [authentication where host.os.type == "linux" and event.action  in ("ssh_login", "user_login") and
-   event.outcome == "success" and source.ip != null and source.ip != "0.0.0.0" and source.ip != "::" ]
 ```
 
 
