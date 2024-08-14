@@ -13,6 +13,7 @@
 LICENSE.txt
 Makefile
 catalog-info.yaml
+renovate.json
 requirements.txt
 runtime.txt
 setup.cfg
