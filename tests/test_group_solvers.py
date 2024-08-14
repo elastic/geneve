@@ -81,10 +81,10 @@ class TestGroupSolvers(tu.SeededTestCase, unittest.TestCase):
             {
                 "source": {
                     "geo": {
-                        "city_name": "Thomazeau",
-                        "country_iso_code": "HT",
-                        "location": {"lat": 18.65297, "lon": -72.09391},
-                        "timezone": "America/Port-au-Prince",
+                        "city_name": "Lower Earley",
+                        "country_iso_code": "GB",
+                        "location": {"lat": 51.42708, "lon": -0.91979},
+                        "timezone": "Europe/London",
                     }
                 },
                 "destination": {
