@@ -295,6 +295,10 @@ jobs:
       - name: Install dependencies
         run: make prereq
 
+      - name: Check versions
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: "set -x; [ \"${{ github.ref }}\" = \"refs/tags/v$(python3 -c 'import geneve; print(geneve.version)')\" ]"
+
       - name: Build package
         run: make package
 
