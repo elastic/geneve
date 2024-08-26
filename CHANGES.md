@@ -1,3 +1,85 @@
+## v0.3.0 - Aug 28, 2024
+
+#### Core
+
+* Split constraints analysis from document generation.
+* Instantiate field solvers only once.
+* Refactor keyword solver, add the oncept of strings solution space.
+* Add Event constraints solver.
+* Early detection of the wrong number of branches.
+* Early detection of empty combined fields solution space.
+* Fix field path splitting.
+* Fix keyword list lookup.
+* Fix location of the Geneve download cache on mscOS.
+* Make constraints cloning more efficient.
+* Do not optimize ASTs when converting from KQL.
+* Fix invocations of `super`.
+* Migrate to `pathlib`.
+* Use `isinstance()` instead of comparing types.
+* Add azure group solver.
+* Add support for dynamic templates.
+* Expand wildcards in the field name.
+* Fix sequence rules with `runs=` on the first subquery.
+* Improve errors reported by `guess_from_query`.
+* Fix EQL sequence subqueries wrt to `fork` and `is_negated`.
+* Avoid superfluous recreation of ip_address values.
+* Use dicts to store history of values.
+* Avoid calling fnmatchcase for solution points with no wildcards.
+* Speed up util.has_wildcards by regex.
+* Add `wildcard` field type.
+* Adopt Renovate for automating the dependencies maintenance.
+* Update all the dependencies.
+
+#### Testing
+* Add support for Serverless to the CI pipeline.
+* Add Security serverless quality gate pipeline.
+* Add Stack 8.8, 8.9, 8.10, 8.11, 8.12, 8.13, 8.14, and 8.15 to the test drill.
+* Use only primary shards, no replicas, during the CI tests.
+* Let failed rules to retry the execution and forget the failures if they eventually
+  succeed or list all the failures if they eventually fail.
+* Compare reports on success or in assertion errors but not on other errors.
+* Drop generated documents from test reports.
+  Makes report much more maintainable.
+* Use a separate test report for each stack version.
+* Use separate schema and rules for each stack version.
+* Add rules version to the tests reports.
+* Save container logs as artifacts.
+* Make `load_schema` cache downloads.
+* Improve diagnostics during the CI tests.
+* Move code linting to its own job.
+* Adopt Ruff for linting Python code.
+* Adopt Staticcheck for linting Go code.
+* Increase ES heap to 2GB in CI.
+* Tag Geneve rules.
+* Improve test progress on verbose execution.
+* Add Python 3.12 to the test drill.
+* Test only oldest and newest Python versions.
+* Add Go 1.21 to the test drill.
+* Test only oldest and newest Go versions.
+* Allow disabling certs verification.
+* Drop duplicated matrix entries.
+* Add a weekly test run to detect detection rules updates.
+* Pin eql package to 0.9.19.
+* Add progress for rules parsing and documents creation.
+* Allow user to specify `test-stacks.sh` params.
+* Keep a copy of the test report for each iteration.
+* Allow keeping the stack after testing.
+* Use the latest available ECS when the calculated version is not avaialble.
+
+#### API server
+
+* Unified requests body decoding.
+* Adopt Pygolo for interaction with the core.
+
+#### API client
+
+* Make actually `geneve --log` effective.
+
+#### Documentation
+
+* Refresh notebook output.
+* Refresh events generation walk-through.
+
 ## v0.2.0 - Apr 12, 2023
 
 #### Documentation
