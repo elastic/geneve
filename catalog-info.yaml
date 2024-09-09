@@ -39,5 +39,9 @@ spec:
         trigger_mode: none
       teams:
         security-engineering-productivity: {}
+        cloud-tooling:
+          access_level: BUILD_AND_READ
+        kibana-release-operators:
+          access_level: BUILD_AND_READ
         everyone:
           access_level: READ_ONLY
