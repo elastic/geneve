@@ -183,87 +183,11 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
             )
         return rules, asts
 
-    stack_signals = {
-        "8.2": {
-            "ack_no_signals": 3,
-            "ack_too_few_signals": 1,
-        },
-        "8.3": {
-            "ack_no_signals": 4,
-            "ack_too_few_signals": 3,
-        },
-        "8.4": {
-            "ack_no_signals": 3,
-            "ack_too_few_signals": 3,
-        },
-        "8.5": {
-            "ack_no_signals": 4,
-            "ack_too_few_signals": 3,
-        },
-        "8.6": {
-            "ack_no_signals": 4,
-            "ack_too_few_signals": 9,
-        },
-        "8.7": {
-            "ack_no_signals": 4,
-            "ack_too_few_signals": 11,
-        },
-        "8.8": {
-            "ack_no_signals": 4,
-            "ack_too_few_signals": 10,
-            "ack_unsuccessful_with_signals": 9,
-        },
-        "8.9": {
-            "ack_no_signals": 2,
-            "ack_too_few_signals": 8,
-            "ack_unsuccessful_with_signals": 7,
-        },
-        "8.10": {
-            "ack_no_signals": 3,
-            "ack_too_few_signals": 7,
-            "ack_unsuccessful_with_signals": 6,
-        },
-        "8.11": {
-            "ack_no_signals": 3,
-            "ack_too_few_signals": 10,
-            "ack_unsuccessful_with_signals": 7,
-        },
-        "8.12": {
-            "ack_failed": 0,
-            "ack_no_signals": 3,
-            "ack_too_few_signals": 9,
-            "ack_unsuccessful_with_signals": 6,
-        },
-        "8.13": {
-            "ack_failed": 0,
-            "ack_no_signals": 3,
-            "ack_too_few_signals": 9,
-            "ack_unsuccessful_with_signals": 6,
-        },
-        "8.14": {
-            "ack_failed": 0,
-            "ack_no_signals": 3,
-            "ack_too_few_signals": 9,
-            "ack_unsuccessful_with_signals": 6,
-        },
-        "8.15": {
-            "ack_failed": 0,
-            "ack_no_signals": 3,
-            "ack_too_few_signals": 9,
-            "ack_unsuccessful_with_signals": 6,
-        },
-        "8.16": {
-            "ack_failed": 1,
-            "ack_no_signals": 3,
-            "ack_too_few_signals": 8,
-            "ack_unsuccessful_with_signals": 5,
-        },
-    }
-
     def test_rules(self):
+        config = tu.load_config()["emitter_rules"]
         stack_version = self.get_version()
         major_minor = f"{stack_version.major}.{stack_version.minor}"
-        for k, v in self.stack_signals.get(major_minor, {}).items():
+        for k, v in config["stack_signals"].get(major_minor, {}).items():
             setattr(self, k, v)
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
         version, collection = tu.load_test_rules()

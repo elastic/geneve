@@ -47,6 +47,7 @@ __all__ = (
 
 root_dir = Path(__file__).parent.parent
 data_dir = root_dir / "tests" / "data"
+config_file = Path(__file__).parent / "config.yaml"
 
 
 def get_test_verbosity():
@@ -107,6 +108,14 @@ def get_test_schema_uri():
 
 def get_test_rules_uri():
     return os.getenv("TEST_DETECTION_RULES_URI") or "https://github.com/elastic/detection-rules/archive/refs/heads/main.tar.gz"
+
+
+def load_config():
+    from ruamel.yaml import YAML
+
+    with open(config_file) as f:
+        yaml = YAML(typ="safe")
+        return yaml.load(f)
 
 
 def load_test_schema():
