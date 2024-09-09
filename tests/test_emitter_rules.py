@@ -124,7 +124,11 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                     cells.append(jupyter.Markdown(heading + sorted(bullets)))
 
     def test_rules_collection(self):
-        version, collection = tu.load_test_rules()
+        config = tu.load_config()["emitter_rules"]
+        stack_version = self.stack_version
+        major_minor = f"{stack_version.major}.{stack_version.minor}"
+        rules_version = config["rules_versions"][major_minor]
+        version, collection = tu.load_test_rules(version=rules_version)
         self.nb.cells.append(jupyter.Markdown(f"Rules version: {version or 'unknown'}"))
         collection = sorted(collection, key=lambda x: x.name)
         rules, asts = self.parse_from_collection(collection)
@@ -187,10 +191,11 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         config = tu.load_config()["emitter_rules"]
         stack_version = self.get_version()
         major_minor = f"{stack_version.major}.{stack_version.minor}"
+        rules_version = config["rules_versions"][major_minor]
         for k, v in config["stack_signals"].get(major_minor, {}).items():
             setattr(self, k, v)
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
-        version, collection = tu.load_test_rules()
+        version, collection = tu.load_test_rules(version=rules_version)
         self.nb.cells.append(jupyter.Markdown(f"Rules version: {version or 'unknown'}"))
         collection = sorted(collection, key=lambda x: (x.name, x.rule_id))
         rules, asts = self.parse_from_collection(collection)

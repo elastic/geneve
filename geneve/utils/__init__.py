@@ -160,7 +160,7 @@ def load_integration_schema(name, kibana_version):
 def load_rules(uri, paths=None, basedir=None, *, timeout=17, tries=3):
     version = None
     uri_parts = urlparse(uri)
-    if uri_parts.hostname == "epr.elastic.co" and uri_parts.path == "/search":
+    if uri_parts.hostname == "epr.elastic.co":
         import requests
 
         for n in range(tries):
@@ -173,11 +173,17 @@ def load_rules(uri, paths=None, basedir=None, *, timeout=17, tries=3):
 
         res.raise_for_status()
         res = res.json()
-        if len(res) != 1:
-            raise ValueError(f"Wrong number of packages: {len(res)}")
-        uri_parts = uri_parts._replace(path=res[0]["download"], query="")
-        uri = urlunparse(uri_parts)
-        version = res[0]["version"]
+
+        if uri_parts.path == "/search":
+            if len(res) != 1:
+                raise ValueError(f"Wrong number of packages: {len(res)}")
+            uri_parts = uri_parts._replace(path=res[0]["download"], query="")
+            uri = urlunparse(uri_parts)
+            version = res[0]["version"]
+        elif uri_parts.path.startswith("/package/security_detection_engine/"):
+            uri_parts = uri_parts._replace(path=res["download"], query="")
+            uri = urlunparse(uri_parts)
+            version = res["version"]
 
     with resource(uri, basedir=basedir, cachedir=dirs.cache) as resource_dir:
         is_package = (resource_dir / "manifest.yml").exists()
