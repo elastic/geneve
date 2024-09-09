@@ -26,6 +26,7 @@ scripts/generate-network-events.sh
 scripts/test-stacks.sh
 scripts/test-qaf-stack.sh
 
+tests/config.yaml
 tests/deployment.json
 tests/data/config_elastic-package.yaml
 tests/data/config_geneve-test-env.yaml

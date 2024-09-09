@@ -47,6 +47,7 @@ __all__ = (
 
 root_dir = Path(__file__).parent.parent
 data_dir = root_dir / "tests" / "data"
+config_file = Path(__file__).parent / "config.yaml"
 
 
 def get_test_verbosity():
@@ -105,16 +106,29 @@ def get_test_schema_uri():
     return os.getenv("TEST_SCHEMA_URI") or "https://github.com/elastic/ecs/archive/refs/heads/main.tar.gz"
 
 
-def get_test_rules_uri():
-    return os.getenv("TEST_DETECTION_RULES_URI") or "https://github.com/elastic/detection-rules/archive/refs/heads/main.tar.gz"
+def get_test_rules_uri(version=None):
+    uri = os.getenv("TEST_DETECTION_RULES_URI")
+    if uri:
+        return uri
+    if version:
+        return f"https://epr.elastic.co/package/security_detection_engine/{version}"
+    return "https://github.com/elastic/detection-rules/archive/refs/heads/main.tar.gz"
+
+
+def load_config():
+    from ruamel.yaml import YAML
+
+    with open(config_file) as f:
+        yaml = YAML(typ="safe")
+        return yaml.load(f)
 
 
 def load_test_schema():
     return load_schema(get_test_schema_uri(), "generated/ecs/ecs_flat.yml", root_dir)
 
 
-def load_test_rules(rules=None):
-    return load_rules(get_test_rules_uri(), rules, root_dir)
+def load_test_rules(version=None, rules=None):
+    return load_rules(get_test_rules_uri(version), rules, root_dir)
 
 
 def get_rule_by_id(rules, rule_id):
