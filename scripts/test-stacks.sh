@@ -163,7 +163,7 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 			TEST_ELASTICSEARCH_URL=`echo $QAF_PROJECT | jq -r '.elasticsearch.url'`
 			TEST_KIBANA_URL=`echo $QAF_PROJECT | jq -r '.kibana.url'`
 
-			TEST_STACK_VERSION=
+			TEST_STACK_VERSION=serverless
 			TEST_SCHEMA_URI=
 			TEST_DETECTION_RULES_URI=
 			TEST_ELASTICSEARCH_PROXY=
