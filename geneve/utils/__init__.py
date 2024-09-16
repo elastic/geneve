@@ -28,7 +28,6 @@ from random import Random
 from tempfile import mkdtemp
 from types import SimpleNamespace
 from urllib.parse import urlparse, urlunparse
-from warnings import warn
 
 from . import dirs, epr
 
@@ -121,10 +120,8 @@ def load_integration_schema(name, kibana_version):
     from ruamel.yaml import YAML
 
     conditions = {}
-    if kibana_version:
+    if kibana_version and str(kibana_version) != "serverless":
         conditions["kibana.version"] = kibana_version
-    else:
-        warn(f"Loading integration '{name}' but no Kibana version was specified, assuming latest.")
 
     e = epr.EPR(timeout=17, tries=3)
     res = e.search_package(name, **conditions)

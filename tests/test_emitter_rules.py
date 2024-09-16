@@ -126,7 +126,10 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     def test_rules_collection(self):
         config = tu.load_config()["emitter_rules"]
         stack_version = self.stack_version
-        major_minor = f"{stack_version.major}.{stack_version.minor}"
+        if str(stack_version) == "serverless":
+            major_minor = "serverless"
+        else:
+            major_minor = f"{stack_version.major}.{stack_version.minor}"
         rules_version = config["rules_versions"][major_minor]
         version, collection = tu.load_test_rules(version=rules_version)
         self.nb.cells.append(jupyter.Markdown(f"Rules version: {version or 'unknown'}"))
@@ -136,7 +139,10 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     def test_unchanged(self):
         stack_version = self.stack_version
-        major_minor = f"{stack_version.major}.{stack_version.minor}"
+        if str(stack_version) == "serverless":
+            major_minor = "serverless"
+        else:
+            major_minor = f"{stack_version.major}.{stack_version.minor}"
         tu.assertReportUnchanged(self, self.nb, f"documents_from_rules-{major_minor}.md")
 
 
@@ -190,7 +196,10 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
     def test_rules(self):
         config = tu.load_config()["emitter_rules"]
         stack_version = self.get_version()
-        major_minor = f"{stack_version.major}.{stack_version.minor}"
+        if str(stack_version) == "serverless":
+            major_minor = "serverless"
+        else:
+            major_minor = f"{stack_version.major}.{stack_version.minor}"
         rules_version = config["rules_versions"][major_minor]
         for k, v in config["stack_signals"].get(major_minor, {}).items():
             setattr(self, k, v)

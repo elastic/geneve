@@ -97,9 +97,14 @@ def http_server(directory, timeout=10):
 
 
 def get_stack_version():
+    version = os.getenv("TEST_STACK_VERSION", None)
+
+    if version in ("serverless", None):
+        return version
+
     import semver
 
-    return semver.VersionInfo.parse(os.getenv("TEST_STACK_VERSION", None))
+    return semver.VersionInfo.parse(version)
 
 
 def get_test_schema_uri():
@@ -244,6 +249,9 @@ class OnlineTestCase:
 
     @classmethod
     def get_version(cls):
+        if cls.serverless:
+            return "serverless"
+
         import semver
 
         return semver.VersionInfo.parse(cls.kb.status()["version"]["number"])
