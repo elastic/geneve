@@ -1,21 +1,38 @@
 emitter_rules:
   rules_versions:
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.2
       "8.2": "8.2.1"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.3
       "8.3": "8.3.4"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.4
       "8.4": "8.4.5"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.5
       "8.5": "8.5.8"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.6
       "8.6": "8.6.10"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.7
       "8.7": "8.7.13"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.8
       "8.8": "8.8.15"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.9
       "8.9": "8.9.15"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.10
       "8.10": "8.10.18"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.11
       "8.11": "8.11.21"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.12
       "8.12": "8.12.21"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.13
       "8.13": "8.13.16"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.14
       "8.14": "8.14.10"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.15
       "8.15": "8.15.4"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.16
       "8.16": "8.15.5"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=
       "9.0": "8.15.5"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=
       "serverless": "8.15.4"
 
   stack_signals:
