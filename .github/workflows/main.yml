@@ -187,7 +187,6 @@ jobs:
         env:
           TEST_STACK_VERSION: ${{ matrix.stack-version }}
           TEST_SCHEMA_URI: ${{ matrix.schema-uri }}
-          TEST_DETECTION_RULES_URI: "https://epr.elastic.co/search?package=security_detection_engine&kibana.version=${{ matrix.stack-version }}"
           TEST_SIGNALS_QUERIES: 1
           TEST_SIGNALS_RULES: 1
           TEST_ELASTICSEARCH_URL: "http://localhost:9280"
