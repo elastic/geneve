@@ -102,7 +102,7 @@ iteration_banner()
 	fi
 }
 
-if [[ "$STACK_VERSIONS" =~ (^| )qaf( |$) ]]; then
+if [[ "$STACK_VERSIONS" =~ (^| )qaf-serverless( |$) ]]; then
 	QAF_PROJECT=`qaf elastic-cloud projects describe --show-credentials --as-json`
 fi
 
@@ -158,7 +158,7 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 
 	ITERATION_FAILURE=0
 	for MAJOR_MINOR in ${STACK_VERSIONS:-$DEFAULT_STACK_VERSIONS}; do
-		if [ "$MAJOR_MINOR" == "qaf" ]; then
+		if [ "$MAJOR_MINOR" == "qaf-serverless" ]; then
 			TEST_API_KEY=`echo $QAF_PROJECT | jq -r '.credentials.api_key'`
 			TEST_ELASTICSEARCH_URL=`echo $QAF_PROJECT | jq -r '.elasticsearch.url'`
 			TEST_KIBANA_URL=`echo $QAF_PROJECT | jq -r '.kibana.url'`
