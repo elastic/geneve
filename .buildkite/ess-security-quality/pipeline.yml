@@ -1,0 +1,31 @@
+agents:
+  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:24cc08509d1d89b0f45442f1dafa7fd0ba03b2f4562d94aef7de68d1b5d2eee6"
+  memory: "3G"
+
+env:
+  EC_REGION: "gcp-eu-central1"
+  EC_ENV: "qa"
+  EC_DEPLOYMENT_NAME: "bk-ess-security-geneve-${BUILDKITE_BUILD_NUMBER}"
+
+steps:
+  - label: ":pipeline: Create environment `ess-geneve-test-environment`"
+    key: create_geneve_environment
+    command:
+      - "qaf elastic-cloud deployments create"
+
+  - label: ":rocket: Deploy Geneve tests"
+    key: geneve_tests
+    depends_on: create_geneve_environment
+    command:
+      - python3 -m pip install -r requirements.txt
+      - ./scripts/test-stacks.sh qaf-ess ${TEST_EXTRA_PARAMS:---online -v --queries}
+
+  - label: ":pipeline: Delete environment `serverless-geneve-test-environment`"
+    key: delete_geneve_environment
+    depends_on:
+      - create_geneve_environment
+      - geneve_tests
+    command:
+      - "qaf elastic-cloud deployments remove"
+      - "qaf elastic-cloud deployments list"
+    allow_dependency_failure: true
