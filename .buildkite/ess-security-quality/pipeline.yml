@@ -3,7 +3,7 @@ agents:
   memory: "3G"
 
 env:
-  EC_REGION: "gcp-eu-central1"
+  EC_REGION: "gcp-us-central1"
   EC_ENV: "qa"
   EC_DEPLOYMENT_NAME: "bk-ess-security-geneve-${BUILDKITE_BUILD_NUMBER}"
 
