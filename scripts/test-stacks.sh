@@ -103,10 +103,10 @@ iteration_banner()
 }
 
 if [[ "$STACK_VERSIONS" =~ (^| )qaf-serverless( |$) ]]; then
-	QAF_PROJECT=`qaf elastic-cloud projects describe --show-credentials --as-json`
+	QAF_DESCR=`qaf elastic-cloud projects describe --show-credentials --as-json`
 fi
 if [[ "$STACK_VERSIONS" =~ (^| )qaf-ess( |$) ]]; then
-	QAF_DEPLOYMENT=`qaf elastic-cloud deployments describe --show-credentials --as-json`
+	QAF_DESCR=`qaf elastic-cloud deployments describe --show-credentials --as-json`
 fi
 
 export TEST_ELASTICSEARCH_URL
@@ -162,9 +162,9 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 	ITERATION_FAILURE=0
 	for MAJOR_MINOR in ${STACK_VERSIONS:-$DEFAULT_STACK_VERSIONS}; do
 		if [ "$MAJOR_MINOR" == "qaf-serverless" ]; then
-			TEST_API_KEY=`echo $QAF_PROJECT | jq -r '.credentials.api_key'`
-			TEST_ELASTICSEARCH_URL=`echo $QAF_PROJECT | jq -r '.elasticsearch.url'`
-			TEST_KIBANA_URL=`echo $QAF_PROJECT | jq -r '.kibana.url'`
+			TEST_API_KEY=`echo $QAF_DESCR | jq -r '.credentials.api_key'`
+			TEST_ELASTICSEARCH_URL=`echo $QAF_DESCR | jq -r '.elasticsearch.url'`
+			TEST_KIBANA_URL=`echo $QAF_DESCR | jq -r '.kibana.url'`
 
 			TEST_STACK_VERSION=serverless
 			TEST_SCHEMA_URI=
@@ -175,11 +175,9 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 		fi
 
 		if [ "$MAJOR_MINOR" == "qaf-ess" ]; then
-			TEST_USERNAME=`echo $QAF_DEPLOYMENT | jq -r '.credentials.username'`
-			TEST_PASSWORD=`echo $QAF_DEPLOYMENT | jq -r '.credentials.password'`
-
-			TEST_ELASTICSEARCH_URL=`echo $QAF_DEPLOYMENT | jq -r '.elasticsearch.url' | sed -e "s#^https://#https://$TEST_USERNAME:$TEST_PASSWORD@#"`
-			TEST_KIBANA_URL=`echo $QAF_DEPLOYMENT | jq -r '.kibana.url' | sed -e "s#^https://#https://$TEST_USERNAME:$TEST_PASSWORD@#"`
+			TEST_API_KEY=`echo $QAF_DESCR | jq -r '.credentials.api_key'`
+			TEST_ELASTICSEARCH_URL=`echo $QAF_DESCR | jq -r '.elasticsearch.url'`
+			TEST_KIBANA_URL=`echo $QAF_DESCR | jq -r '.kibana.url'`
 
 			TEST_STACK_VERSION=
 			TEST_SCHEMA_URI=
