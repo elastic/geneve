@@ -25,6 +25,7 @@ import unittest
 
 import tests.utils as tu
 from geneve.events_emitter import SourceEvents, ast_from_rule
+from geneve.utils import load_rules
 
 from . import jupyter
 
@@ -130,8 +131,9 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             major_minor = "serverless"
         else:
             major_minor = f"{stack_version.major}.{stack_version.minor}"
-        rules_version = config["rules_versions"][major_minor]
-        version, collection = tu.load_test_rules(version=rules_version)
+        rules_version = config["rules_versions"].get(major_minor)
+        rules_uri = tu.get_test_rules_uri(rules_version, stack_version)
+        version, collection = load_rules(rules_uri, paths=None, basedir=tu.root_dir)
         self.nb.cells.append(jupyter.Markdown(f"Rules version: {version or 'unknown'}"))
         collection = sorted(collection, key=lambda x: x.name)
         rules, asts = self.parse_from_collection(collection)
@@ -200,11 +202,12 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
             major_minor = "serverless"
         else:
             major_minor = f"{stack_version.major}.{stack_version.minor}"
-        rules_version = config["rules_versions"][major_minor]
         for k, v in config["stack_signals"].get(major_minor, {}).items():
             setattr(self, k, v)
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
-        version, collection = tu.load_test_rules(version=rules_version)
+        rules_version = config["rules_versions"].get(major_minor)
+        rules_uri = tu.get_test_rules_uri(rules_version, stack_version)
+        version, collection = load_rules(rules_uri, paths=None, basedir=tu.root_dir)
         self.nb.cells.append(jupyter.Markdown(f"Rules version: {version or 'unknown'}"))
         collection = sorted(collection, key=lambda x: (x.name, x.rule_id))
         rules, asts = self.parse_from_collection(collection)
