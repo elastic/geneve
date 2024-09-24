@@ -3,6 +3,7 @@ agents:
   memory: "3G"
 
 env:
+  EC_REGISTER_BACKEND: "appex-qa-team-cluster"
   EC_REGION: "gcp-us-central1"
   EC_ENV: "qa"
   EC_DEPLOYMENT_NAME: "bk-ess-security-geneve-${BUILDKITE_BUILD_NUMBER}"
