@@ -33,7 +33,7 @@ from functools import partial
 from pathlib import Path
 
 from geneve.events_emitter import SourceEvents
-from geneve.utils import batched, load_rules, load_schema, random
+from geneve.utils import batched, load_schema, random
 
 from . import jupyter
 
@@ -111,12 +111,17 @@ def get_test_schema_uri():
     return os.getenv("TEST_SCHEMA_URI") or "https://github.com/elastic/ecs/archive/refs/heads/main.tar.gz"
 
 
-def get_test_rules_uri(version=None):
+def get_test_rules_uri(rules_version=None, kibana_version=None):
     uri = os.getenv("TEST_DETECTION_RULES_URI")
     if uri:
         return uri
-    if version:
-        return f"https://epr.elastic.co/package/security_detection_engine/{version}"
+    if rules_version:
+        return f"https://epr.elastic.co/package/security_detection_engine/{rules_version}"
+    if kibana_version:
+        if str(kibana_version) == "serverless":
+            return "https://epr.elastic.co/search?package=security_detection_engine"
+        else:
+            return f"https://epr.elastic.co/search?package=security_detection_engine&kibana.version={kibana_version}"
     return "https://github.com/elastic/detection-rules/archive/refs/heads/main.tar.gz"
 
 
@@ -130,10 +135,6 @@ def load_config():
 
 def load_test_schema():
     return load_schema(get_test_schema_uri(), "generated/ecs/ecs_flat.yml", root_dir)
-
-
-def load_test_rules(version=None, rules=None):
-    return load_rules(get_test_rules_uri(version), rules, root_dir)
 
 
 def get_rule_by_id(rules, rule_id):

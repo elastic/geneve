@@ -14,6 +14,8 @@ emitter_rules:
       "8.13": "8.13.16"
       "8.14": "8.14.10"
       "8.15": "8.15.4"
+      "8.16": "8.15.5"
+      "9.0": "8.15.5"
       "serverless": "8.15.4"
 
   stack_signals:
@@ -71,6 +73,16 @@ emitter_rules:
           ack_unsuccessful_with_signals: 6
           ack_no_signals: 3
           ack_too_few_signals: 9
+      "8.16":
+          ack_failed: 0
+          ack_unsuccessful_with_signals: 7
+          ack_no_signals: 3
+          ack_too_few_signals: 10
+      "9.0":
+          ack_failed: 0
+          ack_unsuccessful_with_signals: 7
+          ack_no_signals: 3
+          ack_too_few_signals: 10
       "serverless":
           ack_failed: 1
           ack_unsuccessful_with_signals: 5
