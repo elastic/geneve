@@ -124,6 +124,12 @@ cleanup()
 	# must be first so to color the banner in base of the exit status
 	iteration_banner
 	rm -r "$TMP_DIR"
+
+	if [ $FAILED_ITERATIONS -gt 0 ]; then
+		echo ""
+		echo "[31mFailed iterations: $FAILED_ITERATIONS / $ITERATION[0m"
+		exit 1
+	fi
 }
 
 get_ecs_tarball()
