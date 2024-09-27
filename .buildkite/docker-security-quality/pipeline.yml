@@ -1,4 +1,5 @@
 agents:
+  image: "python:bookworm"
   memory: "4G"
 
 steps:
