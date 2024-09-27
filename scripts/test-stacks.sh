@@ -93,6 +93,14 @@ iteration_banner()
 		STATS+=" / $ITERATIONS"
 	fi
 
+	if [ $MAX_FAILURES -gt 0 ]; then
+		STATS+=" ! $TOTAL_FAILURES"
+	fi
+
+	if [ $MAX_FAILURES -lt 0 ]; then
+		STATS+=" ! $FAILED_ITERATIONS"
+	fi
+
 	if [ $ITERATIONS -lt 0 ] || [ $ITERATIONS -gt 1 ]; then
 		if [ $EXIT_STATUS -eq 0 ] && [ $ITERATION_FAILURE -eq 0 ]; then
 			echo "[32m========================================[0m - $STATS - [32m========================================[0m"
@@ -126,8 +134,6 @@ cleanup()
 	rm -r "$TMP_DIR"
 
 	if [ $FAILED_ITERATIONS -gt 0 ]; then
-		echo ""
-		echo "[31mFailed iterations: $FAILED_ITERATIONS / $ITERATION[0m"
 		exit 1
 	fi
 }

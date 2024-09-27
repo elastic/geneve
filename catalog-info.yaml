@@ -50,7 +50,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
   name: geneve-ess-security-quality
-  description: "Geneve - ESS Security quality testing"
+  description: "Geneve - Security quality testing (ESS)"
 spec:
   type: buildkite-pipeline
   owner: group:security-engineering-productivity
@@ -63,6 +63,36 @@ spec:
     spec:
       repository: elastic/geneve
       pipeline_file: .buildkite/ess-security-quality/pipeline.yml
+      skip_intermediate_builds: false
+      provider_settings:
+        build_branches: true
+        trigger_mode: none
+      teams:
+        security-engineering-productivity: {}
+        cloud-tooling:
+          access_level: BUILD_AND_READ
+        kibana-release-operators:
+          access_level: BUILD_AND_READ
+        everyone:
+          access_level: READ_ONLY
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: geneve-docker-security-quality
+  description: "Geneve - Security quality testing (Docker)"
+spec:
+  type: buildkite-pipeline
+  owner: group:security-engineering-productivity
+  system: buildkite
+  implementation:
+    apiVersion: buildkite.elastic.dev/v1
+    kind: Pipeline
+    metadata:
+      name: geneve-docker-security-quality
+    spec:
+      repository: elastic/geneve
+      pipeline_file: .buildkite/docker-security-quality/pipeline.yml
       skip_intermediate_builds: false
       provider_settings:
         build_branches: true
