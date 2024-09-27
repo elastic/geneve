@@ -121,6 +121,8 @@ def get_test_rules_uri(rules_version=None, kibana_version=None):
         if str(kibana_version) == "serverless":
             return "https://epr.elastic.co/search?package=security_detection_engine"
         else:
+            if str(kibana_version).endswith("-SNAPSHOT"):
+                kibana_version = str(kibana_version)[: -len("-SNAPSHOT")]
             return f"https://epr.elastic.co/search?package=security_detection_engine&kibana.version={kibana_version}"
     return "https://github.com/elastic/detection-rules/archive/refs/heads/main.tar.gz"
 

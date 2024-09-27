@@ -121,6 +121,8 @@ def load_integration_schema(name, kibana_version):
 
     conditions = {}
     if kibana_version and str(kibana_version) != "serverless":
+        if str(kibana_version).endswith("-SNAPSHOT"):
+            kibana_version = str(kibana_version)[: -len("-SNAPSHOT")]
         conditions["kibana.version"] = kibana_version
 
     e = epr.EPR(timeout=17, tries=3)
