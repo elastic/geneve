@@ -1,9 +1,22 @@
 agents:
+  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:55a198946ab24e6fcbe98a83a10cea1c695fb006b23afb7516e99b59499e5eb2"
   memory: "4G"
 
 steps:
+  - label: ":pipeline: Install Docker"
+    key: install_docker
+    command:
+      - apt update
+      - apt-get install -y docker.io
+
   - label: ":rocket: Deploy Geneve tests"
     key: geneve_tests
+    depends_on: install_docker
     command:
-      - python3 -m pip install -r requirements.txt
-      - ./scripts/test-stacks.sh $STACK_VERSION ${TEST_EXTRA_PARAMS:---online -v --queries}
+      - python3 -m pip install -r requirements.txt ;
+      - ./scripts/test-stacks.sh $STACK_VERSION ${TEST_EXTRA_PARAMS:---online -v --queries} ;
+    plugins:
+      - docker#v5.12.0:
+          image: "docker:latest"
+          volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
