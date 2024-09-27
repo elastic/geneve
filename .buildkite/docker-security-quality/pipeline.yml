@@ -4,7 +4,6 @@ agents:
 steps:
   - label: ":rocket: Deploy Geneve tests"
     key: geneve_tests
-    depends_on: create_geneve_environment
     command:
       - python3 -m pip install -r requirements.txt
       - ./scripts/test-stacks.sh $STACK_VERSION ${TEST_EXTRA_PARAMS:---online -v --queries}
