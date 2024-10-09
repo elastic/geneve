@@ -32,12 +32,12 @@
       "autoReplaceStringTemplate": "{{{kibanaVersion}}}: \"{{{newValue}}}\""
     }
   ],
-  "customDatasources": [
+  "customDatasources": {
     "epr": {
       "defaultRegistryUrlTemplate": "https://epr.elastic.co/search?{{{replace '\\s+kibana_version=' '&kibana.version=' packageName}}}",
       "transformTemplates": [
         "{\"releases\":[{\"version\": $.version}]}"
       ]
     }
-  ]
+  }
 }
