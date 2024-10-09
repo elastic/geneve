@@ -28,7 +28,7 @@
       "matchStrings": [
         "\\s*# renovate: datasource=epr (?<packageName>package=\\S+ kibana_version=\\S*)\\s*\\n(?<kibanaVersion>.+): \"(?<currentValue>\\S+)\""
       ],
-      "autoReplaceStringTemplate": "{{{kibanaVersion}}}: \"{{{newValue}}}\""
+      "autoReplaceStringTemplate": "{{{kibanaVersion}}}: \"{{{newValue}}}\"",
       "datasourceTemplate": "epr"
     }
   ],
