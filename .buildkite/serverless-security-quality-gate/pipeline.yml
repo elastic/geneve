@@ -29,5 +29,5 @@ steps:
       - geneve_quality_gate
     command:
       - "qaf elastic-cloud projects delete"
-      - "qaf elastic-cloud projects list"
+      - "qaf elastic-cloud projects list || true"
     allow_dependency_failure: true

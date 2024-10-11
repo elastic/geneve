@@ -28,5 +28,5 @@ steps:
       - geneve_tests
     command:
       - "qaf elastic-cloud deployments remove"
-      - "qaf elastic-cloud deployments list"
+      - "qaf elastic-cloud deployments list || true"
     allow_dependency_failure: true
