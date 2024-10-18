@@ -1,5 +1,5 @@
 agents:
-  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:4f697d9556b495e6cf2526fea0436f87c21d700528b27b962c15a4465651f31f"
+  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:beb84ba27e78d0cdb4cf76dc66f05d347b81076c9ba6944baab1dcb5b3bd828b"
   memory: "3G"
 
 env:
