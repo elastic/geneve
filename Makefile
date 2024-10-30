@@ -11,6 +11,8 @@ ifeq ($(PYTHON),)
 	PYTHON := $(ACTIVATE)python3
 endif
 
+# if golang is installed only
+ifneq ($(shell command -v go 2>/dev/null),)
 PYGOLO_DIR := $(shell go list -f '{{.Dir}}' -m gitlab.com/pygolo/py)
 ifeq ($(PYGOLO_DIR),)
 	PYGOLO_DIR := $(shell go get gitlab.com/pygolo/py && go list -f '{{.Dir}}' -m gitlab.com/pygolo/py)
@@ -22,6 +24,7 @@ else
 define embed-python
 	$(error Embedding Python is not supported on this platform)
 endef
+endif
 endif
 
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
@@ -88,6 +91,7 @@ cli-bench:
 clean:
 	go clean -cache -testcache
 	rm -rf gnv
+	echo $(PYGOLO_DIR)
 
 pkg-build:
 	$(PYTHON) -m build
