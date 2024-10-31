@@ -5,35 +5,36 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.15.4
+Rules version: 8.15.9
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (68)](#unsupported-rule-type-new_terms-68)
-      1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
-      1. [Unsupported rule type: esql (23)](#unsupported-rule-type-esql-23)
+      1. [Unsupported rule type: new_terms (72)](#unsupported-rule-type-new_terms-72)
+      1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
+      1. [Unsupported rule type: esql (26)](#unsupported-rule-type-esql-26)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
+      1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
       1. [Unsupported function: match (11)](#unsupported-function-match-11)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
-      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (5)](#unsupported-argument-types-class-eqlastfield-5)
+      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (6)](#unsupported-argument-types-class-eqlastfield-6)
       1. [Root without branches (4)](#root-without-branches-4)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (3)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
+      1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported function: startsWith (3)](#unsupported-function-startswith-3)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
       1. [Unsupported function: endswith (2)](#unsupported-function-endswith-2)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
+      1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*attribute=userData*'}): ('*instanceId*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsattributeuserdata-instanceid-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
@@ -56,6 +57,7 @@ Rules version: 8.15.4
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'LsaCallAuthenticationPackage'}): ('KerbRetrieveEncodedTicketMessage')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringslsacallauthenticationpackage-kerbretrieveencodedticketmessage-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NTLMSSPNegotiate'}): ('NegotiateSMB')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsntlmsspnegotiate-negotiatesmb-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstartupinfoex-updateprocthreadattribute-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Set-MpPreference'}): ('DisableArchiveScanning')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsset-mppreference-disablearchivescanning-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookA'}): ('GetForegroundWindow')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssetwindowshooka-getforegroundwindow-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'System.IO.Compression.DeflateStream'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemiocompressiondeflatestream-frombase64string-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'VirtualAlloc'}): ('WriteProcessMemory')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsvirtualalloc-writeprocessmemory-1)
@@ -76,6 +78,7 @@ Rules version: 8.15.4
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh')) (1)](#unsolvable-constraints-processname-excluded-by-stringssh-sh-1)
+      1. [Unsolvable constraints: process.name (not in Strings({'rundll32.exe'}): ('mshta.exe')) (1)](#unsolvable-constraints-processname-not-in-stringsrundll32exe-mshtaexe-1)
       1. [Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)](#unsolvable-constraints-processparentargs-excluded-by-stringswdisystemhost-wdisystemhost-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'dllhost.exe'}): ('dllhost.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsdllhostexe-dllhostexe-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsrundll32exe-rundll32exe-1)
@@ -175,12 +178,13 @@ Rules version: 8.15.4
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (68)
+### Unsupported rule type: new_terms (72)
 
-68 rules:
+72 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS EC2 Admin Credential Fetch via Assumed Role
+* AWS SSM `SendCommand` with Run Shell Command Parameters
 * AWS STS GetCallerIdentity API Called for the First Time
 * AWS STS Temporary Credentials via AssumeRole
 * AWS Systems Manager SecureString Parameter Request with Decryption Flag
@@ -188,6 +192,7 @@ Rules version: 8.15.4
 * Authentication via Unusual PAM Grantor
 * CAP_SYS_ADMIN Assigned to Binary
 * DPKG Package Installed by Unusual Parent Process
+* Deprecated - Suspicious JAVA Child Process
 * Discovery of Internet Capabilities via Built-in Tools
 * Enumeration of Kernel Modules
 * Enumeration of Kernel Modules via Proc
@@ -213,6 +218,8 @@ Rules version: 8.15.4
 * First Time Seen NewCredentials Logon Process
 * First Time Seen Removable Device
 * FirstTime Seen Account Performing DCSync
+* Linux Clipboard Activity Detected
+* Microsoft 365 Portal Login from Rare Location
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
 * Modification of Dynamic Linker Preload Shared Object
@@ -222,7 +229,6 @@ Rules version: 8.15.4
 * Potential Pass-the-Hash (PtH) Attempt
 * Potential Privilege Escalation via Linux DAC permissions
 * Potential Shadow File Read via Command Line Utilities
-* Potential Suspicious Clipboard Activity Detected
 * Privileged Docker Container Creation
 * Query Registry using Built-in Tools
 * RPM Package Installed by Unusual Parent Process
@@ -231,8 +237,8 @@ Rules version: 8.15.4
 * SSM Session Started to EC2 Instance
 * Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
+* Successful Application SSO from Rare Unknown Client Device
 * Sudoers File Modification
-* Suspicious JAVA Child Process
 * Suspicious Microsoft 365 Mail Access by ClientAppId
 * Suspicious Modprobe File Event
 * Suspicious Network Activity to the Internet by Previously Unknown Executable
@@ -243,24 +249,27 @@ Rules version: 8.15.4
 * Svchost spawning Cmd
 * Systemd Service Started by Unusual Parent Process
 * UID Elevation from Previously Unknown Executable
+* Unauthorized Scope for Public App OAuth2 Token Grant with Client Credentials
 * Unknown Execution of Binary with RWX Memory Region
 * Unusual Discovery Activity by User
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 
-### Unsupported rule type: threshold (28)
+### Unsupported rule type: threshold (29)
 
-28 rules:
+29 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
 * Agent Spoofing - Multiple Hosts Using Same Agent
 * Attempts to Brute Force an Okta User Account
+* Deprecated - Potential Password Spraying of Microsoft 365 User Accounts
 * GitHub UEBA - Multiple Alerts from a GitHub Account
 * High Number of Cloned GitHub Repos From PAT
 * High Number of Okta User Password Reset or Unlock Attempts
 * High Number of Process Terminations
 * High Number of Process and/or Service Terminations
+* Microsoft 365 Portal Logins from Impossible Travel Locations
 * Multiple Alerts Involving a User
 * Multiple Alerts in Different ATT&CK Tactics on a Single Host
 * Multiple Okta Sessions Detected for a Single User
@@ -273,7 +282,6 @@ Rules version: 8.15.4
 * Potential Network Scan Detected
 * Potential Network Scan Executed From Host
 * Potential Network Sweep Detected
-* Potential Password Spraying of Microsoft 365 User Accounts
 * Potential Ransomware Behavior - High count of Readme files by System
 * Potential SYN-Based Network Scan Detected
 * Potential macOS SSH Brute Force Detected
@@ -281,11 +289,12 @@ Rules version: 8.15.4
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported rule type: esql (23)
+### Unsupported rule type: esql (26)
 
-23 rules:
+26 rules:
 
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
+* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
 * AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
 * AWS EC2 EBS Snapshot Shared with Another Account
@@ -299,6 +308,8 @@ Rules version: 8.15.4
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 * AWS Signin Single Factor Console Login with Federated User
 * Attempts to Brute Force a Microsoft 365 User Account
+* Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
+* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
 * High Number of Okta Device Token Cookies Generated for Authentication
 * Multiple Device Token Hashes for Single Okta Session
 * Multiple Okta User Authentication Events with Client Address
@@ -330,9 +341,9 @@ Rules version: 8.15.4
 
 ## Generation errors
 
-### Root with too many branches (limit: 10000) (14)
+### Root with too many branches (limit: 10000) (15)
 
-14 rules:
+15 rules:
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
 * External IP Lookup from Non-Browser Process
@@ -347,6 +358,7 @@ Rules version: 8.15.4
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
 * Startup or Run Key Registry Modification
+* Suspicious PowerShell Execution via Windows Scripts
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)
 
@@ -406,14 +418,15 @@ Rules version: 8.15.4
 * Tainted Out-Of-Tree Kernel Module Load
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
-### Unsupported argument type(s): <class 'eql.ast.Field'> (5)
+### Unsupported argument type(s): <class 'eql.ast.Field'> (6)
 
-5 rules:
+6 rules:
 * External User Added to Google Workspace Group
 * Image Loaded with Invalid Signature
 * Interactive Logon by an Unusual Process
 * Potential Ransomware Note File Dropped via SMB
 * Suspicious File Renamed via SMB
+* Unusual Network Activity from a Windows System Binary
 
 ### Root without branches (4)
 
@@ -423,6 +436,14 @@ Rules version: 8.15.4
 * Potential Protocol Tunneling via Chisel Server
 * Suspicious Data Encryption via OpenSSL Utility
 
+### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)
+
+4 rules:
+* Execution via MS VisualStudio Pre/Post Build Events
+* Suspicious JetBrains TeamCity Child Process
+* Suspicious Windows Command Shell Arguments
+* Web Shell Detection: Script Process Child of Common Web Processes
+
 ### <class 'eql.ast.Sample'> (3)
 
 3 rules:
@@ -430,19 +451,19 @@ Rules version: 8.15.4
 * Potential Meterpreter Reverse Shell
 * Potential Reverse Shell via UDP
 
-### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (3)
-
-3 rules:
-* Execution via MS VisualStudio Pre/Post Build Events
-* Suspicious JetBrains TeamCity Child Process
-* Web Shell Detection: Script Process Child of Common Web Processes
-
 ### Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)
 
 3 rules:
 * Downloaded Shortcut Files
 * Downloaded URL Files
 * File with Suspicious Extension Downloaded
+
+### Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)
+
+3 rules:
+* Active Directory Forced Authentication from Linux Host - SMB Named Pipes
+* Unsigned DLL Loaded by a Trusted Process
+* Unsigned DLL Side-Loading from a Suspicious Folder
 
 ### Unsupported function: startsWith (3)
 
@@ -475,12 +496,6 @@ Rules version: 8.15.4
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
 
-### Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)
-
-2 rules:
-* Unsigned DLL Loaded by a Trusted Process
-* Unsigned DLL Side-Loading from a Suspicious Folder
-
 ### Unsupported function: endswith (2)
 
 2 rules:
@@ -491,6 +506,11 @@ Rules version: 8.15.4
 
 1 rules:
 * Potential Okta MFA Bombing via Push Notifications
+
+### Cannot choose from an empty set (1)
+
+1 rules:
+* MsiExec Service Child Process With Network Connection
 
 ### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)
 
@@ -602,6 +622,11 @@ Rules version: 8.15.4
 1 rules:
 * PowerShell Script with Token Impersonation Capabilities
 
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Set-MpPreference'}): ('DisableArchiveScanning')) (1)
+
+1 rules:
+* PowerShell Script with Windows Defender Tampering Capabilities
+
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookA'}): ('GetForegroundWindow')) (1)
 
 1 rules:
@@ -701,6 +726,11 @@ Rules version: 8.15.4
 
 1 rules:
 * Suspicious macOS MS Office Child Process
+
+### Unsolvable constraints: process.name (not in Strings({'rundll32.exe'}): ('mshta.exe')) (1)
+
+1 rules:
+* Script Execution via Microsoft HTML Application
 
 ### Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)
 

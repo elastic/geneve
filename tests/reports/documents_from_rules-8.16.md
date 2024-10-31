@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.15.5
+Rules version: 8.15.9
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (71)](#unsupported-rule-type-new_terms-71)
+      1. [Unsupported rule type: new_terms (72)](#unsupported-rule-type-new_terms-72)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: esql (26)](#unsupported-rule-type-esql-26)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
@@ -26,12 +26,12 @@ Rules version: 8.15.5
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
+      1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported function: startsWith (3)](#unsupported-function-startswith-3)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)](#unsupported-argument-type-class-eqlastfunctioncall-2)
       1. [Unsupported function: endswith (2)](#unsupported-function-endswith-2)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
@@ -178,9 +178,9 @@ Rules version: 8.15.5
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (71)
+### Unsupported rule type: new_terms (72)
 
-71 rules:
+72 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS EC2 Admin Credential Fetch via Assumed Role
@@ -192,6 +192,7 @@ Rules version: 8.15.5
 * Authentication via Unusual PAM Grantor
 * CAP_SYS_ADMIN Assigned to Binary
 * DPKG Package Installed by Unusual Parent Process
+* Deprecated - Suspicious JAVA Child Process
 * Discovery of Internet Capabilities via Built-in Tools
 * Enumeration of Kernel Modules
 * Enumeration of Kernel Modules via Proc
@@ -217,6 +218,7 @@ Rules version: 8.15.5
 * First Time Seen NewCredentials Logon Process
 * First Time Seen Removable Device
 * FirstTime Seen Account Performing DCSync
+* Linux Clipboard Activity Detected
 * Microsoft 365 Portal Login from Rare Location
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
@@ -227,7 +229,6 @@ Rules version: 8.15.5
 * Potential Pass-the-Hash (PtH) Attempt
 * Potential Privilege Escalation via Linux DAC permissions
 * Potential Shadow File Read via Command Line Utilities
-* Potential Suspicious Clipboard Activity Detected
 * Privileged Docker Container Creation
 * Query Registry using Built-in Tools
 * RPM Package Installed by Unusual Parent Process
@@ -236,8 +237,8 @@ Rules version: 8.15.5
 * SSM Session Started to EC2 Instance
 * Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
+* Successful Application SSO from Rare Unknown Client Device
 * Sudoers File Modification
-* Suspicious JAVA Child Process
 * Suspicious Microsoft 365 Mail Access by ClientAppId
 * Suspicious Modprobe File Event
 * Suspicious Network Activity to the Internet by Previously Unknown Executable
@@ -457,6 +458,13 @@ Rules version: 8.15.5
 * Downloaded URL Files
 * File with Suspicious Extension Downloaded
 
+### Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)
+
+3 rules:
+* Active Directory Forced Authentication from Linux Host - SMB Named Pipes
+* Unsigned DLL Loaded by a Trusted Process
+* Unsigned DLL Side-Loading from a Suspicious Folder
+
 ### Unsupported function: startsWith (3)
 
 3 rules:
@@ -487,12 +495,6 @@ Rules version: 8.15.5
 2 rules:
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
-
-### Unsupported argument type: <class 'eql.ast.FunctionCall'> (2)
-
-2 rules:
-* Unsigned DLL Loaded by a Trusted Process
-* Unsigned DLL Side-Loading from a Suspicious Folder
 
 ### Unsupported function: endswith (2)
 
