@@ -30,6 +30,8 @@ emitter_rules:
       "8.15": "8.15.4"
       # renovate: datasource=epr package=security_detection_engine kibana_version=8.16
       "8.16": "8.15.5"
+      # renovate: datasource=epr package=security_detection_engine kibana_version=8.17
+      "8.17": "8.15.9"
       # renovate: datasource=epr package=security_detection_engine kibana_version=
       "9.0": "8.15.5"
       # renovate: datasource=epr package=security_detection_engine kibana_version=
@@ -91,6 +93,11 @@ emitter_rules:
           ack_no_signals: 3
           ack_too_few_signals: 9
       "8.16":
+          ack_failed: 0
+          ack_unsuccessful_with_signals: 7
+          ack_no_signals: 3
+          ack_too_few_signals: 10
+      "8.17":
           ack_failed: 0
           ack_unsuccessful_with_signals: 7
           ack_no_signals: 3
