@@ -129,9 +129,11 @@ class Kibana:
     def delete_detection_engine_rules(self, rules=None):
         if rules is None:
             rules = self.find_detection_engine_rules()
-        rules = [{"id": rule} for rule in rules]
-        url = f"{self.url}/api/detection_engine/rules/_bulk_delete"
-        res = self.session.delete(url, data=json.dumps(rules))
+        if not rules:
+            return {}
+        req = {"action": "delete", "ids": list(rules)}
+        url = f"{self.url}/api/detection_engine/rules/_bulk_action"
+        res = self.session.post(url, data=json.dumps(req))
         res.raise_for_status()
         return res.json()
 
