@@ -118,13 +118,11 @@ class Kibana:
         return {rule["id"]: rule for rule in res.json()["data"]}
 
     def create_detection_engine_rules(self, rules):
-        url = f"{self.url}/api/detection_engine/rules/_bulk_create"
-        res = self.session.post(url, data=json.dumps(rules))
-        res.raise_for_status()
-        for i, rule in enumerate(res.json()):
-            if "error" in rule:
-                raise ValueError(f"{rule['error']['message']}: {rules[i]}")
-            yield rule["id"], rule
+        for i, rule in enumerate(rules):
+            res = self.create_detection_engine_rule(rule)
+            if "error" in res:
+                raise ValueError(f"{res['error']['message']}: {rules[i]}")
+            yield res["id"], rule
 
     def delete_detection_engine_rules(self, rules=None):
         if rules is None:
