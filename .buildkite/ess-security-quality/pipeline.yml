@@ -1,6 +1,7 @@
 agents:
   image: "docker.elastic.co/appex-qa/qaf:latest@sha256:f90eb904016d10ac22df247405c324503ab7c62a6e3630b00fb5deeb8d155d6f"
-  memory: "3G"
+  memory: "16G"
+  cpu: 4
 
 env:
   EC_REGISTER_BACKEND: "appex-qa-team-cluster"
