@@ -297,7 +297,7 @@ class OnlineTestCase:
 
         from elasticsearch import exceptions
 
-        self.kb.delete_detection_engine_rules()
+        self.kb.delete_all_detection_engine_rules()
 
         if self.es.indices.exists_index_template(name=self.index_template):
             self.es.indices.delete_index_template(name=self.index_template)

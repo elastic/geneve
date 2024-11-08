@@ -124,16 +124,11 @@ class Kibana:
                 raise ValueError(f"{res['error']['message']}: {rules[i]}")
             yield res["id"], rule
 
-    def delete_detection_engine_rules(self, rules=None):
-        if rules is None:
-            rules = self.find_detection_engine_rules()
-        if not rules:
-            return {}
-        req = {"action": "delete", "ids": list(rules)}
+    def delete_all_detection_engine_rules(self):
         url = f"{self.url}/api/detection_engine/rules/_bulk_action"
+        req = {"action": "delete", "query": ""}
         res = self.session.post(url, data=json.dumps(req))
         res.raise_for_status()
-        return res.json()
 
     def search_detection_engine_signals(self, body):
         url = f"{self.url}/api/detection_engine/signals/search"
