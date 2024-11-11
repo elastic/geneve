@@ -124,7 +124,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 with self.nb.chapter(f"### {err} ({len(errors[err])})") as cells:
                     cells.append(jupyter.Markdown(heading + sorted(bullets)))
 
-    def test_rules_collection(self):
+    def test_collection(self):
         config = tu.load_config()["emitter_rules"]
         stack_version = self.stack_version
         if str(stack_version) == "serverless":
