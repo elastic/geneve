@@ -23,19 +23,19 @@ emitter_rules:
       # renovate: datasource=epr package=security_detection_engine kibana_version=8.12
       "8.12": "8.12.26"
       # renovate: datasource=epr package=security_detection_engine kibana_version=8.13
-      "8.13": "8.13.21"
+      "8.13": "8.13.22"
       # renovate: datasource=epr package=security_detection_engine kibana_version=8.14
-      "8.14": "8.14.15"
+      "8.14": "8.14.16"
       # renovate: datasource=epr package=security_detection_engine kibana_version=8.15
-      "8.15": "8.15.9"
+      "8.15": "8.15.10"
       # renovate: datasource=epr package=security_detection_engine kibana_version=8.16
-      "8.16": "8.15.9"
+      "8.16": "8.16.1"
       # renovate: datasource=epr package=security_detection_engine kibana_version=8.17
-      "8.17": "8.15.9"
+      "8.17": "8.16.1"
       # renovate: datasource=epr package=security_detection_engine kibana_version=
-      "9.0": "8.15.9"
+      "9.0": "8.16.1"
       # renovate: datasource=epr package=security_detection_engine kibana_version=
-      "serverless": "8.15.9"
+      "serverless": "8.16.1"
 
   stack_signals:
       "8.2":

@@ -5,14 +5,14 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.15.9
+Rules version: 8.16.1
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
+      1. [Unsupported rule type: new_terms (81)](#unsupported-rule-type-new_terms-81)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: new_terms (72)](#unsupported-rule-type-new_terms-72)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported rule type: esql (26)](#unsupported-rule-type-esql-26)
+      1. [Unsupported rule type: esql (28)](#unsupported-rule-type-esql-28)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
@@ -71,6 +71,10 @@ Rules version: 8.15.9
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsdrivegooglecom-exportdownload-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*fromhex*'}): ('*decode*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsfromhex-decode-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*id_dsa*'}): ('*/home/*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsid_dsa-home-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*net.ipv4.ip_forward*'}): ('*echo *')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsnetipv4ip_forward-echo--1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*vm.swappiness*'}): ('*echo *')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsvmswappiness-echo--1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsarpexe-arpexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
@@ -101,6 +105,92 @@ Rules version: 8.15.9
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
+
+### Unsupported rule type: new_terms (81)
+
+81 rules:
+
+* AWS CLI Command with Custom Endpoint URL
+* AWS EC2 Admin Credential Fetch via Assumed Role
+* AWS IAM Create User via Assumed Role on EC2 Instance
+* AWS IAM Customer-Managed Policy Attached to Role by Rare User
+* AWS SNS Email Subscription by Rare User
+* AWS SSM Command Document Created by Rare User
+* AWS SSM `SendCommand` Execution by Rare User
+* AWS SSM `SendCommand` with Run Shell Command Parameters
+* AWS STS AssumeRole with New MFA Device
+* AWS STS GetCallerIdentity API Called for the First Time
+* AWS STS Role Assumption by Service
+* AWS STS Role Assumption by User
+* AWS Systems Manager SecureString Parameter Request with Decryption Flag
+* Abnormal Process ID or Lock File Created
+* Authentication via Unusual PAM Grantor
+* CAP_SYS_ADMIN Assigned to Binary
+* DPKG Package Installed by Unusual Parent Process
+* Deprecated - Suspicious JAVA Child Process
+* Discovery of Internet Capabilities via Built-in Tools
+* Enumeration of Kernel Modules
+* Enumeration of Kernel Modules via Proc
+* Enumeration of Privileged Local Groups Membership
+* Execution of an Unsigned Service
+* File Permission Modification in Writable Directory
+* First Occurrence GitHub Event for a Personal Access Token (PAT)
+* First Occurrence of Entra ID Auth via DeviceCode Protocol
+* First Occurrence of GitHub Repo Interaction From a New IP
+* First Occurrence of GitHub User Interaction with Private Repo
+* First Occurrence of IP Address For GitHub Personal Access Token (PAT)
+* First Occurrence of IP Address For GitHub User
+* First Occurrence of Okta User Session Started via Proxy
+* First Occurrence of Personal Access Token (PAT) Use For a GitHub User
+* First Occurrence of Private Repo Event from Specific GitHub Personal Access Token (PAT)
+* First Occurrence of STS GetFederationToken Request by User
+* First Occurrence of User Agent For a GitHub Personal Access Token (PAT)
+* First Occurrence of User-Agent For a GitHub User
+* First Time AWS Cloudformation Stack Creation by User
+* First Time Seen AWS Secret Value Accessed in Secrets Manager
+* First Time Seen Commonly Abused Remote Access Tool Execution
+* First Time Seen Driver Loaded
+* First Time Seen Google Workspace OAuth Login from Third-Party Application
+* First Time Seen NewCredentials Logon Process
+* First Time Seen Removable Device
+* FirstTime Seen Account Performing DCSync
+* Linux Clipboard Activity Detected
+* Microsoft 365 Portal Login from Rare Location
+* Microsoft Build Engine Started an Unusual Process
+* Microsoft Build Engine Started by a Script Process
+* Modification of Dynamic Linker Preload Shared Object
+* Modification of Standard Authentication Module or Configuration
+* Network Activity Detected via Kworker
+* Network Traffic Capture via CAP_NET_RAW
+* Potential Pass-the-Hash (PtH) Attempt
+* Potential Privilege Escalation via Linux DAC permissions
+* Potential Shadow File Read via Command Line Utilities
+* Privileged Docker Container Creation
+* Query Registry using Built-in Tools
+* RPM Package Installed by Unusual Parent Process
+* Rare SMB Connection to the Internet
+* SSH Authorized Keys File Modification
+* SSM Session Started to EC2 Instance
+* Sensitive Files Compression
+* Shared Object Created or Changed by Previously Unknown Process
+* Successful Application SSO from Rare Unknown Client Device
+* Sudoers File Modification
+* Suspicious Microsoft 365 Mail Access by ClientAppId
+* Suspicious Modprobe File Event
+* Suspicious Network Activity to the Internet by Previously Unknown Executable
+* Suspicious PowerShell Engine ImageLoad
+* Suspicious PrintSpooler Service Executable File Creation
+* Suspicious Sysctl File Event
+* Suspicious System Commands Executed by Previously Unknown Executable
+* Svchost spawning Cmd
+* Systemd Service Started by Unusual Parent Process
+* UID Elevation from Previously Unknown Executable
+* Unauthorized Scope for Public App OAuth2 Token Grant with Client Credentials
+* Unknown Execution of Binary with RWX Memory Region
+* Unusual Discovery Activity by User
+* Unusual Discovery Signal Alert with Unusual Process Command Line
+* Unusual Discovery Signal Alert with Unusual Process Executable
+* Unusual Interactive Shell Launched from System User
 
 ### Unsupported rule type: machine_learning (72)
 
@@ -179,83 +269,6 @@ Rules version: 8.15.9
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: new_terms (72)
-
-72 rules:
-
-* AWS CLI Command with Custom Endpoint URL
-* AWS EC2 Admin Credential Fetch via Assumed Role
-* AWS SSM `SendCommand` with Run Shell Command Parameters
-* AWS STS GetCallerIdentity API Called for the First Time
-* AWS STS Temporary Credentials via AssumeRole
-* AWS Systems Manager SecureString Parameter Request with Decryption Flag
-* Abnormal Process ID or Lock File Created
-* Authentication via Unusual PAM Grantor
-* CAP_SYS_ADMIN Assigned to Binary
-* DPKG Package Installed by Unusual Parent Process
-* Deprecated - Suspicious JAVA Child Process
-* Discovery of Internet Capabilities via Built-in Tools
-* Enumeration of Kernel Modules
-* Enumeration of Kernel Modules via Proc
-* Enumeration of Privileged Local Groups Membership
-* Execution of an Unsigned Service
-* File Permission Modification in Writable Directory
-* First Occurrence GitHub Event for a Personal Access Token (PAT)
-* First Occurrence of GitHub Repo Interaction From a New IP
-* First Occurrence of GitHub User Interaction with Private Repo
-* First Occurrence of IP Address For GitHub Personal Access Token (PAT)
-* First Occurrence of IP Address For GitHub User
-* First Occurrence of Okta User Session Started via Proxy
-* First Occurrence of Personal Access Token (PAT) Use For a GitHub User
-* First Occurrence of Private Repo Event from Specific GitHub Personal Access Token (PAT)
-* First Occurrence of STS GetFederationToken Request by User
-* First Occurrence of User Agent For a GitHub Personal Access Token (PAT)
-* First Occurrence of User-Agent For a GitHub User
-* First Time AWS Cloudformation Stack Creation by User
-* First Time Seen AWS Secret Value Accessed in Secrets Manager
-* First Time Seen Commonly Abused Remote Access Tool Execution
-* First Time Seen Driver Loaded
-* First Time Seen Google Workspace OAuth Login from Third-Party Application
-* First Time Seen NewCredentials Logon Process
-* First Time Seen Removable Device
-* FirstTime Seen Account Performing DCSync
-* Linux Clipboard Activity Detected
-* Microsoft 365 Portal Login from Rare Location
-* Microsoft Build Engine Started an Unusual Process
-* Microsoft Build Engine Started by a Script Process
-* Modification of Dynamic Linker Preload Shared Object
-* Modification of Standard Authentication Module or Configuration
-* Network Activity Detected via Kworker
-* Network Traffic Capture via CAP_NET_RAW
-* Potential Pass-the-Hash (PtH) Attempt
-* Potential Privilege Escalation via Linux DAC permissions
-* Potential Shadow File Read via Command Line Utilities
-* Privileged Docker Container Creation
-* Query Registry using Built-in Tools
-* RPM Package Installed by Unusual Parent Process
-* Rare SMB Connection to the Internet
-* SSH Authorized Keys File Modification
-* SSM Session Started to EC2 Instance
-* Sensitive Files Compression
-* Shared Object Created or Changed by Previously Unknown Process
-* Successful Application SSO from Rare Unknown Client Device
-* Sudoers File Modification
-* Suspicious Microsoft 365 Mail Access by ClientAppId
-* Suspicious Modprobe File Event
-* Suspicious Network Activity to the Internet by Previously Unknown Executable
-* Suspicious PowerShell Engine ImageLoad
-* Suspicious PrintSpooler Service Executable File Creation
-* Suspicious Sysctl File Event
-* Suspicious System Commands Executed by Previously Unknown Executable
-* Svchost spawning Cmd
-* Systemd Service Started by Unusual Parent Process
-* UID Elevation from Previously Unknown Executable
-* Unauthorized Scope for Public App OAuth2 Token Grant with Client Credentials
-* Unknown Execution of Binary with RWX Memory Region
-* Unusual Discovery Activity by User
-* Unusual Discovery Signal Alert with Unusual Process Command Line
-* Unusual Discovery Signal Alert with Unusual Process Executable
-
 ### Unsupported rule type: threshold (29)
 
 29 rules:
@@ -290,14 +303,15 @@ Rules version: 8.15.9
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported rule type: esql (26)
+### Unsupported rule type: esql (28)
 
-26 rules:
+28 rules:
 
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
 * AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
 * AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
+* AWS Discovery API Calls via CLI from a Single Resource
 * AWS EC2 EBS Snapshot Shared with Another Account
 * AWS EC2 Multi-Region DescribeInstances API Calls
 * AWS IAM AdministratorAccess Policy Attached to Group
@@ -306,6 +320,7 @@ Rules version: 8.15.9
 * AWS IAM User Created Access Keys For Another User
 * AWS S3 Bucket Enumeration or Brute Force
 * AWS S3 Object Encryption Using External KMS Key
+* AWS STS Role Chaining
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 * AWS Signin Single Factor Console Login with Federated User
 * Attempts to Brute Force a Microsoft 365 User Account
@@ -728,6 +743,26 @@ Rules version: 8.15.9
 
 1 rules:
 * Suspicious File Downloaded from Google Drive
+
+### Unsolvable constraints: process.command_line (not in Strings({'*fromhex*'}): ('*decode*')) (1)
+
+1 rules:
+* Potential Hex Payload Execution
+
+### Unsolvable constraints: process.command_line (not in Strings({'*id_dsa*'}): ('*/home/*')) (1)
+
+1 rules:
+* Private Key Searching Activity
+
+### Unsolvable constraints: process.command_line (not in Strings({'*net.ipv4.ip_forward*'}): ('*echo *')) (1)
+
+1 rules:
+* IPv4/IPv6 Forwarding Activity
+
+### Unsolvable constraints: process.command_line (not in Strings({'*vm.swappiness*'}): ('*echo *')) (1)
+
+1 rules:
+* Memory Swap Modification
 
 ### Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)
 
