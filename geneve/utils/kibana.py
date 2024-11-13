@@ -122,11 +122,15 @@ class Kibana:
         return {rule["id"]: rule for rule in rules}
 
     def create_detection_engine_rules(self, rules):
-        for i, rule in enumerate(rules):
-            res = self.create_detection_engine_rule(rule)
-            if "error" in res:
-                raise ValueError(f"{res['error']['message']}: {rules[i]}")
-            yield res["id"], rule
+        body = "\n".join(json.dumps(rule) for rule in rules)
+        files = {"file": ("rules.ndjson", body, "application/octet-stream")}
+        url = f"{self.url}/api/detection_engine/rules/_import"
+        res = self.session.post(url, files=files, headers={"Content-Type": None})
+        res.raise_for_status()
+        ret = res.json()
+        if ret["errors"]:
+            raise ValueError("Could not create rule(s):\n  " + "\n  ".join(str(x) for x in ret["errors"]))
+        return ret
 
     def delete_all_detection_engine_rules(self):
         url = f"{self.url}/api/detection_engine/rules/_bulk_action"

@@ -432,17 +432,21 @@ class SignalsTestCase:
             rules_to_go = len(rules)
             sys.stderr.write(f"\n  Loading rules: {rules_to_go} ")
             sys.stderr.flush()
-        pending = {}
         for chunk in batched(rules, rules_chunk_size):
-            ret = self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
-            for rule, (rule_id, created_rule) in zip(chunk, ret):
-                rule["id"] = rule_id
-                if rule["enabled"]:
-                    pending[rule_id] = created_rule
+            self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
             if verbose:
                 rules_to_go -= len(chunk)
                 sys.stderr.write(f"{rules_to_go} ")
                 sys.stderr.flush()
+
+        pending = {}
+        for rule_id, created_rule in self.kb.find_detection_engine_rules(len(rules)).items():
+            for rule in rules:
+                if rule["rule_id"] == created_rule["rule_id"]:
+                    rule["id"] = rule_id
+                    if rule["enabled"]:
+                        pending[rule_id] = created_rule
+                    break
         return pending
 
     def wait_for_rules(self, pending, max_rules, timeout=300, sleep=5):
