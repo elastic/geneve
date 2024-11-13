@@ -111,38 +111,32 @@ class Kibana:
         res.raise_for_status()
         return res.json()
 
-    def find_detection_engine_rules(self):
-        url = f"{self.url}/api/detection_engine/rules/_find?per_page=1000"
+    def find_detection_engine_rules(self, count_max):
+        count_max += 1
+        url = f"{self.url}/api/detection_engine/rules/_find?per_page={count_max}"
         res = self.session.get(url)
         res.raise_for_status()
-        return {rule["id"]: rule for rule in res.json()["data"]}
+        rules = res.json()["data"]
+        if len(rules) == count_max:
+            raise ValueError(f"The number of returned rules is suspiciously equal to count_max ({count_max})")
+        return {rule["id"]: rule for rule in rules}
 
     def create_detection_engine_rules(self, rules):
-        for i, rule in enumerate(rules):
-            res = self.create_detection_engine_rule(rule)
-            if "error" in res:
-                raise ValueError(f"{res['error']['message']}: {rules[i]}")
-            yield res["id"], rule
+        body = "\n".join(json.dumps(rule) for rule in rules)
+        files = {"file": ("rules.ndjson", body, "application/octet-stream")}
+        url = f"{self.url}/api/detection_engine/rules/_import"
+        res = self.session.post(url, files=files, headers={"Content-Type": None})
+        res.raise_for_status()
+        ret = res.json()
+        if ret["errors"]:
+            raise ValueError("Could not create rule(s):\n  " + "\n  ".join(str(x) for x in ret["errors"]))
+        return ret
 
-    def delete_detection_engine_rules(self, rules=None):
-        if rules is None:
-            rules = self.find_detection_engine_rules()
-        if not rules:
-            return {}
-        req = {"action": "delete", "ids": list(rules)}
+    def delete_all_detection_engine_rules(self):
         url = f"{self.url}/api/detection_engine/rules/_bulk_action"
+        req = {"action": "delete", "query": ""}
         res = self.session.post(url, data=json.dumps(req))
         res.raise_for_status()
-        return res.json()
-
-    def find_detection_engine_rules_statuses(self, rules=None):
-        if rules is None:
-            rules = self.find_detection_engine_rules()
-        rules = {"ids": list(rules)}
-        url = f"{self.url}/api/detection_engine/rules/_find_statuses?per_page=1000"
-        res = self.session.post(url, data=json.dumps(rules))
-        res.raise_for_status()
-        return res.json()
 
     def search_detection_engine_signals(self, body):
         url = f"{self.url}/api/detection_engine/signals/search"

@@ -279,13 +279,6 @@ class OnlineTestCase:
         stack.kb.create_siem_index()
         cls.siem_index_name = stack.kb.get_siem_index()["name"]
 
-        try:
-            stack.kb.find_detection_engine_rules_statuses({})
-            cls.check_rules = cls.check_rules_legacy
-        except stack.kb.exceptions.HTTPError as e:
-            if e.response.status_code != 404:
-                raise
-
         build_flavor = stack.es.info()["version"].get("build_flavor")
         cls.serverless = build_flavor == "serverless"
 
@@ -304,7 +297,7 @@ class OnlineTestCase:
 
         from elasticsearch import exceptions
 
-        self.kb.delete_detection_engine_rules()
+        self.kb.delete_all_detection_engine_rules()
 
         if self.es.indices.exists_index_template(name=self.index_template):
             self.es.indices.delete_index_template(name=self.index_template)
@@ -439,20 +432,24 @@ class SignalsTestCase:
             rules_to_go = len(rules)
             sys.stderr.write(f"\n  Loading rules: {rules_to_go} ")
             sys.stderr.flush()
-        pending = {}
         for chunk in batched(rules, rules_chunk_size):
-            ret = self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
-            for rule, (rule_id, created_rule) in zip(chunk, ret):
-                rule["id"] = rule_id
-                if rule["enabled"]:
-                    pending[rule_id] = created_rule
+            self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
             if verbose:
                 rules_to_go -= len(chunk)
                 sys.stderr.write(f"{rules_to_go} ")
                 sys.stderr.flush()
+
+        pending = {}
+        for rule_id, created_rule in self.kb.find_detection_engine_rules(len(rules)).items():
+            for rule in rules:
+                if rule["rule_id"] == created_rule["rule_id"]:
+                    rule["id"] = rule_id
+                    if rule["enabled"]:
+                        pending[rule_id] = created_rule
+                    break
         return pending
 
-    def wait_for_rules(self, pending, timeout=300, sleep=5):
+    def wait_for_rules(self, pending, max_rules, timeout=300, sleep=5):
         start = time.time()
         successful = {}
         failed = {}
@@ -463,7 +460,7 @@ class SignalsTestCase:
             if verbose:
                 sys.stderr.write(f"{len(pending)} ")
                 sys.stderr.flush()
-            self.check_rules(pending, successful, failed)
+            self.check_rules(pending, successful, failed, max_rules)
             if pending:
                 time.sleep(sleep)
             else:
@@ -473,9 +470,8 @@ class SignalsTestCase:
             sys.stderr.flush()
         return successful, failed
 
-    def check_rules(self, pending, successful, failed):
-        rules = self.kb.find_detection_engine_rules()
-        for rule_id, rule in rules.items():
+    def check_rules(self, pending, successful, failed, max_rules):
+        for rule_id, rule in self.kb.find_detection_engine_rules(max_rules).items():
             if "execution_summary" not in rule:
                 continue
             if rule_id not in pending:
@@ -486,18 +482,6 @@ class SignalsTestCase:
                 self.handle_rule_success(rule_id, pending, successful, failed)
             elif last_execution["status"] == "failed":
                 self.handle_rule_failure(rule_id, failed, last_execution["message"])
-
-    def check_rules_legacy(self, pending, successful, failed):
-        statuses = self.kb.find_detection_engine_rules_statuses(pending)
-        for rule_id, rule_status in statuses.items():
-            current_status = rule_status["current_status"]
-            if current_status["last_success_at"]:
-                self.handle_rule_success(rule_id, pending, successful, failed)
-            elif current_status["last_failure_at"]:
-                if verbose > 1:
-                    sys.stderr.write(f"{rule_id}: {current_status['last_failure_message']}")
-                    sys.stderr.flush()
-                self.handle_rule_failure(rule_id, failed, current_status["last_failure_message"])
 
     def handle_rule_success(self, rule_id, pending, successful, failed):
         del pending[rule_id]
@@ -636,7 +620,7 @@ class SignalsTestCase:
             self.assertEqual(len(rule_ids), value, msg=msg)
 
     def check_signals(self, rules, pending):
-        successful, failed = self.wait_for_rules(pending)
+        successful, failed = self.wait_for_rules(pending, len(rules))
         signals = self.wait_for_signals(rules)
 
         unsuccessful = set(signals) - set(successful)

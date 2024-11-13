@@ -28,6 +28,10 @@ class GeneveTestEnvStack(ElasticStack):
             "elasticsearch": {
                 "hosts": "$TEST_ELASTICSEARCH_URL",
                 "api_key": "${TEST_API_KEY:-}",
+                "basic_auth": [
+                    "${TEST_ELASTICSEARCH_USER:-}",
+                    "${TEST_ELASTICSEARCH_PASS:-}",
+                ],
                 "ca_certs": "${TEST_CA_CERTS:-}",
                 "verify_certs": "${TEST_VERIFY_CERTS:-}",
                 "request_timeout": 30,
@@ -35,6 +39,10 @@ class GeneveTestEnvStack(ElasticStack):
             "kibana": {
                 "url": "$TEST_KIBANA_URL",
                 "api_key": "${TEST_API_KEY:-}",
+                "basic_auth": [
+                    "${TEST_KIBANA_USER:-}",
+                    "${TEST_KIBANA_PASS:-}",
+                ],
                 "ca_certs": "${TEST_CA_CERTS:-}",
                 "verify_certs": "${TEST_VERIFY_CERTS:-}",
             },

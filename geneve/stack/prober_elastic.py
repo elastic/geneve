@@ -86,6 +86,11 @@ class ElasticStack:
             if not kb_args.get(var):
                 kb_args.pop(var, None)
 
+        if es_args.get("basic_auth") == ["", ""]:
+            es_args.pop("basic_auth", None)
+        if kb_args.get("basic_auth") == ["", ""]:
+            kb_args.pop("basic_auth", None)
+
         if "verify_certs" in es_args:
             es_args["verify_certs"] = str_to_bool(es_args["verify_certs"])
         if "verify_certs" in kb_args:
