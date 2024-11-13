@@ -135,15 +135,6 @@ class Kibana:
         res.raise_for_status()
         return res.json()
 
-    def find_detection_engine_rules_statuses(self, rules=None):
-        if rules is None:
-            rules = self.find_detection_engine_rules()
-        rules = {"ids": list(rules)}
-        url = f"{self.url}/api/detection_engine/rules/_find_statuses?per_page=1000"
-        res = self.session.post(url, data=json.dumps(rules))
-        res.raise_for_status()
-        return res.json()
-
     def search_detection_engine_signals(self, body):
         url = f"{self.url}/api/detection_engine/signals/search"
         res = self.session.post(url, data=json.dumps(body))

@@ -279,13 +279,6 @@ class OnlineTestCase:
         stack.kb.create_siem_index()
         cls.siem_index_name = stack.kb.get_siem_index()["name"]
 
-        try:
-            stack.kb.find_detection_engine_rules_statuses({})
-            cls.check_rules = cls.check_rules_legacy
-        except stack.kb.exceptions.HTTPError as e:
-            if e.response.status_code != 404:
-                raise
-
         build_flavor = stack.es.info()["version"].get("build_flavor")
         cls.serverless = build_flavor == "serverless"
 
@@ -486,18 +479,6 @@ class SignalsTestCase:
                 self.handle_rule_success(rule_id, pending, successful, failed)
             elif last_execution["status"] == "failed":
                 self.handle_rule_failure(rule_id, failed, last_execution["message"])
-
-    def check_rules_legacy(self, pending, successful, failed):
-        statuses = self.kb.find_detection_engine_rules_statuses(pending)
-        for rule_id, rule_status in statuses.items():
-            current_status = rule_status["current_status"]
-            if current_status["last_success_at"]:
-                self.handle_rule_success(rule_id, pending, successful, failed)
-            elif current_status["last_failure_at"]:
-                if verbose > 1:
-                    sys.stderr.write(f"{rule_id}: {current_status['last_failure_message']}")
-                    sys.stderr.flush()
-                self.handle_rule_failure(rule_id, failed, current_status["last_failure_message"])
 
     def handle_rule_success(self, rule_id, pending, successful, failed):
         del pending[rule_id]
