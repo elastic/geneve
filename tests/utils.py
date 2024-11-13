@@ -445,7 +445,7 @@ class SignalsTestCase:
                 sys.stderr.flush()
         return pending
 
-    def wait_for_rules(self, pending, timeout=300, sleep=5):
+    def wait_for_rules(self, pending, max_rules, timeout=300, sleep=5):
         start = time.time()
         successful = {}
         failed = {}
@@ -456,7 +456,7 @@ class SignalsTestCase:
             if verbose:
                 sys.stderr.write(f"{len(pending)} ")
                 sys.stderr.flush()
-            self.check_rules(pending, successful, failed)
+            self.check_rules(pending, successful, failed, max_rules)
             if pending:
                 time.sleep(sleep)
             else:
@@ -466,9 +466,8 @@ class SignalsTestCase:
             sys.stderr.flush()
         return successful, failed
 
-    def check_rules(self, pending, successful, failed):
-        rules = self.kb.find_detection_engine_rules()
-        for rule_id, rule in rules.items():
+    def check_rules(self, pending, successful, failed, max_rules):
+        for rule_id, rule in self.kb.find_detection_engine_rules(max_rules).items():
             if "execution_summary" not in rule:
                 continue
             if rule_id not in pending:
@@ -617,7 +616,7 @@ class SignalsTestCase:
             self.assertEqual(len(rule_ids), value, msg=msg)
 
     def check_signals(self, rules, pending):
-        successful, failed = self.wait_for_rules(pending)
+        successful, failed = self.wait_for_rules(pending, len(rules))
         signals = self.wait_for_signals(rules)
 
         unsuccessful = set(signals) - set(successful)

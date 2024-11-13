@@ -111,11 +111,15 @@ class Kibana:
         res.raise_for_status()
         return res.json()
 
-    def find_detection_engine_rules(self):
-        url = f"{self.url}/api/detection_engine/rules/_find?per_page=1000"
+    def find_detection_engine_rules(self, count_max):
+        count_max += 1
+        url = f"{self.url}/api/detection_engine/rules/_find?per_page={count_max}"
         res = self.session.get(url)
         res.raise_for_status()
-        return {rule["id"]: rule for rule in res.json()["data"]}
+        rules = res.json()["data"]
+        if len(rules) == count_max:
+            raise ValueError(f"The number of returned rules is suspiciously equal to count_max ({count_max})")
+        return {rule["id"]: rule for rule in rules}
 
     def create_detection_engine_rules(self, rules):
         for i, rule in enumerate(rules):
