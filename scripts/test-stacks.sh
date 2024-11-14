@@ -138,13 +138,38 @@ cleanup()
 	fi
 }
 
+compare_major_minor()
+{
+	local v1=(${1//./ })
+	local v2=(${3//./ })
+	local op=$2
+
+	for i in {0..1}; do
+		if [[ ${v1[$i]} -lt ${v2[$i]} ]]; then
+			[[ "$op" =~ -lt|-le ]]
+			return
+		elif [[ ${v1[$i]} -gt ${v2[$i]} ]]; then
+			[[ "$op" =~ -gt|-ge ]]
+			return
+		fi
+	done
+
+	[[ "$op" =~ -eq|-le|-ge ]]
+}
+
 get_ecs_tarball()
 {
 	(
 		ls -1 etc/ecs-v*.tar.gz | sort -V
 		# ensure that the specified version, if present, is always last
 		ls etc/ecs-v$(echo $1 | cut -d. -f1,2).*.tar.gz 2>/dev/null | sort -V
-	) | tail -1
+	) | while read tarball; do
+		if [[ $tarball =~ ecs-v(.*).tar.gz ]]; then
+			if [ $1 = serverless ] || compare_major_minor $1 -ge ${BASH_REMATCH[1]}; then
+				echo $tarball
+			fi
+		fi
+	done | tail -1
 }
 
 TMP_DIR=$(mktemp -d)

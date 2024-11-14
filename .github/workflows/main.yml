@@ -98,7 +98,7 @@ jobs:
       matrix:
         include:
           - stack-version: 8.16.0
-            schema-uri: "./etc/ecs-v8.11.0.tar.gz"
+            schema-uri: "./etc/ecs-v8.16.0.tar.gz"
           - stack-version: 8.15.0
             schema-uri: "./etc/ecs-v8.11.0.tar.gz"
           - stack-version: 8.14.0
