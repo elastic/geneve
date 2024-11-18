@@ -720,6 +720,33 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 self.assertEqual(mappings, se.mappings(root))
                 self.assertEqual(mappings, se.mappings())
 
+    def test_mappings_extra_fields(self):
+        extra_fields = [
+            "process.code_signature.exists",
+            "process.pid",
+        ]
+        query = 'process where process.name == "regsvr32.exe"'
+        mappings = {
+            "properties": {
+                "@timestamp": {"type": "date"},
+                "event": {"properties": {"category": {"type": "keyword"}}},
+                "process": {
+                    "properties": {
+                        "name": {"type": "keyword"},
+                        "code_signature": {"properties": {"exists": {"type": "boolean"}}},
+                        "pid": {"type": "long"},
+                    },
+                },
+            },
+        }
+        with self.subTest(query):
+            se = SourceEvents(self.schema)
+            se.stack_version = self.stack_version
+
+            root = se.add_query(query)
+            self.assertEqual(mappings, se.mappings(root, extra_fields=extra_fields))
+            self.assertEqual(mappings, se.mappings(extra_fields=extra_fields))
+
     @nb.chapter("## Mono-branch mono-document")
     def test_mono_branch_mono_doc(self, cells):
         cells.append(

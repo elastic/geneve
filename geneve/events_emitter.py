@@ -176,9 +176,9 @@ class SourceEvents:
     def fields(self):
         return set(chain(*(root.fields() for root in self.__roots)))
 
-    def mappings(self, root=None):
+    def mappings(self, root=None, *, extra_fields=[]):
         fields = self.fields() if root is None else root.fields()
-        return emit_mappings(fields, self.schema)
+        return emit_mappings(fields | set(extra_fields), self.schema)
 
     def roots(self):
         return iter(self.__roots)
