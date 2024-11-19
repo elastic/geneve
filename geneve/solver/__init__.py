@@ -51,22 +51,20 @@ def get_ecs_constraints(solver, field):
 
 
 def emit_field(doc, field, value):
-    if value is not None:
-        for part in reversed(split_path(field)):
-            value = {part: value}
-        deep_merge(doc, value)
+    for part in reversed(split_path(field)):
+        value = {part: value}
+    deep_merge(doc, value)
 
 
 def emit_group(doc, group, values):
     group_parts = split_path(group)
     group_parts.reverse()
     for field, value in values.items():
-        if value is not None:
-            for part in reversed(split_path(field)):
-                value = {part: value}
-            for part in group_parts:
-                value = {part: value}
-            deep_merge(doc, value)
+        for part in reversed(split_path(field)):
+            value = {part: value}
+        for part in group_parts:
+            value = {part: value}
+        deep_merge(doc, value)
 
 
 class solver:  # noqa: N801
@@ -154,6 +152,10 @@ class Entity:
         for field, solver in self.fields.items():
             if solver:
                 solver.solve_field(doc, join_doc, environment)
+            elif doc is not None:
+                if has_wildcards(field):
+                    field = expand_wildcards(field, string.ascii_letters, 1, 3)
+                self.emit_group(doc, {field: None})
 
     def emit_group(self, doc, values):
         emit_group(doc, self.group, values)

@@ -454,6 +454,19 @@ multi_branch_multi_doc = {
     ],
 }
 
+fields_deletion = {
+    """any where process.pid == null
+    """: (
+        [],
+        [[{}]],
+    ),
+    """any where process.name == null
+    """: (
+        [{"process": {"name": "some"}}],
+        [[{}]],
+    ),
+}
+
 exceptions = {
     """any where false
     """: "Root without branches",
@@ -818,6 +831,23 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 self.assertQuery(query, docs)
             cells.append(self.query_cell(query, docs))
 
+    @nb.chapter("## Fields deletion")
+    def test_fields_deletion(self, cells):
+        cells.append(
+            jupyter.Markdown(
+                """
+            When a query requires that a field is absent (by setting to null) it's easy
+            to just not generate it. When the field generation instead is superimposed
+            on existing documents, non-generating a field is not enough in that it must
+            be actively deleted from the base document when present.
+        """
+            )
+        )
+        for i, (query, (corpus, docs)) in enumerate(fields_deletion.items()):
+            with self.subTest(query, i=i):
+                self.assertQuery(query, docs, corpus=corpus)
+            cells.append(self.query_cell(query, docs))
+
     @nb.chapter("## Error conditions")
     def test_exceptions(self, cells):
         cells.append(
@@ -849,7 +879,7 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         )
         for i, (query, branches, docs) in enumerate(cardinality):
             with self.subTest(query, i=i):
-                self.assertQuery(query, docs, int(len(docs) / branches))
+                self.assertQuery(query, docs, count=int(len(docs) / branches))
                 cells.append(self.query_cell(query, docs, len(docs)))
 
     @nb.chapter("## Any oddities?")

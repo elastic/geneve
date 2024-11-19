@@ -236,8 +236,8 @@ class QueryTestCase:
     def subTest(self, query, **kwargs):  # noqa: N802
         return super(QueryTestCase, self).subTest(query, **kwargs, seed=query)
 
-    def assertQuery(self, query, docs, count=1):  # noqa: N802
-        se = SourceEvents(self.schema)
+    def assertQuery(self, query, docs, *, count=1, corpus=None):  # noqa: N802
+        se = SourceEvents(self.schema, corpus=corpus)
         se.stack_version = self.stack_version
         se.add_query(query, meta=query)
         branches = se.emit(timestamp=False, complete=True, count=count)

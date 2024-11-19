@@ -34,9 +34,11 @@ class TestDictUtils(unittest.TestCase):
         self.assertEqual(deep_merge({}, {"a": "A"}), {"a": "A"})
         self.assertEqual(deep_merge({"a": "A"}, {}), {"a": "A"})
         self.assertEqual(deep_merge({"a": "A"}, {"b": "B"}), {"a": "A", "b": "B"})
+        self.assertEqual(deep_merge({"a": "A"}, {"a": None}, overwrite=True), {"a": None})
         self.assertEqual(deep_merge({"a": ["A"]}, {"a": ["A"]}), {"a": ["A"]})
         self.assertEqual(deep_merge({"a": ["A"]}, {"a": ["B"]}), {"a": ["A", "B"]})
         self.assertEqual(deep_merge({"a": ["A"]}, {"a": [{"b": "B"}]}), {"a": ["A", {"b": "B"}]})
+        self.assertEqual(deep_merge({"a": "A"}, {"a": "B"}, overwrite=True), {"a": "B"})
 
         with self.assertRaises(ValueError, msg='Destination field already exists: a ("A" != "B")'):
             deep_merge({"a": "A"}, {"a": "B"})
