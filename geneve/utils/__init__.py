@@ -91,7 +91,10 @@ def resource(uri, basedir=None, cachedir=None, cachefile=None, validate=None):
         if local_file.is_dir():
             tmpdir = local_file
         else:
-            shutil.unpack_archive(local_file, tmpdir)
+            kwargs = {}
+            if sys.version_info >= (3, 12) and ".tar" in local_file.suffixes:
+                kwargs = {"filter": "data"}
+            shutil.unpack_archive(local_file, tmpdir, **kwargs)
             if local_file.parent == tmpdir:
                 local_file.unlink()
             inner_entries = tmpdir.glob("*")
