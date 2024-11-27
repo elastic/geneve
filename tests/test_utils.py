@@ -24,7 +24,7 @@ from shutil import make_archive
 from geneve.utils import deep_merge, resource, tempdir
 from geneve.utils.hdict import hdict
 
-from .utils import data_dir, http_server, tempenv
+from .utils import data_dir, flat_walk, http_server, tempenv
 
 
 class TestDictUtils(unittest.TestCase):
@@ -253,3 +253,30 @@ class TestHierarchicalDict(unittest.TestCase):
 
         del d["ecs.version"]
         self.assertEqual([], list(d.groups()))
+
+
+class TestFlatWalk(unittest.TestCase):
+    def test_flat_walk(self):
+        doc = {
+            "0": {
+                "a": {
+                    "I": None,
+                },
+                "b": None,
+            },
+            "1.a": {
+                "I": None,
+                "II": None,
+            },
+            "2.a.I": None,
+        }
+
+        fields = [
+            "0.a.I",
+            "0.b",
+            "1.a.I",
+            "1.a.II",
+            "2.a.I",
+        ]
+
+        self.assertEqual(fields, list(flat_walk(doc)))

@@ -33,7 +33,7 @@ from functools import partial
 from pathlib import Path
 
 from geneve.events_emitter import SourceEvents
-from geneve.utils import batched, load_schema, random
+from geneve.utils import batched, dirs, load_schema, random, resource
 
 from . import jupyter
 
@@ -162,6 +162,14 @@ def diff_files(first, second):
             p.kill()
             out = p.communicate()[0]
     return out.decode("utf-8")
+
+
+def flat_walk(doc, path=[]):
+    for k, v in doc.items():
+        if isinstance(v, dict):
+            yield from flat_walk(v, path + [k])
+        else:
+            yield ".".join(path + [k])
 
 
 def assertIdenticalFiles(tc, first, second):  # noqa: N802
@@ -318,9 +326,54 @@ class SignalsTestCase:
     multiplying_factor = int(os.getenv("TEST_SIGNALS_MULTI") or 0) or 1
     test_tags = ["Geneve"]
 
+    def load_corpus(self):
+        corpus = None
+        corpus_fields = set()
+
+        corpus_uri = os.getenv("TEST_CORPUS_URI")
+        if corpus_uri:
+            if verbose:
+                sys.stderr.write("\n  Loading corpus: ")
+                sys.stderr.flush()
+
+            with resource(corpus_uri, cachedir=dirs.cache) as corpus_file:
+                import mmap
+
+                def reader(*, wrap_around):
+                    with open(corpus_file, "r") as f:
+                        with mmap.mmap(f.fileno(), 0, prot=mmap.PROT_READ) as mm:
+                            while True:
+                                mm.seek(0)
+                                while line := mm.readline():
+                                    yield json.loads(line)
+                                if not wrap_around:
+                                    break
+
+                count = 0
+                fields = set()
+                for doc in reader(wrap_around=False):
+                    fields |= set(flat_walk(doc))
+                    if count % 100000 == 0:
+                        sys.stderr.write(f"{count} ")
+                        sys.stderr.flush()
+                    count += 1
+
+                corpus = reader(wrap_around=True)
+                corpus_fields = fields
+
+            if verbose:
+                if count % 100000:
+                    sys.stderr.write(f"{count} ")
+                sys.stderr.write(f"docs, {len(fields)} fields")
+                sys.stderr.flush()
+
+        return corpus, corpus_fields
+
     def generate_docs_and_mappings(self, rules, asts):
+        corpus, corpus_fields = self.load_corpus()
+
         schema = load_test_schema()
-        se = SourceEvents(schema)
+        se = SourceEvents(schema, corpus=corpus)
         se.stack_version = self.get_version()
 
         if verbose and verbose <= 2:
@@ -362,7 +415,7 @@ class SignalsTestCase:
             sys.stderr.write(f"{ok_rules}/{len(bulk)} ")
             sys.stderr.flush()
 
-        return (bulk, se.mappings())
+        return (bulk, se.mappings(extra_fields=corpus_fields))
 
     def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=200, rules_chunk_size=50):
         docs, mappings = self.generate_docs_and_mappings(rules, asts)

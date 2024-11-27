@@ -94,17 +94,21 @@ def resource(uri, basedir=None, cachedir=None, cachefile=None, validate=None):
             kwargs = {}
             if sys.version_info >= (3, 12) and ".tar" in local_file.suffixes:
                 kwargs = {"filter": "data"}
-            shutil.unpack_archive(local_file, tmpdir, **kwargs)
-            if local_file.parent == tmpdir:
-                local_file.unlink()
-            inner_entries = tmpdir.glob("*")
-            new_tmpdir = next(inner_entries)
             try:
-                # check if there are other directories or files
-                _ = next(inner_entries)
-            except StopIteration:
-                # lone entry, probably a directory, let's use it as base
-                tmpdir = new_tmpdir
+                shutil.unpack_archive(local_file, tmpdir, **kwargs)
+            except shutil.ReadError:
+                tmpdir = local_file
+            else:
+                if local_file.parent == tmpdir:
+                    local_file.unlink()
+                inner_entries = tmpdir.glob("*")
+                new_tmpdir = next(inner_entries)
+                try:
+                    # check if there are other directories or files
+                    _ = next(inner_entries)
+                except StopIteration:
+                    # lone entry, probably a directory, let's use it as base
+                    tmpdir = new_tmpdir
 
         yield tmpdir
 
