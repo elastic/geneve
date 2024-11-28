@@ -2,6 +2,7 @@
 *.g
 *.ipynb
 *.md
+*.ndjson
 *.png
 *.tar.gz
 *.toml
@@ -28,6 +29,7 @@ scripts/test-qaf-stack.sh
 
 tests/config.yaml
 tests/deployment.json
+tests/data/.gitignore
 tests/data/config_elastic-package.yaml
 tests/data/config_geneve-test-env.yaml
 tests/data/test-package-1.2.3/*

@@ -24,7 +24,7 @@ from itertools import chain
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
 from .events_emitter_eql import get_ast_stats  # noqa: F401
 from .solver import emit_field
-from .utils import deep_merge, has_wildcards, random, split_path
+from .utils import deep_merge, has_wildcards, random, remove_none_fields, split_path
 
 __all__ = ("SourceEvents",)
 
@@ -111,31 +111,37 @@ def emit_mappings(fields, schema):
     return mappings
 
 
-def events_from_branch(branch, environment, timestamp, meta):
+def events_from_branch(branch, environment, timestamp, meta, corpus):
     events = []
     for doc in branch.solve(environment):
         if timestamp:
             emit_field(doc, "@timestamp", timestamp[0].isoformat(timespec="milliseconds"))
             timestamp[0] += timedelta(milliseconds=1)
+        if corpus:
+            doc = deep_merge(next(corpus), doc, overwrite=True)
+        remove_none_fields(doc)
         events.append(Event(meta, doc))
     return events
 
 
-def events_from_root(root, environment, timestamp):
-    return [events_from_branch(branch, environment, timestamp, root.meta) for branch in root]
+def events_from_root(root, environment, timestamp, corpus):
+    return [events_from_branch(branch, environment, timestamp, root.meta, corpus) for branch in root]
 
 
 class SourceEvents:
     schema = {}
+    corpus = None
     stack_version = None
     max_branches = 10000
 
-    def __init__(self, schema=None):
+    def __init__(self, schema=None, *, corpus=None):
         self.__roots = []
         self.__environment = {}
 
         if schema is not None:
             self.schema = schema
+        if corpus:
+            self.corpus = iter(corpus)
 
     @classmethod
     def from_ast(cls, ast, *, meta=None):
@@ -176,27 +182,28 @@ class SourceEvents:
     def fields(self):
         return set(chain(*(root.fields() for root in self.__roots)))
 
-    def mappings(self, root=None):
+    def mappings(self, root=None, *, extra_fields=[]):
         fields = self.fields() if root is None else root.fields()
-        return emit_mappings(fields, self.schema)
+        return emit_mappings(fields | set(extra_fields), self.schema)
 
     def roots(self):
         return iter(self.__roots)
 
-    def emit(self, root=None, *, timestamp=True, complete=False, count=1):
+    def emit(self, root=None, *, timestamp=True, complete=False, count=1, corpus=None):
+        corpus = iter(corpus) if corpus else self.corpus
         if timestamp:
             timestamp = [datetime.now(timezone.utc).astimezone()]
         if complete:
             if root:
-                events = (events_from_root(root, self.__environment, timestamp) for _ in range(count))
+                events = (events_from_root(root, self.__environment, timestamp, corpus) for _ in range(count))
             else:
-                events = (events_from_root(root, self.__environment, timestamp) for _ in range(count) for root in self.__roots)
+                events = (events_from_root(root, self.__environment, timestamp, corpus) for _ in range(count) for root in self.__roots)
         else:
             if root:
-                events = (events_from_branch(random.choice(root), self.__environment, timestamp, root.meta) for _ in range(count))
+                events = (events_from_branch(random.choice(root), self.__environment, timestamp, root.meta, corpus) for _ in range(count))
             else:
                 events = (
-                    events_from_branch(random.choice(root), self.__environment, timestamp, root.meta)
+                    events_from_branch(random.choice(root), self.__environment, timestamp, root.meta, corpus)
                     for root in random.choices(self.__roots, k=count)
                 )
         return list(chain(*events))
@@ -204,7 +211,7 @@ class SourceEvents:
     def try_emit(self, root):
         state = random.getstate()
         try:
-            _ = events_from_root(root, environment={}, timestamp=False)
+            _ = events_from_root(root, environment={}, timestamp=False, corpus=None)
         finally:
             random.setstate(state)
 

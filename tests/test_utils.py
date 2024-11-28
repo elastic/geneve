@@ -24,7 +24,7 @@ from shutil import make_archive
 from geneve.utils import deep_merge, resource, tempdir
 from geneve.utils.hdict import hdict
 
-from .utils import data_dir, http_server, tempenv
+from .utils import data_dir, flat_walk, http_server, tempenv
 
 
 class TestDictUtils(unittest.TestCase):
@@ -34,9 +34,11 @@ class TestDictUtils(unittest.TestCase):
         self.assertEqual(deep_merge({}, {"a": "A"}), {"a": "A"})
         self.assertEqual(deep_merge({"a": "A"}, {}), {"a": "A"})
         self.assertEqual(deep_merge({"a": "A"}, {"b": "B"}), {"a": "A", "b": "B"})
+        self.assertEqual(deep_merge({"a": "A"}, {"a": None}, overwrite=True), {"a": None})
         self.assertEqual(deep_merge({"a": ["A"]}, {"a": ["A"]}), {"a": ["A"]})
         self.assertEqual(deep_merge({"a": ["A"]}, {"a": ["B"]}), {"a": ["A", "B"]})
         self.assertEqual(deep_merge({"a": ["A"]}, {"a": [{"b": "B"}]}), {"a": ["A", {"b": "B"}]})
+        self.assertEqual(deep_merge({"a": "A"}, {"a": "B"}, overwrite=True), {"a": "B"})
 
         with self.assertRaises(ValueError, msg='Destination field already exists: a ("A" != "B")'):
             deep_merge({"a": "A"}, {"a": "B"})
@@ -251,3 +253,30 @@ class TestHierarchicalDict(unittest.TestCase):
 
         del d["ecs.version"]
         self.assertEqual([], list(d.groups()))
+
+
+class TestFlatWalk(unittest.TestCase):
+    def test_flat_walk(self):
+        doc = {
+            "0": {
+                "a": {
+                    "I": None,
+                },
+                "b": None,
+            },
+            "1.a": {
+                "I": None,
+                "II": None,
+            },
+            "2.a.I": None,
+        }
+
+        fields = [
+            "0.a.I",
+            "0.b",
+            "1.a.I",
+            "1.a.II",
+            "2.a.I",
+        ]
+
+        self.assertEqual(fields, list(flat_walk(doc)))

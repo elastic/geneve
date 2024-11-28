@@ -91,17 +91,24 @@ def resource(uri, basedir=None, cachedir=None, cachefile=None, validate=None):
         if local_file.is_dir():
             tmpdir = local_file
         else:
-            shutil.unpack_archive(local_file, tmpdir)
-            if local_file.parent == tmpdir:
-                local_file.unlink()
-            inner_entries = tmpdir.glob("*")
-            new_tmpdir = next(inner_entries)
+            kwargs = {}
+            if sys.version_info >= (3, 12) and ".tar" in local_file.suffixes:
+                kwargs = {"filter": "data"}
             try:
-                # check if there are other directories or files
-                _ = next(inner_entries)
-            except StopIteration:
-                # lone entry, probably a directory, let's use it as base
-                tmpdir = new_tmpdir
+                shutil.unpack_archive(local_file, tmpdir, **kwargs)
+            except shutil.ReadError:
+                tmpdir = local_file
+            else:
+                if local_file.parent == tmpdir:
+                    local_file.unlink()
+                inner_entries = tmpdir.glob("*")
+                new_tmpdir = next(inner_entries)
+                try:
+                    # check if there are other directories or files
+                    _ = next(inner_entries)
+                except StopIteration:
+                    # lone entry, probably a directory, let's use it as base
+                    tmpdir = new_tmpdir
 
         yield tmpdir
 
@@ -221,21 +228,33 @@ def load_rules(uri, paths=None, basedir=None, *, timeout=17, tries=3):
     return version, rules
 
 
-def deep_merge(a, b, path=None):
+def deep_merge(a, b, path=None, *, overwrite=False):
     """Recursively merge two dictionaries"""
 
     for key in b:
         if key in a:
             path = (path or []) + [str(key)]
             if isinstance(a[key], dict) and isinstance(b[key], dict):
-                deep_merge(a[key], b[key], path)
+                deep_merge(a[key], b[key], path, overwrite=overwrite)
             elif isinstance(a[key], list) and isinstance(b[key], list):
                 a[key].extend(x for x in b[key] if x not in a[key])
+            elif overwrite:
+                a[key] = b[key]
             elif a[key] != b[key]:
                 raise ValueError(f"Destination field already exists: {'.'.join(path)} ('{a[key]}' != '{b[key]}')")
         else:
             a[key] = b[key]
     return a
+
+
+def remove_none_fields(doc):
+    for field, value in list(doc.items()):
+        if isinstance(value, dict):
+            remove_none_fields(value)
+            if not value:
+                del doc[field]
+        elif value is None:
+            del doc[field]
 
 
 class TreeTraverser:

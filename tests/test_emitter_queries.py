@@ -454,6 +454,19 @@ multi_branch_multi_doc = {
     ],
 }
 
+fields_deletion = {
+    """any where process.pid == null
+    """: (
+        [],
+        [[{}]],
+    ),
+    """any where process.name == null
+    """: (
+        [{"process": {"name": "some"}}],
+        [[{}]],
+    ),
+}
+
 exceptions = {
     """any where false
     """: "Root without branches",
@@ -720,6 +733,33 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 self.assertEqual(mappings, se.mappings(root))
                 self.assertEqual(mappings, se.mappings())
 
+    def test_mappings_extra_fields(self):
+        extra_fields = [
+            "process.code_signature.exists",
+            "process.pid",
+        ]
+        query = 'process where process.name == "regsvr32.exe"'
+        mappings = {
+            "properties": {
+                "@timestamp": {"type": "date"},
+                "event": {"properties": {"category": {"type": "keyword"}}},
+                "process": {
+                    "properties": {
+                        "name": {"type": "keyword"},
+                        "code_signature": {"properties": {"exists": {"type": "boolean"}}},
+                        "pid": {"type": "long"},
+                    },
+                },
+            },
+        }
+        with self.subTest(query):
+            se = SourceEvents(self.schema)
+            se.stack_version = self.stack_version
+
+            root = se.add_query(query)
+            self.assertEqual(mappings, se.mappings(root, extra_fields=extra_fields))
+            self.assertEqual(mappings, se.mappings(extra_fields=extra_fields))
+
     @nb.chapter("## Mono-branch mono-document")
     def test_mono_branch_mono_doc(self, cells):
         cells.append(
@@ -791,6 +831,23 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 self.assertQuery(query, docs)
             cells.append(self.query_cell(query, docs))
 
+    @nb.chapter("## Fields deletion")
+    def test_fields_deletion(self, cells):
+        cells.append(
+            jupyter.Markdown(
+                """
+            When a query requires that a field is absent (by setting to null) it's easy
+            to just not generate it. When the field generation instead is superimposed
+            on existing documents, non-generating a field is not enough in that it must
+            be actively deleted from the base document when present.
+        """
+            )
+        )
+        for i, (query, (corpus, docs)) in enumerate(fields_deletion.items()):
+            with self.subTest(query, i=i):
+                self.assertQuery(query, docs, corpus=corpus)
+            cells.append(self.query_cell(query, docs))
+
     @nb.chapter("## Error conditions")
     def test_exceptions(self, cells):
         cells.append(
@@ -822,7 +879,7 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         )
         for i, (query, branches, docs) in enumerate(cardinality):
             with self.subTest(query, i=i):
-                self.assertQuery(query, docs, int(len(docs) / branches))
+                self.assertQuery(query, docs, count=int(len(docs) / branches))
                 cells.append(self.query_cell(query, docs, len(docs)))
 
     @nb.chapter("## Any oddities?")
