@@ -72,12 +72,20 @@ class TestResource(unittest.TestCase):
     resource_xztar = data_dir / (resource.name + ".tar.xz")
     resource_zip = data_dir / (resource.name + ".zip")
 
+    resource2 = data_dir / "test-resource.ndjson"
+    resource2_bz2 = data_dir / (resource2.name + ".bz2")
+    resource2_gz = data_dir / (resource2.name + ".gz")
+    resource2_xz = data_dir / (resource2.name + ".xz")
+
     @classmethod
     def setUpClass(cls):
         make_archive(cls.resource, "bztar", root_dir=data_dir, base_dir=cls.resource.name)
         make_archive(cls.resource, "gztar", root_dir=data_dir, base_dir=cls.resource.name)
         make_archive(cls.resource, "xztar", root_dir=data_dir, base_dir=cls.resource.name)
         make_archive(cls.resource, "zip", root_dir=data_dir, base_dir=cls.resource.name)
+        make_archive(cls.resource2, "bz2", root_dir=data_dir, base_dir=cls.resource2.name)
+        make_archive(cls.resource2, "gz", root_dir=data_dir, base_dir=cls.resource2.name)
+        make_archive(cls.resource2, "xz", root_dir=data_dir, base_dir=cls.resource2.name)
 
     @classmethod
     def tearDownClass(cls):
@@ -85,6 +93,9 @@ class TestResource(unittest.TestCase):
         cls.resource_gztar.unlink()
         cls.resource_xztar.unlink()
         cls.resource_zip.unlink()
+        cls.resource2_bz2.unlink()
+        cls.resource2_gz.unlink()
+        cls.resource2_xz.unlink()
 
     def test_dir(self):
         uri = str(self.resource)
@@ -108,6 +119,19 @@ class TestResource(unittest.TestCase):
                     with resource(uri, basedir=basedir) as resource_dir:
                         manifest = resource_dir / "manifest.yml"
                         self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
+
+        for ext in ["bz2", "gz", "xz"]:
+            tests = [
+                (f"file://./tests/data/{self.resource2.name}.{ext}", None),
+                (f"file://./{self.resource2.name}.{ext}", data_dir),
+                (f"tests/data/{self.resource2.name}.{ext}", None),
+                (f"{self.resource2.name}.{ext}", data_dir),
+            ]
+
+            for uri, basedir in tests:
+                with self.subTest(uri=uri, basedir=basedir):
+                    with resource(uri, basedir=basedir) as resource_dir:
+                        self.assertTrue(resource_dir.exists(), msg=f"{resource_dir} does not exist")
 
     def test_remote(self):
         with http_server(data_dir) as server:
