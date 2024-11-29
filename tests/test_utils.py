@@ -67,17 +67,23 @@ class TestResource(unittest.TestCase):
     """Test resource() helper."""
 
     resource = data_dir / "test-package-1.2.3"
-    resource_zip = data_dir / (resource.name + ".zip")
+    resource_bztar = data_dir / (resource.name + ".tar.bz2")
     resource_gztar = data_dir / (resource.name + ".tar.gz")
+    resource_xztar = data_dir / (resource.name + ".tar.xz")
+    resource_zip = data_dir / (resource.name + ".zip")
 
     @classmethod
     def setUpClass(cls):
+        make_archive(cls.resource, "bztar", root_dir=data_dir, base_dir=cls.resource.name)
         make_archive(cls.resource, "gztar", root_dir=data_dir, base_dir=cls.resource.name)
+        make_archive(cls.resource, "xztar", root_dir=data_dir, base_dir=cls.resource.name)
         make_archive(cls.resource, "zip", root_dir=data_dir, base_dir=cls.resource.name)
 
     @classmethod
     def tearDownClass(cls):
+        cls.resource_bztar.unlink()
         cls.resource_gztar.unlink()
+        cls.resource_xztar.unlink()
         cls.resource_zip.unlink()
 
     def test_dir(self):
@@ -89,7 +95,7 @@ class TestResource(unittest.TestCase):
             self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
 
     def test_local(self):
-        for ext in ["tar.gz", "zip"]:
+        for ext in ["tar.bz2", "tar.gz", "tar.xz", "zip"]:
             tests = [
                 (f"file://./tests/data/{self.resource.name}.{ext}", None),
                 (f"file://./{self.resource.name}.{ext}", data_dir),
