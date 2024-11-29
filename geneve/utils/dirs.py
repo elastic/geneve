@@ -18,8 +18,11 @@
 """System dependent notable dirs."""
 
 import os
+import shutil
 import sys
+from contextlib import contextmanager
 from pathlib import Path
+from tempfile import mkdtemp
 
 if sys.platform == "win32":
     cache = Path(os.getenv("LOCALAPPDATA")) / "Geneve" / "Cache"
@@ -27,3 +30,12 @@ elif sys.platform == "darwin":
     cache = Path.home() / "Library" / "Caches" / "geneve"
 else:
     cache = Path.home() / ".cache" / "geneve"
+
+
+@contextmanager
+def tempdir():
+    tmpdir = mkdtemp()
+    try:
+        yield Path(tmpdir)
+    finally:
+        shutil.rmtree(tmpdir)

@@ -20,16 +20,15 @@
 import functools
 import json
 import re
-import shutil
 import sys
-from contextlib import contextmanager
 from pathlib import Path
 from random import Random
-from tempfile import mkdtemp
 from types import SimpleNamespace
 from urllib.parse import urlparse, urlunparse
 
 from . import dirs, epr
+from .dirs import tempdir as tempdir
+from .resource import resource as resource
 
 random = Random()
 wc_re = re.compile(r"\*|\?")
@@ -52,65 +51,6 @@ def expand_wildcards(s, alphabet, min_star_len, max_star_len):
         else:
             chars.append(c)
     return "".join(chars)
-
-
-@contextmanager
-def tempdir():
-    tmpdir = mkdtemp()
-    try:
-        yield Path(tmpdir)
-    finally:
-        shutil.rmtree(tmpdir)
-
-
-@contextmanager
-def resource(uri, basedir=None, cachedir=None, cachefile=None, validate=None):
-    import requests
-
-    with tempdir() as tmpdir:
-        uri_parts = urlparse(str(uri))
-        if uri_parts.scheme.startswith("http"):
-            download_dir = Path(cachedir or tmpdir)
-            if cachedir and cachefile:
-                local_file = download_dir / cachefile
-            else:
-                local_file = download_dir / Path(uri_parts.path).name
-            if local_file.exists() and validate and not validate(local_file):
-                local_file.unlink()
-            if not local_file.exists():
-                download_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
-                with open(local_file, "wb") as f:
-                    f.write(requests.get(uri).content)
-        elif uri_parts.scheme == "file":
-            local_file = Path(basedir or Path.cwd()) / (uri_parts.netloc + uri_parts.path)
-        elif uri_parts.scheme == "":
-            local_file = Path(basedir or Path.cwd()) / uri_parts.path
-        else:
-            raise ValueError(f"uri scheme not supported: {uri_parts.scheme}")
-
-        if local_file.is_dir():
-            tmpdir = local_file
-        else:
-            kwargs = {}
-            if sys.version_info >= (3, 12) and ".tar" in local_file.suffixes:
-                kwargs = {"filter": "data"}
-            try:
-                shutil.unpack_archive(local_file, tmpdir, **kwargs)
-            except shutil.ReadError:
-                tmpdir = local_file
-            else:
-                if local_file.parent == tmpdir:
-                    local_file.unlink()
-                inner_entries = tmpdir.glob("*")
-                new_tmpdir = next(inner_entries)
-                try:
-                    # check if there are other directories or files
-                    _ = next(inner_entries)
-                except StopIteration:
-                    # lone entry, probably a directory, let's use it as base
-                    tmpdir = new_tmpdir
-
-        yield tmpdir
 
 
 @functools.lru_cache

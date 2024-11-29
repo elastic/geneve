@@ -325,6 +325,12 @@ class SignalsTestCase:
 
     multiplying_factor = int(os.getenv("TEST_SIGNALS_MULTI") or 0) or 1
     test_tags = ["Geneve"]
+    corpus_file = None
+
+    def tearDown(self):
+        if self.corpus_file:
+            self.corpus_file.close()
+        super(SignalsTestCase, self).tearDown()
 
     def load_corpus(self):
         corpus = None
@@ -337,17 +343,18 @@ class SignalsTestCase:
                 sys.stderr.flush()
 
             with resource(corpus_uri, cachedir=dirs.cache) as corpus_file:
-                import mmap
+                self.corpus_file = open(corpus_file, "r")
 
                 def reader(*, wrap_around):
-                    with open(corpus_file, "r") as f:
-                        with mmap.mmap(f.fileno(), 0, prot=mmap.PROT_READ) as mm:
-                            while True:
-                                mm.seek(0)
-                                while line := mm.readline():
-                                    yield json.loads(line)
-                                if not wrap_around:
-                                    break
+                    import mmap
+
+                    with mmap.mmap(self.corpus_file.fileno(), 0, prot=mmap.PROT_READ) as mm:
+                        while True:
+                            mm.seek(0)
+                            while line := mm.readline():
+                                yield json.loads(line)
+                            if not wrap_around:
+                                break
 
                 count = 0
                 fields = set()
