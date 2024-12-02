@@ -1,9 +1,0 @@
-paths:
-  - ^/.kibana.*
-  - ^/.reporting-.*
-  - ^/_bulk
-  - ^/_monitoring
-  - ^/_nodes
-  - ^/_pit
-  - ^/_security
-  - ^/_xpack

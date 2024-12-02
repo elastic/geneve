@@ -42,17 +42,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Setup Go
-        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5
-        with:
-          go-version: "1.22"
-          cache: false
-
       - name: Install dependencies
-        run: make prereq-lint
+        run: make prereq
 
       - name: Lint
-        run: make lint cli-lint
+        run: make lint
 
   unit-tests:
     name: Unit tests (${{ matrix.os }}/py-${{ matrix.python-version }})
@@ -131,19 +125,12 @@ jobs:
     env:
       TEST_ELASTICSEARCH_URL: "http://elastic:changeme@localhost:29650"
       TEST_KIBANA_URL: "http://elastic:changeme@localhost:65290"
-      TEST_GENEVE_LOG: "gnv-${{ matrix.stack-version }}.log"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           persist-credentials: false
-
-      - name: Setup Go
-        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5
-        with:
-          go-version: "1.18"
-          cache: false
 
       - name: Setup Python
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5
@@ -152,15 +139,6 @@ jobs:
 
       - name: Install dependencies
         run: make prereq
-
-      - name: Build CLI
-        run: make pygolo-diags cli-build
-
-      - name: Start Geneve server
-        run: |
-          ./gnv serve -l 0.0.0.0:9280 -r $TEST_ELASTICSEARCH_URL --log $TEST_GENEVE_LOG &
-          curl -s --retry 3 --retry-connrefused http://localhost:9256/api/status
-          curl -s -XPOST -H "Content-Type: application/yaml" http://localhost:9256/api/grasp/ignore --data-binary '@tests/grasp-ignore.yaml'
 
       - name: Setup cache
         id: elastic-stack-cache
@@ -190,7 +168,6 @@ jobs:
       - name: Start Elastic Stack ${{ matrix.stack-version }}
         env:
           TEST_STACK_VERSION: ${{ matrix.stack-version }}
-          TEST_ELASTICSEARCH_PROXY: "http://host.docker.internal:9280"
         run: make up
 
       - name: Run online tests
@@ -199,7 +176,6 @@ jobs:
           TEST_SCHEMA_URI: ${{ matrix.schema-uri }}
           TEST_SIGNALS_QUERIES: 1
           TEST_SIGNALS_RULES: 1
-          TEST_ELASTICSEARCH_URL: "http://localhost:9280"
         run: make online-tests
 
       - name: Explain shards allocation
@@ -217,16 +193,6 @@ jobs:
           docker logs geneve-test-kbn-1 >kbn-${{ matrix.stack-version }}.log
           make down
 
-      - name: Stop Geneve server
-        if: always()
-        run: |
-          curl -s "http://localhost:9256/api/grasp"
-          curl -s "http://localhost:9256/api/grasp/indices?percent=100"
-          curl -s "http://localhost:9256/api/grasp/calls?percent=100"
-          curl -s "http://localhost:9256/api/grasp/searches?percent=100"
-          killall gnv
-          if grep "WARNING: DATA RACE" $TEST_GENEVE_LOG; then awk '/WARNING: DATA RACE/{found=1} found' $TEST_GENEVE_LOG; false; fi
-
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
@@ -235,7 +201,6 @@ jobs:
           path: |
             es-*.log
             kbn-*.log
-            gnv-*.log
 
       - name: Upload reports
         if: always()
@@ -243,46 +208,6 @@ jobs:
         with:
           name: test-reports-${{ matrix.stack-version }}
           path: tests/reports/*.new.md
-
-  cli:
-    name: CLI (${{ matrix.os }}/go-${{ matrix.go-version }}/py-${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        go-version: ["1.18", "1.22"]
-        python-version: ["3.8", "3.12"]
-        os: ["ubuntu-latest", "macos-latest"]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          persist-credentials: false
-
-      - name: Setup Python
-        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Setup Go
-        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5
-        with:
-          go-version: ${{ matrix.go-version }}
-          cache: false
-
-      - name: Install dependencies
-        run: make prereq
-
-      - name: Build
-        run: make pygolo-diags cli-build
-
-      - name: Test
-        run: make cli-test
-
-      - name: Benchmark
-        run: make cli-bench
 
   package-build:
     name: Package build (${{ matrix.os }}/py-${{ matrix.python-version }})
@@ -361,7 +286,6 @@ jobs:
       - unit-tests
       - online-tests
       - package-tests
-      - cli
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
 
     steps:
