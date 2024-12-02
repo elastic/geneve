@@ -1,5 +1,4 @@
 PYTEST_VERBOSE := $(if $(filter-out 0,$(V)),$(if $(filter-out 1,$(V)),$(if $(filter-out 2,$(V)),-vvv,-vv),-v) -r aP,-qq)
-GO_VERBOSE := $(if $(filter-out 0,$(V)),,-q)
 
 ifeq ($(VENV),)
 	ACTIVATE :=
@@ -11,22 +10,6 @@ ifeq ($(PYTHON),)
 	PYTHON := $(ACTIVATE)python3
 endif
 
-# if golang is installed only
-ifneq ($(shell command -v go 2>/dev/null),)
-PYGOLO_DIR := $(shell go list -f '{{.Dir}}' -m gitlab.com/pygolo/py)
-ifeq ($(PYGOLO_DIR),)
-	PYGOLO_DIR := $(shell go get gitlab.com/pygolo/py && go list -f '{{.Dir}}' -m gitlab.com/pygolo/py)
-endif
-ifneq ($(PYGOLO_DIR),)
-	include $(PYGOLO_DIR)/Python.mk
-	GO_TAGS := $(if $(PYGOLO_TAGS),-tags "$(PYGOLO_TAGS)")
-else
-define embed-python
-	$(error Embedding Python is not supported on this platform)
-endef
-endif
-endif
-
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
 all: lint tests
@@ -34,10 +17,6 @@ all: lint tests
 prereq:
 	$(PYTHON) -m pip install --user --upgrade pip
 	$(PYTHON) -m pip install --user -r requirements.txt
-
-prereq-lint: prereq
-	go install golang.org/x/lint/golint@latest
-	go install honnef.co/go/tools/cmd/staticcheck@latest
 
 lint:
 	$(PYTHON) -m ruff check geneve tests
@@ -63,35 +42,6 @@ down:
 
 jupyter:
 	jupyter-notebook
-
-gnv: main.go $(call rwildcard,cmd,*.go)
-	$(embed-python)
-	go build $(GO_TAGS) -race -o $@ .
-
-cli-build: gnv
-	./gnv version
-	@if [ $$(./gnv version | grep "version:" | head -2 | sort | uniq | wc -l) -ne 1 ]; then \
-		echo "\nApplication and module versions do not match"; \
-		false; \
-	fi
-
-cli-lint:
-	golint .
-	go vet $(GO_TAGS) .
-	staticcheck $(GO_TAGS) .
-
-cli-test:
-	$(embed-python)
-	go test $(strip $(GO_VERBOSE) $(GO_TAGS)) -race ./...
-
-cli-bench:
-	$(embed-python)
-	go test $(strip $(GO_VERBOSE) $(GO_TAGS)) -bench=. ./cmd/geneve/source
-
-clean:
-	go clean -cache -testcache
-	rm -rf gnv
-	echo $(PYGOLO_DIR)
 
 pkg-build:
 	$(PYTHON) -m build

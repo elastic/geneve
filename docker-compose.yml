@@ -31,7 +31,7 @@ services:
     image: ${TEST_KIBANA_IMAGE:-docker.elastic.co/kibana/kibana:${TEST_STACK_VERSION:-8.16.0}}
     environment:
       SERVER_NAME: kbn
-      ELASTICSEARCH_HOSTS: ${TEST_ELASTICSEARCH_PROXY:-http://es:9200}
+      ELASTICSEARCH_HOSTS: http://es:9200
       ELASTICSEARCH_USERNAME: kibana_system
       ELASTICSEARCH_PASSWORD: changeme
       XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: 0123456789abcdef0123456789ABCDEF
