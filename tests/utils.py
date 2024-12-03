@@ -384,32 +384,39 @@ class SignalsTestCase:
         se.stack_version = self.get_version()
 
         if verbose and verbose <= 2:
-            sys.stderr.write("\n  Parsing rules and creating documents: ")
+            sys.stderr.write("\n  Parsing rules: ")
             sys.stderr.flush()
 
-        ok_rules = 0
-        bulk = []
-        for rule, ast in zip(rules, asts):
-            if verbose and verbose <= 2 and ok_rules % 100 == 0:
-                sys.stderr.write(f"{ok_rules}/{len(bulk)} ")
+        roots = []
+        num_docs = 0
+        for i, (rule, ast) in enumerate(zip(rules, asts)):
+            if verbose and verbose <= 2 and i % 100 == 0:
+                sys.stderr.write(f"{len(rules) - i} ")
                 sys.stderr.flush()
 
             with self.subTest(rule["query"]):
                 try:
-                    root = se.add_ast(ast, meta={"index": rule["index"][0]})
-                    events = se.emit(root, complete=True, count=self.multiplying_factor)
+                    root = se.add_ast(ast)
+                    num_docs += sum(len(branch) for branch in root) * self.multiplying_factor
+                    roots.append((root, rule))
                 except Exception as e:
                     rule["enabled"] = False
                     if verbose > 2:
                         sys.stderr.write(f"{str(e)}\n")
                         sys.stderr.flush()
-                    continue
-                ok_rules += 1
+
+        if verbose and verbose <= 2:
+            sys.stderr.write("0 ")
+            sys.stderr.flush()
+
+        def bulk():
+            for root, rule in roots:
+                events = se.emit(root, complete=True, count=self.multiplying_factor)
 
                 doc_count = 0
                 for event in itertools.chain(*events):
-                    bulk.append(json.dumps({"create": {"_index": event.meta["index"]}}))
-                    bulk.append(json.dumps(event.doc))
+                    yield json.dumps({"create": {"_index": rule["index"][0]}})
+                    yield json.dumps(event.doc)
                     if verbose > 2:
                         sys.stderr.write(json.dumps(event.doc, sort_keys=True) + "\n")
                         sys.stderr.flush()
@@ -418,14 +425,13 @@ class SignalsTestCase:
                 rule[".test_private"]["branch_count"] = len(root) * self.multiplying_factor
                 rule[".test_private"]["doc_count"] = doc_count
 
-        if verbose and verbose <= 2:
-            sys.stderr.write(f"{ok_rules}/{len(bulk)} ")
-            sys.stderr.flush()
-
-        return (bulk, se.mappings(extra_fields=corpus_fields))
+        return (bulk(), num_docs, se.mappings(extra_fields=corpus_fields))
 
     def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=200, rules_chunk_size=50):
-        docs, mappings = self.generate_docs_and_mappings(rules, asts)
+        bulk, docs_to_go, mappings = self.generate_docs_and_mappings(rules, asts)
+
+        # for each doc there are two lines in the bulk: the operation and the doc itself
+        bulk_chunk_size = docs_chunk_size * 2
 
         if verbose:
             sys.stderr.write("\n  Deleting any unit-test indices: ")
@@ -464,12 +470,11 @@ class SignalsTestCase:
 
         with self.nb.chapter("## Rejected documents") as cells:
             if verbose:
-                docs_to_go = len(docs)
                 sys.stderr.write(f"\n  Loading documents: {docs_to_go} ")
                 sys.stderr.flush()
-                num_chunks = math.ceil(len(docs) / docs_chunk_size)
+                num_chunks = math.ceil(docs_to_go / docs_chunk_size)
                 prev_report_chunk = 0
-            for i, chunk in enumerate(batched(docs, docs_chunk_size)):
+            for i, chunk in enumerate(batched(bulk, bulk_chunk_size)):
                 kwargs = {
                     "operations": "\n".join(chunk),
                 }
@@ -481,7 +486,7 @@ class SignalsTestCase:
                             sys.stderr.write(f"{str(item['create'])}\n")
                             sys.stderr.flush()
                 if verbose:
-                    docs_to_go -= len(chunk)
+                    docs_to_go -= len(chunk) // 2  # bulk: op + doc
                     nth_chunk = int(i / num_chunks * 14)  # 14 is just an arbitray number to give enough updates
                     if nth_chunk != prev_report_chunk or i == num_chunks - 1:
                         prev_report_chunk = nth_chunk

@@ -246,7 +246,7 @@ else:
 
     def batched(iterable, chunk_size):
         iterator = iter(iterable)
-        while chunk := type(iterable)(islice(iterator, chunk_size)):
+        while chunk := list(islice(iterator, chunk_size)):
             yield chunk
 
 
