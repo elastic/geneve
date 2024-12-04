@@ -206,7 +206,7 @@ class SourceEvents:
                     events_from_branch(random.choice(root), self.__environment, timestamp, root.meta, corpus)
                     for root in random.choices(self.__roots, k=count)
                 )
-        return list(chain(*events))
+        return chain(*events)
 
     def try_emit(self, root):
         state = random.getstate()
