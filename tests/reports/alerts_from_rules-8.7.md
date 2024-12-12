@@ -76,7 +76,7 @@ Branch count: 4608
 Document count: 13824  
 Index: geneve-ut-0252  
 Failure message(s):  
-  got 1000 signals, expected 4608  
+  got 2000 signals, expected 4608  
 
 ```python
 sequence by host.id, user.id with maxspan=1m
