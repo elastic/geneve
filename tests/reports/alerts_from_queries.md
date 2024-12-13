@@ -12,7 +12,7 @@ Here you can learn what queries are supported.
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-000
+Index: geneve-ut-0000
 
 ```python
 any where true
@@ -24,7 +24,7 @@ any where true
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-001
+Index: geneve-ut-0001
 
 ```python
 any where not false
@@ -36,7 +36,7 @@ any where not false
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-002
+Index: geneve-ut-0002
 
 ```python
 any where not (true and false)
@@ -48,7 +48,7 @@ any where not (true and false)
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-003
+Index: geneve-ut-0003
 
 ```python
 any where not (false or false)
@@ -60,7 +60,7 @@ any where not (false or false)
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-004
+Index: geneve-ut-0004
 
 ```python
 network where source.port > 512 and source.port < 1024
@@ -72,7 +72,7 @@ network where source.port > 512 and source.port < 1024
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-005
+Index: geneve-ut-0005
 
 ```python
 network where not (source.port < 512 or source.port > 1024)
@@ -84,7 +84,7 @@ network where not (source.port < 512 or source.port > 1024)
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-006
+Index: geneve-ut-0006
 
 ```python
 network where destination.port not in (80, 443)
@@ -96,7 +96,7 @@ network where destination.port not in (80, 443)
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-007
+Index: geneve-ut-0007
 
 ```python
 network where not destination.port in (80, 443)
@@ -108,7 +108,7 @@ network where not destination.port in (80, 443)
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-008
+Index: geneve-ut-0008
 
 ```python
 network where destination.port == 22 and destination.port in (80, 443) or destination.port == 25
@@ -120,7 +120,7 @@ network where destination.port == 22 and destination.port in (80, 443) or destin
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-009
+Index: geneve-ut-0009
 
 ```python
 process where process.name == "regsvr32.exe"
@@ -132,7 +132,7 @@ process where process.name == "regsvr32.exe"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-010
+Index: geneve-ut-0010
 
 ```python
 process where process.name != "regsvr32.exe"
@@ -144,7 +144,7 @@ process where process.name != "regsvr32.exe"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-011
+Index: geneve-ut-0011
 
 ```python
 process where process.pid != 0
@@ -156,7 +156,7 @@ process where process.pid != 0
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-012
+Index: geneve-ut-0012
 
 ```python
 process where process.pid >= 0
@@ -168,7 +168,7 @@ process where process.pid >= 0
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-013
+Index: geneve-ut-0013
 
 ```python
 process where process.pid > 0
@@ -180,7 +180,7 @@ process where process.pid > 0
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-014
+Index: geneve-ut-0014
 
 ```python
 process where process.code_signature.exists == true
@@ -192,7 +192,7 @@ process where process.code_signature.exists == true
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-015
+Index: geneve-ut-0015
 
 ```python
 process where process.code_signature.exists != true
@@ -204,7 +204,7 @@ process where process.code_signature.exists != true
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-016
+Index: geneve-ut-0016
 
 ```python
 any where network.protocol == "some protocol"
@@ -216,7 +216,7 @@ any where network.protocol == "some protocol"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-017
+Index: geneve-ut-0017
 
 ```python
 any where process.pid == null
@@ -228,7 +228,7 @@ any where process.pid == null
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-018
+Index: geneve-ut-0018
 
 ```python
 any where not process.pid != null
@@ -240,7 +240,7 @@ any where not process.pid != null
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-019
+Index: geneve-ut-0019
 
 ```python
 any where process.pid != null
@@ -252,7 +252,7 @@ any where process.pid != null
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-020
+Index: geneve-ut-0020
 
 ```python
 any where not process.pid == null
@@ -264,7 +264,7 @@ any where not process.pid == null
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-021
+Index: geneve-ut-0021
 
 ```python
 process where process.name == "regsvr32.exe" and process.parent.name == "cmd.exe"
@@ -276,7 +276,7 @@ process where process.name == "regsvr32.exe" and process.parent.name == "cmd.exe
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-022
+Index: geneve-ut-0022
 
 ```python
 process where process.args != null
@@ -288,7 +288,7 @@ process where process.args != null
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-023
+Index: geneve-ut-0023
 
 ```python
 process where process.args : "-f" and process.args == "-r"
@@ -300,7 +300,7 @@ process where process.args : "-f" and process.args == "-r"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-024
+Index: geneve-ut-0024
 
 ```python
 network where destination.ip == "127.0.0.1"
@@ -312,7 +312,7 @@ network where destination.ip == "127.0.0.1"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-025
+Index: geneve-ut-0025
 
 ```python
 network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
@@ -324,7 +324,7 @@ network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-026
+Index: geneve-ut-0026
 
 ```python
 network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
@@ -336,7 +336,7 @@ network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-027
+Index: geneve-ut-0027
 
 ```python
 network where destination.ip != null
@@ -348,7 +348,7 @@ network where destination.ip != null
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-028
+Index: geneve-ut-0028
 
 ```python
 network where destination.ip == "::1"
@@ -360,7 +360,7 @@ network where destination.ip == "::1"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-029
+Index: geneve-ut-0029
 
 ```python
 network where destination.ip == "822e::/16"
@@ -372,7 +372,7 @@ network where destination.ip == "822e::/16"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-030
+Index: geneve-ut-0030
 
 ```python
 event.category:network and destination.ip:"822e::/16"
@@ -384,7 +384,7 @@ event.category:network and destination.ip:"822e::/16"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-031
+Index: geneve-ut-0031
 
 ```python
 network where host.ip != null
@@ -396,7 +396,7 @@ network where host.ip != null
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-032
+Index: geneve-ut-0032
 
 ```python
 event.category:network and host.ip:"822e::/96"
@@ -408,7 +408,7 @@ event.category:network and host.ip:"822e::/96"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-033
+Index: geneve-ut-0033
 
 ```python
 event.category:process and not process.args : (TRUE or true)
@@ -420,7 +420,7 @@ event.category:process and not process.args : (TRUE or true)
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-034
+Index: geneve-ut-0034
 
 ```python
 network where not (source.port > 512 and source.port < 1024)
@@ -432,7 +432,7 @@ network where not (source.port > 512 and source.port < 1024)
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-035
+Index: geneve-ut-0035
 
 ```python
 network where source.port > 512 or source.port < 1024
@@ -444,7 +444,7 @@ network where source.port > 512 or source.port < 1024
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-036
+Index: geneve-ut-0036
 
 ```python
 network where source.port < 2000 and (source.port > 512 or source.port > 1024)
@@ -456,7 +456,7 @@ network where source.port < 2000 and (source.port > 512 or source.port > 1024)
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-037
+Index: geneve-ut-0037
 
 ```python
 network where (source.port > 512 or source.port > 1024) and source.port < 2000
@@ -468,7 +468,7 @@ network where (source.port > 512 or source.port > 1024) and source.port < 2000
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-038
+Index: geneve-ut-0038
 
 ```python
 network where (source.port > 1024 or source.port < 2000) and (source.port < 4000 or source.port > 512)
@@ -480,7 +480,7 @@ network where (source.port > 1024 or source.port < 2000) and (source.port < 4000
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-039
+Index: geneve-ut-0039
 
 ```python
 network where destination.port in (80, 443)
@@ -492,7 +492,7 @@ network where destination.port in (80, 443)
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-040
+Index: geneve-ut-0040
 
 ```python
 process where process.name : ("*.EXE", "*.DLL")
@@ -504,7 +504,7 @@ process where process.name : ("*.EXE", "*.DLL")
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-041
+Index: geneve-ut-0041
 
 ```python
 process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
@@ -516,7 +516,7 @@ process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-042
+Index: geneve-ut-0042
 
 ```python
 process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or process.name == "powershell.exe"
@@ -528,7 +528,7 @@ process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or pro
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-043
+Index: geneve-ut-0043
 
 ```python
 process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
@@ -540,7 +540,7 @@ process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-044
+Index: geneve-ut-0044
 
 ```python
 process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "powershell.exe"
@@ -552,7 +552,7 @@ process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "po
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-045
+Index: geneve-ut-0045
 
 ```python
 process where event.type in ("start", "process_started") and process.args : "dump-keychain" and process.args : "-d"
@@ -564,7 +564,7 @@ process where event.type in ("start", "process_started") and process.args : "dum
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-046
+Index: geneve-ut-0046
 
 ```python
 event.type:(start or process_started) and (process.args:"dump-keychain" and process.args:"-d")
@@ -576,7 +576,7 @@ event.type:(start or process_started) and (process.args:"dump-keychain" and proc
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-047
+Index: geneve-ut-0047
 
 ```python
 event.category:process and process.args:a and process.args:(b1 or b2) and process.args:(c1 or c2)
@@ -588,7 +588,7 @@ event.category:process and process.args:a and process.args:(b1 or b2) and proces
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-048
+Index: geneve-ut-0048
 
 ```python
 process where process.args : "a" and process.args : ("b1", "b2") and process.args : ("c1", "c2")
@@ -600,7 +600,7 @@ process where process.args : "a" and process.args : ("b1", "b2") and process.arg
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-049
+Index: geneve-ut-0049
 
 ```python
 sequence
@@ -614,7 +614,7 @@ sequence
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-050
+Index: geneve-ut-0050
 
 ```python
 sequence by user.id
@@ -628,7 +628,7 @@ sequence by user.id
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-051
+Index: geneve-ut-0051
 
 ```python
 sequence
@@ -642,7 +642,7 @@ sequence
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-052
+Index: geneve-ut-0052
 
 ```python
 sequence
@@ -656,7 +656,7 @@ sequence
 
 Branch count: 1  
 Document count: 4  
-Index: geneve-ut-053
+Index: geneve-ut-0053
 
 ```python
 sequence
@@ -670,7 +670,7 @@ sequence
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-054
+Index: geneve-ut-0054
 
 ```python
 sequence
@@ -684,7 +684,7 @@ sequence
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-055
+Index: geneve-ut-0055
 
 ```python
 sequence by user.id
@@ -698,7 +698,7 @@ sequence by user.id
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-056
+Index: geneve-ut-0056
 
 ```python
 sequence
@@ -712,7 +712,7 @@ sequence
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-057
+Index: geneve-ut-0057
 
 ```python
 sequence by user.id
