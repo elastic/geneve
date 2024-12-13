@@ -173,7 +173,7 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
                 asts.append(ast_from_rule(rule))
             except Exception:
                 continue
-            index_name = "{:s}-{:03d}".format(self.index_template, i)
+            index_name = "{:s}-{:04d}".format(self.index_template, i)
             rules.append(
                 {
                     "rule_id": rule.rule_id,

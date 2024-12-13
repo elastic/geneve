@@ -915,7 +915,7 @@ class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCas
         asts = []
         for i, query in enumerate(queries):
             guess = guess_from_query(query)
-            index_name = "{:s}-{:03d}".format(self.index_template, i)
+            index_name = "{:s}-{:04d}".format(self.index_template, i)
             rules.append(
                 {
                     "rule_id": "test_{:03d}".format(i),
