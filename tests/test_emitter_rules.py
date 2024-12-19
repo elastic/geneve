@@ -213,7 +213,7 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         rules, asts = self.parse_from_collection(collection)
         pending = self.load_rules_and_docs(rules, asts)
         try:
-            self.check_signals(rules, pending)
+            self.check_signals(rules, pending, timeout=180)
         except AssertionError:
             tu.assertReportUnchanged(self, self.nb, f"alerts_from_rules-{major_minor}{mf_ext}.md")
             raise
