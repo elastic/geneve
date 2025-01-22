@@ -144,7 +144,7 @@ class ElasticStack:
                 return "0000-00-00 00:00:00"
             if (dot := d.find(".")) != -1:
                 d = d[:dot]
-            return datetime.fromisoformat(d).strftime("%Y-%m-%d %H:%M%:%S")
+            return datetime.fromisoformat(d).strftime("%Y-%m-%d %H:%M:%S")
 
         es_info = self.es.info()
         es_version = es_info["version"].get("number")
