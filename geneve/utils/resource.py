@@ -42,9 +42,9 @@ def download(uri, destdir, *, basedir=None, cachedir=None, cachefile=None, valid
 
                 f.write(requests.get(uri).content)
     elif uri_parts.scheme == "file":
-        local_file = Path(basedir or Path.cwd()) / (uri_parts.netloc + uri_parts.path)
+        local_file = Path(basedir or ".") / (uri_parts.netloc + uri_parts.path)
     elif uri_parts.scheme == "":
-        local_file = Path(basedir or Path.cwd()) / uri_parts.path
+        local_file = Path(basedir or ".") / uri_parts.path
     else:
         raise ValueError(f"uri scheme not supported: {uri_parts.scheme}")
     return local_file
