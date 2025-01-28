@@ -5,24 +5,24 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.14.16
+Rules version: 8.14.20
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (81)](#unsupported-rule-type-new_terms-81)
+      1. [Unsupported rule type: new_terms (89)](#unsupported-rule-type-new_terms-89)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
+      1. [Unsupported rule type: esql (34)](#unsupported-rule-type-esql-34)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported rule type: esql (28)](#unsupported-rule-type-esql-28)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
+      1. [Unsupported function: match (13)](#unsupported-function-match-13)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
-      1. [Unsupported function: match (11)](#unsupported-function-match-11)
-      1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
+      1. [Field type solver: match_only_text (8)](#field-type-solver-match_only_text-8)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (6)](#unsupported-argument-types-class-eqlastfield-6)
-      1. [Root without branches (4)](#root-without-branches-4)
+      1. [Root without branches (5)](#root-without-branches-5)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
@@ -105,19 +105,21 @@ Rules version: 8.14.16
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (81)
+### Unsupported rule type: new_terms (89)
 
-81 rules:
+89 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS EC2 Admin Credential Fetch via Assumed Role
 * AWS IAM Create User via Assumed Role on EC2 Instance
 * AWS IAM Customer-Managed Policy Attached to Role by Rare User
+* AWS S3 Unauthenticated Bucket Access by Rare Source
 * AWS SNS Email Subscription by Rare User
 * AWS SSM Command Document Created by Rare User
 * AWS SSM `SendCommand` Execution by Rare User
 * AWS SSM `SendCommand` with Run Shell Command Parameters
 * AWS STS AssumeRole with New MFA Device
+* AWS STS AssumeRoot by Rare User and Member Account
 * AWS STS GetCallerIdentity API Called for the First Time
 * AWS STS Role Assumption by Service
 * AWS STS Role Assumption by User
@@ -126,7 +128,6 @@ Rules version: 8.14.16
 * Authentication via Unusual PAM Grantor
 * CAP_SYS_ADMIN Assigned to Binary
 * DPKG Package Installed by Unusual Parent Process
-* Deprecated - Suspicious JAVA Child Process
 * Discovery of Internet Capabilities via Built-in Tools
 * Enumeration of Kernel Modules
 * Enumeration of Kernel Modules via Proc
@@ -153,6 +154,7 @@ Rules version: 8.14.16
 * First Time Seen NewCredentials Logon Process
 * First Time Seen Removable Device
 * FirstTime Seen Account Performing DCSync
+* Kernel Object File Creation
 * Linux Clipboard Activity Detected
 * Microsoft 365 Portal Login from Rare Location
 * Microsoft Build Engine Started an Unusual Process
@@ -168,6 +170,7 @@ Rules version: 8.14.16
 * Query Registry using Built-in Tools
 * RPM Package Installed by Unusual Parent Process
 * Rare SMB Connection to the Internet
+* SNS Topic Message Publish by Rare User
 * SSH Authorized Keys File Modification
 * SSM Session Started to EC2 Instance
 * Sensitive Files Compression
@@ -177,6 +180,7 @@ Rules version: 8.14.16
 * Suspicious Microsoft 365 Mail Access by ClientAppId
 * Suspicious Modprobe File Event
 * Suspicious Network Activity to the Internet by Previously Unknown Executable
+* Suspicious Path Invocation from Command Line
 * Suspicious PowerShell Engine ImageLoad
 * Suspicious PrintSpooler Service Executable File Creation
 * Suspicious Sysctl File Event
@@ -186,10 +190,14 @@ Rules version: 8.14.16
 * UID Elevation from Previously Unknown Executable
 * Unauthorized Scope for Public App OAuth2 Token Grant with Client Credentials
 * Unknown Execution of Binary with RWX Memory Region
+* Unusual AWS S3 Object Encryption with SSE-C
 * Unusual Discovery Activity by User
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 * Unusual Interactive Shell Launched from System User
+* Unusual Pkexec Execution
+* Unusual Preload Environment Variable Process Execution
+* Unusual SSHD Child Process
 
 ### Unsupported rule type: machine_learning (72)
 
@@ -268,6 +276,45 @@ Rules version: 8.14.16
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
+### Unsupported rule type: esql (34)
+
+34 rules:
+
+* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
+* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
+* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
+* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
+* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
+* AWS Discovery API Calls via CLI from a Single Resource
+* AWS EC2 EBS Snapshot Shared or Made Public
+* AWS EC2 Multi-Region DescribeInstances API Calls
+* AWS IAM AdministratorAccess Policy Attached to Group
+* AWS IAM AdministratorAccess Policy Attached to Role
+* AWS IAM AdministratorAccess Policy Attached to User
+* AWS IAM Login Profile Added for Root
+* AWS IAM User Created Access Keys For Another User
+* AWS S3 Bucket Enumeration or Brute Force
+* AWS S3 Object Encryption Using External KMS Key
+* AWS STS Role Chaining
+* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
+* AWS Signin Single Factor Console Login with Federated User
+* Attempts to Brute Force a Microsoft 365 User Account
+* Azure Entra MFA TOTP Brute Force Attempts
+* Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
+* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
+* High Number of Okta Device Token Cookies Generated for Authentication
+* Multiple Device Token Hashes for Single Okta Session
+* Multiple Okta User Authentication Events with Client Address
+* Multiple Okta User Authentication Events with Same Device Token Hash
+* Okta User Sessions Started from Different Geolocations
+* Potential AWS S3 Bucket Ransomware Note Uploaded
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Widespread Malware Infection Across Multiple Hosts
+* Unusual High Confidence Content Filter Blocks Detected
+* Unusual High Denied Sensitive Information Policy Blocks Detected
+* Unusual High Denied Topic Blocks Detected
+* Unusual High Word Policy Blocks Detected
+
 ### Unsupported rule type: threshold (29)
 
 29 rules:
@@ -276,7 +323,7 @@ Rules version: 8.14.16
 * AWS Management Console Brute Force of Root User Identity
 * Agent Spoofing - Multiple Hosts Using Same Agent
 * Attempts to Brute Force an Okta User Account
-* Deprecated - Potential Password Spraying of Microsoft 365 User Accounts
+* Excessive AWS S3 Object Encryption with SSE-C
 * GitHub UEBA - Multiple Alerts from a GitHub Account
 * High Number of Cloned GitHub Repos From PAT
 * High Number of Okta User Password Reset or Unlock Attempts
@@ -296,44 +343,11 @@ Rules version: 8.14.16
 * Potential Network Scan Executed From Host
 * Potential Network Sweep Detected
 * Potential Ransomware Behavior - High count of Readme files by System
-* Potential SYN-Based Network Scan Detected
+* Potential SYN-Based Port Scan Detected
 * Potential macOS SSH Brute Force Detected
 * Rapid Secret Retrieval Attempts from AWS SecretsManager
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
-
-### Unsupported rule type: esql (28)
-
-28 rules:
-
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
-* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* AWS Discovery API Calls via CLI from a Single Resource
-* AWS EC2 EBS Snapshot Shared with Another Account
-* AWS EC2 Multi-Region DescribeInstances API Calls
-* AWS IAM AdministratorAccess Policy Attached to Group
-* AWS IAM AdministratorAccess Policy Attached to Role
-* AWS IAM AdministratorAccess Policy Attached to User
-* AWS IAM User Created Access Keys For Another User
-* AWS S3 Bucket Enumeration or Brute Force
-* AWS S3 Object Encryption Using External KMS Key
-* AWS STS Role Chaining
-* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* AWS Signin Single Factor Console Login with Federated User
-* Attempts to Brute Force a Microsoft 365 User Account
-* Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
-* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
-* High Number of Okta Device Token Cookies Generated for Authentication
-* Multiple Device Token Hashes for Single Okta Session
-* Multiple Okta User Authentication Events with Client Address
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Okta User Sessions Started from Different Geolocations
-* Potential AWS S3 Bucket Ransomware Note Uploaded
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Widespread Malware Infection Across Multiple Hosts
-* Unusual High Confidence Misconduct Blocks Detected
 
 ### Unsupported rule type: threat_match (5)
 
@@ -362,7 +376,6 @@ Rules version: 8.14.16
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
 * External IP Lookup from Non-Browser Process
-* File Compressed or Archived into Common Format
 * Potential DNS Tunneling via NsLookup
 * Potential Evasion via Windows Filtering Platform
 * Potential Linux Ransomware Note Creation Detected
@@ -372,8 +385,26 @@ Rules version: 8.14.16
 * Potential Remote Code Execution via Web Server
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
+* Remote Execution via File Shares
 * Startup or Run Key Registry Modification
 * Suspicious PowerShell Execution via Windows Scripts
+
+### Unsupported function: match (13)
+
+13 rules:
+* Alternate Data Stream Creation/Execution at Volume Root Directory
+* Creation of Hidden Files and Directories via CommandLine
+* Executable File Creation with Multiple Extensions
+* Masquerading Space After Filename
+* Potential Credential Access via Windows Utilities
+* Potential Exploitation of an Unquoted Service Path Vulnerability
+* Process Created with a Duplicated Token
+* Process Started from Process ID (PID) File
+* SUID/SGID Bit Set
+* Simple HTTP Web Server Connection
+* Simple HTTP Web Server Creation
+* Suspicious Execution via Microsoft Office Add-Ins
+* Suspicious Service was Installed in the System
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)
 
@@ -407,26 +438,12 @@ Rules version: 8.14.16
 * AWS S3 Bucket Server Access Logging Disabled
 * AWS S3 Object Versioning Suspended
 
-### Unsupported function: match (11)
+### Field type solver: match_only_text (8)
 
-11 rules:
-* Alternate Data Stream Creation/Execution at Volume Root Directory
-* Creation of Hidden Files and Directories via CommandLine
-* Executable File Creation with Multiple Extensions
-* Masquerading Space After Filename
-* Potential Credential Access via Windows Utilities
-* Potential Exploitation of an Unquoted Service Path Vulnerability
-* Process Created with a Duplicated Token
-* Process Started from Process ID (PID) File
-* SUID/SGID Bit Set
-* Suspicious Execution via Microsoft Office Add-Ins
-* Suspicious Service was Installed in the System
-
-### Field type solver: match_only_text (7)
-
-7 rules:
+8 rules:
 * Account Configured with Never-Expiring Password
 * Kerberos Pre-authentication Disabled for User
+* Process Started with Executable Stack
 * Segfault Detected
 * Suspicious rc.local Error Message
 * Tainted Kernel Module Load
@@ -443,10 +460,11 @@ Rules version: 8.14.16
 * Suspicious File Renamed via SMB
 * Unusual Network Activity from a Windows System Binary
 
-### Root without branches (4)
+### Root without branches (5)
 
-4 rules:
+5 rules:
 * Docker Escape via Nsenter
+* Initramfs Extraction via CPIO
 * Linux init (PID 1) Secret Dump via GDB
 * Potential Protocol Tunneling via Chisel Server
 * Suspicious Data Encryption via OpenSSL Utility
