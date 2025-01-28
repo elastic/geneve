@@ -1,3 +1,31 @@
+## v0.4.0 - Jan 28, 2025
+
+#### Core
+
+* Add fields superimposition.
+* Drop the Geneve API server and proxy.
+* Generate docs incrementally.
+
+#### Testing
+
+* Add Stack 8.16 and 8.17 to the test drill.
+* Split out the tests configuration.
+* Use rules versions specified in the test config file.
+* Stop observing the stack version in Serverless.
+* Disable the EPR condition on Serverless Kibana when searching for packages.
+* Add an ESS Buildkite pipeline.
+* Default to download rules from EPR if not configured locally.
+* Various improvements to scripts/test-stacks.sh.
+* Don't fail the Buildkite pipeline if the list fails.
+* Drop deprecated `/api/detection_engine/rules/_bulk_delete`.
+* Drop testing support for 7.x.
+* Make `find_detection_engine_rules` more strict.
+* Migrate to `_import` to bulk create rules.
+* Add `filter` when extracting a tarball (fix Python warning).
+* Test also bztar and xztar resources.
+* Update to Python 3.13.
+* Update to ECS 8.16.0.
+
 ## v0.3.0 - Aug 28, 2024
 
 #### Core
