@@ -5,11 +5,11 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.13.22
+Rules version: 8.13.23
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (81)](#unsupported-rule-type-new_terms-81)
+      1. [Unsupported rule type: new_terms (82)](#unsupported-rule-type-new_terms-82)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: esql (28)](#unsupported-rule-type-esql-28)
@@ -105,9 +105,9 @@ Rules version: 8.13.22
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (81)
+### Unsupported rule type: new_terms (82)
 
-81 rules:
+82 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS EC2 Admin Credential Fetch via Assumed Role
@@ -118,6 +118,7 @@ Rules version: 8.13.22
 * AWS SSM `SendCommand` Execution by Rare User
 * AWS SSM `SendCommand` with Run Shell Command Parameters
 * AWS STS AssumeRole with New MFA Device
+* AWS STS AssumeRoot by Rare User and Member Account
 * AWS STS GetCallerIdentity API Called for the First Time
 * AWS STS Role Assumption by Service
 * AWS STS Role Assumption by User
