@@ -2,7 +2,7 @@ black
 build
 elasticsearch>=8.2.0
 eql==0.9.19
-faker==35.2.2
+faker==36.1.0
 faker-datasets
 infinite-sets
 isort
