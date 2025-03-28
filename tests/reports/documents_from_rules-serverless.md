@@ -5,38 +5,37 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.17.3
+Rules version: 8.17.7
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (89)](#unsupported-rule-type-new_terms-89)
-      1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
-      1. [Unsupported rule type: esql (34)](#unsupported-rule-type-esql-34)
+      1. [Unsupported rule type: new_terms (102)](#unsupported-rule-type-new_terms-102)
+      1. [Unsupported rule type: machine_learning (74)](#unsupported-rule-type-machine_learning-74)
+      1. [Unsupported rule type: esql (48)](#unsupported-rule-type-esql-48)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
+      1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
       1. [Unsupported function: match (13)](#unsupported-function-match-13)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
-      1. [Field type solver: match_only_text (8)](#field-type-solver-match_only_text-8)
+      1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (6)](#unsupported-argument-types-class-eqlastfield-6)
       1. [Root without branches (5)](#root-without-branches-5)
+      1. [Unsolvable constraints: event.category & event.type (empty intersection) (4)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-4)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported function: startsWith (3)](#unsupported-function-startswith-3)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
-      1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported function: endswith (2)](#unsupported-function-endswith-2)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
-      1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*attribute=userData*'}): ('*instanceId*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsattributeuserdata-instanceid-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
@@ -62,13 +61,14 @@ Rules version: 8.17.3
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'System.IO.Compression.DeflateStream'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemiocompressiondeflatestream-frombase64string-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'VirtualAlloc'}): ('WriteProcessMemory')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsvirtualalloc-writeprocessmemory-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswindowsclipboard-gettext-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Runtime.InteropServices.Marshal]::Copy'}): ('VirtualProtect')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemruntimeinteropservicesmarshalcopy-virtualprotect-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[Ref].Assembly.GetType(('System.Management.Automation'}): ('.SetValue(')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsrefassemblygettypesystemmanagementautomation-setvalue-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[dbo].[Credentials]'}): ('Veeam')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdbocredentials-veeam-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[string]::join'}): ('$pSHoMe[')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstringjoin-pshome-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('*copy*')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-copy-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsdrivegooglecom-exportdownload-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*fromhex*'}): ('*decode*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsfromhex-decode-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*id_dsa*'}): ('*/home/*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsid_dsa-home-1)
@@ -105,16 +105,20 @@ Rules version: 8.17.3
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (89)
+### Unsupported rule type: new_terms (102)
 
-89 rules:
+102 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS EC2 Admin Credential Fetch via Assumed Role
+* AWS EC2 Route Table Modified or Deleted
+* AWS EC2 User Data Retrieval for EC2 Instance
+* AWS IAM Assume Role Policy Update
 * AWS IAM Create User via Assumed Role on EC2 Instance
 * AWS IAM Customer-Managed Policy Attached to Role by Rare User
 * AWS S3 Unauthenticated Bucket Access by Rare Source
 * AWS SNS Email Subscription by Rare User
+* AWS SNS Topic Created by Rare User
 * AWS SSM Command Document Created by Rare User
 * AWS SSM `SendCommand` Execution by Rare User
 * AWS SSM `SendCommand` with Run Shell Command Parameters
@@ -126,6 +130,8 @@ Rules version: 8.17.3
 * AWS Systems Manager SecureString Parameter Request with Decryption Flag
 * Abnormal Process ID or Lock File Created
 * Authentication via Unusual PAM Grantor
+* Azure Entra ID Rare App ID for Principal Authentication
+* Azure Entra ID Rare Authentication Requirement for Principal User
 * CAP_SYS_ADMIN Assigned to Binary
 * DPKG Package Installed by Unusual Parent Process
 * Discovery of Internet Capabilities via Built-in Tools
@@ -133,6 +139,7 @@ Rules version: 8.17.3
 * Enumeration of Kernel Modules via Proc
 * Enumeration of Privileged Local Groups Membership
 * Execution of an Unsigned Service
+* File Creation in /var/log via Suspicious Process
 * File Permission Modification in Writable Directory
 * First Occurrence GitHub Event for a Personal Access Token (PAT)
 * First Occurrence of Entra ID Auth via DeviceCode Protocol
@@ -155,6 +162,7 @@ Rules version: 8.17.3
 * First Time Seen Removable Device
 * FirstTime Seen Account Performing DCSync
 * Kernel Object File Creation
+* Kill Command Execution
 * Linux Clipboard Activity Detected
 * Microsoft 365 Portal Login from Rare Location
 * Microsoft Build Engine Started an Unusual Process
@@ -167,6 +175,7 @@ Rules version: 8.17.3
 * Potential Privilege Escalation via Linux DAC permissions
 * Potential Shadow File Read via Command Line Utilities
 * Privileged Docker Container Creation
+* Process Backgrounded by Unusual Parent
 * Query Registry using Built-in Tools
 * RPM Package Installed by Unusual Parent Process
 * Rare SMB Connection to the Internet
@@ -176,6 +185,9 @@ Rules version: 8.17.3
 * Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
 * Successful Application SSO from Rare Unknown Client Device
+* Successful SSH Authentication from Unusual IP Address
+* Successful SSH Authentication from Unusual SSH Public Key
+* Successful SSH Authentication from Unusual User
 * Sudoers File Modification
 * Suspicious Microsoft 365 Mail Access by ClientAppId
 * Suspicious Modprobe File Event
@@ -197,17 +209,19 @@ Rules version: 8.17.3
 * Unusual Interactive Shell Launched from System User
 * Unusual Pkexec Execution
 * Unusual Preload Environment Variable Process Execution
+* Unusual Remote File Creation
 * Unusual SSHD Child Process
 
-### Unsupported rule type: machine_learning (72)
+### Unsupported rule type: machine_learning (74)
 
-72 rules:
+74 rules:
 
 * Anomalous Linux Compiler Activity
 * Anomalous Process For a Linux Population
 * Anomalous Process For a Windows Population
 * Anomalous Windows Process Creation
 * DNS Tunneling
+* Decline in host-based traffic
 * High Mean of Process Arguments in an RDP Session
 * High Mean of RDP Session Duration
 * High Variance in RDP Session Duration
@@ -232,6 +246,7 @@ Rules version: 8.17.3
 * Spike in Number of Processes in an RDP Session
 * Spike in Remote File Transfers
 * Spike in Successful Logon Events from a Source IP
+* Spike in host-based traffic
 * Suspicious Powershell Script
 * Suspicious Windows Process Cluster Spawned by a Host
 * Suspicious Windows Process Cluster Spawned by a Parent Process
@@ -276,9 +291,9 @@ Rules version: 8.17.3
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: esql (34)
+### Unsupported rule type: esql (48)
 
-34 rules:
+48 rules:
 
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
 * AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
@@ -299,21 +314,35 @@ Rules version: 8.17.3
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 * AWS Signin Single Factor Console Login with Federated User
 * Attempts to Brute Force a Microsoft 365 User Account
+* Azure Entra ID Password Spraying (Non-Interactive SFA)
 * Azure Entra MFA TOTP Brute Force Attempts
 * Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
 * Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
+* Azure OpenAI Insecure Output Handling
+* High Number of Egress Network Connections from Unusual Executable
 * High Number of Okta Device Token Cookies Generated for Authentication
+* M365 OneDrive Excessive File Downloads with OAuth Token
 * Multiple Device Token Hashes for Single Okta Session
 * Multiple Okta User Authentication Events with Client Address
 * Multiple Okta User Authentication Events with Same Device Token Hash
 * Okta User Sessions Started from Different Geolocations
 * Potential AWS S3 Bucket Ransomware Note Uploaded
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Azure OpenAI Model Theft
+* Potential Denial of Azure OpenAI ML Service
+* Potential Malware-Driven SSH Brute Force Attempt
+* Potential Port Scanning Activity from Compromised Host
+* Potential Subnet Scanning Activity from Compromised Host
 * Potential Widespread Malware Infection Across Multiple Hosts
+* Unusual Base64 Encoding/Decoding Activity
+* Unusual Command Execution from Web Server Parent
+* Unusual File Creation by Web Server
+* Unusual File Transfer Utility Launched
 * Unusual High Confidence Content Filter Blocks Detected
 * Unusual High Denied Sensitive Information Policy Blocks Detected
 * Unusual High Denied Topic Blocks Detected
 * Unusual High Word Policy Blocks Detected
+* Unusual Process Spawned from Web Server Parent
 
 ### Unsupported rule type: threshold (29)
 
@@ -370,9 +399,9 @@ Rules version: 8.17.3
 
 ## Generation errors
 
-### Root with too many branches (limit: 10000) (15)
+### Root with too many branches (limit: 10000) (14)
 
-15 rules:
+14 rules:
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
 * External IP Lookup from Non-Browser Process
@@ -387,7 +416,6 @@ Rules version: 8.17.3
 * Potential Reverse Shell via Suspicious Child Process
 * Remote Execution via File Shares
 * Startup or Run Key Registry Modification
-* Suspicious PowerShell Execution via Windows Scripts
 
 ### Unsupported function: match (13)
 
@@ -438,13 +466,12 @@ Rules version: 8.17.3
 * AWS S3 Bucket Server Access Logging Disabled
 * AWS S3 Object Versioning Suspended
 
-### Field type solver: match_only_text (8)
+### Field type solver: match_only_text (7)
 
-8 rules:
-* Account Configured with Never-Expiring Password
-* Kerberos Pre-authentication Disabled for User
+7 rules:
 * Process Started with Executable Stack
 * Segfault Detected
+* Suspicious Usage of bpf_probe_write_user Helper
 * Suspicious rc.local Error Message
 * Tainted Kernel Module Load
 * Tainted Out-Of-Tree Kernel Module Load
@@ -468,6 +495,14 @@ Rules version: 8.17.3
 * Linux init (PID 1) Secret Dump via GDB
 * Potential Protocol Tunneling via Chisel Server
 * Suspicious Data Encryption via OpenSSL Utility
+
+### Unsolvable constraints: event.category & event.type (empty intersection) (4)
+
+4 rules:
+* Deprecated - Suspicious File Creation in /etc for Persistence
+* File with Right-to-Left Override Character (RTLO) Created/Executed
+* Python Site or User Customize File Creation
+* Unsigned DLL loaded by DNS Service
 
 ### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)
 
@@ -511,12 +546,6 @@ Rules version: 8.17.3
 * Potential Successful Linux FTP Brute Force Attack Detected
 * Potential Successful Linux RDP Brute Force Attack Detected
 
-### Unsolvable constraints: event.category & event.type (empty intersection) (2)
-
-2 rules:
-* Suspicious File Creation in /etc for Persistence
-* Unsigned DLL loaded by DNS Service
-
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)
 
 2 rules:
@@ -549,11 +578,6 @@ Rules version: 8.17.3
 
 1 rules:
 * AWS S3 Bucket Expiration Lifecycle Configuration Added
-
-### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*attribute=userData*'}): ('*instanceId*')) (1)
-
-1 rules:
-* Attempt to Retrieve User Data from AWS EC2 Instance
 
 ### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)
 
@@ -680,7 +704,7 @@ Rules version: 8.17.3
 1 rules:
 * PowerShell Suspicious Script with Clipboard Retrieval Capabilities
 
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Runtime.InteropServices.Marshal]::Copy'}): ('VirtualProtect')) (1)
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[Ref].Assembly.GetType(('System.Management.Automation'}): ('.SetValue(')) (1)
 
 1 rules:
 * Potential Antimalware Scan Interface Bypass via PowerShell
@@ -714,6 +738,11 @@ Rules version: 8.17.3
 
 1 rules:
 * PowerShell Suspicious Script with Audio Capture Capabilities
+
+### Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('*copy*')) (1)
+
+1 rules:
+* Remote File Copy to a Hidden Share
 
 ### Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)
 
