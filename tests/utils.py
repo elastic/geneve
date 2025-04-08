@@ -376,7 +376,7 @@ class SignalsTestCase:
 
         return corpus, corpus_fields
 
-    def generate_docs_and_mappings(self, rules, asts):
+    def generate_docs_and_mappings(self, rules, asts, rules_chunk_size):
         corpus, corpus_fields = self.load_corpus()
 
         schema = load_test_schema()
@@ -384,26 +384,30 @@ class SignalsTestCase:
         se.stack_version = self.get_version()
 
         if verbose and verbose <= 2:
-            sys.stderr.write("\n  Parsing rules: ")
+            sys.stderr.write("\n  Analyzing rules: ")
             sys.stderr.flush()
 
         roots = []
         num_docs = 0
         for i, (rule, ast) in enumerate(zip(rules, asts)):
-            if verbose and verbose <= 2 and i % 100 == 0:
+            if verbose and verbose <= 2 and i % rules_chunk_size == 0:
                 sys.stderr.write(f"{len(rules) - i} ")
                 sys.stderr.flush()
 
             with self.subTest(rule["query"]):
                 try:
                     root = se.add_ast(ast)
-                    num_docs += sum(len(branch) for branch in root) * self.multiplying_factor
-                    roots.append((root, rule))
                 except Exception as e:
                     rule["enabled"] = False
                     if verbose > 2:
                         sys.stderr.write(f"{str(e)}\n")
                         sys.stderr.flush()
+                else:
+                    doc_count = sum(len(branch) for branch in root) * self.multiplying_factor
+                    rule[".test_private"]["branch_count"] = len(root) * self.multiplying_factor
+                    rule[".test_private"]["doc_count"] = doc_count
+                    roots.append((root, rule))
+                    num_docs += doc_count
 
         if verbose and verbose <= 2:
             sys.stderr.write("0 ")
@@ -413,37 +417,52 @@ class SignalsTestCase:
             for root, rule in roots:
                 events = se.emit(root, complete=True, count=self.multiplying_factor)
 
-                doc_count = 0
                 for event in itertools.chain(*events):
                     yield json.dumps({"create": {"_index": rule["index"][0]}})
                     yield json.dumps(event.doc)
                     if verbose > 2:
                         sys.stderr.write(json.dumps(event.doc, sort_keys=True) + "\n")
                         sys.stderr.flush()
-                    doc_count += 1
-
-                rule[".test_private"]["branch_count"] = len(root) * self.multiplying_factor
-                rule[".test_private"]["doc_count"] = doc_count
 
         return (bulk(), num_docs, se.mappings(extra_fields=corpus_fields))
 
-    def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=200, rules_chunk_size=50):
-        bulk, docs_to_go, mappings = self.generate_docs_and_mappings(rules, asts)
-
-        # for each doc there are two lines in the bulk: the operation and the doc itself
-        bulk_chunk_size = docs_chunk_size * 2
-
+    def create_rules(self, rules, asts, rules_chunk_size):
         if verbose:
             sys.stderr.write("\n  Deleting any unit-test indices: ")
             sys.stderr.flush()
         for i, rule in enumerate(rules):
-            if verbose and i % 100 == 0 and not i == len(rules) - 1:
+            if verbose and i % rules_chunk_size == 0 and not i == len(rules) - 1:
                 sys.stderr.write(f"{len(rules) - i} ")
                 sys.stderr.flush()
             self.es.indices.delete(index=rule["index"], ignore_unavailable=True)
         if verbose:
             sys.stderr.write("0")
             sys.stderr.flush()
+
+        if verbose:
+            rules_to_go = len(rules)
+            sys.stderr.write(f"\n  Creating rules: {rules_to_go} ")
+            sys.stderr.flush()
+        for chunk in batched(rules, rules_chunk_size):
+            self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
+            if verbose:
+                rules_to_go -= len(chunk)
+                sys.stderr.write(f"{rules_to_go} ")
+                sys.stderr.flush()
+
+        pending = {}
+        for rule_id, created_rule in self.kb.find_detection_engine_rules(len(rules)).items():
+            for rule in rules:
+                if rule["rule_id"] == created_rule["rule_id"]:
+                    rule["id"] = rule_id
+                    if rule["enabled"]:
+                        pending[rule_id] = created_rule
+                    break
+        return pending
+
+    def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=200, rules_chunk_size=50):
+        bulk, docs_to_go, mappings = self.generate_docs_and_mappings(rules, asts, rules_chunk_size)
+        pending = self.create_rules(rules, asts, rules_chunk_size)
 
         kwargs = {
             "name": self.index_template,
@@ -474,6 +493,10 @@ class SignalsTestCase:
                 sys.stderr.flush()
                 num_chunks = math.ceil(docs_to_go / docs_chunk_size)
                 prev_report_chunk = 0
+
+            # for each doc there are two lines in the bulk: the operation and the doc itself
+            bulk_chunk_size = docs_chunk_size * 2
+
             for i, chunk in enumerate(batched(bulk, bulk_chunk_size)):
                 kwargs = {
                     "operations": "\n".join(chunk),
@@ -493,25 +516,6 @@ class SignalsTestCase:
                         sys.stderr.write(f"{docs_to_go} ")
                         sys.stderr.flush()
 
-        if verbose:
-            rules_to_go = len(rules)
-            sys.stderr.write(f"\n  Loading rules: {rules_to_go} ")
-            sys.stderr.flush()
-        for chunk in batched(rules, rules_chunk_size):
-            self.kb.create_detection_engine_rules(filter_out_test_data(chunk))
-            if verbose:
-                rules_to_go -= len(chunk)
-                sys.stderr.write(f"{rules_to_go} ")
-                sys.stderr.flush()
-
-        pending = {}
-        for rule_id, created_rule in self.kb.find_detection_engine_rules(len(rules)).items():
-            for rule in rules:
-                if rule["rule_id"] == created_rule["rule_id"]:
-                    rule["id"] = rule_id
-                    if rule["enabled"]:
-                        pending[rule_id] = created_rule
-                    break
         return pending
 
     def wait_for_rules(self, pending, max_rules, timeout=300, sleep=5):
@@ -597,7 +601,7 @@ class SignalsTestCase:
             signals[bucket["key"]] = (bucket["doc_count"], branch_count)
         return signals
 
-    def wait_for_signals(self, rules, timeout=90, sleep=5):
+    def wait_for_signals(self, rules, timeout, sleep=5):
         if verbose:
             sys.stderr.write("\n  Waiting for signals generation: ")
             sys.stderr.flush()
@@ -684,9 +688,9 @@ class SignalsTestCase:
             msg = None if verbose < 3 else self.debug_rules(rules, rule_ids)
             self.assertEqual(len(rule_ids), value, msg=msg)
 
-    def check_signals(self, rules, pending):
+    def check_signals(self, rules, pending, timeout=90):
         successful, failed = self.wait_for_rules(pending, len(rules))
-        signals = self.wait_for_signals(rules)
+        signals = self.wait_for_signals(rules, timeout=timeout)
 
         unsuccessful = set(signals) - set(successful)
         no_signals = set(successful) - set(signals)
