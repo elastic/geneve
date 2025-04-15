@@ -120,9 +120,9 @@ emitter_rules:
           ack_too_few_signals: 11
       "9.0":
           ack_failed: 0
-          ack_unsuccessful_with_signals: 7
+          ack_unsuccessful_with_signals: 8
           ack_no_signals: 3
-          ack_too_few_signals: 10
+          ack_too_few_signals: 11
       "9.1":
           ack_failed: 0
           ack_unsuccessful_with_signals: 8
