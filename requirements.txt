@@ -1,6 +1,6 @@
 black
 build
-elasticsearch~=8.0
+elasticsearch~=9.0
 eql==0.9.19
 faker==35.2.2
 faker-datasets
