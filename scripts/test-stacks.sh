@@ -280,7 +280,9 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 
 		for NEW_MD in `find tests/reports -name \*.new.md`; do
 			cp $NEW_MD ${NEW_MD/.new.md/.#$ITERATION.md}
-			mv $NEW_MD ${NEW_MD/.new.md/.md}
+			if [ $ITERATIONS -eq 1 ]; then
+				mv $NEW_MD ${NEW_MD/.new.md/.md}
+			fi
 		done
 
 		ITERATION_FAILURE=1
