@@ -111,10 +111,10 @@ iteration_banner()
 }
 
 if [[ "$STACK_VERSIONS" =~ (^| )qaf-serverless( |$) ]]; then
-	QAF_DESCR=`qaf elastic-cloud projects describe --show-credentials --as-json`
+	QAF_PROJECT_DESCR=`qaf elastic-cloud projects describe --show-credentials --as-json`
 fi
 if [[ "$STACK_VERSIONS" =~ (^| )qaf-ess( |$) ]]; then
-	QAF_DESCR=`qaf elastic-cloud deployments describe --show-credentials --as-json`
+	QAF_DEPLOYMENT_DESCR=`qaf elastic-cloud deployments describe --show-credentials --as-json`
 fi
 
 export TEST_ELASTICSEARCH_URL
@@ -199,9 +199,9 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 	ITERATION_FAILURE=0
 	for MAJOR_MINOR in ${STACK_VERSIONS:-$DEFAULT_STACK_VERSIONS}; do
 		if [ "$MAJOR_MINOR" == "qaf-serverless" ]; then
-			TEST_API_KEY=`echo $QAF_DESCR | jq -r '.credentials.api_key'`
-			TEST_ELASTICSEARCH_URL=`echo $QAF_DESCR | jq -r '.elasticsearch.url'`
-			TEST_KIBANA_URL=`echo $QAF_DESCR | jq -r '.kibana.url'`
+			TEST_API_KEY=`echo $QAF_PROJECT_DESCR | jq -r '.credentials.api_key'`
+			TEST_ELASTICSEARCH_URL=`echo $QAF_PROJECT_DESCR | jq -r '.elasticsearch.url'`
+			TEST_KIBANA_URL=`echo $QAF_PROJECT_DESCR | jq -r '.kibana.url'`
 
 			TEST_STACK_VERSION=serverless
 			TEST_SCHEMA_URI=
@@ -212,9 +212,9 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 		fi
 
 		if [ "$MAJOR_MINOR" == "qaf-ess" ]; then
-			TEST_API_KEY=`echo $QAF_DESCR | jq -r '.credentials.api_key'`
-			TEST_ELASTICSEARCH_URL=`echo $QAF_DESCR | jq -r '.elasticsearch.url'`
-			TEST_KIBANA_URL=`echo $QAF_DESCR | jq -r '.kibana.url'`
+			TEST_API_KEY=`echo $QAF_DEPLOYMENT_DESCR | jq -r '.credentials.api_key'`
+			TEST_ELASTICSEARCH_URL=`echo $QAF_DEPLOYMENT_DESCR | jq -r '.elasticsearch.url'`
+			TEST_KIBANA_URL=`echo $QAF_DEPLOYMENT_DESCR | jq -r '.kibana.url'`
 
 			TEST_STACK_VERSION=
 			TEST_SCHEMA_URI=
@@ -280,7 +280,9 @@ while [ $ITERATIONS -lt 0 ] || [ $ITERATION -lt $ITERATIONS ]; do
 
 		for NEW_MD in `find tests/reports -name \*.new.md`; do
 			cp $NEW_MD ${NEW_MD/.new.md/.#$ITERATION.md}
-			mv $NEW_MD ${NEW_MD/.new.md/.md}
+			if [ $ITERATIONS -eq 1 ]; then
+				mv $NEW_MD ${NEW_MD/.new.md/.md}
+			fi
 		done
 
 		ITERATION_FAILURE=1
