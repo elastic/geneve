@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.17.7
+Rules version: 8.18.1
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (102)](#unsupported-rule-type-new_terms-102)
-      1. [Unsupported rule type: machine_learning (74)](#unsupported-rule-type-machine_learning-74)
+      1. [Unsupported rule type: new_terms (109)](#unsupported-rule-type-new_terms-109)
+      1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: esql (48)](#unsupported-rule-type-esql-48)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
@@ -105,11 +105,13 @@ Rules version: 8.17.7
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (102)
+### Unsupported rule type: new_terms (109)
 
-102 rules:
+109 rules:
 
 * AWS CLI Command with Custom Endpoint URL
+* AWS DynamoDB Scan by Unusual User
+* AWS DynamoDB Table Exported to S3
 * AWS EC2 Admin Credential Fetch via Assumed Role
 * AWS EC2 Route Table Modified or Deleted
 * AWS EC2 User Data Retrieval for EC2 Instance
@@ -164,9 +166,12 @@ Rules version: 8.17.7
 * Kernel Object File Creation
 * Kill Command Execution
 * Linux Clipboard Activity Detected
+* Microsoft 365 Illicit Consent Grant via Registered Application
 * Microsoft 365 Portal Login from Rare Location
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
+* Microsoft Entra ID Conditional Access Policy (CAP) Modified
+* Microsoft Entra ID Illicit Consent Grant via Registered Application
 * Modification of Dynamic Linker Preload Shared Object
 * Modification of Standard Authentication Module or Configuration
 * Network Activity Detected via Kworker
@@ -207,14 +212,16 @@ Rules version: 8.17.7
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 * Unusual Interactive Shell Launched from System User
+* Unusual Network Connection to Suspicious Top Level Domain
+* Unusual Network Connection to Suspicious Web Service
 * Unusual Pkexec Execution
 * Unusual Preload Environment Variable Process Execution
 * Unusual Remote File Creation
 * Unusual SSHD Child Process
 
-### Unsupported rule type: machine_learning (74)
+### Unsupported rule type: machine_learning (95)
 
-74 rules:
+95 rules:
 
 * Anomalous Linux Compiler Activity
 * Anomalous Process For a Linux Population
@@ -222,10 +229,13 @@ Rules version: 8.17.7
 * Anomalous Windows Process Creation
 * DNS Tunneling
 * Decline in host-based traffic
+* High Command Line Entropy Detected for Privileged Commands
 * High Mean of Process Arguments in an RDP Session
 * High Mean of RDP Session Duration
 * High Variance in RDP Session Duration
+* Host Detected with Suspicious Windows Process(es)
 * Network Traffic to Rare Destination Country
+* Parent Process Detected with Suspicious Windows Process(es)
 * Potential DGA Activity
 * Potential Data Exfiltration Activity to an Unusual Destination Port
 * Potential Data Exfiltration Activity to an Unusual IP Address
@@ -238,23 +248,33 @@ Rules version: 8.17.7
 * Spike in Bytes Sent to an External Device via Airdrop
 * Spike in Failed Logon Events
 * Spike in Firewall Denies
+* Spike in Group Application Assignment Change Events
+* Spike in Group Lifecycle Change Events
+* Spike in Group Management Events
+* Spike in Group Membership Events
+* Spike in Group Privilege Change Events
 * Spike in Logon Events
 * Spike in Network Traffic
 * Spike in Network Traffic To a Country
 * Spike in Number of Connections Made from a Source IP
 * Spike in Number of Connections Made to a Destination IP
 * Spike in Number of Processes in an RDP Session
+* Spike in Privileged Command Execution by a User
 * Spike in Remote File Transfers
+* Spike in Special Logon Events
+* Spike in Special Privilege Use Events
 * Spike in Successful Logon Events from a Source IP
+* Spike in User Account Management Events
+* Spike in User Lifecycle Management Change Events
 * Spike in host-based traffic
 * Suspicious Powershell Script
-* Suspicious Windows Process Cluster Spawned by a Host
-* Suspicious Windows Process Cluster Spawned by a Parent Process
-* Suspicious Windows Process Cluster Spawned by a User
 * Unusual AWS Command for a User
 * Unusual City For an AWS Command
 * Unusual Country For an AWS Command
 * Unusual DNS Activity
+* Unusual Group Name Accessed by a User
+* Unusual Host Name for Okta Privileged Operations Detected
+* Unusual Host Name for Windows Privileged Operations Detected
 * Unusual Hour for a User to Logon
 * Unusual Linux Network Activity
 * Unusual Linux Network Configuration Discovery
@@ -268,16 +288,23 @@ Rules version: 8.17.7
 * Unusual Linux Username
 * Unusual Login Activity
 * Unusual Network Destination Domain Name
+* Unusual Privilege Type assigned to a User
+* Unusual Process Detected for Privileged Commands by a User
 * Unusual Process For a Linux Host
 * Unusual Process For a Windows Host
 * Unusual Process Spawned by a Host
 * Unusual Process Spawned by a Parent Process
 * Unusual Process Spawned by a User
 * Unusual Process Writing Data to an External Device
+* Unusual Region Name for Okta Privileged Operations Detected
+* Unusual Region Name for Windows Privileged Operations Detected
 * Unusual Remote File Directory
 * Unusual Remote File Extension
 * Unusual Remote File Size
+* Unusual Source IP for Okta Privileged Operations Detected
+* Unusual Source IP for Windows Privileged Operations Detected
 * Unusual Source IP for a User to Logon from
+* Unusual Spike in Concurrent Active Sessions by a User
 * Unusual Sudo Activity
 * Unusual Time or Day for an RDP Session
 * Unusual Web Request
@@ -290,6 +317,7 @@ Rules version: 8.17.7
 * Unusual Windows User Calling the Metadata Service
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
+* User Detected with Suspicious Windows Process(es)
 
 ### Unsupported rule type: esql (48)
 

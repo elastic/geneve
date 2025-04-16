@@ -5,11 +5,11 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.17.7
+Rules version: 8.17.8
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (102)](#unsupported-rule-type-new_terms-102)
+      1. [Unsupported rule type: new_terms (109)](#unsupported-rule-type-new_terms-109)
       1. [Unsupported rule type: machine_learning (74)](#unsupported-rule-type-machine_learning-74)
       1. [Unsupported rule type: esql (48)](#unsupported-rule-type-esql-48)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
@@ -105,11 +105,13 @@ Rules version: 8.17.7
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (102)
+### Unsupported rule type: new_terms (109)
 
-102 rules:
+109 rules:
 
 * AWS CLI Command with Custom Endpoint URL
+* AWS DynamoDB Scan by Unusual User
+* AWS DynamoDB Table Exported to S3
 * AWS EC2 Admin Credential Fetch via Assumed Role
 * AWS EC2 Route Table Modified or Deleted
 * AWS EC2 User Data Retrieval for EC2 Instance
@@ -164,9 +166,12 @@ Rules version: 8.17.7
 * Kernel Object File Creation
 * Kill Command Execution
 * Linux Clipboard Activity Detected
+* Microsoft 365 Illicit Consent Grant via Registered Application
 * Microsoft 365 Portal Login from Rare Location
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
+* Microsoft Entra ID Conditional Access Policy (CAP) Modified
+* Microsoft Entra ID Illicit Consent Grant via Registered Application
 * Modification of Dynamic Linker Preload Shared Object
 * Modification of Standard Authentication Module or Configuration
 * Network Activity Detected via Kworker
@@ -207,6 +212,8 @@ Rules version: 8.17.7
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 * Unusual Interactive Shell Launched from System User
+* Unusual Network Connection to Suspicious Top Level Domain
+* Unusual Network Connection to Suspicious Web Service
 * Unusual Pkexec Execution
 * Unusual Preload Environment Variable Process Execution
 * Unusual Remote File Creation
@@ -225,7 +232,9 @@ Rules version: 8.17.7
 * High Mean of Process Arguments in an RDP Session
 * High Mean of RDP Session Duration
 * High Variance in RDP Session Duration
+* Host Detected with Suspicious Windows Process(es)
 * Network Traffic to Rare Destination Country
+* Parent Process Detected with Suspicious Windows Process(es)
 * Potential DGA Activity
 * Potential Data Exfiltration Activity to an Unusual Destination Port
 * Potential Data Exfiltration Activity to an Unusual IP Address
@@ -248,9 +257,6 @@ Rules version: 8.17.7
 * Spike in Successful Logon Events from a Source IP
 * Spike in host-based traffic
 * Suspicious Powershell Script
-* Suspicious Windows Process Cluster Spawned by a Host
-* Suspicious Windows Process Cluster Spawned by a Parent Process
-* Suspicious Windows Process Cluster Spawned by a User
 * Unusual AWS Command for a User
 * Unusual City For an AWS Command
 * Unusual Country For an AWS Command
@@ -290,6 +296,7 @@ Rules version: 8.17.7
 * Unusual Windows User Calling the Metadata Service
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
+* User Detected with Suspicious Windows Process(es)
 
 ### Unsupported rule type: esql (48)
 
