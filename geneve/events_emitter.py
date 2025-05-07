@@ -115,8 +115,8 @@ def events_from_branch(branch, environment, timestamp, meta, corpus):
     events = []
     for doc in branch.solve(environment):
         if timestamp:
-            emit_field(doc, "@timestamp", timestamp[0].isoformat(timespec="milliseconds"))
-            timestamp[0] += timedelta(milliseconds=1)
+            emit_field(doc, "@timestamp", timestamp[0].isoformat(timespec="microseconds"))
+            timestamp[0] += timedelta(microseconds=100)
         if corpus:
             doc = deep_merge(next(corpus), doc, overwrite=True)
         remove_none_fields(doc)
