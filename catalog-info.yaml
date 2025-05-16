@@ -19,8 +19,38 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
+  name: geneve-main
+  description: "Geneve - Catalog and Renovate checks"
+  links:
+    - title: Pipeline
+      url: https://buildkite.com/elastic/geneve
+spec:
+  type: buildkite-pipeline
+  owner: group:security-engineering-productivity
+  system: buildkite
+  implementation:
+    apiVersion: buildkite.elastic.dev/v1
+    kind: Pipeline
+    metadata:
+      name: geneve
+      description: Test Catalog and Renovate configs
+    spec:
+      repository: elastic/geneve
+      pipeline_file: ".buildkite/pipelines/main.yml"
+      teams:
+        security-engineering-productivity:
+          access_level: MANAGE_BUILD_AND_READ
+        everyone:
+          access_level: READ_ONLY
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
   name: geneve-serverless-security-quality-gate
   description: "Geneve - Serverless Security quality gate testing"
+  links:
+    - title: Pipeline
+      url: https://buildkite.com/elastic/geneve-serverless-security-quality-gate
 spec:
   type: buildkite-pipeline
   owner: group:security-engineering-productivity
@@ -32,7 +62,7 @@ spec:
       name: geneve-serverless-security-quality-gate
     spec:
       repository: elastic/geneve
-      pipeline_file: .buildkite/serverless-security-quality-gate/pipeline.yml
+      pipeline_file: .buildkite/pipelines/serverless-security-quality-gate.yml
       skip_intermediate_builds: false
       provider_settings:
         build_branches: true
@@ -51,6 +81,9 @@ kind: Resource
 metadata:
   name: geneve-ess-security-quality
   description: "Geneve - Security quality testing (ESS)"
+  links:
+    - title: Pipeline
+      url: https://buildkite.com/elastic/geneve-ess-security-quality
 spec:
   type: buildkite-pipeline
   owner: group:security-engineering-productivity
@@ -62,7 +95,7 @@ spec:
       name: geneve-ess-security-quality
     spec:
       repository: elastic/geneve
-      pipeline_file: .buildkite/ess-security-quality/pipeline.yml
+      pipeline_file: .buildkite/pipelines/ess-security-quality.yml
       skip_intermediate_builds: false
       provider_settings:
         build_branches: true
@@ -81,6 +114,9 @@ kind: Resource
 metadata:
   name: geneve-docker-security-quality
   description: "Geneve - Security quality testing (Docker)"
+  links:
+    - title: Pipeline
+      url: https://buildkite.com/elastic/geneve-docker-security-quality
 spec:
   type: buildkite-pipeline
   owner: group:security-engineering-productivity
@@ -92,7 +128,7 @@ spec:
       name: geneve-docker-security-quality
     spec:
       repository: elastic/geneve
-      pipeline_file: .buildkite/docker-security-quality/pipeline.yml
+      pipeline_file: .buildkite/pipelines/docker-security-quality.yml
       skip_intermediate_builds: false
       provider_settings:
         build_branches: true
