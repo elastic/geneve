@@ -24,7 +24,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": "tests/config.yaml",
+      "fileMatch": [
+        "tests/config.yaml"
+      ],
       "matchStrings": [
         "\\s*# renovate: datasource=epr (?<packageName>package=\\S+ kibana_version=\\S*)\\s*\\n(?<kibanaVersion>.+): \"(?<currentValue>\\S+)\""
       ],
