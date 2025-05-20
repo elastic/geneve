@@ -4,6 +4,7 @@
     "local>elastic/renovate-config"
   ],
   "ignorePaths": [
+    "tests/reports/**"
   ],
   "packageRules": [
     {
