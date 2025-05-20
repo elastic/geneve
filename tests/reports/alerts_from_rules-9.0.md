@@ -6583,7 +6583,7 @@ event.dataset : "kubernetes.audit_logs"
   and kubernetes.audit.objectRef.resource:"pods"
   and kubernetes.audit.verb:("create" or "update" or "patch")
   and kubernetes.audit.requestObject.spec.hostIPC:true
-  and not kubernetes.audit.requestObject.spec.containers.image: ("docker.elastic.co/beats/elastic-agent:8.4.0")
+  and not kubernetes.audit.requestObject.spec.containers.image: ("docker.elastic.co/beats/elastic-agent:8.18.1")
 ```
 
 
@@ -6600,7 +6600,7 @@ event.dataset : "kubernetes.audit_logs"
   and kubernetes.audit.objectRef.resource:"pods"
   and kubernetes.audit.verb:("create" or "update" or "patch")
   and kubernetes.audit.requestObject.spec.hostNetwork:true
-  and not kubernetes.audit.requestObject.spec.containers.image: ("docker.elastic.co/beats/elastic-agent:8.4.0")
+  and not kubernetes.audit.requestObject.spec.containers.image: ("docker.elastic.co/beats/elastic-agent:8.18.1")
 ```
 
 
@@ -6617,7 +6617,7 @@ event.dataset : "kubernetes.audit_logs"
   and kubernetes.audit.objectRef.resource:"pods"
   and kubernetes.audit.verb:("create" or "update" or "patch")
   and kubernetes.audit.requestObject.spec.hostPID:true
-  and not kubernetes.audit.requestObject.spec.containers.image: ("docker.elastic.co/beats/elastic-agent:8.4.0")
+  and not kubernetes.audit.requestObject.spec.containers.image: ("docker.elastic.co/beats/elastic-agent:8.18.1")
 ```
 
 
@@ -6650,7 +6650,7 @@ event.dataset : "kubernetes.audit_logs"
   "/etc/kubernetes/manifests" or
   "/etc/kubernetes/pki" or
   "/home/admin")
-  and not kubernetes.audit.requestObject.spec.containers.image: ("docker.elastic.co/beats/elastic-agent:8.4.0")
+  and not kubernetes.audit.requestObject.spec.containers.image: ("docker.elastic.co/beats/elastic-agent:8.18.1")
 ```
 
 
@@ -6667,7 +6667,7 @@ event.dataset : "kubernetes.audit_logs"
   and kubernetes.audit.objectRef.resource:pods
   and kubernetes.audit.verb:create
   and kubernetes.audit.requestObject.spec.containers.securityContext.privileged:true
-  and not kubernetes.audit.requestObject.spec.containers.image: ("docker.elastic.co/beats/elastic-agent:8.4.0")
+  and not kubernetes.audit.requestObject.spec.containers.image: ("docker.elastic.co/beats/elastic-agent:8.18.1")
 ```
 
 
