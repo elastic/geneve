@@ -3,6 +3,8 @@
   "extends": [
     "local>elastic/renovate-config"
   ],
+  "ignorePaths": [
+  ],
   "packageRules": [
     {
       "matchPackageNames": [
