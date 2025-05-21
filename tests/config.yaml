@@ -1,135 +1,135 @@
 emitter_rules:
   rules_versions:
-      # renovate: datasource=epr package=security_detection_engine-8.2
-      "8.2": "8.2.1"
-      # renovate: datasource=epr package=security_detection_engine-8.3
-      "8.3": "8.3.4"
-      # renovate: datasource=epr package=security_detection_engine-8.4
-      "8.4": "8.4.5"
-      # renovate: datasource=epr package=security_detection_engine-8.5
-      "8.5": "8.5.8"
-      # renovate: datasource=epr package=security_detection_engine-8.6
-      "8.6": "8.6.10"
-      # renovate: datasource=epr package=security_detection_engine-8.7
-      "8.7": "8.7.13"
-      # renovate: datasource=epr package=security_detection_engine-8.8
-      "8.8": "8.8.15"
-      # renovate: datasource=epr package=security_detection_engine-8.9
-      "8.9": "8.9.15"
-      # renovate: datasource=epr package=security_detection_engine-8.10
-      "8.10": "8.10.18"
-      # renovate: datasource=epr package=security_detection_engine-8.11
-      "8.11": "8.11.21"
-      # renovate: datasource=epr package=security_detection_engine-8.12
-      "8.12": "8.12.26"
-      # renovate: datasource=epr package=security_detection_engine-8.13
-      "8.13": "8.13.23"
-      # renovate: datasource=epr package=security_detection_engine-8.14
-      "8.14": "8.14.24"
-      # renovate: datasource=epr package=security_detection_engine-8.15
-      "8.15": "8.15.18"
-      # renovate: datasource=epr package=security_detection_engine-8.16
-      "8.16": "8.16.10"
-      # renovate: datasource=epr package=security_detection_engine-8.17
-      "8.17": "8.17.8"
-      # renovate: datasource=epr package=security_detection_engine-8.18
-      "8.18": "8.18.1"
-      # renovate: datasource=epr package=security_detection_engine-8.19
-      "8.19": "8.18.1"
-      # renovate: datasource=epr package=security_detection_engine-9.0
-      "9.0": "9.0.1"
-      # renovate: datasource=epr package=security_detection_engine-9.1
-      "9.1": "9.0.1"
-      # renovate: datasource=epr package=security_detection_engine
-      "serverless": "9.0.1"
+    # renovate: datasource=epr package=security_detection_engine-8.2
+    "8.2": "8.2.1"
+    # renovate: datasource=epr package=security_detection_engine-8.3
+    "8.3": "8.3.4"
+    # renovate: datasource=epr package=security_detection_engine-8.4
+    "8.4": "8.4.5"
+    # renovate: datasource=epr package=security_detection_engine-8.5
+    "8.5": "8.5.8"
+    # renovate: datasource=epr package=security_detection_engine-8.6
+    "8.6": "8.6.10"
+    # renovate: datasource=epr package=security_detection_engine-8.7
+    "8.7": "8.7.13"
+    # renovate: datasource=epr package=security_detection_engine-8.8
+    "8.8": "8.8.15"
+    # renovate: datasource=epr package=security_detection_engine-8.9
+    "8.9": "8.9.15"
+    # renovate: datasource=epr package=security_detection_engine-8.10
+    "8.10": "8.10.18"
+    # renovate: datasource=epr package=security_detection_engine-8.11
+    "8.11": "8.11.21"
+    # renovate: datasource=epr package=security_detection_engine-8.12
+    "8.12": "8.12.26"
+    # renovate: datasource=epr package=security_detection_engine-8.13
+    "8.13": "8.13.23"
+    # renovate: datasource=epr package=security_detection_engine-8.14
+    "8.14": "8.14.24"
+    # renovate: datasource=epr package=security_detection_engine-8.15
+    "8.15": "8.15.18"
+    # renovate: datasource=epr package=security_detection_engine-8.16
+    "8.16": "8.16.10"
+    # renovate: datasource=epr package=security_detection_engine-8.17
+    "8.17": "8.17.8"
+    # renovate: datasource=epr package=security_detection_engine-8.18
+    "8.18": "8.18.1"
+    # renovate: datasource=epr package=security_detection_engine-8.19
+    "8.19": "8.18.1"
+    # renovate: datasource=epr package=security_detection_engine-9.0
+    "9.0": "9.0.1"
+    # renovate: datasource=epr package=security_detection_engine-9.1
+    "9.1": "9.0.1"
+    # renovate: datasource=epr package=security_detection_engine
+    "serverless": "9.0.1"
 
   stack_signals:
-      "8.2":
-          ack_no_signals: 3
-          ack_too_few_signals: 1
-      "8.3":
-          ack_no_signals: 4
-          ack_too_few_signals: 3
-      "8.4":
-          ack_no_signals: 3
-          ack_too_few_signals: 3
-      "8.5":
-          ack_no_signals: 4
-          ack_too_few_signals: 3
-      "8.6":
-          ack_no_signals: 4
-          ack_too_few_signals: 9
-      "8.7":
-          ack_no_signals: 4
-          ack_too_few_signals: 11
-      "8.8":
-          ack_unsuccessful_with_signals: 9
-          ack_no_signals: 4
-          ack_too_few_signals: 10
-      "8.9":
-          ack_unsuccessful_with_signals: 7
-          ack_no_signals: 2
-          ack_too_few_signals: 8
-      "8.10":
-          ack_unsuccessful_with_signals: 6
-          ack_no_signals: 3
-          ack_too_few_signals: 7
-      "8.11":
-          ack_unsuccessful_with_signals: 7
-          ack_no_signals: 3
-          ack_too_few_signals: 10
-      "8.12":
-          ack_failed: 0
-          ack_unsuccessful_with_signals: 7
-          ack_no_signals: 3
-          ack_too_few_signals: 10
-      "8.13":
-          ack_failed: 0
-          ack_unsuccessful_with_signals: 7
-          ack_no_signals: 3
-          ack_too_few_signals: 10
-      "8.14":
-          ack_failed: 0
-          ack_unsuccessful_with_signals: 7
-          ack_no_signals: 3
-          ack_too_few_signals: 10
-      "8.15":
-          ack_failed: 0
-          ack_unsuccessful_with_signals: 8
-          ack_no_signals: 3
-          ack_too_few_signals: 11
-      "8.16":
-          ack_failed: 0
-          ack_unsuccessful_with_signals: 8
-          ack_no_signals: 3
-          ack_too_few_signals: 11
-      "8.17":
-          ack_failed: 0
-          ack_unsuccessful_with_signals: 8
-          ack_no_signals: 3
-          ack_too_few_signals: 11
-      "8.18":
-          ack_failed: 0
-          ack_unsuccessful_with_signals: 8
-          ack_no_signals: 3
-          ack_too_few_signals: 11
-      "8.19":
-          ack_failed: 0
-          ack_unsuccessful_with_signals: 8
-          ack_no_signals: 3
-          ack_too_few_signals: 11
-      "9.0":
-          ack_failed: 0
-          ack_unsuccessful_with_signals: 8
-          ack_no_signals: 3
-          ack_too_few_signals: 11
-      "9.1":
-          ack_failed: 0
-          ack_unsuccessful_with_signals: 8
-          ack_no_signals: 3
-          ack_too_few_signals: 11
-      "serverless":
-          ack_failed: 1
-          ack_unsuccessful_with_signals: 7
-          ack_no_signals: 3
-          ack_too_few_signals: 10
+    "8.2":
+      ack_no_signals: 3
+      ack_too_few_signals: 1
+    "8.3":
+      ack_no_signals: 4
+      ack_too_few_signals: 3
+    "8.4":
+      ack_no_signals: 3
+      ack_too_few_signals: 3
+    "8.5":
+      ack_no_signals: 4
+      ack_too_few_signals: 3
+    "8.6":
+      ack_no_signals: 4
+      ack_too_few_signals: 9
+    "8.7":
+      ack_no_signals: 4
+      ack_too_few_signals: 11
+    "8.8":
+      ack_unsuccessful_with_signals: 9
+      ack_no_signals: 4
+      ack_too_few_signals: 10
+    "8.9":
+      ack_unsuccessful_with_signals: 7
+      ack_no_signals: 2
+      ack_too_few_signals: 8
+    "8.10":
+      ack_unsuccessful_with_signals: 6
+      ack_no_signals: 3
+      ack_too_few_signals: 7
+    "8.11":
+      ack_unsuccessful_with_signals: 7
+      ack_no_signals: 3
+      ack_too_few_signals: 10
+    "8.12":
+      ack_failed: 0
+      ack_unsuccessful_with_signals: 7
+      ack_no_signals: 3
+      ack_too_few_signals: 10
+    "8.13":
+      ack_failed: 0
+      ack_unsuccessful_with_signals: 7
+      ack_no_signals: 3
+      ack_too_few_signals: 10
+    "8.14":
+      ack_failed: 0
+      ack_unsuccessful_with_signals: 7
+      ack_no_signals: 3
+      ack_too_few_signals: 10
+    "8.15":
+      ack_failed: 0
+      ack_unsuccessful_with_signals: 8
+      ack_no_signals: 3
+      ack_too_few_signals: 11
+    "8.16":
+      ack_failed: 0
+      ack_unsuccessful_with_signals: 8
+      ack_no_signals: 3
+      ack_too_few_signals: 11
+    "8.17":
+      ack_failed: 0
+      ack_unsuccessful_with_signals: 8
+      ack_no_signals: 3
+      ack_too_few_signals: 11
+    "8.18":
+      ack_failed: 0
+      ack_unsuccessful_with_signals: 8
+      ack_no_signals: 3
+      ack_too_few_signals: 11
+    "8.19":
+      ack_failed: 0
+      ack_unsuccessful_with_signals: 8
+      ack_no_signals: 3
+      ack_too_few_signals: 11
+    "9.0":
+      ack_failed: 0
+      ack_unsuccessful_with_signals: 8
+      ack_no_signals: 3
+      ack_too_few_signals: 11
+    "9.1":
+      ack_failed: 0
+      ack_unsuccessful_with_signals: 8
+      ack_no_signals: 3
+      ack_too_few_signals: 11
+    "serverless":
+      ack_failed: 1
+      ack_unsuccessful_with_signals: 7
+      ack_no_signals: 3
+      ack_too_few_signals: 10
