@@ -31,9 +31,9 @@
         "tests/config.yaml"
       ],
       "matchStrings": [
-        "\\s*# renovate: datasource=epr package=(?<packageName>security_detection_engine-\\S+)\\s*\\n(?<kibanaVersion>.+): \"(?<currentValue>\\S+)\""
+        "# renovate: datasource=epr package=(?<packageName>security_detection_engine-\\S+)\\s*\\n(?<kibanaVersion>.+): \"(?<currentValue>\\S+)\""
       ],
-      "autoReplaceStringTemplate": "{{{kibanaVersion}}}: \"{{{newValue}}}\"",
+      "autoReplaceStringTemplate": "# renovate: datasource=epr package=security_detection_engine-{{{kibanaVersion}}}:\n{{{kibanaVersion}}}: \"{{{newValue}}}\"",
       "datasourceTemplate": "custom.security_detection_engine"
     }
   ],
