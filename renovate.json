@@ -31,15 +31,15 @@
         "tests/config.yaml"
       ],
       "matchStrings": [
-        "\\s*# renovate: datasource=epr (?<packageName>package=\\S+ kibana_version=\\S*)\\s*\\n(?<kibanaVersion>.+): \"(?<currentValue>\\S+)\""
+        "\\s*# renovate: datasource=epr package=(?<packageName>security_detection_engine-\\S+)\\s*\\n(?<kibanaVersion>.+): \"(?<currentValue>\\S+)\""
       ],
       "autoReplaceStringTemplate": "{{{kibanaVersion}}}: \"{{{newValue}}}\"",
-      "datasourceTemplate": "custom.epr"
+      "datasourceTemplate": "custom.security_detection_engine"
     }
   ],
   "customDatasources": {
-    "epr": {
-      "defaultRegistryUrlTemplate": "https://epr.elastic.co/search?{{{replace '\\s+kibana_version=' '&kibana.version=' packageName}}}",
+    "security_detection_engine": {
+      "defaultRegistryUrlTemplate": "https://epr.elastic.co/search?package={{{replace '-' '&kibana.version=' packageName}}}",
       "transformTemplates": [
         "{\"releases\":[{\"version\": $.version}]}"
       ]
