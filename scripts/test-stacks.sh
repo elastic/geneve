@@ -37,9 +37,9 @@ Options:
   -v, --verbose     more verbose output
 
 Example:
-  $(basename $0) --iterations 3 8.7 8.8
+  $(basename $0) --iterations 3 8.19 9.0 qaf-serverless
 
-  will test 3 times the stacks 8.7 and 8.8 offline
+  will test 3 times the stacks 8.19 and 9.0 offline
 EOF
 }
 
