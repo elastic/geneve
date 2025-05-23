@@ -5,20 +5,20 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.18.1
+Rules version: 8.18.5
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (109)](#unsupported-rule-type-new_terms-109)
+      1. [Unsupported rule type: new_terms (122)](#unsupported-rule-type-new_terms-122)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported rule type: esql (48)](#unsupported-rule-type-esql-48)
+      1. [Unsupported rule type: esql (71)](#unsupported-rule-type-esql-71)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
+      1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
+      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
       1. [Unsupported function: match (13)](#unsupported-function-match-13)
-      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (6)](#unsupported-argument-types-class-eqlastfield-6)
@@ -68,6 +68,7 @@ Rules version: 8.18.1
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*@/*.zip*'}): ('*http*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringszip-http-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('*copy*')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-copy-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsdrivegooglecom-exportdownload-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*fromhex*'}): ('*decode*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsfromhex-decode-1)
@@ -82,6 +83,7 @@ Rules version: 8.18.1
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh')) (1)](#unsolvable-constraints-processname-excluded-by-stringssh-sh-1)
+      1. [Unsolvable constraints: process.name (not in Strings({'pluginkit'}): ('python*')) (1)](#unsolvable-constraints-processname-not-in-stringspluginkit-python-1)
       1. [Unsolvable constraints: process.name (not in Strings({'rundll32.exe'}): ('mshta.exe')) (1)](#unsolvable-constraints-processname-not-in-stringsrundll32exe-mshtaexe-1)
       1. [Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)](#unsolvable-constraints-processparentargs-excluded-by-stringswdisystemhost-wdisystemhost-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'dllhost.exe'}): ('dllhost.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsdllhostexe-dllhostexe-1)
@@ -105,9 +107,9 @@ Rules version: 8.18.1
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (109)
+### Unsupported rule type: new_terms (122)
 
-109 rules:
+122 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -115,6 +117,7 @@ Rules version: 8.18.1
 * AWS EC2 Admin Credential Fetch via Assumed Role
 * AWS EC2 Route Table Modified or Deleted
 * AWS EC2 User Data Retrieval for EC2 Instance
+* AWS IAM API Calls via Temporary Session Tokens
 * AWS IAM Assume Role Policy Update
 * AWS IAM Create User via Assumed Role on EC2 Instance
 * AWS IAM Customer-Managed Policy Attached to Role by Rare User
@@ -133,7 +136,6 @@ Rules version: 8.18.1
 * Abnormal Process ID or Lock File Created
 * Authentication via Unusual PAM Grantor
 * Azure Entra ID Rare App ID for Principal Authentication
-* Azure Entra ID Rare Authentication Requirement for Principal User
 * CAP_SYS_ADMIN Assigned to Binary
 * DPKG Package Installed by Unusual Parent Process
 * Discovery of Internet Capabilities via Built-in Tools
@@ -172,6 +174,10 @@ Rules version: 8.18.1
 * Microsoft Build Engine Started by a Script Process
 * Microsoft Entra ID Conditional Access Policy (CAP) Modified
 * Microsoft Entra ID Illicit Consent Grant via Registered Application
+* Microsoft Entra ID Rare Authentication Requirement for Principal User
+* Microsoft Entra ID Service Principal Credentials Added by Rare User
+* Microsoft Entra ID SharePoint Access for User Principal via Auth Broker
+* Microsoft Graph First Occurrence of Client Request
 * Modification of Dynamic Linker Preload Shared Object
 * Modification of Standard Authentication Module or Configuration
 * Network Activity Detected via Kworker
@@ -194,8 +200,11 @@ Rules version: 8.18.1
 * Successful SSH Authentication from Unusual SSH Public Key
 * Successful SSH Authentication from Unusual User
 * Sudoers File Modification
+* Suspicious Email Access by First-Party Application via Microsoft Graph
+* Suspicious Mailbox Permission Delegation in Exchange Online
 * Suspicious Microsoft 365 Mail Access by ClientAppId
 * Suspicious Modprobe File Event
+* Suspicious Named Pipe Creation
 * Suspicious Network Activity to the Internet by Previously Unknown Executable
 * Suspicious Path Invocation from Command Line
 * Suspicious PowerShell Engine ImageLoad
@@ -203,6 +212,7 @@ Rules version: 8.18.1
 * Suspicious Sysctl File Event
 * Suspicious System Commands Executed by Previously Unknown Executable
 * Svchost spawning Cmd
+* System Binary Symlink to Suspicious Location
 * Systemd Service Started by Unusual Parent Process
 * UID Elevation from Previously Unknown Executable
 * Unauthorized Scope for Public App OAuth2 Token Grant with Client Credentials
@@ -211,13 +221,18 @@ Rules version: 8.18.1
 * Unusual Discovery Activity by User
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
+* Unusual Execution from Kernel Thread (kthreadd) Parent
+* Unusual Exim4 Child Process
+* Unusual Interactive Process Launched in a Container
 * Unusual Interactive Shell Launched from System User
+* Unusual LD_PRELOAD/LD_LIBRARY_PATH Command Line Arguments
 * Unusual Network Connection to Suspicious Top Level Domain
 * Unusual Network Connection to Suspicious Web Service
 * Unusual Pkexec Execution
 * Unusual Preload Environment Variable Process Execution
 * Unusual Remote File Creation
 * Unusual SSHD Child Process
+* Unusual Scheduled Task Update
 
 ### Unsupported rule type: machine_learning (95)
 
@@ -319,9 +334,9 @@ Rules version: 8.18.1
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: esql (48)
+### Unsupported rule type: esql (71)
 
-48 rules:
+71 rules:
 
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
 * AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
@@ -338,19 +353,25 @@ Rules version: 8.18.1
 * AWS IAM User Created Access Keys For Another User
 * AWS S3 Bucket Enumeration or Brute Force
 * AWS S3 Object Encryption Using External KMS Key
+* AWS S3 Static Site JavaScript File Uploaded
 * AWS STS Role Chaining
+* AWS STS Temporary IAM Session Token Used from Multiple Addresses
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 * AWS Signin Single Factor Console Login with Federated User
-* Attempts to Brute Force a Microsoft 365 User Account
 * Azure Entra ID Password Spraying (Non-Interactive SFA)
 * Azure Entra MFA TOTP Brute Force Attempts
 * Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
 * Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
 * Azure OpenAI Insecure Output Handling
+* Dynamic IEX Reconstruction via Method String Access
 * High Number of Egress Network Connections from Unusual Executable
 * High Number of Okta Device Token Cookies Generated for Authentication
 * M365 OneDrive Excessive File Downloads with OAuth Token
+* Microsoft Azure or Mail Sign-in from a Suspicious Source
+* Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
+* Microsoft Entra ID Session Reuse with Suspicious Graph Access
 * Multiple Device Token Hashes for Single Okta Session
+* Multiple Microsoft 365 User Account Lockouts in Short Time Window
 * Multiple Okta User Authentication Events with Client Address
 * Multiple Okta User Authentication Events with Same Device Token Hash
 * Okta User Sessions Started from Different Geolocations
@@ -358,10 +379,27 @@ Rules version: 8.18.1
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
 * Potential Azure OpenAI Model Theft
 * Potential Denial of Azure OpenAI ML Service
+* Potential Dynamic IEX Reconstruction via Environment Variables
+* Potential Malicious PowerShell Based on Alert Correlation
 * Potential Malware-Driven SSH Brute Force Attempt
+* Potential Microsoft 365 User Account Brute Force
 * Potential Port Scanning Activity from Compromised Host
+* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
+* Potential PowerShell Obfuscation via Character Array Reconstruction
+* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
+* Potential PowerShell Obfuscation via High Numeric Character Proportion
+* Potential PowerShell Obfuscation via High Special Character Proportion
+* Potential PowerShell Obfuscation via Invalid Escape Sequences
+* Potential PowerShell Obfuscation via Reverse Keywords
+* Potential PowerShell Obfuscation via Special Character Overuse
+* Potential PowerShell Obfuscation via String Concatenation
+* Potential PowerShell Obfuscation via String Reordering
 * Potential Subnet Scanning Activity from Compromised Host
 * Potential Widespread Malware Infection Across Multiple Hosts
+* PowerShell Obfuscation via Negative Index String Reversal
+* Rare Connection to WebDAV Target
+* Suspicious Activity via Auth Broker On-Behalf-of Principal User
+* Suspicious Microsoft 365 UserLoggedIn via OAuth Code
 * Unusual Base64 Encoding/Decoding Activity
 * Unusual Command Execution from Web Server Parent
 * Unusual File Creation by Web Server
@@ -406,11 +444,12 @@ Rules version: 8.18.1
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported rule type: threat_match (5)
+### Unsupported rule type: threat_match (6)
 
-5 rules:
+6 rules:
 
 * Rapid7 Threat Command CVEs Correlation
+* Threat Intel Email Indicator Match
 * Threat Intel Hash Indicator Match
 * Threat Intel IP Address Indicator Match
 * Threat Intel URL Indicator Match
@@ -445,6 +484,23 @@ Rules version: 8.18.1
 * Remote Execution via File Shares
 * Startup or Run Key Registry Modification
 
+### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)
+
+13 rules:
+* AdminSDHolder SDProp Exclusion Added
+* Image File Execution Options Injection
+* Ingress Transfer via Windows BITS
+* Memory Dump File with Unusual Extension
+* NullSessionPipe Registry Modification
+* Persistence via Hidden Run Key Detected
+* Potential Hex Payload Execution via Command-Line
+* Potential curl CVE-2023-38545 Exploitation
+* Renamed Utility Executed with Short Program Name
+* Suspicious Access to LDAP Attributes
+* Suspicious Execution via MSIEXEC
+* Suspicious Process Access via Direct System Call
+* Uncommon Registry Persistence Change
+
 ### Unsupported function: match (13)
 
 13 rules:
@@ -461,22 +517,6 @@ Rules version: 8.18.1
 * Simple HTTP Web Server Creation
 * Suspicious Execution via Microsoft Office Add-Ins
 * Suspicious Service was Installed in the System
-
-### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)
-
-12 rules:
-* AdminSDHolder SDProp Exclusion Added
-* Image File Execution Options Injection
-* Ingress Transfer via Windows BITS
-* Memory Dump File with Unusual Extension
-* NullSessionPipe Registry Modification
-* Persistence via Hidden Run Key Detected
-* Potential curl CVE-2023-38545 Exploitation
-* Renamed Utility Executed with Short Program Name
-* Suspicious Access to LDAP Attributes
-* Suspicious Execution via MSIEXEC
-* Suspicious Process Access via Direct System Call
-* Uncommon Registry Persistence Change
 
 ### Unsupported function: stringContains (12)
 
@@ -767,6 +807,11 @@ Rules version: 8.18.1
 1 rules:
 * PowerShell Suspicious Script with Audio Capture Capabilities
 
+### Unsolvable constraints: process.command_line (not in Strings({'*@/*.zip*'}): ('*http*')) (1)
+
+1 rules:
+* Potential Data Exfiltration Through Curl
+
 ### Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('*copy*')) (1)
 
 1 rules:
@@ -780,7 +825,7 @@ Rules version: 8.18.1
 ### Unsolvable constraints: process.command_line (not in Strings({'*fromhex*'}): ('*decode*')) (1)
 
 1 rules:
-* Potential Hex Payload Execution
+* Potential Hex Payload Execution via Common Utility
 
 ### Unsolvable constraints: process.command_line (not in Strings({'*id_dsa*'}): ('*/home/*')) (1)
 
@@ -836,6 +881,11 @@ Rules version: 8.18.1
 
 1 rules:
 * Suspicious macOS MS Office Child Process
+
+### Unsolvable constraints: process.name (not in Strings({'pluginkit'}): ('python*')) (1)
+
+1 rules:
+* Finder Sync Plugin Registered and Enabled
 
 ### Unsolvable constraints: process.name (not in Strings({'rundll32.exe'}): ('mshta.exe')) (1)
 
