@@ -5,11 +5,11 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.16.14
+Rules version: 8.16.15
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (122)](#unsupported-rule-type-new_terms-122)
+      1. [Unsupported rule type: new_terms (126)](#unsupported-rule-type-new_terms-126)
       1. [Unsupported rule type: machine_learning (74)](#unsupported-rule-type-machine_learning-74)
       1. [Unsupported rule type: esql (62)](#unsupported-rule-type-esql-62)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
@@ -79,6 +79,7 @@ Rules version: 8.16.14
       1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsedgewebview2exe-msedgewebview2exe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'net1.exe'}): ('net1.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsnet1exe-net1exe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringspowershellexe-powershellexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
@@ -107,9 +108,9 @@ Rules version: 8.16.14
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (122)
+### Unsupported rule type: new_terms (126)
 
-122 rules:
+126 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -138,6 +139,7 @@ Rules version: 8.16.14
 * Azure Entra ID Rare App ID for Principal Authentication
 * CAP_SYS_ADMIN Assigned to Binary
 * DPKG Package Installed by Unusual Parent Process
+* Delegated Managed Service Account Modification by an Unusual User
 * Discovery of Internet Capabilities via Built-in Tools
 * Enumeration of Kernel Modules
 * Enumeration of Kernel Modules via Proc
@@ -170,9 +172,11 @@ Rules version: 8.16.14
 * Linux Clipboard Activity Detected
 * Microsoft 365 Illicit Consent Grant via Registered Application
 * Microsoft 365 Portal Login from Rare Location
+* Microsoft 365 Suspicious Inbox Rule to Delete or Move Emails
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
 * Microsoft Entra ID Conditional Access Policy (CAP) Modified
+* Microsoft Entra ID Elevated Access to User Access Administrator
 * Microsoft Entra ID Illicit Consent Grant via Registered Application
 * Microsoft Entra ID Rare Authentication Requirement for Principal User
 * Microsoft Entra ID Service Principal Credentials Added by Rare User
@@ -233,6 +237,7 @@ Rules version: 8.16.14
 * Unusual Remote File Creation
 * Unusual SSHD Child Process
 * Unusual Scheduled Task Update
+* dMSA Account Creation by an Unusual User
 
 ### Unsupported rule type: machine_learning (74)
 
@@ -831,6 +836,11 @@ Rules version: 8.16.14
 
 1 rules:
 * Potential Masquerading as Browser Process
+
+### Unsolvable constraints: process.name (excluded by Strings({'net1.exe'}): ('net1.exe')) (1)
+
+1 rules:
+* Account Discovery Command via SYSTEM Account
 
 ### Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (1)
 
