@@ -174,26 +174,20 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
             except Exception:
                 continue
             index_name = "{:s}-{:04d}".format(self.index_template, i)
-            rules.append(
+            rule = {k: v for k, v in vars(rule).items() if not k.startswith("__") and k != "path"}
+            rule.update(
                 {
-                    "rule_id": rule.rule_id,
-                    "risk_score": rule.risk_score,
-                    "description": rule.description,
-                    "name": f"Geneve: {rule.name}",
+                    "name": "Geneve: " + rule["name"],
                     "index": [index_name],
                     "interval": "180s",
                     "from": "now-2h",
-                    "severity": rule.severity,
-                    "type": rule.type,
-                    "query": rule.query,
-                    "language": rule.language,
-                    "tags": self.test_tags + rule.tags,
-                    "version": rule.version,
+                    "tags": self.test_tags + rule["tags"],
                     "max_signals": 1000,
                     "enabled": True,
                     ".test_private": {},  # private test data, not sent to Kibana
                 }
             )
+            rules.append(rule)
         return rules, asts
 
     def test_rules(self):

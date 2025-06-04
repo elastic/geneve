@@ -580,13 +580,7 @@ class SignalsTestCase:
     def get_signals_per_rule(self, rules):
         body = {
             "size": 0,
-            "query": {
-                "bool": {
-                    "must_not": [
-                        {"exists": {"field": "signal.rule.building_block_type"}},
-                    ]
-                }
-            },
+            "query": {"match_all": {}},
             "aggs": {
                 "signals_per_rule": {
                     "terms": {
