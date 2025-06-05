@@ -63,73 +63,77 @@ emitter_rules:
       ack_no_signals: 4
       ack_too_few_signals: 11
     "8.8":
+      ack_failed: 9
       ack_unsuccessful_with_signals: 9
       ack_no_signals: 4
       ack_too_few_signals: 10
     "8.9":
+      ack_failed: 7
       ack_unsuccessful_with_signals: 7
       ack_no_signals: 2
       ack_too_few_signals: 8
     "8.10":
+      ack_failed: 6
       ack_unsuccessful_with_signals: 6
       ack_no_signals: 3
       ack_too_few_signals: 7
     "8.11":
+      ack_failed: 7
       ack_unsuccessful_with_signals: 7
       ack_no_signals: 3
       ack_too_few_signals: 10
     "8.12":
-      ack_failed: 0
+      ack_failed: 7
       ack_unsuccessful_with_signals: 7
       ack_no_signals: 3
       ack_too_few_signals: 10
     "8.13":
-      ack_failed: 0
+      ack_failed: 7
       ack_unsuccessful_with_signals: 7
       ack_no_signals: 3
       ack_too_few_signals: 10
     "8.14":
-      ack_failed: 0
+      ack_failed: 7
       ack_unsuccessful_with_signals: 7
       ack_no_signals: 3
       ack_too_few_signals: 10
     "8.15":
-      ack_failed: 0
+      ack_failed: 8
       ack_unsuccessful_with_signals: 8
       ack_no_signals: 3
       ack_too_few_signals: 11
     "8.16":
-      ack_failed: 0
+      ack_failed: 8
       ack_unsuccessful_with_signals: 8
       ack_no_signals: 4
       ack_too_few_signals: 11
     "8.17":
-      ack_failed: 0
+      ack_failed: 8
       ack_unsuccessful_with_signals: 8
       ack_no_signals: 4
       ack_too_few_signals: 11
     "8.18":
-      ack_failed: 0
+      ack_failed: 8
       ack_unsuccessful_with_signals: 8
       ack_no_signals: 4
       ack_too_few_signals: 11
     "8.19":
-      ack_failed: 0
+      ack_failed: 8
       ack_unsuccessful_with_signals: 8
       ack_no_signals: 4
       ack_too_few_signals: 11
     "9.0":
-      ack_failed: 0
+      ack_failed: 8
       ack_unsuccessful_with_signals: 8
       ack_no_signals: 4
       ack_too_few_signals: 11
     "9.1":
-      ack_failed: 0
+      ack_failed: 8
       ack_unsuccessful_with_signals: 8
       ack_no_signals: 4
       ack_too_few_signals: 11
     "serverless":
-      ack_failed: 1
+      ack_failed: 8
       ack_unsuccessful_with_signals: 7
       ack_no_signals: 4
       ack_too_few_signals: 10

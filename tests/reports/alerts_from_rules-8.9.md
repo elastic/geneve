@@ -8,10 +8,215 @@ Curious about the inner workings? Read [here](signals_generation.md).
 Rules version: 8.9.15
 
 ## Table of contents
+   1. [Failed rules (7)](#failed-rules-7)
    1. [Unsuccessful rules with signals (7)](#unsuccessful-rules-with-signals-7)
    1. [Rules with no signals (2)](#rules-with-no-signals-2)
    1. [Rules with too few signals (8)](#rules-with-too-few-signals-8)
    1. [Rules with the correct signals (770)](#rules-with-the-correct-signals-770)
+
+## Failed rules (7)
+
+### File Creation, Execution and Self-Deletion in Suspicious Directory
+
+Branch count: 4608  
+Document count: 13824  
+Index: geneve-ut-0262  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by host.id, user.id with maxspan=1m
+  [file where host.os.type == "linux" and event.action == "creation" and 
+   process.name in ("curl", "wget", "fetch", "ftp", "sftp", "scp", "rsync", "ld") and 
+   file.path : ("/dev/shm/*", "/run/shm/*", "/tmp/*", "/var/tmp/*",
+     "/run/*", "/var/run/*", "/var/www/*", "/proc/*/fd/*")] by file.name
+  [process where host.os.type == "linux" and event.action == "exec" and event.type == "start" and 
+   process.parent.name in ("bash", "dash", "ash", "sh", "tcsh", "csh", "zsh", "ksh", "fish")] by process.name
+  [file where host.os.type == "linux" and event.action == "deletion" and not process.name in ("rm", "ld") and 
+   file.path : ("/dev/shm/*", "/run/shm/*", "/tmp/*", "/var/tmp/*",
+     "/run/*", "/var/run/*", "/var/www/*", "/proc/*/fd/*")] by file.name
+```
+
+
+
+### Potential External Linux SSH Brute Force Detected
+
+Branch count: 1024  
+Document count: 10240  
+Index: geneve-ut-0573  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by host.id, source.ip, user.name with maxspan=15s
+  [ authentication where host.os.type == "linux" and 
+   event.action in ("ssh_login", "user_login") and event.outcome == "failure" and
+   not cidrmatch(source.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", 
+       "::1", "FE80::/10", "FF00::/8") ] with runs = 10
+```
+
+
+
+### Potential Internal Linux SSH Brute Force Detected
+
+Branch count: 1024  
+Document count: 10240  
+Index: geneve-ut-0577  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by host.id, source.ip, user.name with maxspan=15s
+  [ authentication where host.os.type == "linux" and 
+   event.action in ("ssh_login", "user_login") and event.outcome == "failure" and
+   cidrmatch(source.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", 
+       "::1", "FE80::/10", "FF00::/8") ] with runs = 10
+```
+
+
+
+### Potential Remote Code Execution via Web Server
+
+Branch count: 3510  
+Document count: 3510  
+Index: geneve-ut-0644  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+process where host.os.type == "linux" and event.type == "start" and
+event.action in ("exec", "exec_event") and process.parent.executable : (
+  "/usr/sbin/nginx", "/usr/local/sbin/nginx",
+  "/usr/sbin/apache", "/usr/local/sbin/apache",
+  "/usr/sbin/apache2", "/usr/local/sbin/apache2",
+  "/usr/sbin/php*", "/usr/local/sbin/php*",
+  "/usr/sbin/lighttpd", "/usr/local/sbin/lighttpd",
+  "/usr/sbin/hiawatha", "/usr/local/sbin/hiawatha",
+  "/usr/local/bin/caddy", 
+  "/usr/local/lsws/bin/lswsctrl",
+  "*/bin/catalina.sh"
+) and
+process.name : ("bash", "dash", "ash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "python*", "perl", "php*", "tmux") and
+process.args : ("whoami", "id", "uname", "cat", "hostname", "ip", "curl", "wget", "pwd") and
+not process.name == "phpquery"
+```
+
+
+
+### Potential Successful SSH Brute Force Attack
+
+Branch count: 2048  
+Document count: 22528  
+Index: geneve-ut-0666  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by host.id, source.ip, user.name with maxspan=15s
+  [authentication where host.os.type == "linux" and event.action  in ("ssh_login", "user_login") and
+   event.outcome == "failure" and source.ip != null and source.ip != "0.0.0.0" and source.ip != "::" ] with runs=10
+
+  [authentication where host.os.type == "linux" and event.action  in ("ssh_login", "user_login") and
+   event.outcome == "success" and source.ip != null and source.ip != "0.0.0.0" and source.ip != "::" ]
+```
+
+
+
+### Suspicious Execution via Scheduled Task
+
+Branch count: 4608  
+Document count: 4608  
+Index: geneve-ut-0839  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+    /* Schedule service cmdline on Win10+ */
+    process.parent.name : "svchost.exe" and process.parent.args : "Schedule" and
+    /* add suspicious programs here */
+    process.pe.original_file_name in
+                                (
+                                  "cscript.exe",
+                                  "wscript.exe",
+                                  "PowerShell.EXE",
+                                  "Cmd.Exe",
+                                  "MSHTA.EXE",
+                                  "RUNDLL32.EXE",
+                                  "REGSVR32.EXE",
+                                  "MSBuild.exe",
+                                  "InstallUtil.exe",
+                                  "RegAsm.exe",
+                                  "RegSvcs.exe",
+                                  "msxsl.exe",
+                                  "CONTROL.EXE",
+                                  "EXPLORER.EXE",
+                                  "Microsoft.Workflow.Compiler.exe",
+                                  "msiexec.exe"
+                                  ) and
+    /* add suspicious paths here */
+    process.args : (
+       "C:\\Users\\*",
+       "C:\\ProgramData\\*",
+       "C:\\Windows\\Temp\\*",
+       "C:\\Windows\\Tasks\\*",
+       "C:\\PerfLogs\\*",
+       "C:\\Intel\\*",
+       "C:\\Windows\\Debug\\*",
+       "C:\\HP\\*") and
+
+     not (process.name : "cmd.exe" and process.args : "?:\\*.bat" and process.working_directory : "?:\\Windows\\System32\\") and
+     not (process.name : "cscript.exe" and process.args : "?:\\Windows\\system32\\calluxxprovider.vbs") and
+     not (process.name : "powershell.exe" and process.args : ("-File", "-PSConsoleFile") and user.id : "S-1-5-18") and
+     not (process.name : "msiexec.exe" and user.id : "S-1-5-18")
+```
+
+
+
+### Suspicious Symbolic Link Created
+
+Branch count: 1836  
+Document count: 1836  
+Index: geneve-ut-0891  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+process where host.os.type == "linux" and event.action in ("exec", "exec_event") and
+event.type == "start" and process.name == "ln" and process.args in ("-s", "-sf") and 
+  (
+    /* suspicious files */
+    (process.args in ("/etc/shadow", "/etc/shadow-", "/etc/shadow~", "/etc/gshadow", "/etc/gshadow-") or 
+    (process.working_directory == "/etc" and process.args in ("shadow", "shadow-", "shadow~", "gshadow", "gshadow-"))) or 
+
+    /* suspicious bins */
+    (process.args in ("/bin/bash", "/bin/dash", "/bin/sh", "/bin/tcsh", "/bin/csh", "/bin/zsh", "/bin/ksh", "/bin/fish") or 
+    (process.working_directory == "/bin" and process.args : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish"))) or 
+    (process.args in ("/usr/bin/bash", "/usr/bin/dash", "/usr/bin/sh", "/usr/bin/tcsh", "/usr/bin/csh", "/usr/bin/zsh", "/usr/bin/ksh", "/usr/bin/fish") or 
+    (process.working_directory == "/usr/bin" and process.args in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish"))) or
+
+    /* suspicious locations */
+    (process.args : ("/etc/cron.d/*", "/etc/cron.daily/*", "/etc/cron.hourly/*", "/etc/cron.weekly/*", "/etc/cron.monthly/*")) or
+    (process.args : ("/home/*/.ssh/*", "/root/.ssh/*","/etc/sudoers.d/*", "/dev/shm/*"))
+  ) and 
+  process.parent.name in ("bash", "dash", "ash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
+  not user.Ext.real.id == "0" and not group.Ext.real.id == "0"
+```
+
+
 
 ## Unsuccessful rules with signals (7)
 
