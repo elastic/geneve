@@ -8,10 +8,285 @@ Curious about the inner workings? Read [here](signals_generation.md).
 Rules version: 8.17.13
 
 ## Table of contents
+   1. [Failed rules (8)](#failed-rules-8)
    1. [Unsuccessful rules with signals (8)](#unsuccessful-rules-with-signals-8)
    1. [Rules with no signals (4)](#rules-with-no-signals-4)
    1. [Rules with too few signals (11)](#rules-with-too-few-signals-11)
    1. [Rules with the correct signals (911)](#rules-with-the-correct-signals-911)
+
+## Failed rules (8)
+
+### Execution of a Downloaded Windows Script
+
+Branch count: 8448  
+Document count: 16896  
+Index: geneve-ut-0342  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by host.id, user.id with maxspan=3m
+[file where host.os.type == "windows" and event.action == "creation" and user.id != "S-1-5-18" and
+  process.name : ("chrome.exe", "msedge.exe", "brave.exe", "browser.exe", "dragon.exe", "vivaldi.exe", "explorer.exe", "winrar.exe", "7zFM.exe", "7zG.exe", "Bandizip.exe") and
+  file.extension in~ ("js", "jse", "vbs", "vbe", "wsh", "hta", "cmd", "bat") and
+  (file.origin_url != null or file.origin_referrer_url != null)]
+[process where host.os.type == "windows" and event.type == "start" and
+ process.parent.name : ("chrome.exe", "msedge.exe", "brave.exe", "firefox.exe", "browser.exe", "dragon.exe", "vivaldi.exe", "explorer.exe", "winrar.exe", "7zFM.exe", "7zG.exe", "Bandizip.exe") and 
+ process.args_count >= 2 and
+ (
+  process.name in~ ("wscript.exe", "mshta.exe") or
+  (process.name : "cmd.exe" and process.command_line : ("*.cmd*", "*.bat*"))
+  )]
+```
+
+
+
+### File Creation, Execution and Self-Deletion in Suspicious Directory
+
+Branch count: 4608  
+Document count: 13824  
+Index: geneve-ut-0364  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by host.id, user.id with maxspan=1m
+  [file where host.os.type == "linux" and event.action == "creation" and
+   process.name in ("curl", "wget", "fetch", "ftp", "sftp", "scp", "rsync", "ld") and
+   file.path : ("/dev/shm/*", "/run/shm/*", "/tmp/*", "/var/tmp/*",
+     "/run/*", "/var/run/*", "/var/www/*", "/proc/*/fd/*")] by file.name
+  [process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
+   process.parent.name in ("bash", "dash", "ash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+   not process.parent.executable like (
+     "/tmp/VeeamApp*", "/tmp/rajh/spack-stage/*", "plz-out/bin/vault/bridge/test/e2e/base/bridge-dev",
+     "/usr/bin/ranlib", "/usr/bin/ar", "plz-out/bin/vault/bridge/test/e2e/base/local-k8s"
+   )] by process.name
+  [file where host.os.type == "linux" and event.action == "deletion" and
+   file.path : (
+     "/dev/shm/*", "/run/shm/*", "/tmp/*", "/var/tmp/*", "/run/*", "/var/run/*", "/var/www/*", "/proc/*/fd/*"
+    ) and not process.name in ("rm", "ld", "conftest", "link", "gcc", "getarch", "ld")] by file.name
+```
+
+
+
+### Git Hook Child Process
+
+Branch count: 2300  
+Document count: 2300  
+Index: geneve-ut-0424  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+process where host.os.type == "linux" and event.type == "start" and
+  event.action in ("exec", "exec_event", "start", "ProcessRollup2") and
+  process.parent.name in (
+    "applypatch-msg", "commit-msg", "fsmonitor-watchman", "post-update", "post-checkout", "post-commit",
+    "pre-applypatch", "pre-commit", "pre-merge-commit", "prepare-commit-msg", "pre-push", "pre-rebase", "pre-receive",
+    "push-to-checkout", "update", "post-receive", "pre-auto-gc", "post-rewrite", "sendemail-validate", "p4-pre-submit",
+    "post-index-change", "post-merge", "post-applypatch"
+  ) and
+  (
+    process.name in ("nohup", "setsid", "disown", "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") or
+    process.name : ("php*", "perl*", "ruby*", "lua*") or
+    process.executable : (
+      "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*",
+      "/run/*", "/srv/*", "/tmp/*", "/var/tmp/*", "/var/log/*"
+    )
+  ) and
+  not process.name in ("git", "dirname")
+```
+
+
+
+### Potential External Linux SSH Brute Force Detected
+
+Branch count: 1024  
+Document count: 10240  
+Index: geneve-ut-0774  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by host.id, source.ip, user.name with maxspan=15s
+  [ authentication where host.os.type == "linux" and 
+   event.action in ("ssh_login", "user_login") and event.outcome == "failure" and
+   not cidrmatch(source.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", 
+       "::1", "FE80::/10", "FF00::/8") ] with runs = 10
+```
+
+
+
+### Potential Internal Linux SSH Brute Force Detected
+
+Branch count: 1024  
+Document count: 10240  
+Index: geneve-ut-0783  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by host.id, source.ip, user.name with maxspan=15s
+  [ authentication where host.os.type == "linux" and 
+   event.action in ("ssh_login", "user_login") and event.outcome == "failure" and
+   cidrmatch(source.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", 
+       "::1", "FE80::/10", "FF00::/8") ] with runs = 10
+```
+
+
+
+### Potential Privilege Escalation via Service ImagePath Modification
+
+Branch count: 1794  
+Document count: 1794  
+Index: geneve-ut-0858  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+registry where host.os.type == "windows" and event.type == "change" and process.executable != null and
+  event.action == "modification" and registry.value == "ImagePath" and
+  registry.key : (
+    "*\\ADWS", "*\\AppHostSvc", "*\\AppReadiness", "*\\AudioEndpointBuilder", "*\\AxInstSV", "*\\camsvc", "*\\CertSvc",
+    "*\\COMSysApp", "*\\CscService", "*\\defragsvc", "*\\DeviceAssociationService", "*\\DeviceInstall", "*\\DevQueryBroker",
+    "*\\Dfs", "*\\DFSR", "*\\diagnosticshub.standardcollector.service", "*\\DiagTrack", "*\\DmEnrollmentSvc", "*\\DNS",
+    "*\\dot3svc", "*\\Eaphost", "*\\GraphicsPerfSvc", "*\\hidserv", "*\\HvHost", "*\\IISADMIN", "*\\IKEEXT",
+    "*\\InstallService", "*\\iphlpsvc", "*\\IsmServ", "*\\LanmanServer", "*\\MSiSCSI", "*\\NcbService", "*\\Netlogon",
+    "*\\Netman", "*\\NtFrs", "*\\PlugPlay", "*\\Power", "*\\PrintNotify", "*\\ProfSvc", "*\\PushToInstall", "*\\RSoPProv",
+    "*\\sacsvr", "*\\SENS", "*\\SensorDataService", "*\\SgrmBroker", "*\\ShellHWDetection", "*\\shpamsvc", "*\\StorSvc",
+    "*\\svsvc", "*\\swprv", "*\\SysMain", "*\\Themes", "*\\TieringEngineService", "*\\TokenBroker", "*\\TrkWks",
+    "*\\UALSVC", "*\\UserManager", "*\\vm3dservice", "*\\vmicguestinterface", "*\\vmicheartbeat", "*\\vmickvpexchange",
+    "*\\vmicrdv", "*\\vmicshutdown", "*\\vmicvmsession", "*\\vmicvss", "*\\vmvss", "*\\VSS", "*\\w3logsvc", "*\\W3SVC",
+    "*\\WalletService", "*\\WAS", "*\\wercplsupport", "*\\WerSvc", "*\\Winmgmt", "*\\wisvc", "*\\wmiApSrv",
+    "*\\WPDBusEnum", "*\\WSearch"
+  ) and
+  not (
+    registry.data.strings : (
+        "?:\\Windows\\system32\\*.exe",
+        "%systemroot%\\system32\\*.exe",
+        "%windir%\\system32\\*.exe",
+        "%SystemRoot%\\system32\\svchost.exe -k *",
+        "%windir%\\system32\\svchost.exe -k *"
+    ) and
+        not registry.data.strings : (
+            "*\\cmd.exe",
+            "*\\cscript.exe",
+            "*\\ieexec.exe",
+            "*\\iexpress.exe",
+            "*\\installutil.exe",
+            "*\\Microsoft.Workflow.Compiler.exe",
+            "*\\msbuild.exe",
+            "*\\mshta.exe",
+            "*\\msiexec.exe",
+            "*\\msxsl.exe",
+            "*\\net.exe",
+            "*\\powershell.exe",
+            "*\\pwsh.exe",
+            "*\\reg.exe",
+            "*\\RegAsm.exe",
+            "*\\RegSvcs.exe",
+            "*\\regsvr32.exe",
+            "*\\rundll32.exe",
+            "*\\vssadmin.exe",
+            "*\\wbadmin.exe",
+            "*\\wmic.exe",
+            "*\\wscript.exe"
+        )
+  )
+```
+
+
+
+### Potential Successful SSH Brute Force Attack
+
+Branch count: 2048  
+Document count: 22528  
+Index: geneve-ut-0896  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by host.id, source.ip, user.name with maxspan=15s
+  [authentication where host.os.type == "linux" and event.action  in ("ssh_login", "user_login") and
+   event.outcome == "failure" and source.ip != null and source.ip != "0.0.0.0" and source.ip != "::" ] with runs=10
+
+  [authentication where host.os.type == "linux" and event.action  in ("ssh_login", "user_login") and
+   event.outcome == "success" and source.ip != null and source.ip != "0.0.0.0" and source.ip != "::" ]
+```
+
+
+
+### Suspicious Execution via Scheduled Task
+
+Branch count: 4608  
+Document count: 4608  
+Index: geneve-ut-1131  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+    /* Schedule service cmdline on Win10+ */
+    process.parent.name : "svchost.exe" and process.parent.args : "Schedule" and
+    /* add suspicious programs here */
+    process.pe.original_file_name in
+                                (
+                                  "cscript.exe",
+                                  "wscript.exe",
+                                  "PowerShell.EXE",
+                                  "Cmd.Exe",
+                                  "MSHTA.EXE",
+                                  "RUNDLL32.EXE",
+                                  "REGSVR32.EXE",
+                                  "MSBuild.exe",
+                                  "InstallUtil.exe",
+                                  "RegAsm.exe",
+                                  "RegSvcs.exe",
+                                  "msxsl.exe",
+                                  "CONTROL.EXE",
+                                  "EXPLORER.EXE",
+                                  "Microsoft.Workflow.Compiler.exe",
+                                  "msiexec.exe"
+                                  ) and
+    /* add suspicious paths here */
+    process.args : (
+       "C:\\Users\\*",
+       "C:\\ProgramData\\*",
+       "C:\\Windows\\Temp\\*",
+       "C:\\Windows\\Tasks\\*",
+       "C:\\PerfLogs\\*",
+       "C:\\Intel\\*",
+       "C:\\Windows\\Debug\\*",
+       "C:\\HP\\*") and
+
+    not (process.name : "cmd.exe" and process.args : "?:\\*.bat" and process.working_directory : "?:\\Windows\\System32\\") and
+    not (process.name : "cscript.exe" and process.args : "?:\\Windows\\system32\\calluxxprovider.vbs") and
+    not (
+       process.name : "powershell.exe" and
+       process.args : (
+           "-File", "-PSConsoleFile",
+           "C:\\ProgramData\\Microsoft\\AutopatchSetupScheduled\\SetupAutopatchClientV2Package.ps1",
+           "C:\\ProgramData\\Microsoft\\AutopatchSetupScheduled\\SetupAutopatchClientPackage.ps1"                
+       ) and user.id : "S-1-5-18"
+    ) and
+    not (process.name : "msiexec.exe" and user.id : "S-1-5-18")
+```
+
+
 
 ## Unsuccessful rules with signals (8)
 

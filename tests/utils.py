@@ -545,7 +545,7 @@ class SignalsTestCase:
             last_execution = rule["execution_summary"]["last_execution"]
             if last_execution["status"] == "succeeded":
                 self.handle_rule_success(rule_id, pending, successful, failed)
-            elif last_execution["status"] == "failed":
+            elif last_execution["status"] in ("failed", "partial failure"):
                 self.handle_rule_failure(rule_id, failed, last_execution["message"])
 
     def handle_rule_success(self, rule_id, pending, successful, failed):
