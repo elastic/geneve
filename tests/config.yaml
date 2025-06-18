@@ -31,7 +31,7 @@ emitter_rules:
     # renovate: datasource=epr package=security_detection_engine-8.16
     "8.16": "8.16.15"
     # renovate: datasource=epr package=security_detection_engine-8.17
-    "8.17": "8.17.13"
+    "8.17": "8.17.14"
     # renovate: datasource=epr package=security_detection_engine-8.18
     "8.18": "8.18.6"
     # renovate: datasource=epr package=security_detection_engine-8.19
