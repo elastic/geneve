@@ -1,0 +1,8 @@
+---
+steps:
+  - label: "Trig geneve-serverless-security-quality-gate with pre-built rules"
+    trigger: "geneve-serverless-security-quality-gate"
+    build:
+      message: "$BUILDKITE_MESSAGE"
+      env:
+        TEST_EXTRA_PARAMS: "--online -v"
