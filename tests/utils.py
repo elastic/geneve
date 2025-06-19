@@ -436,14 +436,20 @@ class SignalsTestCase:
         if verbose:
             sys.stderr.write("\n  Deleting any unit-test indices: ")
             sys.stderr.flush()
+        indices = []
         for i, rule in enumerate(rules):
-            if verbose and i % 100 == 0 and not i == len(rules) - 1:
-                sys.stderr.write(f"{len(rules) - i} ")
-                sys.stderr.flush()
-            self.es.indices.delete(index=rule["index"], ignore_unavailable=True)
+            # this expands all the wildcards
+            indices.extend(self.es.indices.get(index=rule["index"], ignore_unavailable=True))
+        indices_to_go = len(indices)
         if verbose:
-            sys.stderr.write("0")
+            sys.stderr.write(f"{indices_to_go} ")
             sys.stderr.flush()
+        for batch in batched(indices, 100):
+            self.es.indices.delete(index=batch)
+            indices_to_go -= len(batch)
+            if verbose:
+                sys.stderr.write(f"{indices_to_go} ")
+                sys.stderr.flush()
 
         kwargs = {
             "name": self.index_template,
