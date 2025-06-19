@@ -1,4 +1,5 @@
 ---
+# $yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 steps:
   - label: "Execute main pipeline"
     plugins:
@@ -20,3 +21,7 @@ steps:
               command: "/agent/check-catalog-info.sh"
               agents:
                 image: "docker.elastic.co/ci-agent-images/pipelib:0.15.0@sha256:753c420cf254a7ed0be658ab153965e0708fe0636dfe2fe57e6e4ae0972bb681"
+          - default:
+              config:
+                label: "Upload test pipeline"
+                command: "buildkite-agent pipeline upload .buildkite/pipelines/test.yml"
