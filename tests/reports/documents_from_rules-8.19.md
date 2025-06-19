@@ -5,20 +5,20 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.18.6
+Rules version: 8.18.7
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: new_terms (126)](#unsupported-rule-type-new_terms-126)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported rule type: esql (71)](#unsupported-rule-type-esql-71)
+      1. [Unsupported rule type: esql (73)](#unsupported-rule-type-esql-73)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
+      1. [Unsupported function: match (14)](#unsupported-function-match-14)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
-      1. [Unsupported function: match (13)](#unsupported-function-match-13)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (6)](#unsupported-argument-types-class-eqlastfield-6)
@@ -26,13 +26,13 @@ Rules version: 8.18.6
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (4)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-4)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
-      1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
+      1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
       1. [Unsupported function: startsWith (3)](#unsupported-function-startswith-3)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
+      1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Unsupported function: endswith (2)](#unsupported-function-endswith-2)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
@@ -115,8 +115,8 @@ Rules version: 8.18.6
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
 * AWS DynamoDB Table Exported to S3
-* AWS EC2 Admin Credential Fetch via Assumed Role
 * AWS EC2 Route Table Modified or Deleted
+* AWS EC2 Unauthorized Admin Credential Fetch via Assumed Role
 * AWS EC2 User Data Retrieval for EC2 Instance
 * AWS IAM API Calls via Temporary Session Tokens
 * AWS IAM Assume Role Policy Update
@@ -339,9 +339,9 @@ Rules version: 8.18.6
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: esql (71)
+### Unsupported rule type: esql (73)
 
-71 rules:
+73 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -350,6 +350,7 @@ Rules version: 8.18.6
 * AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
 * AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
 * AWS Discovery API Calls via CLI from a Single Resource
+* AWS EC2 EBS Snapshot Access Removed
 * AWS EC2 EBS Snapshot Shared or Made Public
 * AWS EC2 Multi-Region DescribeInstances API Calls
 * AWS IAM AdministratorAccess Policy Attached to Group
@@ -365,14 +366,15 @@ Rules version: 8.18.6
 * AWS Signin Single Factor Console Login with Federated User
 * Azure Entra ID Password Spraying (Non-Interactive SFA)
 * Azure Entra MFA TOTP Brute Force Attempts
-* Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
 * Azure OpenAI Insecure Output Handling
+* Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
 * Dynamic IEX Reconstruction via Method String Access
 * High Number of Egress Network Connections from Unusual Executable
 * High Number of Okta Device Token Cookies Generated for Authentication
 * M365 OneDrive Excessive File Downloads with OAuth Token
 * Microsoft Azure or Mail Sign-in from a Suspicious Source
 * Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
+* Microsoft Entra ID Exccessive Account Lockouts Detected
 * Microsoft Entra ID Session Reuse with Suspicious Graph Access
 * Multiple Device Token Hashes for Single Okta Session
 * Multiple Microsoft 365 User Account Lockouts in Short Time Window
@@ -403,8 +405,8 @@ Rules version: 8.18.6
 * Potential Widespread Malware Infection Across Multiple Hosts
 * PowerShell Obfuscation via Negative Index String Reversal
 * Rare Connection to WebDAV Target
-* Suspicious Activity via Auth Broker On-Behalf-of Principal User
 * Suspicious Microsoft 365 UserLoggedIn via OAuth Code
+* Suspicious Microsoft OAuth Flow via Auth Broker to DRS
 * Unusual Base64 Encoding/Decoding Activity
 * Unusual Command Execution from Web Server Parent
 * Unusual File Creation by Web Server
@@ -489,6 +491,24 @@ Rules version: 8.18.6
 * Remote Execution via File Shares
 * Startup or Run Key Registry Modification
 
+### Unsupported function: match (14)
+
+14 rules:
+* Alternate Data Stream Creation/Execution at Volume Root Directory
+* BloodHound Suite User-Agents Detected
+* Creation of Hidden Files and Directories via CommandLine
+* Executable File Creation with Multiple Extensions
+* Masquerading Space After Filename
+* Potential Credential Access via Windows Utilities
+* Potential Exploitation of an Unquoted Service Path Vulnerability
+* Process Created with a Duplicated Token
+* Process Started from Process ID (PID) File
+* SUID/SGID Bit Set
+* Simple HTTP Web Server Connection
+* Simple HTTP Web Server Creation
+* Suspicious Execution via Microsoft Office Add-Ins
+* Suspicious Service was Installed in the System
+
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)
 
 13 rules:
@@ -505,23 +525,6 @@ Rules version: 8.18.6
 * Suspicious Execution via MSIEXEC
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
-
-### Unsupported function: match (13)
-
-13 rules:
-* Alternate Data Stream Creation/Execution at Volume Root Directory
-* Creation of Hidden Files and Directories via CommandLine
-* Executable File Creation with Multiple Extensions
-* Masquerading Space After Filename
-* Potential Credential Access via Windows Utilities
-* Potential Exploitation of an Unquoted Service Path Vulnerability
-* Process Created with a Duplicated Token
-* Process Started from Process ID (PID) File
-* SUID/SGID Bit Set
-* Simple HTTP Web Server Connection
-* Simple HTTP Web Server Creation
-* Suspicious Execution via Microsoft Office Add-Ins
-* Suspicious Service was Installed in the System
 
 ### Unsupported function: stringContains (12)
 
@@ -592,19 +595,19 @@ Rules version: 8.18.6
 * Potential Meterpreter Reverse Shell
 * Potential Reverse Shell via UDP
 
-### Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)
-
-3 rules:
-* Downloaded Shortcut Files
-* Downloaded URL Files
-* File with Suspicious Extension Downloaded
-
 ### Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)
 
 3 rules:
 * Active Directory Forced Authentication from Linux Host - SMB Named Pipes
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
+
+### Unsupported function: endswith (3)
+
+3 rules:
+* Potential Machine Account Relay Attack via SMB
+* Potential Relay Attack against a Domain Controller
+* Unusual Execution via Microsoft Common Console File
 
 ### Unsupported function: startsWith (3)
 
@@ -625,17 +628,17 @@ Rules version: 8.18.6
 * RPC (Remote Procedure Call) from the Internet
 * RPC (Remote Procedure Call) to the Internet
 
+### Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)
+
+2 rules:
+* Downloaded Shortcut Files
+* File with Suspicious Extension Downloaded
+
 ### Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)
 
 2 rules:
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
-
-### Unsupported function: endswith (2)
-
-2 rules:
-* Potential Relay Attack against a Domain Controller
-* Unusual Execution via Microsoft Common Console File
 
 ### <class 'eql.ast.SubqueryBy'> (1)
 
