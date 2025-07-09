@@ -40,6 +40,8 @@ emitter_rules:
     "9.0": "9.0.8"
     # renovate: datasource=epr package=security_detection_engine-9.1
     "9.1": "9.0.8"
+    # renovate: datasource=epr package=security_detection_engine-9.2
+    "9.2": "9.0.8"
     # renovate: datasource=epr package=security_detection_engine
     "serverless": "9.0.8"
 
@@ -128,6 +130,11 @@ emitter_rules:
       ack_no_signals: 7
       ack_too_few_signals: 12
     "9.1":
+      ack_failed: 18
+      ack_unsuccessful_with_signals: 9
+      ack_no_signals: 7
+      ack_too_few_signals: 12
+    "9.2":
       ack_failed: 18
       ack_unsuccessful_with_signals: 9
       ack_no_signals: 7
