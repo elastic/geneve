@@ -5,11 +5,11 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.0.7
+Rules version: 9.0.8
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (126)](#unsupported-rule-type-new_terms-126)
+      1. [Unsupported rule type: new_terms (129)](#unsupported-rule-type-new_terms-129)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: esql (73)](#unsupported-rule-type-esql-73)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
@@ -21,11 +21,11 @@ Rules version: 9.0.7
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
-      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (6)](#unsupported-argument-types-class-eqlastfield-6)
-      1. [Root without branches (5)](#root-without-branches-5)
-      1. [Unsolvable constraints: event.category & event.type (empty intersection) (4)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-4)
+      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
+      1. [Root without branches (6)](#root-without-branches-6)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
+      1. [Unsolvable constraints: event.category & event.type (empty intersection) (3)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
       1. [Unsupported function: startsWith (3)](#unsupported-function-startswith-3)
@@ -35,6 +35,7 @@ Rules version: 9.0.7
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
+      1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
@@ -91,6 +92,7 @@ Rules version: 9.0.7
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsrundll32exe-rundll32exe-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'winword.exe'}): ('winword.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringswinwordexe-winwordexe-1)
       1. [Unsolvable constraints: process.parent.name (excluded by Strings({'wscript.exe'}): ('wscript.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringswscriptexe-wscriptexe-1)
+      1. [Unsolvable constraints: process.pid (out of boundary, 1 <= 0 <= 4294967295) (1)](#unsolvable-constraints-processpid-out-of-boundary-1--0--4294967295-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings1131f6ad-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1131f6aa-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings42b5faae-6536-11d2-ae5a-0000f87571e3-40b66650-4972-11d1-a7ca-0000f87571e3-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
@@ -99,6 +101,7 @@ Rules version: 9.0.7
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (1)](#unsupported-keyword-fileextentropy-constraint--1)
       1. [Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)](#unsupported-keyword-ml_is_dgamalicious_probability-constraint--1)
+      1. [Unsupported &keyword 'o365.audit.OperationCount' constraint: >= (1)](#unsupported-keyword-o365auditoperationcount-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: <= (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: > (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
@@ -108,9 +111,9 @@ Rules version: 9.0.7
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (126)
+### Unsupported rule type: new_terms (129)
 
-126 rules:
+129 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -141,6 +144,7 @@ Rules version: 9.0.7
 * DPKG Package Installed by Unusual Parent Process
 * Delegated Managed Service Account Modification by an Unusual User
 * Discovery of Internet Capabilities via Built-in Tools
+* Entra ID User Signed In from Unusual Device
 * Enumeration of Kernel Modules
 * Enumeration of Kernel Modules via Proc
 * Enumeration of Privileged Local Groups Membership
@@ -205,8 +209,9 @@ Rules version: 9.0.7
 * Successful SSH Authentication from Unusual User
 * Sudoers File Modification
 * Suspicious Email Access by First-Party Application via Microsoft Graph
+* Suspicious Entra ID OAuth User Impersonation Scope Detected
 * Suspicious Mailbox Permission Delegation in Exchange Online
-* Suspicious Microsoft 365 Mail Access by ClientAppId
+* Suspicious Microsoft 365 Mail Access by Unusual ClientAppId
 * Suspicious Modprobe File Event
 * Suspicious Named Pipe Creation
 * Suspicious Network Activity to the Internet by Previously Unknown Executable
@@ -234,6 +239,7 @@ Rules version: 9.0.7
 * Unusual Network Connection to Suspicious Web Service
 * Unusual Pkexec Execution
 * Unusual Preload Environment Variable Process Execution
+* Unusual ROPC Login Attempt by User Principal
 * Unusual Remote File Creation
 * Unusual SSHD Child Process
 * Unusual Scheduled Task Update
@@ -364,7 +370,6 @@ Rules version: 9.0.7
 * AWS STS Role Chaining
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 * AWS Signin Single Factor Console Login with Federated User
-* Azure Entra ID Password Spraying (Non-Interactive SFA)
 * Azure Entra MFA TOTP Brute Force Attempts
 * Azure OpenAI Insecure Output Handling
 * Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
@@ -372,10 +377,12 @@ Rules version: 9.0.7
 * High Number of Egress Network Connections from Unusual Executable
 * High Number of Okta Device Token Cookies Generated for Authentication
 * M365 OneDrive Excessive File Downloads with OAuth Token
+* Microsoft 365 Brute Force via Entra ID Sign-Ins
 * Microsoft Azure or Mail Sign-in from a Suspicious Source
 * Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
 * Microsoft Entra ID Exccessive Account Lockouts Detected
 * Microsoft Entra ID Session Reuse with Suspicious Graph Access
+* Microsoft Entra ID Sign-In Brute Force Activity
 * Multiple Device Token Hashes for Single Okta Session
 * Multiple Microsoft 365 User Account Lockouts in Short Time Window
 * Multiple Okta User Authentication Events with Client Address
@@ -388,7 +395,6 @@ Rules version: 9.0.7
 * Potential Dynamic IEX Reconstruction via Environment Variables
 * Potential Malicious PowerShell Based on Alert Correlation
 * Potential Malware-Driven SSH Brute Force Attempt
-* Potential Microsoft 365 Brute Force via Entra ID Sign-Ins
 * Potential Microsoft 365 User Account Brute Force
 * Potential Port Scanning Activity from Compromised Host
 * Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
@@ -553,32 +559,26 @@ Rules version: 9.0.7
 * Tainted Out-Of-Tree Kernel Module Load
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
-### Unsupported argument type(s): <class 'eql.ast.Field'> (6)
+### Unsupported argument type(s): <class 'eql.ast.Field'> (7)
 
-6 rules:
+7 rules:
 * External User Added to Google Workspace Group
 * Image Loaded with Invalid Signature
 * Interactive Logon by an Unusual Process
 * Potential Ransomware Note File Dropped via SMB
 * Suspicious File Renamed via SMB
 * Unusual Network Activity from a Windows System Binary
+* Windows Service Installed via an Unusual Client
 
-### Root without branches (5)
+### Root without branches (6)
 
-5 rules:
+6 rules:
 * Docker Escape via Nsenter
 * Initramfs Extraction via CPIO
+* Kubectl Configuration Discovery
 * Linux init (PID 1) Secret Dump via GDB
 * Potential Protocol Tunneling via Chisel Server
 * Suspicious Data Encryption via OpenSSL Utility
-
-### Unsolvable constraints: event.category & event.type (empty intersection) (4)
-
-4 rules:
-* Deprecated - Suspicious File Creation in /etc for Persistence
-* File with Right-to-Left Override Character (RTLO) Created/Executed
-* Python Site or User Customize File Creation
-* Unsigned DLL loaded by DNS Service
 
 ### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)
 
@@ -594,6 +594,13 @@ Rules version: 9.0.7
 * Network Connection from Binary with RWX Memory Region
 * Potential Meterpreter Reverse Shell
 * Potential Reverse Shell via UDP
+
+### Unsolvable constraints: event.category & event.type (empty intersection) (3)
+
+3 rules:
+* File with Right-to-Left Override Character (RTLO) Created/Executed
+* Python Site or User Customize File Creation
+* Unsigned DLL loaded by DNS Service
 
 ### Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)
 
@@ -649,6 +656,11 @@ Rules version: 9.0.7
 
 1 rules:
 * MsiExec Service Child Process With Network Connection
+
+### Field type solver: flattened (1)
+
+1 rules:
+* Suspicious ADRS Token Request by Microsoft Auth Broker
 
 ### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)
 
@@ -930,6 +942,11 @@ Rules version: 9.0.7
 1 rules:
 * Windows Script Executing PowerShell
 
+### Unsolvable constraints: process.pid (out of boundary, 1 <= 0 <= 4294967295) (1)
+
+1 rules:
+* Service Creation via Local Kerberos Authentication
+
 ### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)
 
 1 rules:
@@ -969,6 +986,11 @@ Rules version: 9.0.7
 
 1 rules:
 * Machine Learning Detected a DNS Request With a High DGA Probability Score
+
+### Unsupported &keyword 'o365.audit.OperationCount' constraint: >= (1)
+
+1 rules:
+* Excessive Microsoft 365 Mailbox Items Accessed
 
 ### Unsupported &keyword 'problemchild.prediction_probability' constraint: <= (1)
 
