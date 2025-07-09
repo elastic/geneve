@@ -5,7 +5,7 @@ learn what rules are supported and what not and why.
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.0.8
+Rules version: 9.1.1
 
 ## Table of contents
    1. [Rejected documents](#rejected-documents)
