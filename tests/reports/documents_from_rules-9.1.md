@@ -5,7 +5,7 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.0.8
+Rules version: 9.1.1
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
