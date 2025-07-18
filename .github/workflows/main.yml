@@ -206,7 +206,8 @@ jobs:
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
         if: always()
         run: |
-          docker logs geneve-test-es-1 >es-${{ matrix.stack-version }}.log
+          docker logs geneve-test-es01-1 >es01-${{ matrix.stack-version }}.log
+          docker logs geneve-test-es02-1 >es02-${{ matrix.stack-version }}.log
           docker logs geneve-test-kbn-1 >kbn-${{ matrix.stack-version }}.log
           make down
 
