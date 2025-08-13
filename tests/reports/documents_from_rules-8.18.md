@@ -5,13 +5,13 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.18.8
+Rules version: 8.18.11
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (129)](#unsupported-rule-type-new_terms-129)
+      1. [Unsupported rule type: new_terms (133)](#unsupported-rule-type-new_terms-133)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported rule type: esql (73)](#unsupported-rule-type-esql-73)
+      1. [Unsupported rule type: esql (74)](#unsupported-rule-type-esql-74)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
@@ -20,6 +20,7 @@ Rules version: 8.18.8
       1. [Unsupported function: match (14)](#unsupported-function-match-14)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
+      1. [Field type solver: constant_keyword (7)](#field-type-solver-constant_keyword-7)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
       1. [Root without branches (6)](#root-without-branches-6)
@@ -37,7 +38,6 @@ Rules version: 8.18.8
       1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
       1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
-      1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
@@ -111,9 +111,9 @@ Rules version: 8.18.8
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (129)
+### Unsupported rule type: new_terms (133)
 
-129 rules:
+133 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -140,6 +140,8 @@ Rules version: 8.18.8
 * Abnormal Process ID or Lock File Created
 * Authentication via Unusual PAM Grantor
 * Azure Entra ID Rare App ID for Principal Authentication
+* Azure Key Vault Modified
+* Azure Key Vault Secret Key Usage by Unusual Identity
 * CAP_SYS_ADMIN Assigned to Binary
 * DPKG Package Installed by Unusual Parent Process
 * Delegated Managed Service Account Modification by an Unusual User
@@ -149,6 +151,7 @@ Rules version: 8.18.8
 * Enumeration of Kernel Modules via Proc
 * Enumeration of Privileged Local Groups Membership
 * Execution of an Unsigned Service
+* External Authentication Method Addition or Modification in Entra ID
 * File Creation in /var/log via Suspicious Process
 * File Permission Modification in Writable Directory
 * First Occurrence GitHub Event for a Personal Access Token (PAT)
@@ -173,6 +176,7 @@ Rules version: 8.18.8
 * FirstTime Seen Account Performing DCSync
 * Kernel Object File Creation
 * Kill Command Execution
+* Kubernetes Unusual Decision by User Agent
 * Linux Clipboard Activity Detected
 * Microsoft 365 Illicit Consent Grant via Registered Application
 * Microsoft 365 Portal Login from Rare Location
@@ -207,7 +211,6 @@ Rules version: 8.18.8
 * Successful SSH Authentication from Unusual IP Address
 * Successful SSH Authentication from Unusual SSH Public Key
 * Successful SSH Authentication from Unusual User
-* Sudoers File Modification
 * Suspicious Email Access by First-Party Application via Microsoft Graph
 * Suspicious Entra ID OAuth User Impersonation Scope Detected
 * Suspicious Mailbox Permission Delegation in Exchange Online
@@ -243,6 +246,7 @@ Rules version: 8.18.8
 * Unusual Remote File Creation
 * Unusual SSHD Child Process
 * Unusual Scheduled Task Update
+* Unusual Web Config File Access
 * dMSA Account Creation by an Unusual User
 
 ### Unsupported rule type: machine_learning (95)
@@ -345,9 +349,9 @@ Rules version: 8.18.8
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: esql (73)
+### Unsupported rule type: esql (74)
 
-73 rules:
+74 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -370,23 +374,24 @@ Rules version: 8.18.8
 * AWS STS Role Chaining
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 * AWS Signin Single Factor Console Login with Federated User
-* Azure Entra MFA TOTP Brute Force Attempts
 * Azure OpenAI Insecure Output Handling
-* Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
 * Dynamic IEX Reconstruction via Method String Access
+* Excessive Secret or Key Retrieval from Azure Key Vault
 * High Number of Egress Network Connections from Unusual Executable
 * High Number of Okta Device Token Cookies Generated for Authentication
 * M365 OneDrive Excessive File Downloads with OAuth Token
 * Microsoft 365 Brute Force via Entra ID Sign-Ins
-* Microsoft Azure or Mail Sign-in from a Suspicious Source
+* Microsoft 365 or Entra ID Sign-in from a Suspicious Source
 * Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
 * Microsoft Entra ID Exccessive Account Lockouts Detected
+* Microsoft Entra ID MFA TOTP Brute Force Attempts
 * Microsoft Entra ID Session Reuse with Suspicious Graph Access
 * Microsoft Entra ID Sign-In Brute Force Activity
 * Multiple Device Token Hashes for Single Okta Session
 * Multiple Microsoft 365 User Account Lockouts in Short Time Window
 * Multiple Okta User Authentication Events with Client Address
 * Multiple Okta User Authentication Events with Same Device Token Hash
+* OIDC Discovery URL Changed in Entra ID
 * Okta User Sessions Started from Different Geolocations
 * Potential AWS S3 Bucket Ransomware Note Uploaded
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
@@ -548,6 +553,17 @@ Rules version: 8.18.8
 * AWS S3 Bucket Server Access Logging Disabled
 * AWS S3 Object Versioning Suspended
 
+### Field type solver: constant_keyword (7)
+
+7 rules:
+* CrowdStrike External Alerts
+* Elastic Security External Alerts
+* Google SecOps External Alerts
+* Microsoft Sentinel External Alerts
+* SentinelOne Alert External Alerts
+* SentinelOne Threat External Alerts
+* Splunk External Alerts
+
 ### Field type solver: match_only_text (7)
 
 7 rules:
@@ -666,11 +682,6 @@ Rules version: 8.18.8
 
 1 rules:
 * AWS S3 Bucket Expiration Lifecycle Configuration Added
-
-### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)
-
-1 rules:
-* EC2 AMI Shared with Another Account
 
 ### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)
 
