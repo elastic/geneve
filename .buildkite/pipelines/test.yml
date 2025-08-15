@@ -7,4 +7,5 @@ steps:
       commit: "$BUILDKITE_COMMIT"
       message: "$BUILDKITE_MESSAGE"
       env:
-        TEST_EXTRA_PARAMS: "--online -v"
+        TEST_EXTRA_PARAMS: "--online"
+        TEST_VERBOSITY: 2
