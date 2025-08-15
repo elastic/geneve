@@ -92,9 +92,9 @@ jobs:
       matrix:
         include:
           - stack-version: 9.2.0-SNAPSHOT
-            schema-uri: "./etc/ecs-v9.0.0.tar.gz"
+            schema-uri: "./etc/ecs-v9.1.0.tar.gz"
           - stack-version: 9.1.0-SNAPSHOT
-            schema-uri: "./etc/ecs-v9.0.0.tar.gz"
+            schema-uri: "./etc/ecs-v9.1.0.tar.gz"
           - stack-version: 9.0.0
             schema-uri: "./etc/ecs-v9.0.0.tar.gz"
           - stack-version: 8.19.0-SNAPSHOT
