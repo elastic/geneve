@@ -1,11 +1,22 @@
 ---
 steps:
-  - label: "Trig Serverless Security QG with pre-built rules"
+  - label: "Serverless with pre-built rules"
     trigger: "geneve-serverless-security-quality-gate"
     build:
       branch: "$BUILDKITE_BRANCH"
       commit: "$BUILDKITE_COMMIT"
       message: "$BUILDKITE_MESSAGE"
       env:
+        TEST_EXTRA_PARAMS: "--online"
+        TEST_VERBOSITY: 2
+
+  - label: "Hosted with pre-built rules"
+    trigger: "geneve-ess-security-quality"
+    build:
+      branch: "$BUILDKITE_BRANCH"
+      commit: "$BUILDKITE_COMMIT"
+      message: "$BUILDKITE_MESSAGE"
+      env:
+        STACK_VERSION: "9.0.0"
         TEST_EXTRA_PARAMS: "--online"
         TEST_VERBOSITY: 2
