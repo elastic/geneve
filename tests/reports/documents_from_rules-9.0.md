@@ -5,19 +5,19 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.0.11
+Rules version: 9.0.12
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: new_terms (133)](#unsupported-rule-type-new_terms-133)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported rule type: esql (74)](#unsupported-rule-type-esql-74)
+      1. [Unsupported rule type: esql (75)](#unsupported-rule-type-esql-75)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
+      1. [Unsupported function: match (18)](#unsupported-function-match-18)
       1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
-      1. [Unsupported function: match (14)](#unsupported-function-match-14)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
       1. [Field type solver: constant_keyword (7)](#field-type-solver-constant_keyword-7)
@@ -349,9 +349,9 @@ Rules version: 9.0.11
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: esql (74)
+### Unsupported rule type: esql (75)
 
-74 rules:
+75 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -375,6 +375,7 @@ Rules version: 9.0.11
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 * AWS Signin Single Factor Console Login with Federated User
 * Azure OpenAI Insecure Output Handling
+* Command Line Obfuscation via Whitespace Padding
 * Dynamic IEX Reconstruction via Method String Access
 * Excessive Secret or Key Retrieval from Azure Key Vault
 * High Number of Egress Network Connections from Unusual Executable
@@ -385,8 +386,8 @@ Rules version: 9.0.11
 * Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
 * Microsoft Entra ID Exccessive Account Lockouts Detected
 * Microsoft Entra ID MFA TOTP Brute Force Attempts
-* Microsoft Entra ID Session Reuse with Suspicious Graph Access
 * Microsoft Entra ID Sign-In Brute Force Activity
+* Microsoft Entra ID Suspicious Session Reuse to Graph Access
 * Multiple Device Token Hashes for Single Okta Session
 * Multiple Microsoft 365 User Account Lockouts in Short Time Window
 * Multiple Okta User Authentication Events with Client Address
@@ -484,6 +485,28 @@ Rules version: 9.0.11
 
 ## Generation errors
 
+### Unsupported function: match (18)
+
+18 rules:
+* Alternate Data Stream Creation/Execution at Volume Root Directory
+* BloodHound Suite User-Agents Detected
+* Creation of Hidden Files and Directories via CommandLine
+* Executable File Creation with Multiple Extensions
+* Masquerading Space After Filename
+* Potential Credential Access via Windows Utilities
+* Potential Exploitation of an Unquoted Service Path Vulnerability
+* Potential Windows Error Manager Masquerading
+* Process Created with a Duplicated Token
+* Process Started from Process ID (PID) File
+* SUID/SGID Bit Set
+* Simple HTTP Web Server Connection
+* Simple HTTP Web Server Creation
+* Suspicious Execution via Microsoft Office Add-Ins
+* Suspicious Service was Installed in the System
+* Unusual Child Processes of RunDLL32
+* Unusual Network Connection via RunDLL32
+* Unusual Process Execution Path - Alternate Data Stream
+
 ### Root with too many branches (limit: 10000) (14)
 
 14 rules:
@@ -501,24 +524,6 @@ Rules version: 9.0.11
 * Potential Reverse Shell via Suspicious Child Process
 * Remote Execution via File Shares
 * Startup or Run Key Registry Modification
-
-### Unsupported function: match (14)
-
-14 rules:
-* Alternate Data Stream Creation/Execution at Volume Root Directory
-* BloodHound Suite User-Agents Detected
-* Creation of Hidden Files and Directories via CommandLine
-* Executable File Creation with Multiple Extensions
-* Masquerading Space After Filename
-* Potential Credential Access via Windows Utilities
-* Potential Exploitation of an Unquoted Service Path Vulnerability
-* Process Created with a Duplicated Token
-* Process Started from Process ID (PID) File
-* SUID/SGID Bit Set
-* Simple HTTP Web Server Connection
-* Simple HTTP Web Server Creation
-* Suspicious Execution via Microsoft Office Add-Ins
-* Suspicious Service was Installed in the System
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)
 
