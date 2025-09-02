@@ -5,7 +5,7 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.18.12
+Rules version: 8.18.13
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
@@ -16,15 +16,15 @@ Rules version: 8.18.12
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Unsupported function: match (18)](#unsupported-function-match-18)
+      1. [Unsupported function: match (19)](#unsupported-function-match-19)
       1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
-      1. [Field type solver: constant_keyword (7)](#field-type-solver-constant_keyword-7)
+      1. [Field type solver: constant_keyword (10)](#field-type-solver-constant_keyword-10)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
       1. [Root without branches (6)](#root-without-branches-6)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (5)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-5)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (3)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
@@ -32,10 +32,10 @@ Rules version: 8.18.12
       1. [Unsupported function: startsWith (3)](#unsupported-function-startswith-3)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-2)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
-      1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
       1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
@@ -82,7 +82,6 @@ Rules version: 8.18.12
       1. [Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsedgewebview2exe-msedgewebview2exe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'net1.exe'}): ('net1.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsnet1exe-net1exe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringspowershellexe-powershellexe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh')) (1)](#unsolvable-constraints-processname-excluded-by-stringssh-sh-1)
       1. [Unsolvable constraints: process.name (not in Strings({'pluginkit'}): ('python*')) (1)](#unsolvable-constraints-processname-not-in-stringspluginkit-python-1)
@@ -121,6 +120,7 @@ Rules version: 8.18.12
 * AWS EC2 Route Table Modified or Deleted
 * AWS EC2 Unauthorized Admin Credential Fetch via Assumed Role
 * AWS EC2 User Data Retrieval for EC2 Instance
+* AWS First Occurrence of STS GetFederationToken Request by User
 * AWS IAM API Calls via Temporary Session Tokens
 * AWS IAM Assume Role Policy Update
 * AWS IAM Create User via Assumed Role on EC2 Instance
@@ -163,10 +163,9 @@ Rules version: 8.18.12
 * First Occurrence of Okta User Session Started via Proxy
 * First Occurrence of Personal Access Token (PAT) Use For a GitHub User
 * First Occurrence of Private Repo Event from Specific GitHub Personal Access Token (PAT)
-* First Occurrence of STS GetFederationToken Request by User
 * First Occurrence of User Agent For a GitHub Personal Access Token (PAT)
 * First Occurrence of User-Agent For a GitHub User
-* First Time AWS Cloudformation Stack Creation by User
+* First Time AWS CloudFormation Stack Creation
 * First Time Seen AWS Secret Value Accessed in Secrets Manager
 * First Time Seen Commonly Abused Remote Access Tool Execution
 * First Time Seen Driver Loaded
@@ -178,8 +177,8 @@ Rules version: 8.18.12
 * Kill Command Execution
 * Kubernetes Unusual Decision by User Agent
 * Linux Clipboard Activity Detected
+* M365 Portal Login (Atypical Travel)
 * Microsoft 365 Illicit Consent Grant via Registered Application
-* Microsoft 365 Portal Login from Rare Location
 * Microsoft 365 Suspicious Inbox Rule to Delete or Move Emails
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
@@ -443,7 +442,7 @@ Rules version: 8.18.12
 * High Number of Okta User Password Reset or Unlock Attempts
 * High Number of Process Terminations
 * High Number of Process and/or Service Terminations
-* Microsoft 365 Portal Logins from Impossible Travel Locations
+* M365 Portal Login (Impossible Travel)
 * Multiple Alerts Involving a User
 * Multiple Alerts in Different ATT&CK Tactics on a Single Host
 * Multiple Okta Sessions Detected for a Single User
@@ -485,14 +484,15 @@ Rules version: 8.18.12
 
 ## Generation errors
 
-### Unsupported function: match (18)
+### Unsupported function: match (19)
 
-18 rules:
+19 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * BloodHound Suite User-Agents Detected
 * Creation of Hidden Files and Directories via CommandLine
 * Executable File Creation with Multiple Extensions
 * Masquerading Space After Filename
+* Network Activity to a Suspicious Top Level Domain
 * Potential Credential Access via Windows Utilities
 * Potential Exploitation of an Unquoted Service Path Vulnerability
 * Potential Windows Error Manager Masquerading
@@ -558,13 +558,16 @@ Rules version: 8.18.12
 * AWS S3 Bucket Server Access Logging Disabled
 * AWS S3 Object Versioning Suspended
 
-### Field type solver: constant_keyword (7)
+### Field type solver: constant_keyword (10)
 
-7 rules:
+10 rules:
 * CrowdStrike External Alerts
 * Elastic Security External Alerts
 * Google SecOps External Alerts
 * Microsoft Sentinel External Alerts
+* Potential DLL Side-Loading via Trusted Microsoft Programs
+* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
+* Potential VIEWSTATE RCE Attempt on SharePoint/IIS
 * SentinelOne Alert External Alerts
 * SentinelOne Threat External Alerts
 * Splunk External Alerts
@@ -601,10 +604,11 @@ Rules version: 8.18.12
 * Potential Protocol Tunneling via Chisel Server
 * Suspicious Data Encryption via OpenSSL Utility
 
-### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)
+### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (5)
 
-4 rules:
+5 rules:
 * Execution via MS VisualStudio Pre/Post Build Events
+* Suspicious Execution from a WebDav Share
 * Suspicious JetBrains TeamCity Child Process
 * Suspicious Windows Command Shell Arguments
 * Web Shell Detection: Script Process Child of Common Web Processes
@@ -633,8 +637,8 @@ Rules version: 8.18.12
 ### Unsupported function: endswith (3)
 
 3 rules:
+* Potential Computer Account Relay Activity
 * Potential Machine Account Relay Attack via SMB
-* Potential Relay Attack against a Domain Controller
 * Unusual Execution via Microsoft Common Console File
 
 ### Unsupported function: startsWith (3)
@@ -656,6 +660,12 @@ Rules version: 8.18.12
 * RPC (Remote Procedure Call) from the Internet
 * RPC (Remote Procedure Call) to the Internet
 
+### Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)
+
+2 rules:
+* Potential Execution via FileFix Phishing Attack
+* Suspicious MS Office Child Process
+
 ### Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)
 
 2 rules:
@@ -672,11 +682,6 @@ Rules version: 8.18.12
 
 1 rules:
 * Potential Okta MFA Bombing via Push Notifications
-
-### Cannot choose from an empty set (1)
-
-1 rules:
-* MsiExec Service Child Process With Network Connection
 
 ### Field type solver: flattened (1)
 
@@ -907,11 +912,6 @@ Rules version: 8.18.12
 
 1 rules:
 * Delayed Execution via Ping
-
-### Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)
-
-1 rules:
-* Suspicious MS Office Child Process
 
 ### Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)
 
