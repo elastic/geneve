@@ -5,26 +5,26 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.18.13
+Rules version: 8.18.14
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (133)](#unsupported-rule-type-new_terms-133)
+      1. [Unsupported rule type: new_terms (139)](#unsupported-rule-type-new_terms-139)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: esql (75)](#unsupported-rule-type-esql-75)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Unsupported function: match (19)](#unsupported-function-match-19)
-      1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
+      1. [Unsupported function: match (20)](#unsupported-function-match-20)
+      1. [Root with too many branches (limit: 10000) (13)](#root-with-too-many-branches-limit-10000-13)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
       1. [Field type solver: constant_keyword (10)](#field-type-solver-constant_keyword-10)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
       1. [Root without branches (6)](#root-without-branches-6)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (5)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-5)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (3)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
@@ -55,6 +55,7 @@ Rules version: 8.18.13
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'IO.Compression.ZipFile'}): ('CompressionLevel')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsiocompressionzipfile-compressionlevel-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Invoke-WmiMethod'}): ('ComputerName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsinvoke-wmimethod-computername-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'LsaCallAuthenticationPackage'}): ('KerbRetrieveEncodedTicketMessage')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringslsacallauthenticationpackage-kerbretrieveencodedticketmessage-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Microsoft.Office.Interop.Outlook'}): ('MAPI')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsmicrosoftofficeinteropoutlook-mapi-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NTLMSSPNegotiate'}): ('NegotiateSMB')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsntlmsspnegotiate-negotiatesmb-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstartupinfoex-updateprocthreadattribute-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Set-MpPreference'}): ('DisableArchiveScanning')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsset-mppreference-disablearchivescanning-1)
@@ -110,13 +111,14 @@ Rules version: 8.18.13
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (133)
+### Unsupported rule type: new_terms (139)
 
-133 rules:
+139 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
 * AWS DynamoDB Table Exported to S3
+* AWS EC2 Route Table Created
 * AWS EC2 Route Table Modified or Deleted
 * AWS EC2 Unauthorized Admin Credential Fetch via Assumed Role
 * AWS EC2 User Data Retrieval for EC2 Instance
@@ -126,9 +128,11 @@ Rules version: 8.18.13
 * AWS IAM Create User via Assumed Role on EC2 Instance
 * AWS IAM Customer-Managed Policy Attached to Role by Rare User
 * AWS S3 Unauthenticated Bucket Access by Rare Source
-* AWS SNS Email Subscription by Rare User
+* AWS SNS Rare Protocol Subscription by User
 * AWS SNS Topic Created by Rare User
+* AWS SNS Topic Message Publish by Rare User
 * AWS SSM Command Document Created by Rare User
+* AWS SSM Session Started to EC2 Instance
 * AWS SSM `SendCommand` Execution by Rare User
 * AWS SSM `SendCommand` with Run Shell Command Parameters
 * AWS STS AssumeRole with New MFA Device
@@ -151,6 +155,7 @@ Rules version: 8.18.13
 * Enumeration of Kernel Modules via Proc
 * Enumeration of Privileged Local Groups Membership
 * Execution of an Unsigned Service
+* Execution via MSSQL xp_cmdshell Stored Procedure
 * External Authentication Method Addition or Modification in Entra ID
 * File Creation in /var/log via Suspicious Process
 * File Permission Modification in Writable Directory
@@ -176,6 +181,7 @@ Rules version: 8.18.13
 * Kernel Object File Creation
 * Kill Command Execution
 * Kubernetes Unusual Decision by User Agent
+* LSASS Memory Dump Handle Access
 * Linux Clipboard Activity Detected
 * M365 Portal Login (Atypical Travel)
 * Microsoft 365 Illicit Consent Grant via Registered Application
@@ -193,6 +199,7 @@ Rules version: 8.18.13
 * Modification of Standard Authentication Module or Configuration
 * Network Activity Detected via Kworker
 * Network Traffic Capture via CAP_NET_RAW
+* Potential Credential Access via DCSync
 * Potential Pass-the-Hash (PtH) Attempt
 * Potential Privilege Escalation via Linux DAC permissions
 * Potential Shadow File Read via Command Line Utilities
@@ -201,9 +208,7 @@ Rules version: 8.18.13
 * Query Registry using Built-in Tools
 * RPM Package Installed by Unusual Parent Process
 * Rare SMB Connection to the Internet
-* SNS Topic Message Publish by Rare User
 * SSH Authorized Keys File Modification
-* SSM Session Started to EC2 Instance
 * Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
 * Successful Application SSO from Rare Unknown Client Device
@@ -234,6 +239,7 @@ Rules version: 8.18.13
 * Unusual Discovery Signal Alert with Unusual Process Executable
 * Unusual Execution from Kernel Thread (kthreadd) Parent
 * Unusual Exim4 Child Process
+* Unusual File Operation by dns.exe
 * Unusual Interactive Process Launched in a Container
 * Unusual Interactive Shell Launched from System User
 * Unusual LD_PRELOAD/LD_LIBRARY_PATH Command Line Arguments
@@ -246,6 +252,7 @@ Rules version: 8.18.13
 * Unusual SSHD Child Process
 * Unusual Scheduled Task Update
 * Unusual Web Config File Access
+* Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
 ### Unsupported rule type: machine_learning (95)
@@ -484,9 +491,9 @@ Rules version: 8.18.13
 
 ## Generation errors
 
-### Unsupported function: match (19)
+### Unsupported function: match (20)
 
-19 rules:
+20 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * BloodHound Suite User-Agents Detected
 * Creation of Hidden Files and Directories via CommandLine
@@ -498,6 +505,7 @@ Rules version: 8.18.13
 * Potential Windows Error Manager Masquerading
 * Process Created with a Duplicated Token
 * Process Started from Process ID (PID) File
+* Remote File Download via PowerShell
 * SUID/SGID Bit Set
 * Simple HTTP Web Server Connection
 * Simple HTTP Web Server Creation
@@ -507,9 +515,9 @@ Rules version: 8.18.13
 * Unusual Network Connection via RunDLL32
 * Unusual Process Execution Path - Alternate Data Stream
 
-### Root with too many branches (limit: 10000) (14)
+### Root with too many branches (limit: 10000) (13)
 
-14 rules:
+13 rules:
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
 * External IP Lookup from Non-Browser Process
@@ -522,7 +530,6 @@ Rules version: 8.18.13
 * Potential Remote Code Execution via Web Server
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
-* Remote Execution via File Shares
 * Startup or Run Key Registry Modification
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)
@@ -604,14 +611,13 @@ Rules version: 8.18.13
 * Potential Protocol Tunneling via Chisel Server
 * Suspicious Data Encryption via OpenSSL Utility
 
-### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (5)
+### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)
 
-5 rules:
+4 rules:
 * Execution via MS VisualStudio Pre/Post Build Events
 * Suspicious Execution from a WebDav Share
 * Suspicious JetBrains TeamCity Child Process
 * Suspicious Windows Command Shell Arguments
-* Web Shell Detection: Script Process Child of Common Web Processes
 
 ### <class 'eql.ast.Sample'> (3)
 
@@ -777,6 +783,11 @@ Rules version: 8.18.13
 
 1 rules:
 * PowerShell Kerberos Ticket Dump
+
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Microsoft.Office.Interop.Outlook'}): ('MAPI')) (1)
+
+1 rules:
+* PowerShell Mailbox Collection Script
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NTLMSSPNegotiate'}): ('NegotiateSMB')) (1)
 
