@@ -5,20 +5,20 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.0.14
+Rules version: 9.0.15
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (139)](#unsupported-rule-type-new_terms-139)
+      1. [Unsupported rule type: new_terms (142)](#unsupported-rule-type-new_terms-142)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported rule type: esql (75)](#unsupported-rule-type-esql-75)
+      1. [Unsupported rule type: esql (74)](#unsupported-rule-type-esql-74)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Unsupported function: match (20)](#unsupported-function-match-20)
-      1. [Root with too many branches (limit: 10000) (13)](#root-with-too-many-branches-limit-10000-13)
+      1. [Unsupported function: match (21)](#unsupported-function-match-21)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
+      1. [Root with too many branches (limit: 10000) (12)](#root-with-too-many-branches-limit-10000-12)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
       1. [Field type solver: constant_keyword (10)](#field-type-solver-constant_keyword-10)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
@@ -79,6 +79,7 @@ Rules version: 9.0.14
       1. [Unsolvable constraints: process.command_line (not in Strings({'*net.ipv4.ip_forward*'}): ('*echo *')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsnetipv4ip_forward-echo--1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*vm.swappiness*'}): ('*echo *')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsvmswappiness-echo--1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsarpexe-arpexe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'dash'}): ('dash')) (1)](#unsolvable-constraints-processname-excluded-by-stringsdash-dash-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsedgewebview2exe-msedgewebview2exe-1)
@@ -111,9 +112,9 @@ Rules version: 9.0.14
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (139)
+### Unsupported rule type: new_terms (142)
 
-139 rules:
+142 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -140,12 +141,15 @@ Rules version: 9.0.14
 * AWS STS GetCallerIdentity API Called for the First Time
 * AWS STS Role Assumption by Service
 * AWS STS Role Assumption by User
+* AWS STS Role Chaining
 * AWS Systems Manager SecureString Parameter Request with Decryption Flag
 * Abnormal Process ID or Lock File Created
 * Authentication via Unusual PAM Grantor
 * Azure Entra ID Rare App ID for Principal Authentication
 * Azure Key Vault Modified
 * Azure Key Vault Secret Key Usage by Unusual Identity
+* Azure Storage Account Blob Public Access Enabled
+* Azure Storage Account Keys Accessed by Privileged User
 * CAP_SYS_ADMIN Assigned to Binary
 * DPKG Package Installed by Unusual Parent Process
 * Delegated Managed Service Account Modification by an Unusual User
@@ -355,9 +359,9 @@ Rules version: 9.0.14
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: esql (75)
+### Unsupported rule type: esql (74)
 
-75 rules:
+74 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -374,15 +378,14 @@ Rules version: 9.0.14
 * AWS IAM AdministratorAccess Policy Attached to User
 * AWS IAM Login Profile Added for Root
 * AWS IAM User Created Access Keys For Another User
-* AWS S3 Bucket Enumeration or Brute Force
 * AWS S3 Object Encryption Using External KMS Key
 * AWS S3 Static Site JavaScript File Uploaded
-* AWS STS Role Chaining
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 * AWS Signin Single Factor Console Login with Federated User
 * Azure OpenAI Insecure Output Handling
 * Command Line Obfuscation via Whitespace Padding
 * Dynamic IEX Reconstruction via Method String Access
+* Entra ID Actor Token User Impersonation Abuse
 * Excessive Secret or Key Retrieval from Azure Key Vault
 * High Number of Egress Network Connections from Unusual Executable
 * High Number of Okta Device Token Cookies Generated for Authentication
@@ -400,7 +403,6 @@ Rules version: 9.0.14
 * Multiple Okta User Authentication Events with Same Device Token Hash
 * OIDC Discovery URL Changed in Entra ID
 * Okta User Sessions Started from Different Geolocations
-* Potential AWS S3 Bucket Ransomware Note Uploaded
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
 * Potential Azure OpenAI Model Theft
 * Potential Denial of Azure OpenAI ML Service
@@ -419,6 +421,7 @@ Rules version: 9.0.14
 * Potential PowerShell Obfuscation via Special Character Overuse
 * Potential PowerShell Obfuscation via String Concatenation
 * Potential PowerShell Obfuscation via String Reordering
+* Potential Ransomware Behavior - Note Files by System
 * Potential Subnet Scanning Activity from Compromised Host
 * Potential Widespread Malware Infection Across Multiple Hosts
 * PowerShell Obfuscation via Negative Index String Reversal
@@ -441,6 +444,7 @@ Rules version: 9.0.14
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
+* AWS S3 Bucket Enumeration or Brute Force
 * Agent Spoofing - Multiple Hosts Using Same Agent
 * Attempts to Brute Force an Okta User Account
 * Excessive AWS S3 Object Encryption with SSE-C
@@ -462,7 +466,6 @@ Rules version: 9.0.14
 * Potential Network Scan Detected
 * Potential Network Scan Executed From Host
 * Potential Network Sweep Detected
-* Potential Ransomware Behavior - High count of Readme files by System
 * Potential SYN-Based Port Scan Detected
 * Potential macOS SSH Brute Force Detected
 * Rapid Secret Retrieval Attempts from AWS SecretsManager
@@ -491,15 +494,16 @@ Rules version: 9.0.14
 
 ## Generation errors
 
-### Unsupported function: match (20)
+### Unsupported function: match (21)
 
-20 rules:
+21 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * BloodHound Suite User-Agents Detected
 * Creation of Hidden Files and Directories via CommandLine
 * Executable File Creation with Multiple Extensions
 * Masquerading Space After Filename
 * Network Activity to a Suspicious Top Level Domain
+* Potential AWS S3 Bucket Ransomware Note Uploaded
 * Potential Credential Access via Windows Utilities
 * Potential Exploitation of an Unquoted Service Path Vulnerability
 * Potential Windows Error Manager Masquerading
@@ -514,23 +518,6 @@ Rules version: 9.0.14
 * Unusual Child Processes of RunDLL32
 * Unusual Network Connection via RunDLL32
 * Unusual Process Execution Path - Alternate Data Stream
-
-### Root with too many branches (limit: 10000) (13)
-
-13 rules:
-* Connection to Commonly Abused Web Services
-* Execution from Unusual Directory - Command Line
-* External IP Lookup from Non-Browser Process
-* Potential DNS Tunneling via NsLookup
-* Potential Evasion via Windows Filtering Platform
-* Potential Linux Ransomware Note Creation Detected
-* Potential Masquerading as System32 DLL
-* Potential Masquerading as System32 Executable
-* Potential Pspy Process Monitoring Detected
-* Potential Remote Code Execution via Web Server
-* Potential Reverse Shell via Suspicious Binary
-* Potential Reverse Shell via Suspicious Child Process
-* Startup or Run Key Registry Modification
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)
 
@@ -548,6 +535,22 @@ Rules version: 9.0.14
 * Suspicious Execution via MSIEXEC
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
+
+### Root with too many branches (limit: 10000) (12)
+
+12 rules:
+* Connection to Commonly Abused Web Services
+* Execution from Unusual Directory - Command Line
+* External IP Lookup from Non-Browser Process
+* Potential DNS Tunneling via NsLookup
+* Potential Evasion via Windows Filtering Platform
+* Potential Linux Ransomware Note Creation Detected
+* Potential Masquerading as System32 DLL
+* Potential Masquerading as System32 Executable
+* Potential Pspy Process Monitoring Detected
+* Potential Remote Code Execution via Web Server
+* Potential Reverse Shell via Suspicious Binary
+* Potential Reverse Shell via Suspicious Child Process
 
 ### Unsupported function: stringContains (12)
 
@@ -905,6 +908,11 @@ Rules version: 9.0.14
 
 1 rules:
 * Remote System Discovery Commands
+
+### Unsolvable constraints: process.name (excluded by Strings({'dash'}): ('dash')) (1)
+
+1 rules:
+* Potential CVE-2025-32463 Nsswitch File Creation
 
 ### Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)
 
