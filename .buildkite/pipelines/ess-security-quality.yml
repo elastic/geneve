@@ -18,7 +18,9 @@ steps:
     key: geneve_tests
     depends_on: create_geneve_environment
     command:
+      - echo "~~~ Install dependencies"
       - python3 -m pip install -r requirements.txt
+      - echo "+++ Run tests"
       - ./scripts/test-stacks.sh qaf-ess ${TEST_EXTRA_PARAMS:---online -v --queries}
     artifact_paths:
       - tests/reports/*.new.md
