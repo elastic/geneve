@@ -5,21 +5,21 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.0.15
+Rules version: 9.0.16
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (142)](#unsupported-rule-type-new_terms-142)
+      1. [Unsupported rule type: new_terms (145)](#unsupported-rule-type-new_terms-145)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported rule type: esql (74)](#unsupported-rule-type-esql-74)
-      1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
+      1. [Unsupported rule type: esql (69)](#unsupported-rule-type-esql-69)
+      1. [Unsupported rule type: threshold (31)](#unsupported-rule-type-threshold-31)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Unsupported function: match (21)](#unsupported-function-match-21)
+      1. [Unsupported function: match (22)](#unsupported-function-match-22)
+      1. [Unsupported function: stringContains (16)](#unsupported-function-stringcontains-16)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
       1. [Root with too many branches (limit: 10000) (12)](#root-with-too-many-branches-limit-10000-12)
-      1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
       1. [Field type solver: constant_keyword (10)](#field-type-solver-constant_keyword-10)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
@@ -112,9 +112,9 @@ Rules version: 9.0.15
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (142)
+### Unsupported rule type: new_terms (145)
 
-142 rules:
+145 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -145,15 +145,19 @@ Rules version: 9.0.15
 * AWS Systems Manager SecureString Parameter Request with Decryption Flag
 * Abnormal Process ID or Lock File Created
 * Authentication via Unusual PAM Grantor
+* Azure Compute Restore Point Collection Deleted by Unusual User
 * Azure Entra ID Rare App ID for Principal Authentication
 * Azure Key Vault Modified
 * Azure Key Vault Secret Key Usage by Unusual Identity
 * Azure Storage Account Blob Public Access Enabled
+* Azure Storage Account Deletion by Unusual User
 * Azure Storage Account Keys Accessed by Privileged User
+* Azure Storage Blob Retrieval via AzCopy
 * CAP_SYS_ADMIN Assigned to Binary
 * DPKG Package Installed by Unusual Parent Process
 * Delegated Managed Service Account Modification by an Unusual User
 * Discovery of Internet Capabilities via Built-in Tools
+* Entra ID OAuth user_impersonation Scope for Unusual User and Client
 * Entra ID User Signed In from Unusual Device
 * Enumeration of Kernel Modules
 * Enumeration of Kernel Modules via Proc
@@ -220,7 +224,6 @@ Rules version: 9.0.15
 * Successful SSH Authentication from Unusual SSH Public Key
 * Successful SSH Authentication from Unusual User
 * Suspicious Email Access by First-Party Application via Microsoft Graph
-* Suspicious Entra ID OAuth User Impersonation Scope Detected
 * Suspicious Mailbox Permission Delegation in Exchange Online
 * Suspicious Microsoft 365 Mail Access by Unusual ClientAppId
 * Suspicious Modprobe File Event
@@ -359,9 +362,9 @@ Rules version: 9.0.15
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: esql (74)
+### Unsupported rule type: esql (69)
 
-74 rules:
+69 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -373,15 +376,10 @@ Rules version: 9.0.15
 * AWS EC2 EBS Snapshot Access Removed
 * AWS EC2 EBS Snapshot Shared or Made Public
 * AWS EC2 Multi-Region DescribeInstances API Calls
-* AWS IAM AdministratorAccess Policy Attached to Group
-* AWS IAM AdministratorAccess Policy Attached to Role
-* AWS IAM AdministratorAccess Policy Attached to User
-* AWS IAM Login Profile Added for Root
 * AWS IAM User Created Access Keys For Another User
 * AWS S3 Object Encryption Using External KMS Key
 * AWS S3 Static Site JavaScript File Uploaded
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* AWS Signin Single Factor Console Login with Federated User
 * Azure OpenAI Insecure Output Handling
 * Command Line Obfuscation via Whitespace Padding
 * Dynamic IEX Reconstruction via Method String Access
@@ -438,15 +436,17 @@ Rules version: 9.0.15
 * Unusual High Word Policy Blocks Detected
 * Unusual Process Spawned from Web Server Parent
 
-### Unsupported rule type: threshold (29)
+### Unsupported rule type: threshold (31)
 
-29 rules:
+31 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
 * AWS S3 Bucket Enumeration or Brute Force
 * Agent Spoofing - Multiple Hosts Using Same Agent
 * Attempts to Brute Force an Okta User Account
+* Azure Compute Restore Point Collections Deleted
+* Azure Storage Account Deletions by User
 * Excessive AWS S3 Object Encryption with SSE-C
 * GitHub UEBA - Multiple Alerts from a GitHub Account
 * High Number of Cloned GitHub Repos From PAT
@@ -494,9 +494,9 @@ Rules version: 9.0.15
 
 ## Generation errors
 
-### Unsupported function: match (21)
+### Unsupported function: match (22)
 
-21 rules:
+22 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * BloodHound Suite User-Agents Detected
 * Creation of Hidden Files and Directories via CommandLine
@@ -504,6 +504,7 @@ Rules version: 9.0.15
 * Masquerading Space After Filename
 * Network Activity to a Suspicious Top Level Domain
 * Potential AWS S3 Bucket Ransomware Note Uploaded
+* Potential Command Shell via NetCat
 * Potential Credential Access via Windows Utilities
 * Potential Exploitation of an Unquoted Service Path Vulnerability
 * Potential Windows Error Manager Masquerading
@@ -518,6 +519,26 @@ Rules version: 9.0.15
 * Unusual Child Processes of RunDLL32
 * Unusual Network Connection via RunDLL32
 * Unusual Process Execution Path - Alternate Data Stream
+
+### Unsupported function: stringContains (16)
+
+16 rules:
+* AWS EC2 Instance Console Login via Assumed Role
+* AWS EC2 Instance Interaction with IAM Service
+* AWS IAM AdministratorAccess Policy Attached to Group
+* AWS IAM AdministratorAccess Policy Attached to Role
+* AWS IAM AdministratorAccess Policy Attached to User
+* AWS IAM CompromisedKeyQuarantine Policy Attached to User
+* AWS IAM Login Profile Added for Root
+* AWS RDS DB Instance Made Public
+* AWS RDS DB Instance or Cluster Deletion Protection Disabled
+* AWS RDS DB Instance or Cluster Password Modified
+* AWS RDS DB Snapshot Shared with Another Account
+* AWS RDS Snapshot Deleted
+* AWS S3 Bucket Policy Added to Share with External Account
+* AWS S3 Bucket Replicated to Another Account
+* AWS S3 Bucket Server Access Logging Disabled
+* AWS S3 Object Versioning Suspended
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)
 
@@ -551,22 +572,6 @@ Rules version: 9.0.15
 * Potential Remote Code Execution via Web Server
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
-
-### Unsupported function: stringContains (12)
-
-12 rules:
-* AWS EC2 Instance Console Login via Assumed Role
-* AWS EC2 Instance Interaction with IAM Service
-* AWS IAM CompromisedKeyQuarantine Policy Attached to User
-* AWS RDS DB Instance Made Public
-* AWS RDS DB Instance or Cluster Deletion Protection Disabled
-* AWS RDS DB Instance or Cluster Password Modified
-* AWS RDS DB Snapshot Shared with Another Account
-* AWS RDS Snapshot Deleted
-* AWS S3 Bucket Policy Added to Share with External Account
-* AWS S3 Bucket Replicated to Another Account
-* AWS S3 Bucket Server Access Logging Disabled
-* AWS S3 Object Versioning Suspended
 
 ### Field type solver: constant_keyword (10)
 
