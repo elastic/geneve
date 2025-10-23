@@ -16,6 +16,7 @@
         "actions/setup-python",
         "actions/upload-artifact",
         "docker.elastic.co/appex-qa/qaf",
+        "docker.elastic.co/ci-agent-images/pipelib",
         "faker",
         "github.com/spf13/cobra",
         "golang.org/x/mod",
