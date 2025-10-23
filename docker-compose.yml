@@ -3,7 +3,7 @@ name: geneve-test
 services:
   certs:
     container_name: certs
-    image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-9.0.0}}
+    image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-9.2.0}}
     command: >
       bash -ec '
         if [ ! -f /certs/ok ]; then
@@ -34,7 +34,7 @@ services:
     depends_on:
       certs:
         condition: service_healthy
-    image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-9.0.0}}
+    image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-9.2.0}}
     environment:
       - node.name=es01
       - cluster.name=geneve-test
@@ -70,7 +70,7 @@ services:
     depends_on:
       certs:
         condition: service_healthy
-    image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-9.0.0}}
+    image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-9.2.0}}
     environment:
       - node.name=es02
       - cluster.name=geneve-test
@@ -108,7 +108,7 @@ services:
         condition: service_healthy
       es02:
         condition: service_healthy
-    image: ${TEST_KIBANA_IMAGE:-docker.elastic.co/kibana/kibana:${TEST_STACK_VERSION:-9.0.0}}
+    image: ${TEST_KIBANA_IMAGE:-docker.elastic.co/kibana/kibana:${TEST_STACK_VERSION:-9.2.0}}
     environment:
       SERVER_NAME: kbn
       ELASTICSEARCH_HOSTS: "http://es01:9200 http://es02:9200"
