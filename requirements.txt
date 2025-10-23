@@ -1,8 +1,8 @@
 black
 build
-elasticsearch~=8.0
+elasticsearch>=8.0,<9.0
 eql==0.9.19
-faker==35.2.2
+faker==35.2.2,<37.0
 faker-datasets
 infinite-sets
 isort
