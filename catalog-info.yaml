@@ -37,6 +37,7 @@ spec:
     spec:
       repository: elastic/geneve
       pipeline_file: ".buildkite/pipelines/main.yml"
+      skip_intermediate_builds: false
       teams:
         security-engineering-productivity:
           access_level: MANAGE_BUILD_AND_READ
