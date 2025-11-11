@@ -14,13 +14,13 @@ steps:
               label: "Verify Renovate configuration"
               command: "renovate-config-validator"
               agents:
-                image: "docker.elastic.co/ci-agent-images/pipelib:0.22.0@sha256:25503116fb91c18383b17aee528b9ca6e520ef58622c7f961c7d255bb8ba51f6"
+                image: "docker.elastic.co/ci-agent-images/pipelib:0.23.0@sha256:69094e7e5fa1e252da2171fdf707bf3408c5e576e86ac64d8d667498bc1b627d"
           # if our catalog-info.yaml is changed, make sure it's well-formed according to our internal standards as well as Backstage's validation
           - path: "catalog-info.yaml"
             config:
               command: "/agent/check-catalog-info.sh"
               agents:
-                image: "docker.elastic.co/ci-agent-images/pipelib:0.22.0@sha256:25503116fb91c18383b17aee528b9ca6e520ef58622c7f961c7d255bb8ba51f6"
+                image: "docker.elastic.co/ci-agent-images/pipelib:0.23.0@sha256:69094e7e5fa1e252da2171fdf707bf3408c5e576e86ac64d8d667498bc1b627d"
           - default:
               config:
                 label: "Upload test pipeline"
