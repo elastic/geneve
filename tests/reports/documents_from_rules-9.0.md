@@ -5,19 +5,19 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.0.16
+Rules version: 9.0.17
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: new_terms (145)](#unsupported-rule-type-new_terms-145)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported rule type: esql (69)](#unsupported-rule-type-esql-69)
+      1. [Unsupported rule type: esql (67)](#unsupported-rule-type-esql-67)
       1. [Unsupported rule type: threshold (31)](#unsupported-rule-type-threshold-31)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
       1. [Unsupported function: match (22)](#unsupported-function-match-22)
-      1. [Unsupported function: stringContains (16)](#unsupported-function-stringcontains-16)
+      1. [Unsupported function: stringContains (20)](#unsupported-function-stringcontains-20)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
       1. [Root with too many branches (limit: 10000) (12)](#root-with-too-many-branches-limit-10000-12)
       1. [Field type solver: constant_keyword (10)](#field-type-solver-constant_keyword-10)
@@ -38,7 +38,6 @@ Rules version: 9.0.16
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
-      1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
@@ -191,7 +190,7 @@ Rules version: 9.0.16
 * Kubernetes Unusual Decision by User Agent
 * LSASS Memory Dump Handle Access
 * Linux Clipboard Activity Detected
-* M365 Portal Login (Atypical Travel)
+* M365 Identity Login from Atypical Travel Location
 * Microsoft 365 Illicit Consent Grant via Registered Application
 * Microsoft 365 Suspicious Inbox Rule to Delete or Move Emails
 * Microsoft Build Engine Started an Unusual Process
@@ -362,9 +361,9 @@ Rules version: 9.0.16
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: esql (69)
+### Unsupported rule type: esql (67)
 
-69 rules:
+67 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -373,8 +372,6 @@ Rules version: 9.0.16
 * AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
 * AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
 * AWS Discovery API Calls via CLI from a Single Resource
-* AWS EC2 EBS Snapshot Access Removed
-* AWS EC2 EBS Snapshot Shared or Made Public
 * AWS EC2 Multi-Region DescribeInstances API Calls
 * AWS IAM User Created Access Keys For Another User
 * AWS S3 Object Encryption Using External KMS Key
@@ -453,7 +450,7 @@ Rules version: 9.0.16
 * High Number of Okta User Password Reset or Unlock Attempts
 * High Number of Process Terminations
 * High Number of Process and/or Service Terminations
-* M365 Portal Login (Impossible Travel)
+* M365 Identity Login from Impossible Travel Location
 * Multiple Alerts Involving a User
 * Multiple Alerts in Different ATT&CK Tactics on a Single Host
 * Multiple Okta Sessions Detected for a Single User
@@ -520,9 +517,11 @@ Rules version: 9.0.16
 * Unusual Network Connection via RunDLL32
 * Unusual Process Execution Path - Alternate Data Stream
 
-### Unsupported function: stringContains (16)
+### Unsupported function: stringContains (20)
 
-16 rules:
+20 rules:
+* AWS EC2 EBS Snapshot Access Removed
+* AWS EC2 EBS Snapshot Shared or Made Public
 * AWS EC2 Instance Console Login via Assumed Role
 * AWS EC2 Instance Interaction with IAM Service
 * AWS IAM AdministratorAccess Policy Attached to Group
@@ -535,6 +534,8 @@ Rules version: 9.0.16
 * AWS RDS DB Instance or Cluster Password Modified
 * AWS RDS DB Snapshot Shared with Another Account
 * AWS RDS Snapshot Deleted
+* AWS S3 Bucket Expiration Lifecycle Configuration Added
+* AWS S3 Bucket Policy Added to Allow Public Access
 * AWS S3 Bucket Policy Added to Share with External Account
 * AWS S3 Bucket Replicated to Another Account
 * AWS S3 Bucket Server Access Logging Disabled
@@ -708,11 +709,6 @@ Rules version: 9.0.16
 
 1 rules:
 * Suspicious ADRS Token Request by Microsoft Auth Broker
-
-### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)
-
-1 rules:
-* AWS S3 Bucket Expiration Lifecycle Configuration Added
 
 ### Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)
 
