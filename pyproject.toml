@@ -21,7 +21,7 @@ classifiers = [
 requires-python = ">=3.8"
 dependencies = [
   "elasticsearch>=8.2.0",
-  "eql==0.9.19",
+  "eql @ git+https://github.com/endgameinc/eql@update_lark_dependency",
   "faker",
   "faker-datasets",
   "infinite-sets",

@@ -1,7 +1,7 @@
 black
 build
 elasticsearch>=8.0,<9.0
-eql==0.9.19
+eql @ git+https://github.com/endgameinc/eql@update_lark_dependency
 faker==35.2.2,<37.0
 faker-datasets
 infinite-sets
