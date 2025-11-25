@@ -5,32 +5,32 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.1.10
+Rules version: 9.1.11
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (145)](#unsupported-rule-type-new_terms-145)
+      1. [Unsupported rule type: new_terms (148)](#unsupported-rule-type-new_terms-148)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported rule type: esql (67)](#unsupported-rule-type-esql-67)
-      1. [Unsupported rule type: threshold (31)](#unsupported-rule-type-threshold-31)
+      1. [Unsupported rule type: esql (77)](#unsupported-rule-type-esql-77)
+      1. [Unsupported rule type: threshold (33)](#unsupported-rule-type-threshold-33)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Unsupported function: match (22)](#unsupported-function-match-22)
-      1. [Unsupported function: stringContains (20)](#unsupported-function-stringcontains-20)
+      1. [Unsupported function: match (23)](#unsupported-function-match-23)
+      1. [Unsupported function: stringContains (21)](#unsupported-function-stringcontains-21)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
       1. [Root with too many branches (limit: 10000) (12)](#root-with-too-many-branches-limit-10000-12)
-      1. [Field type solver: constant_keyword (10)](#field-type-solver-constant_keyword-10)
+      1. [Field type solver: constant_keyword (11)](#field-type-solver-constant_keyword-11)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
       1. [Root without branches (6)](#root-without-branches-6)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
+      1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (3)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-3)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
-      1. [Unsupported function: startsWith (3)](#unsupported-function-startswith-3)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-2)
@@ -83,6 +83,7 @@ Rules version: 9.1.10
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsedgewebview2exe-msedgewebview2exe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'net1.exe'}): ('net1.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsnet1exe-net1exe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'nohup'}): ('nohup')) (1)](#unsolvable-constraints-processname-excluded-by-stringsnohup-nohup-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringspowershellexe-powershellexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh')) (1)](#unsolvable-constraints-processname-excluded-by-stringssh-sh-1)
@@ -111,9 +112,9 @@ Rules version: 9.1.10
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (145)
+### Unsupported rule type: new_terms (148)
 
-145 rules:
+148 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -145,6 +146,8 @@ Rules version: 9.1.10
 * Abnormal Process ID or Lock File Created
 * Authentication via Unusual PAM Grantor
 * Azure Compute Restore Point Collection Deleted by Unusual User
+* Azure Compute Snapshot Deletion by Unusual User and Resource Group
+* Azure Diagnostic Settings Deletion
 * Azure Entra ID Rare App ID for Principal Authentication
 * Azure Key Vault Modified
 * Azure Key Vault Secret Key Usage by Unusual Identity
@@ -215,6 +218,7 @@ Rules version: 9.1.10
 * Query Registry using Built-in Tools
 * RPM Package Installed by Unusual Parent Process
 * Rare SMB Connection to the Internet
+* Remote File Creation in World Writeable Directory
 * SSH Authorized Keys File Modification
 * Sensitive Files Compression
 * Shared Object Created or Changed by Previously Unknown Process
@@ -361,9 +365,9 @@ Rules version: 9.1.10
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: esql (67)
+### Unsupported rule type: esql (77)
 
-67 rules:
+77 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -377,9 +381,13 @@ Rules version: 9.1.10
 * AWS S3 Object Encryption Using External KMS Key
 * AWS S3 Static Site JavaScript File Uploaded
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
+* Agent Spoofing - Multiple Hosts Using Same Agent
+* Alerts in Different ATT&CK Tactics by Host
 * Azure OpenAI Insecure Output Handling
 * Command Line Obfuscation via Whitespace Padding
 * Dynamic IEX Reconstruction via Method String Access
+* Elastic Defend and Email Alerts Correlation
+* Elastic Defend and Network Security Alerts Correlation
 * Entra ID Actor Token User Impersonation Abuse
 * Excessive Secret or Key Retrieval from Azure Key Vault
 * High Number of Egress Network Connections from Unusual Executable
@@ -388,11 +396,11 @@ Rules version: 9.1.10
 * Microsoft 365 Brute Force via Entra ID Sign-Ins
 * Microsoft 365 or Entra ID Sign-in from a Suspicious Source
 * Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
-* Microsoft Entra ID Exccessive Account Lockouts Detected
 * Microsoft Entra ID MFA TOTP Brute Force Attempts
 * Microsoft Entra ID Sign-In Brute Force Activity
 * Microsoft Entra ID Suspicious Session Reuse to Graph Access
 * Multiple Device Token Hashes for Single Okta Session
+* Multiple Elastic Defend Alerts by Agent
 * Multiple Microsoft 365 User Account Lockouts in Short Time Window
 * Multiple Okta User Authentication Events with Client Address
 * Multiple Okta User Authentication Events with Same Device Token Hash
@@ -404,6 +412,7 @@ Rules version: 9.1.10
 * Potential Dynamic IEX Reconstruction via Environment Variables
 * Potential Malicious PowerShell Based on Alert Correlation
 * Potential Malware-Driven SSH Brute Force Attempt
+* Potential Masquerading as Svchost
 * Potential Microsoft 365 User Account Brute Force
 * Potential Port Scanning Activity from Compromised Host
 * Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
@@ -417,6 +426,7 @@ Rules version: 9.1.10
 * Potential PowerShell Obfuscation via String Concatenation
 * Potential PowerShell Obfuscation via String Reordering
 * Potential Ransomware Behavior - Note Files by System
+* Potential Spike in Web Server Error Logs
 * Potential Subnet Scanning Activity from Compromised Host
 * Potential Widespread Malware Infection Across Multiple Hosts
 * PowerShell Obfuscation via Negative Index String Reversal
@@ -432,17 +442,22 @@ Rules version: 9.1.10
 * Unusual High Denied Topic Blocks Detected
 * Unusual High Word Policy Blocks Detected
 * Unusual Process Spawned from Web Server Parent
+* Web Server Discovery or Fuzzing Activity
+* Web Server Potential Command Injection Request
+* Web Server Potential Spike in Error Response Codes
+* Web Server Suspicious User Agent Requests
 
-### Unsupported rule type: threshold (31)
+### Unsupported rule type: threshold (33)
 
-31 rules:
+33 rules:
 
 * AWS IAM Brute Force of Assume Role Policy
 * AWS Management Console Brute Force of Root User Identity
 * AWS S3 Bucket Enumeration or Brute Force
-* Agent Spoofing - Multiple Hosts Using Same Agent
+* AWS Secrets Manager Rapid Secrets Retrieval
 * Attempts to Brute Force an Okta User Account
 * Azure Compute Restore Point Collections Deleted
+* Azure Compute Snapshot Deletions by User
 * Azure Storage Account Deletions by User
 * Excessive AWS S3 Object Encryption with SSE-C
 * GitHub UEBA - Multiple Alerts from a GitHub Account
@@ -451,6 +466,7 @@ Rules version: 9.1.10
 * High Number of Process Terminations
 * High Number of Process and/or Service Terminations
 * M365 Identity Login from Impossible Travel Location
+* Microsoft Entra ID Excessive Account Lockouts Detected
 * Multiple Alerts Involving a User
 * Multiple Alerts in Different ATT&CK Tactics on a Single Host
 * Multiple Okta Sessions Detected for a Single User
@@ -458,6 +474,7 @@ Rules version: 9.1.10
 * My First Rule
 * O365 Excessive Single Sign-On Logon Errors
 * Okta Brute Force or Password Spraying Attack
+* Okta Multiple OS Names Detected for a Single DT Hash
 * Potential Buffer Overflow Attack Detected
 * Potential LSASS Memory Dump via PssCaptureSnapShot
 * Potential Network Scan Detected
@@ -465,7 +482,6 @@ Rules version: 9.1.10
 * Potential Network Sweep Detected
 * Potential SYN-Based Port Scan Detected
 * Potential macOS SSH Brute Force Detected
-* Rapid Secret Retrieval Attempts from AWS SecretsManager
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
@@ -491,11 +507,12 @@ Rules version: 9.1.10
 
 ## Generation errors
 
-### Unsupported function: match (22)
+### Unsupported function: match (23)
 
-22 rules:
+23 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * BloodHound Suite User-Agents Detected
+* Command Obfuscation via Unicode Modifier Letters
 * Creation of Hidden Files and Directories via CommandLine
 * Executable File Creation with Multiple Extensions
 * Masquerading Space After Filename
@@ -517,9 +534,9 @@ Rules version: 9.1.10
 * Unusual Network Connection via RunDLL32
 * Unusual Process Execution Path - Alternate Data Stream
 
-### Unsupported function: stringContains (20)
+### Unsupported function: stringContains (21)
 
-20 rules:
+21 rules:
 * AWS EC2 EBS Snapshot Access Removed
 * AWS EC2 EBS Snapshot Shared or Made Public
 * AWS EC2 Instance Console Login via Assumed Role
@@ -529,6 +546,7 @@ Rules version: 9.1.10
 * AWS IAM AdministratorAccess Policy Attached to User
 * AWS IAM CompromisedKeyQuarantine Policy Attached to User
 * AWS IAM Login Profile Added for Root
+* AWS IAM Roles Anywhere Trust Anchor Created with External CA
 * AWS RDS DB Instance Made Public
 * AWS RDS DB Instance or Cluster Deletion Protection Disabled
 * AWS RDS DB Instance or Cluster Password Modified
@@ -574,9 +592,9 @@ Rules version: 9.1.10
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
 
-### Field type solver: constant_keyword (10)
+### Field type solver: constant_keyword (11)
 
-10 rules:
+11 rules:
 * CrowdStrike External Alerts
 * Elastic Security External Alerts
 * Google SecOps External Alerts
@@ -584,6 +602,7 @@ Rules version: 9.1.10
 * Potential DLL Side-Loading via Trusted Microsoft Programs
 * Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
 * Potential VIEWSTATE RCE Attempt on SharePoint/IIS
+* Potential Webshell Deployed via Apache Struts CVE-2023-50164 Exploitation
 * SentinelOne Alert External Alerts
 * SentinelOne Threat External Alerts
 * Splunk External Alerts
@@ -628,6 +647,14 @@ Rules version: 9.1.10
 * Suspicious JetBrains TeamCity Child Process
 * Suspicious Windows Command Shell Arguments
 
+### Unsupported function: startsWith (4)
+
+4 rules:
+* AWS IAM Virtual MFA Device Registration Attempt with Session Token
+* Persistent Scripts in the Startup Directory
+* Potential ADIDNS Poisoning via Wildcard Record Creation
+* SMB Connections via LOLBin or Untrusted Process
+
 ### <class 'eql.ast.Sample'> (3)
 
 3 rules:
@@ -662,13 +689,6 @@ Rules version: 9.1.10
 * Potential Computer Account Relay Activity
 * Potential Machine Account Relay Attack via SMB
 * Unusual Execution via Microsoft Common Console File
-
-### Unsupported function: startsWith (3)
-
-3 rules:
-* Persistent Scripts in the Startup Directory
-* Potential ADIDNS Poisoning via Wildcard Record Creation
-* SMB Connections via LOLBin or Untrusted Process
 
 ### Pipes are unsupported (2)
 
@@ -934,6 +954,11 @@ Rules version: 9.1.10
 
 1 rules:
 * Account Discovery Command via SYSTEM Account
+
+### Unsolvable constraints: process.name (excluded by Strings({'nohup'}): ('nohup')) (1)
+
+1 rules:
+* Curl or Wget Egress Network Connection via LoLBin
 
 ### Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (1)
 
