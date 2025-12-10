@@ -5,22 +5,22 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.1.11
+Rules version: 9.1.12
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (148)](#unsupported-rule-type-new_terms-148)
+      1. [Unsupported rule type: new_terms (153)](#unsupported-rule-type-new_terms-153)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported rule type: esql (77)](#unsupported-rule-type-esql-77)
+      1. [Unsupported rule type: esql (80)](#unsupported-rule-type-esql-80)
       1. [Unsupported rule type: threshold (33)](#unsupported-rule-type-threshold-33)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Unsupported function: match (23)](#unsupported-function-match-23)
+      1. [Unsupported function: match (26)](#unsupported-function-match-26)
       1. [Unsupported function: stringContains (21)](#unsupported-function-stringcontains-21)
+      1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
+      1. [Field type solver: constant_keyword (13)](#field-type-solver-constant_keyword-13)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
-      1. [Root with too many branches (limit: 10000) (12)](#root-with-too-many-branches-limit-10000-12)
-      1. [Field type solver: constant_keyword (11)](#field-type-solver-constant_keyword-11)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
       1. [Root without branches (6)](#root-without-branches-6)
@@ -36,6 +36,7 @@ Rules version: 9.1.11
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-2)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
+      1. ['NoneType' object is not subscriptable (1)](#nonetype-object-is-not-subscriptable-1)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
@@ -45,6 +46,7 @@ Rules version: 9.1.11
       1. [Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)](#unsolvable-constraints-fileextheader_bytes-excluded-by-strings504b0304-504b0304-1)
       1. [Unsolvable constraints: file.extension (cannot be non-null) (1)](#unsolvable-constraints-fileextension-cannot-be-non-null-1)
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringsswipuploadashx-post-1)
+      1. [Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringschild_process-exec-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (excluded by Strings({'DsGetSiteName'}): ('DsGetSiteName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-excluded-by-stringsdsgetsitename-dsgetsitename-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
@@ -70,6 +72,7 @@ Rules version: 9.1.11
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-o--c--1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*@/*.zip*'}): ('*http*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringszip-http-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('*copy*')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-copy-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsdrivegooglecom-exportdownload-1)
@@ -112,9 +115,9 @@ Rules version: 9.1.11
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (148)
+### Unsupported rule type: new_terms (153)
 
-148 rules:
+153 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -158,6 +161,7 @@ Rules version: 9.1.11
 * CAP_SYS_ADMIN Assigned to Binary
 * DPKG Package Installed by Unusual Parent Process
 * Delegated Managed Service Account Modification by an Unusual User
+* Deprecated - Modification of Standard Authentication Module or Configuration
 * Discovery of Internet Capabilities via Built-in Tools
 * Entra ID OAuth user_impersonation Scope for Unusual User and Client
 * Entra ID User Signed In from Unusual Device
@@ -188,6 +192,7 @@ Rules version: 9.1.11
 * First Time Seen NewCredentials Logon Process
 * First Time Seen Removable Device
 * FirstTime Seen Account Performing DCSync
+* GenAI Process Connection to Unusual Domain
 * Kernel Object File Creation
 * Kill Command Execution
 * Kubernetes Unusual Decision by User Agent
@@ -206,10 +211,11 @@ Rules version: 9.1.11
 * Microsoft Entra ID SharePoint Access for User Principal via Auth Broker
 * Microsoft Graph First Occurrence of Client Request
 * Modification of Dynamic Linker Preload Shared Object
-* Modification of Standard Authentication Module or Configuration
 * Network Activity Detected via Kworker
 * Network Traffic Capture via CAP_NET_RAW
+* New GitHub Self Hosted Action Runner
 * Potential Credential Access via DCSync
+* Potential HTTP Downgrade Attack
 * Potential Pass-the-Hash (PtH) Attempt
 * Potential Privilege Escalation via Linux DAC permissions
 * Potential Shadow File Read via Command Line Utilities
@@ -257,11 +263,13 @@ Rules version: 9.1.11
 * Unusual Network Connection to Suspicious Web Service
 * Unusual Pkexec Execution
 * Unusual Preload Environment Variable Process Execution
+* Unusual Process Modifying GenAI Configuration File
 * Unusual ROPC Login Attempt by User Principal
 * Unusual Remote File Creation
 * Unusual SSHD Child Process
 * Unusual Scheduled Task Update
 * Unusual Web Config File Access
+* Unusual Web Server Command Execution
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
@@ -365,9 +373,9 @@ Rules version: 9.1.11
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: esql (77)
+### Unsupported rule type: esql (80)
 
-77 rules:
+80 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -376,6 +384,7 @@ Rules version: 9.1.11
 * AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
 * AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
 * AWS Discovery API Calls via CLI from a Single Resource
+* AWS EC2 LOLBin Execution via SSM SendCommand
 * AWS EC2 Multi-Region DescribeInstances API Calls
 * AWS IAM User Created Access Keys For Another User
 * AWS S3 Object Encryption Using External KMS Key
@@ -399,6 +408,7 @@ Rules version: 9.1.11
 * Microsoft Entra ID MFA TOTP Brute Force Attempts
 * Microsoft Entra ID Sign-In Brute Force Activity
 * Microsoft Entra ID Suspicious Session Reuse to Graph Access
+* Multiple Cloud Secrets Accessed by Source Address
 * Multiple Device Token Hashes for Single Okta Session
 * Multiple Elastic Defend Alerts by Agent
 * Multiple Microsoft 365 User Account Lockouts in Short Time Window
@@ -432,6 +442,7 @@ Rules version: 9.1.11
 * PowerShell Obfuscation via Negative Index String Reversal
 * Rare Connection to WebDAV Target
 * Suspicious Microsoft 365 UserLoggedIn via OAuth Code
+* Suspicious Microsoft Entra ID Concurrent Sign-Ins via DeviceCode
 * Suspicious Microsoft OAuth Flow via Auth Broker to DRS
 * Unusual Base64 Encoding/Decoding Activity
 * Unusual Command Execution from Web Server Parent
@@ -451,7 +462,7 @@ Rules version: 9.1.11
 
 33 rules:
 
-* AWS IAM Brute Force of Assume Role Policy
+* AWS IAM Principal Enumeration via UpdateAssumeRolePolicy
 * AWS Management Console Brute Force of Root User Identity
 * AWS S3 Bucket Enumeration or Brute Force
 * AWS Secrets Manager Rapid Secrets Retrieval
@@ -507,14 +518,16 @@ Rules version: 9.1.11
 
 ## Generation errors
 
-### Unsupported function: match (23)
+### Unsupported function: match (26)
 
-23 rules:
+26 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * BloodHound Suite User-Agents Detected
 * Command Obfuscation via Unicode Modifier Letters
 * Creation of Hidden Files and Directories via CommandLine
 * Executable File Creation with Multiple Extensions
+* File Deletion via Shred
+* GenAI Process Connection to Suspicious Top Level Domain
 * Masquerading Space After Filename
 * Network Activity to a Suspicious Top Level Domain
 * Potential AWS S3 Bucket Ransomware Note Uploaded
@@ -524,6 +537,7 @@ Rules version: 9.1.11
 * Potential Windows Error Manager Masquerading
 * Process Created with a Duplicated Token
 * Process Started from Process ID (PID) File
+* React2Shell (CVE-2025-55182) Exploitation Attempt
 * Remote File Download via PowerShell
 * SUID/SGID Bit Set
 * Simple HTTP Web Server Connection
@@ -559,6 +573,41 @@ Rules version: 9.1.11
 * AWS S3 Bucket Server Access Logging Disabled
 * AWS S3 Object Versioning Suspended
 
+### Root with too many branches (limit: 10000) (14)
+
+14 rules:
+* Connection to Commonly Abused Web Services
+* Execution from Unusual Directory - Command Line
+* External IP Lookup from Non-Browser Process
+* GenAI or MCP Server Child Process Execution
+* Potential DNS Tunneling via NsLookup
+* Potential Evasion via Windows Filtering Platform
+* Potential Linux Ransomware Note Creation Detected
+* Potential Masquerading as System32 DLL
+* Potential Masquerading as System32 Executable
+* Potential Pspy Process Monitoring Detected
+* Potential Remote Code Execution via Web Server
+* Potential Reverse Shell via Suspicious Binary
+* Potential Reverse Shell via Suspicious Child Process
+* Suspicious React Server Child Process
+
+### Field type solver: constant_keyword (13)
+
+13 rules:
+* CrowdStrike External Alerts
+* Elastic Security External Alerts
+* External Alerts
+* Google SecOps External Alerts
+* Initial Access via File Upload Followed by GET Request
+* Microsoft Sentinel External Alerts
+* Potential DLL Side-Loading via Trusted Microsoft Programs
+* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
+* Potential VIEWSTATE RCE Attempt on SharePoint/IIS
+* Potential Webshell Deployed via Apache Struts CVE-2023-50164 Exploitation
+* SentinelOne Alert External Alerts
+* SentinelOne Threat External Alerts
+* Splunk External Alerts
+
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)
 
 13 rules:
@@ -575,37 +624,6 @@ Rules version: 9.1.11
 * Suspicious Execution via MSIEXEC
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
-
-### Root with too many branches (limit: 10000) (12)
-
-12 rules:
-* Connection to Commonly Abused Web Services
-* Execution from Unusual Directory - Command Line
-* External IP Lookup from Non-Browser Process
-* Potential DNS Tunneling via NsLookup
-* Potential Evasion via Windows Filtering Platform
-* Potential Linux Ransomware Note Creation Detected
-* Potential Masquerading as System32 DLL
-* Potential Masquerading as System32 Executable
-* Potential Pspy Process Monitoring Detected
-* Potential Remote Code Execution via Web Server
-* Potential Reverse Shell via Suspicious Binary
-* Potential Reverse Shell via Suspicious Child Process
-
-### Field type solver: constant_keyword (11)
-
-11 rules:
-* CrowdStrike External Alerts
-* Elastic Security External Alerts
-* Google SecOps External Alerts
-* Microsoft Sentinel External Alerts
-* Potential DLL Side-Loading via Trusted Microsoft Programs
-* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
-* Potential VIEWSTATE RCE Attempt on SharePoint/IIS
-* Potential Webshell Deployed via Apache Struts CVE-2023-50164 Exploitation
-* SentinelOne Alert External Alerts
-* SentinelOne Threat External Alerts
-* Splunk External Alerts
 
 ### Field type solver: match_only_text (7)
 
@@ -720,6 +738,11 @@ Rules version: 9.1.11
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
 
+### 'NoneType' object is not subscriptable (1)
+
+1 rules:
+* GenAI Process Performing Encoding/Chunking Prior to Network Activity
+
 ### <class 'eql.ast.SubqueryBy'> (1)
 
 1 rules:
@@ -764,6 +787,11 @@ Rules version: 9.1.11
 
 1 rules:
 * SUNBURST Command and Control Activity
+
+### Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)
+
+1 rules:
+* Anomalous React Server Components Flight Data Patterns
 
 ### Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)
 
@@ -889,6 +917,11 @@ Rules version: 9.1.11
 
 1 rules:
 * PowerShell Suspicious Script with Audio Capture Capabilities
+
+### Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)
+
+1 rules:
+* GenAI Process Compiling or Generating Executables
 
 ### Unsolvable constraints: process.command_line (not in Strings({'*@/*.zip*'}): ('*http*')) (1)
 
