@@ -35,17 +35,17 @@ emitter_rules:
     # renovate: datasource=epr package=security_detection_engine-8.18
     "8.18": "8.18.15"
     # renovate: datasource=epr package=security_detection_engine-8.19
-    "8.19": "8.19.12"
+    "8.19": "8.19.13"
     # renovate: datasource=epr package=security_detection_engine-9.0
     "9.0": "9.0.19"
     # renovate: datasource=epr package=security_detection_engine-9.1
-    "9.1": "9.1.12"
+    "9.1": "9.1.13"
     # renovate: datasource=epr package=security_detection_engine-9.2
-    "9.2": "9.2.4"
+    "9.2": "9.2.5"
     # renovate: datasource=epr package=security_detection_engine-9.3
-    "9.3": "9.2.4"
+    "9.3": "9.3.1"
     # renovate: datasource=epr package=security_detection_engine
-    "serverless": "9.2.4"
+    "serverless": "9.3.1"
 
   stack_signals:
     "8.2":
@@ -122,32 +122,32 @@ emitter_rules:
       ack_no_signals: 7
       ack_too_few_signals: 15
     "8.19":
-      ack_failed: 17
-      ack_unsuccessful_with_signals: 16
+      ack_failed: 18
+      ack_unsuccessful_with_signals: 14
       ack_no_signals: 7
-      ack_too_few_signals: 19
+      ack_too_few_signals: 16
     "9.0":
       ack_failed: 17
       ack_unsuccessful_with_signals: 16
       ack_no_signals: 7
       ack_too_few_signals: 19
     "9.1":
-      ack_failed: 17
-      ack_unsuccessful_with_signals: 16
+      ack_failed: 18
+      ack_unsuccessful_with_signals: 14
       ack_no_signals: 7
-      ack_too_few_signals: 19
+      ack_too_few_signals: 16
     "9.2":
-      ack_failed: 17
-      ack_unsuccessful_with_signals: 16
+      ack_failed: 18
+      ack_unsuccessful_with_signals: 14
       ack_no_signals: 7
-      ack_too_few_signals: 19
+      ack_too_few_signals: 16
     "9.3":
-      ack_failed: 17
-      ack_unsuccessful_with_signals: 16
+      ack_failed: 18
+      ack_unsuccessful_with_signals: 14
       ack_no_signals: 7
-      ack_too_few_signals: 19
+      ack_too_few_signals: 16
     "serverless":
-      ack_failed: 17
-      ack_unsuccessful_with_signals: 15
+      ack_failed: 18
+      ack_unsuccessful_with_signals: 14
       ack_no_signals: 7
-      ack_too_few_signals: 18
+      ack_too_few_signals: 16
