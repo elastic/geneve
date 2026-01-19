@@ -187,65 +187,6 @@ sequence by host.id, user.id with maxspan=1m
 
 
 
-### GenAI Process Accessing Sensitive Files
-
-Branch count: 2574  
-Document count: 2574  
-Index: geneve-ut-0468
-
-```python
-file where event.action in ("open", "creation", "modification") and event.outcome == "success" and
-
-  // GenAI process 
-    process.name in (
-      "ollama.exe", "ollama", "Ollama",
-      "textgen.exe", "textgen", "text-generation-webui.exe", "oobabooga.exe",
-      "lmstudio.exe", "lmstudio", "LM Studio",
-      "claude.exe", "claude", "Claude",
-      "cursor.exe", "cursor", "Cursor",
-      "copilot.exe", "copilot", "Copilot",
-      "codex.exe", "codex",
-      "Jan", "jan.exe", "jan",
-      "gpt4all.exe", "gpt4all", "GPT4All",
-      "gemini-cli.exe", "gemini-cli",
-      "genaiscript.exe", "genaiscript",
-      "grok.exe", "grok",
-      "qwen.exe", "qwen",
-      "koboldcpp.exe", "koboldcpp", "KoboldCpp",
-      "llama-server", "llama-cli"
-    ) and
-
-  // Sensitive file paths
-  (
-    // Persistence via Shell configs
-    file.name in (".bashrc", ".bash_profile", ".zshrc", ".zshenv", ".zprofile", ".profile", ".bash_logout") or
-
-    // Credentials In Files 
-    file.name like~ 
-                 ("key?.db", 
-                  "logins.json", 
-                  "Login Data", 
-                  "Local State",
-                  "signons.sqlite",
-                  "Cookies", 
-                  "cookies.sqlite",
-                  "Cookies.binarycookies", 
-                  "login.keychain-db", 
-                  "System.keychain", 
-                  "credentials.db", 
-                  "credentials", 
-                  "access_tokens.db", 
-                  "accessTokens.json", 
-                  "azureProfile.json",
-                  "RDCMan.settings", 
-                  "known_hosts", 
-                  "KeePass.config.xml", 
-                  "Unattended.xml")
-  )
-```
-
-
-
 ### Git Hook Child Process
 
 Branch count: 2300  
@@ -1399,71 +1340,6 @@ network where host.os.type == "windows" and dns.question.name != null and proces
 
 
 
-### System Public IP Discovery via DNS Query
-
-Branch count: 1053  
-Document count: 1053  
-Index: geneve-ut-1354
-
-```python
-network where host.os.type == "windows" and dns.question.name != null and process.name != null and
-(
-  process.name : ("MSBuild.exe", "mshta.exe", "wscript.exe", "powershell.exe", "pwsh.exe", "msiexec.exe", "rundll32.exe",
-  "bitsadmin.exe", "InstallUtil.exe", "RegAsm.exe", "vbc.exe", "RegSvcs.exe", "python.exe", "regsvr32.exe", "dllhost.exe",
-  "node.exe", "javaw.exe", "java.exe", "*.pif", "*.com") or
-
-  (?process.code_signature.trusted == false or ?process.code_signature.exists == false) or
-
-  ?process.code_signature.subject_name : ("AutoIt Consulting Ltd", "OpenJS Foundation", "Python Software Foundation") or
-
-  ?process.executable : ("?:\\Users\\*.exe", "?:\\ProgramData\\*.exe")
- ) and
- dns.question.name :
-         (
-          "ip-api.com",
-          "checkip.dyndns.org",
-          "api.ipify.org",
-          "api.ipify.com",
-          "whatismyip.akamai.com",
-          "bot.whatismyipaddress.com",
-          "ifcfg.me",
-          "ident.me",
-          "ipof.in",
-          "ip.tyk.nu",
-          "icanhazip.com",
-          "curlmyip.com",
-          "wgetip.com",
-          "eth0.me",
-          "ipecho.net",
-          "ip.appspot.com",
-          "api.myip.com",
-          "geoiptool.com",
-          "api.2ip.ua",
-          "api.ip.sb",
-          "ipinfo.io",
-          "checkip.amazonaws.com",
-          "wtfismyip.com",
-          "iplogger.*",
-          "freegeoip.net",
-          "freegeoip.app",
-          "ipinfo.io",
-          "geoplugin.net",
-          "myip.dnsomatic.com",
-          "www.geoplugin.net",
-          "api64.ipify.org",
-          "ip4.seeip.org",
-          "*.geojs.io",
-          "*portmap.io",
-          "api.2ip.ua",
-          "api.db-ip.com",
-          "geolocation-db.com",
-          "httpbin.org",
-          "myip.opendns.com"
-         )
-```
-
-
-
 ## Rules with no signals (7)
 
 ### Forbidden Request from Unusual User Agent in Kubernetes
@@ -1699,67 +1575,6 @@ sequence by host.id, user.id with maxspan=1m
    file.path : (
      "/dev/shm/*", "/run/shm/*", "/tmp/*", "/var/tmp/*", "/run/*", "/var/run/*", "/var/www/*", "/proc/*/fd/*"
     ) and not process.name in ("rm", "ld", "conftest", "link", "gcc", "getarch", "ld")] by file.name
-```
-
-
-
-### GenAI Process Accessing Sensitive Files
-
-Branch count: 2574  
-Document count: 2574  
-Index: geneve-ut-0468  
-Failure message(s):  
-  got 1000 signals, expected 2574  
-
-```python
-file where event.action in ("open", "creation", "modification") and event.outcome == "success" and
-
-  // GenAI process 
-    process.name in (
-      "ollama.exe", "ollama", "Ollama",
-      "textgen.exe", "textgen", "text-generation-webui.exe", "oobabooga.exe",
-      "lmstudio.exe", "lmstudio", "LM Studio",
-      "claude.exe", "claude", "Claude",
-      "cursor.exe", "cursor", "Cursor",
-      "copilot.exe", "copilot", "Copilot",
-      "codex.exe", "codex",
-      "Jan", "jan.exe", "jan",
-      "gpt4all.exe", "gpt4all", "GPT4All",
-      "gemini-cli.exe", "gemini-cli",
-      "genaiscript.exe", "genaiscript",
-      "grok.exe", "grok",
-      "qwen.exe", "qwen",
-      "koboldcpp.exe", "koboldcpp", "KoboldCpp",
-      "llama-server", "llama-cli"
-    ) and
-
-  // Sensitive file paths
-  (
-    // Persistence via Shell configs
-    file.name in (".bashrc", ".bash_profile", ".zshrc", ".zshenv", ".zprofile", ".profile", ".bash_logout") or
-
-    // Credentials In Files 
-    file.name like~ 
-                 ("key?.db", 
-                  "logins.json", 
-                  "Login Data", 
-                  "Local State",
-                  "signons.sqlite",
-                  "Cookies", 
-                  "cookies.sqlite",
-                  "Cookies.binarycookies", 
-                  "login.keychain-db", 
-                  "System.keychain", 
-                  "credentials.db", 
-                  "credentials", 
-                  "access_tokens.db", 
-                  "accessTokens.json", 
-                  "azureProfile.json",
-                  "RDCMan.settings", 
-                  "known_hosts", 
-                  "KeePass.config.xml", 
-                  "Unattended.xml")
-  )
 ```
 
 
@@ -3268,24 +3083,11 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
-### Active Directory Discovery using AdExplorer
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-0130
-
-```python
-process where host.os.type == "windows" and event.type == "start" and
-  (process.name : "ADExplorer*.exe" or ?process.pe.original_file_name == "AdExp")
-```
-
-
-
 ### Active Directory Group Modification by SYSTEM
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0132
+Index: geneve-ut-0133
 
 ```python
 iam where host.os.type == "windows" and event.code == "4728" and
@@ -3301,7 +3103,7 @@ not group.id : "S-1-5-21-*-513"
 
 Branch count: 36  
 Document count: 36  
-Index: geneve-ut-0133
+Index: geneve-ut-0134
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -3321,7 +3123,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0134
+Index: geneve-ut-0135
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -3342,7 +3144,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0135
+Index: geneve-ut-0136
 
 ```python
 event.code:5136 and host.os.type:"windows" and winlog.event_data.ObjectDN:CN=AdminSDHolder,CN=System*
@@ -3354,7 +3156,7 @@ event.code:5136 and host.os.type:"windows" and winlog.event_data.ObjectDN:CN=Adm
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0137
+Index: geneve-ut-0138
 
 ```python
 event.dataset:okta.system and event.action:group.privilege.grant
@@ -3366,7 +3168,7 @@ event.dataset:okta.system and event.action:group.privilege.grant
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0138
+Index: geneve-ut-0139
 
 ```python
 event.dataset:okta.system and event.action:user.account.privilege.grant
@@ -3399,7 +3201,7 @@ file where host.os.type == "windows" and event.type == "creation" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0140
+Index: geneve-ut-0141
 
 ```python
 event.kind:alert and event.module:endgame and (event.action:behavior_protection_event or endgame.event_subtype_full:behavior_protection_event)
@@ -3536,20 +3338,6 @@ process where host.os.type == "linux" and event.type == "start" and
 event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
 process.name == "journalctl" and process.args like ("--vacuum-time=*", "--vacuum-size=*", "--vacuum-files=*") and
 not process.parent.args == "/etc/cron.daily/clean-journal-logs"
-```
-
-
-
-### Attempt to Clear Logs via Journalctl
-
-Branch count: 18  
-Document count: 18  
-Index: geneve-ut-0158
-
-```python
-process where host.os.type == "linux" and event.type == "start" and
-event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
-process.name == "journalctl" and process.args like ("--vacuum-time=*", "--vacuum-size=*", "--vacuum-files=*")
 ```
 
 
@@ -3993,7 +3781,7 @@ file where host.os.type == "macos" and event.action == "modification" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0193
+Index: geneve-ut-0192
 
 ```python
 event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WRITE" and event.outcome:(Success or success)
@@ -4005,7 +3793,7 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0194
+Index: geneve-ut-0193
 
 ```python
 event.dataset:azure.activitylogs and
@@ -4024,7 +3812,7 @@ event.dataset:azure.activitylogs and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0195
+Index: geneve-ut-0194
 
 ```python
 event.dataset:azure.activitylogs and
@@ -4038,7 +3826,7 @@ event.dataset:azure.activitylogs and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0196
+Index: geneve-ut-0195
 
 ```python
 event.dataset:azure.activitylogs and
@@ -4056,7 +3844,7 @@ event.dataset:azure.activitylogs and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0197
+Index: geneve-ut-0196
 
 ```python
 event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/WRITE" and event.outcome:(Success or success)
@@ -4068,7 +3856,7 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0198
+Index: geneve-ut-0197
 
 ```python
 event.dataset:azure.activitylogs and azure.activitylogs.operation_name:(
@@ -4132,7 +3920,7 @@ event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOF
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0215
+Index: geneve-ut-0210
 
 ```python
 event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/EVENTS.K8S.IO/EVENTS/DELETE" and
@@ -4145,7 +3933,7 @@ event.outcome:(Success or success)
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0216
+Index: geneve-ut-0211
 
 ```python
 event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/PODS/DELETE" and
@@ -4158,7 +3946,7 @@ event.outcome:(Success or success)
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0217
+Index: geneve-ut-0212
 
 ```python
 event.dataset:azure.activitylogs and azure.activitylogs.operation_name:
@@ -4195,7 +3983,7 @@ event.dataset: azure.activitylogs and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0220
+Index: geneve-ut-0215
 
 ```python
 event.dataset:azure.activitylogs and
@@ -4209,7 +3997,7 @@ event.dataset:azure.activitylogs and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0223
+Index: geneve-ut-0216
 
 ```python
 event.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.RESOURCES/SUBSCRIPTIONS/RESOURCEGROUPS/DELETE" and event.outcome:(Success or success)
@@ -5288,29 +5076,6 @@ process.parent.name in ("node", "bun", "node.exe", "bun.exe") and (
 
 
 
-### Curl or Wget Spawned via Node.js
-
-Branch count: 624  
-Document count: 624  
-Index: geneve-ut-0292
-
-```python
-process where event.type == "start" and
- event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
- process.parent.name in ("node", "bun", "node.exe", "bun.exe") and (
-  (
-    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "cmd.exe", "bash.exe", "powershell.exe") and
-    process.command_line like~ ("*curl*http*", "*wget*http*")
-  ) or 
-  (
-    process.name in ("curl", "wget", "curl.exe", "wget.exe")
-  )
-) and
- not process.command_line like ("*127.0.0.1*", "*localhost*")
-```
-
-
-
 ### CyberArk Privileged Access Security Error
 
 Branch count: 1  
@@ -6066,7 +5831,7 @@ not (
     "/bin/pacman", "/usr/bin/pacman", "/usr/bin/dpkg-divert", "/bin/dpkg-divert", "/sbin/apk", "/usr/sbin/apk",
     "/usr/local/sbin/apk", "/usr/bin/apt", "/usr/sbin/pacman", "/bin/podman", "/usr/bin/podman", "/usr/bin/puppet",
     "/bin/puppet", "/opt/puppetlabs/puppet/bin/puppet", "/usr/bin/chef-client", "/bin/chef-client",
-    "/bin/autossl_check", "/usr/bin/autossl_check", "/proc/self/exe",  "/usr/bin/pamac-daemon",
+    "/bin/autossl_check", "/usr/bin/autossl_check", "/proc/self/exe", "/dev/fd/*",  "/usr/bin/pamac-daemon",
     "/bin/pamac-daemon", "/usr/lib/snapd/snapd", "/usr/local/bin/dockerd", "/usr/libexec/platform-python",
     "/usr/lib/snapd/snap-update-ns", "./usr/bin/podman", "/usr/bin/crio", "/usr/bin/buildah", "/bin/dnf5",
     "/usr/bin/dnf5", "/usr/bin/pamac", "/dev/fd/3"
@@ -11000,27 +10765,6 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
-### NetSupport Manager Execution from an Unusual Path
-
-Branch count: 18  
-Document count: 18  
-Index: geneve-ut-0730
-
-```python
-process where host.os.type == "windows" and event.type == "start" and
- (process.name : "client32.exe" or ?process.pe.original_file_name == "client32.exe" or process.parent.name : "client32.exe") and
- (
-  process.executable :
-               ("?:\\Users\\*.exe",
-                "?:\\ProgramData\\*.exe",
-                "\\Device\\HarddiskVolume?\\Users\\*.exe",
-                "\\Device\\HarddiskVolume?\\ProgramData\\*.exe") or
-  ?process.parent.executable : ("?:\\Users\\*\\client32.exe", "?:\\ProgramData\\*\\client32.exe")
-  )
-```
-
-
-
 ### Netcat Listener Established via rlwrap
 
 Branch count: 20  
@@ -11441,20 +11185,6 @@ configuration where event.dataset == "github.audit" and event.action == "org.add
 Branch count: 36  
 Document count: 72  
 Index: geneve-ut-0809
-
-```python
-sequence by host.id with maxspan=10s
-  [process where host.os.type in ("linux", "macos") and event.type == "start" and event.action in ("exec", "ProcessRollup2", "start") and process.name == "node" and process.args == "install"] by process.entity_id
-  [process where host.os.type in ("linux", "macos") and event.type == "start" and event.action in ("exec", "ProcessRollup2", "start") and process.parent.name == "node"] by process.parent.entity_id
-```
-
-
-
-### Node.js Pre or Post-Install Script Execution
-
-Branch count: 36  
-Document count: 72  
-Index: geneve-ut-0761
 
 ```python
 sequence by host.id with maxspan=10s
@@ -12277,22 +12007,6 @@ not file.path like (
 Branch count: 24  
 Document count: 24  
 Index: geneve-ut-0869
-
-```python
-process where host.os.type == "linux" and event.type == "start" and
-event.action in ("exec", "exec_event", "start", "executed", "process_started", "ProcessRollup2") and
-process.name == "sudo" and process.args like ("-R", "--chroot*") and
-// To enforce the -R and --chroot arguments to be for sudo specifically, while wildcarding potential full sudo paths
-process.command_line like ("*sudo -R*", "*sudo --chroot*")
-```
-
-
-
-### Potential CVE-2025-32463 Sudo Chroot Execution Attempt
-
-Branch count: 24  
-Document count: 24  
-Index: geneve-ut-0824
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -14331,33 +14045,6 @@ any where host.os.type == "windows" and
 
 
 
-### Potential REMCOS Trojan Execution
-
-Branch count: 14  
-Document count: 14  
-Index: geneve-ut-0970
-
-```python
-any where host.os.type == "windows" and
-(
- (event.category == "file" and event.type == "deletion" and file.path like "C:\\Users\\*\\AppData\\Local\\Temp\\TH????.tmp") or
-
- (event.category == "file" and file.path : "?:\\Users\\*\\AppData\\Roaming\\remcos\\logs.dat") or
-
- (event.category == "registry" and
-  registry.value : ("Remcos", "Rmc-??????", "licence") and
-  registry.path : (
-      "*\\Windows\\CurrentVersion\\Run\\Remcos",
-      "*\\Windows\\CurrentVersion\\Run\\Rmc-??????",
-      "*\\SOFTWARE\\Remcos-*\\licence",
-      "*\\Software\\Rmc-??????\\licence"
-  )
- )
-)
-```
-
-
-
 ### Potential Remote Credential Access via Registry
 
 Branch count: 4  
@@ -14668,19 +14355,6 @@ sequence by host.id with maxspan=3s
 Branch count: 14  
 Document count: 14  
 Index: geneve-ut-1033
-
-```python
-process where event.type == "start" and event.action like ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started", "Process Create*") and
-process.name : ("gitleaks.exe", "gitleaks")
-```
-
-
-
-### Potential Secret Scanning via Gitleaks
-
-Branch count: 14  
-Document count: 14  
-Index: geneve-ut-0991
 
 ```python
 process where event.type == "start" and event.action like ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started", "Process Create*") and
@@ -15392,24 +15066,6 @@ registry.path : (
 Branch count: 24  
 Document count: 24  
 Index: geneve-ut-1101
-
-```python
-process where event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
-process.name == "docker" and process.args == "--privileged" and process.args == "run" and
-process.args == "-v" and process.args like "/:/*" and
-not (
-  (process.args == "aktosecurity/mirror-api-logging:k8s_ebpf" and process.args == "akto-api-security-traffic-collector") or
-  (process.args like "goharbor/prepare:*" and process.args in ("/:/hostfs", "/:/hostfs/"))
-)
-```
-
-
-
-### Privileged Container Creation with Host Directory Mount
-
-Branch count: 24  
-Document count: 24  
-Index: geneve-ut-1061
 
 ```python
 process where event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
@@ -18503,55 +18159,6 @@ process where host.os.type == "windows" and event.type == "start" and
 Branch count: 12  
 Document count: 12  
 Index: geneve-ut-1329
-
-```python
-process where host.os.type == "windows" and event.type == "start" and
- process.parent.name : "mshta.exe" and
- (
-  process.name : ("cmd.exe", "powershell.exe", "certutil.exe", "bitsadmin.exe", "curl.exe", "msiexec.exe", "schtasks.exe", "reg.exe", "wscript.exe", "rundll32.exe") or
-  process.executable : ("C:\\Users\\*\\*.exe", "\\Device\\HarddiskVolume*\\Users\\*\\*.exe")
-  )
-```
-
-
-
-### Suspicious Microsoft Antimalware Service Execution
-
-Branch count: 2  
-Document count: 2  
-Index: geneve-ut-1285
-
-```python
-process where host.os.type == "windows" and event.type == "start" and
-(
-  (process.pe.original_file_name == "MsMpEng.exe" and not process.name : "MsMpEng.exe") or
-  (
-    process.name : "MsMpEng.exe" and
-    not process.executable : (
-            "?:\\ProgramData\\Microsoft\\Windows Defender\\*.exe",
-            "?:\\Program Files\\Windows Defender\\*.exe",
-            "?:\\Program Files (x86)\\Windows Defender\\*.exe",
-            "?:\\Program Files\\Microsoft Security Client\\*.exe",
-            "?:\\Program Files (x86)\\Microsoft Security Client\\*.exe",
-
-            /* Crowdstrike specific exclusion as it uses NT Object paths */
-            "\\Device\\HarddiskVolume*\\ProgramData\\Microsoft\\Windows Defender\\*.exe",
-            "\\Device\\HarddiskVolume*\\Program Files\\Windows Defender\\*.exe",
-            "\\Device\\HarddiskVolume*\\Program Files (x86)\\Windows Defender\\*.exe",
-            "\\Device\\HarddiskVolume*\\Program Files\\Microsoft Security Client\\*.exe",
-            "\\Device\\HarddiskVolume*\\Program Files (x86)\\Microsoft Security Client\\*.exe"
-    )
-  )
-)
-```
-
-
-
-### Suspicious Microsoft HTML Application Child Process
-
-Branch count: 12  
-Document count: 12  
-Index: geneve-ut-1288
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and

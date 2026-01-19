@@ -33,18 +33,14 @@ from . import jupyter
 class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
     nb = jupyter.Notebook()
-    nb.cells.append(
-        jupyter.Markdown(
-            """
+    nb.cells.append(jupyter.Markdown("""
         # Documents generation from detection rules
 
         This report captures the error reported while generating documents from detection rules. Here you
         can learn what rules are still problematic and for which no documents can be generated at the moment.
 
         Curious about the inner workings? Read [here](signals_generation.md).
-    """
-        )
-    )
+    """))
 
     def parse_from_collection(self, collection):
         asts = []
@@ -152,18 +148,14 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
     nb = jupyter.Notebook()
-    nb.cells.append(
-        jupyter.Markdown(
-            """
+    nb.cells.append(jupyter.Markdown("""
         # Alerts generation from detection rules
 
         This report captures the detection rules signals generation coverage. Here you can
         learn what rules are supported and what not and why.
 
         Curious about the inner workings? Read [here](signals_generation.md).
-    """
-        )
-    )
+    """))
 
     def parse_from_collection(self, collection):
         rules = []

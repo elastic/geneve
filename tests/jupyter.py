@@ -70,14 +70,10 @@ def _get_nb_badges(filename):
     if not github_user or not github_repo or not github_branch:
         return []
 
-    return [
-        Markdown(
-            f"""
+    return [Markdown(f"""
         [![nbviewer]({_nbviewer_badge_url})]({_nbviewer_base_url}/{github_user}/{github_repo}/blob/{github_branch}/{path})
         [![Binder]({_binder_badge_url})]({_binder_base_url}/{github_user}/{github_repo}/{github_branch}?labpath={path})
-    """
-        )
-    ]
+    """)]
 
 
 def to_file(filename, cells):
