@@ -643,9 +643,7 @@ cardinality = [
 class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
     nb = jupyter.Notebook()
-    nb.cells.append(
-        jupyter.Markdown(
-            """
+    nb.cells.append(jupyter.Markdown("""
         # Documents generation from test queries
 
         This Jupyter Notebook captures the unit test results of documents generation from queries.
@@ -656,22 +654,17 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         Curious about the inner workings? Read [here](../../docs/events_generation.md).
         Need help in using a Jupyter Notebook?
         Read [here](https://jupyter-notebook.readthedocs.io/en/stable/notebook.html#structure-of-a-notebook-document).
-    """
-        )
-    )
+    """))
 
     @classmethod
     @nb.chapter("## Preliminaries")
     def setUpClass(cls, cells):
         super(TestQueries, cls).setUpClass()
         cells += [
-            jupyter.Markdown(
-                """
+            jupyter.Markdown("""
                 This is an auxiliary cell, it prepares the environment for the rest of this notebook.
-            """
-            ),
-            jupyter.Code(
-                """
+            """),
+            jupyter.Code("""
                 import os; os.chdir('../..')  # use the repo's root as base for local modules import
                 from geneve.events_emitter import SourceEvents
                 from geneve.utils import load_schema
@@ -688,10 +681,8 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                             return [event.doc for event in events]
                     except Exception as e:
                         print(e)
-            """
-            ),
-            jupyter.Markdown(
-                """
+            """),
+            jupyter.Markdown("""
                 ## How to read the test results
 
                 If you opened this as freshly generated, the output cells content comes from the unit tests run and
@@ -702,8 +693,7 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
                 On the other hand, you can experiment and modify the queries in the input cells, check the results
                 and, why not?, report any interesting finding. You can also add and remove cells at will.
-            """
-            ),
+            """),
         ]
 
     def test_len(self):
@@ -762,14 +752,10 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     @nb.chapter("## Mono-branch mono-document")
     def test_mono_branch_mono_doc(self, cells):
-        cells.append(
-            jupyter.Markdown(
-                """
+        cells.append(jupyter.Markdown("""
             What follows are queries that shall trigger a signal with just a single source event,
             therefore at most one document is generated for each execution.
-        """
-            )
-        )
+        """))
         for i, (query, docs) in enumerate(mono_branch_mono_doc.items()):
             with self.subTest(query, i=i):
                 self.assertEqual(len(docs), 1)
@@ -779,14 +765,10 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     @nb.chapter("## Multi-branch mono-document")
     def test_multi_branch_mono_doc(self, cells):
-        cells.append(
-            jupyter.Markdown(
-                """
+        cells.append(jupyter.Markdown("""
             Following queries have one or more disjunctive operators (eg. _or_) which split the query
             in multiple _branches_. Each branch shall generate a single source event.
-        """
-            )
-        )
+        """))
         for i, (query, docs) in enumerate(multi_branch_mono_doc.items()):
             with self.subTest(query, i=i):
                 self.assertGreater(len(docs), 1)
@@ -797,15 +779,11 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     @nb.chapter("## Mono-branch multi-document")
     def test_mono_branch_multi_doc(self, cells):
-        cells.append(
-            jupyter.Markdown(
-                """
+        cells.append(jupyter.Markdown("""
             Following queries instead require multiple related source events, it's not analyzed only each
             event content but also the relation with each others. Therefore a senquence of documents is generated
             each time and all the documents in the sequence are required for one signal to be generated.
-        """
-            )
-        )
+        """))
         for i, (query, docs) in enumerate(mono_branch_multi_doc.items()):
             with self.subTest(query, i=i):
                 self.assertEqual(len(docs), 1)
@@ -815,14 +793,10 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     @nb.chapter("## Multi-branch multi-document")
     def test_multi_branch_multi_doc(self, cells):
-        cells.append(
-            jupyter.Markdown(
-                """
+        cells.append(jupyter.Markdown("""
             Same as above but one or more queries in the sequence have a disjunction (eg. _or_ operator) therefore
             multiple sequences shall be generated.
-        """
-            )
-        )
+        """))
         for i, (query, docs) in enumerate(multi_branch_multi_doc.items()):
             with self.subTest(query, i=i):
                 self.assertGreater(len(docs), 1)
@@ -833,16 +807,12 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     @nb.chapter("## Fields deletion")
     def test_fields_deletion(self, cells):
-        cells.append(
-            jupyter.Markdown(
-                """
+        cells.append(jupyter.Markdown("""
             When a query requires that a field is absent (by setting to null) it's easy
             to just not generate it. When the field generation instead is superimposed
             on existing documents, non-generating a field is not enough in that it must
             be actively deleted from the base document when present.
-        """
-            )
-        )
+        """))
         for i, (query, (corpus, docs)) in enumerate(fields_deletion.items()):
             with self.subTest(query, i=i):
                 self.assertQuery(query, docs, corpus=corpus)
@@ -850,17 +820,13 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     @nb.chapter("## Error conditions")
     def test_exceptions(self, cells):
-        cells.append(
-            jupyter.Markdown(
-                """
+        cells.append(jupyter.Markdown("""
             Not all the queries make sense, no documents can be generated for those that cannot logically be ever
             matched. In such cases an error is reported, as the following cells show.
 
             Here you can challenge the generation engine first hand and check that all the due errors are reported
             and make sense to you.
-        """
-            )
-        )
+        """))
         for i, (query, msg) in enumerate(exceptions.items()):
             with self.subTest(query, i=i):
                 with self.assertRaises(ValueError, msg=msg) as cm:
@@ -870,13 +836,9 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     @nb.chapter("## Cardinality")
     def test_cardinality(self, cells):
-        cells.append(
-            jupyter.Markdown(
-                """
+        cells.append(jupyter.Markdown("""
             Cardinality constraints set an upper bound to the number of different values generated for a given field.
-        """
-            )
-        )
+        """))
         for i, (query, branches, docs) in enumerate(cardinality):
             with self.subTest(query, i=i):
                 self.assertQuery(query, docs, count=int(len(docs) / branches))
@@ -884,14 +846,10 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 
     @nb.chapter("## Any oddities?")
     def test_unchanged(self, cells):
-        cells.append(
-            jupyter.Markdown(
-                """
+        cells.append(jupyter.Markdown("""
             Did you find anything odd reviewing the report or playing with the documents emitter?
             We are interested to know, feel free to [create an issue](https://github.com/elastic/geneve/issues/new).
-        """
-            )
-        )
+        """))
         tu.assertReportUnchanged(self, self.nb, "documents_from_queries.ipynb")
 
 
@@ -899,16 +857,12 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
 class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
     nb = jupyter.Notebook()
-    nb.cells.append(
-        jupyter.Markdown(
-            """
+    nb.cells.append(jupyter.Markdown("""
         # Alerts generation from test queries
 
         This report captures the unit test queries signals generation coverage.
         Here you can learn what queries are supported.
-    """
-        )
-    )
+    """))
 
     def parse_from_queries(self, queries):
         rules = []
