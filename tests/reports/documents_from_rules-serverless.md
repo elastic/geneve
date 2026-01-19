@@ -750,13 +750,6 @@ Rules version: 9.3.1
 * Potential NTLM Relay Attack against a Computer Account
 * Remote Computer Account DnsHostName Update
 
-### Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)
-
-3 rules:
-* Potential Kerberos Relay Attack against a Computer Account
-* Potential NTLM Relay Attack against a Computer Account
-* Remote Computer Account DnsHostName Update
-
 ### Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)
 
 3 rules:
