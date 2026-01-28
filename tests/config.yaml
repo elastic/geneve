@@ -43,7 +43,7 @@ emitter_rules:
     # renovate: datasource=epr package=security_detection_engine-9.2
     "9.2": "9.2.5"
     # renovate: datasource=epr package=security_detection_engine-9.3
-    "9.3": "9.3.1"
+    "9.3": "9.3.2"
     # renovate: datasource=epr package=security_detection_engine
     "serverless": "9.3.1"
 
