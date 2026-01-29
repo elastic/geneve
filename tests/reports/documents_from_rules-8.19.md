@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.19.13
+Rules version: 8.19.14
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: new_terms (167)](#unsupported-rule-type-new_terms-167)
-      1. [Unsupported rule type: esql (101)](#unsupported-rule-type-esql-101)
+      1. [Unsupported rule type: esql (109)](#unsupported-rule-type-esql-109)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -19,7 +19,7 @@ Rules version: 8.19.13
       1. [Unsupported function: match (28)](#unsupported-function-match-28)
       1. [Unsupported function: stringContains (23)](#unsupported-function-stringcontains-23)
       1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
-      1. [Field type solver: constant_keyword (13)](#field-type-solver-constant_keyword-13)
+      1. [Field type solver: constant_keyword (12)](#field-type-solver-constant_keyword-12)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
       1. [Root without branches (9)](#root-without-branches-9)
       1. [Field type solver: match_only_text (8)](#field-type-solver-match_only_text-8)
@@ -52,15 +52,17 @@ Rules version: 8.19.13
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdumpcreds-dumpcerts-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Eventing.Reader.EventLogSession'}): ('.ClearLog')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringseventingreadereventlogsession-clearlog-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-AudioDevice'}): ('Recording')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsget-audiodevice-recording-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-WmiObject'}): ('AntiVirusProduct')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsget-wmiobject-antivirusproduct-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'IO.Compression.ZipFile'}): ('CompressionLevel')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsiocompressionzipfile-compressionlevel-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Invoke-WmiMethod'}): ('ComputerName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsinvoke-wmimethod-computername-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'LsaCallAuthenticationPackage'}): ('KerbRetrieveEncodedTicketMessage')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringslsacallauthenticationpackage-kerbretrieveencodedticketmessage-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Microsoft.Office.Interop.Outlook'}): ('MAPI')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsmicrosoftofficeinteropoutlook-mapi-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NTLMSSPNegotiate'}): ('NegotiateSMB')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsntlmsspnegotiate-negotiatesmb-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'New-MailboxExportRequest'}): ('-FilePath')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsnew-mailboxexportrequest--filepath-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstartupinfoex-updateprocthreadattribute-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Set-MpPreference'}): ('DisableArchiveScanning')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsset-mppreference-disablearchivescanning-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookA'}): ('GetForegroundWindow')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssetwindowshooka-getforegroundwindow-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookEx'}): ('GetForegroundWindow')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssetwindowshookex-getforegroundwindow-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'System.IO.Compression.DeflateStream'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemiocompressiondeflatestream-frombase64string-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'VirtualAlloc'}): ('WriteProcessMemory')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsvirtualalloc-writeprocessmemory-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswindowsclipboard-gettext-1)
@@ -70,7 +72,6 @@ Rules version: 8.19.13
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
       1. [Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*')) (1)](#unsolvable-constraints-processcommand_line-excluded-by-stringsprocsysvmdrop_caches-drop_caches-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-o--c--1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*@/*.zip*'}): ('*http*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringszip-http-1)
@@ -294,9 +295,9 @@ Rules version: 8.19.13
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (101)
+### Unsupported rule type: esql (109)
 
-101 rules:
+109 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -319,6 +320,7 @@ Rules version: 8.19.13
 * Azure Key Vault Excessive Secret or Key Retrieved
 * Azure OpenAI Insecure Output Handling
 * Command Line Obfuscation via Whitespace Padding
+* Detection Alert on a Process Exhibiting CPU Spike
 * Dynamic IEX Reconstruction via Method String Access
 * Elastic Defend and Email Alerts Correlation
 * Elastic Defend and Network Security Alerts Correlation
@@ -339,6 +341,8 @@ Rules version: 8.19.13
 * High Number of Okta Device Token Cookies Generated for Authentication
 * High Number of Protected Branch Force Pushes by User
 * LSASS Process Access via Windows API
+* Lateral Movement Alerts from a Newly Observed Source Address
+* Lateral Movement Alerts from a Newly Observed User
 * M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
 * M365 Identity User Account Lockouts
 * M365 Identity User Brute Force Attempted
@@ -347,6 +351,7 @@ Rules version: 8.19.13
 * Microsoft Entra ID Exccessive Account Lockouts Detected
 * Multiple Alerts Involving a User
 * Multiple Alerts in Same ATT&CK Tactic by Host
+* Multiple Alerts on a Host Exhibiting CPU Spike
 * Multiple Cloud Secrets Accessed by Source Address
 * Multiple Device Token Hashes for Single Okta Session
 * Multiple Elastic Defend Alerts by Agent
@@ -355,8 +360,12 @@ Rules version: 8.19.13
 * Multiple Logon Failure from the same Source Address
 * Multiple Okta User Authentication Events with Client Address
 * Multiple Okta User Authentication Events with Same Device Token Hash
+* Multiple Vulnerabilities by Asset via Wiz
 * Newly Observed Elastic Defend Behavior Alert
+* Newly Observed FortiGate Alert
 * Newly Observed High Severity Detection Alert
+* Newly Observed High Severity Suricata Alert
+* Newly Observed Palo Alto Network Alert
 * Okta User Sessions Started from Different Geolocations
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
 * Potential Azure OpenAI Model Theft
@@ -637,12 +646,11 @@ Rules version: 8.19.13
 * Suspicious React Server Child Process
 * Unusual User Privilege Enumeration via id
 
-### Field type solver: constant_keyword (13)
+### Field type solver: constant_keyword (12)
 
-13 rules:
+12 rules:
 * CrowdStrike External Alerts
 * Elastic Security External Alerts
-* External Alerts
 * Google SecOps External Alerts
 * Initial Access via File Upload Followed by GET Request
 * Microsoft Sentinel External Alerts
@@ -866,6 +874,11 @@ Rules version: 8.19.13
 1 rules:
 * PowerShell Script with Log Clear Capabilities
 
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-AudioDevice'}): ('Recording')) (1)
+
+1 rules:
+* PowerShell Suspicious Script with Audio Capture Capabilities
+
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-WmiObject'}): ('AntiVirusProduct')) (1)
 
 1 rules:
@@ -896,6 +909,11 @@ Rules version: 8.19.13
 1 rules:
 * Potential PowerShell Pass-the-Hash/Relay Script
 
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'New-MailboxExportRequest'}): ('-FilePath')) (1)
+
+1 rules:
+* Exchange Mailbox Export via PowerShell
+
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)
 
 1 rules:
@@ -906,7 +924,7 @@ Rules version: 8.19.13
 1 rules:
 * PowerShell Script with Windows Defender Tampering Capabilities
 
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookA'}): ('GetForegroundWindow')) (1)
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookEx'}): ('GetForegroundWindow')) (1)
 
 1 rules:
 * PowerShell Keylogging Script
@@ -955,11 +973,6 @@ Rules version: 8.19.13
 
 1 rules:
 * PowerShell Share Enumeration Script
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)
-
-1 rules:
-* PowerShell Suspicious Script with Audio Capture Capabilities
 
 ### Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*')) (1)
 
