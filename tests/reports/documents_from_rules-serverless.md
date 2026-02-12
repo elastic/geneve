@@ -5,23 +5,23 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.2
+Rules version: 9.3.3
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (168)](#unsupported-rule-type-new_terms-168)
-      1. [Unsupported rule type: esql (111)](#unsupported-rule-type-esql-111)
+      1. [Unsupported rule type: new_terms (171)](#unsupported-rule-type-new_terms-171)
+      1. [Unsupported rule type: esql (124)](#unsupported-rule-type-esql-124)
       1. [Unsupported rule type: machine_learning (105)](#unsupported-rule-type-machine_learning-105)
       1. [Unsupported rule type: threshold (31)](#unsupported-rule-type-threshold-31)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Unsupported function: match (28)](#unsupported-function-match-28)
+      1. [Unsupported function: match (30)](#unsupported-function-match-30)
       1. [Unsupported function: stringContains (23)](#unsupported-function-stringcontains-23)
       1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
       1. [Field type solver: constant_keyword (12)](#field-type-solver-constant_keyword-12)
-      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
-      1. [Root without branches (10)](#root-without-branches-10)
+      1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
+      1. [Root without branches (9)](#root-without-branches-9)
       1. [Field type solver: match_only_text (8)](#field-type-solver-match_only_text-8)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
@@ -30,7 +30,6 @@ Rules version: 9.3.2
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
-      1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'kubectl'}): ('kubectl')) (2)](#unsolvable-constraints-processname-excluded-by-stringskubectl-kubectl-2)
@@ -40,12 +39,14 @@ Rules version: 9.3.2
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. ['NoneType' object is not subscriptable (1)](#nonetype-object-is-not-subscriptable-1)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
+      1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
       1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)](#unsolvable-constraints-fileextheader_bytes-excluded-by-strings504b0304-504b0304-1)
       1. [Unsolvable constraints: file.extension (cannot be non-null) (1)](#unsolvable-constraints-fileextension-cannot-be-non-null-1)
       1. [Unsolvable constraints: file.name (not in Strings({'*.so.*'}): ('.*.so')) (1)](#unsolvable-constraints-filename-not-in-stringsso-so-1)
+      1. [Unsolvable constraints: fortinet.firewall.cfgattr (not in Strings({'*srcaddr[all]*'}): ('*dstaddr[all]*')) (1)](#unsolvable-constraints-fortinetfirewallcfgattr-not-in-stringssrcaddrall-dstaddrall-1)
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringsswipuploadashx-post-1)
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringschild_process-exec-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
@@ -78,6 +79,9 @@ Rules version: 9.3.2
       1. [Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-o--c--1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*@/*.zip*'}): ('*http*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringszip-http-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('* copy*')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings--copy-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*com.apple.Safari*'}): ('*IncludeDevelopMenu*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringscomapplesafari-includedevelopmenu-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*connect=*'}): ('*restrict=off*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsconnect-restrictoff-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*csrutil*status*'}): ('*enabled*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringscsrutilstatus-enabled-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsdrivegooglecom-exportdownload-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*fromhex*'}): ('*decode*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsfromhex-decode-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*id_dsa*'}): ('*/home/*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsid_dsa-home-1)
@@ -118,14 +122,13 @@ Rules version: 9.3.2
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: <= (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: > (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
-      1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (168)
+### Unsupported rule type: new_terms (171)
 
-168 rules:
+171 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -168,8 +171,6 @@ Rules version: 9.3.2
 * Azure Storage Blob Retrieval via AzCopy
 * DPKG Package Installed by Unusual Parent Process
 * Delegated Managed Service Account Modification by an Unusual User
-* Deprecated - CAP_SYS_ADMIN Assigned to Binary
-* Deprecated - Modification of Standard Authentication Module or Configuration
 * Discovery of Internet Capabilities via Built-in Tools
 * Entra ID Conditional Access Policy (CAP) Modified
 * Entra ID Elevated Access to User Access Administrator
@@ -208,12 +209,17 @@ Rules version: 9.3.2
 * First Time Seen NewCredentials Logon Process
 * First Time Seen Removable Device
 * FirstTime Seen Account Performing DCSync
+* FortiGate Administrator Account Creation from Unusual Source
 * GenAI Process Connection to Unusual Domain
 * GitHub Actions Unusual Bot Push to Repository
 * Github Activity on a Private Repository from an Unusual IP
 * Interactive Shell Launched via Unusual Parent Process in a Container
 * Kernel Object File Creation
 * Kill Command Execution
+* Kubernetes Anonymous Request Authorized by Unusual User Agent
+* Kubernetes Denied Service Account Request via Unusual User Agent
+* Kubernetes Forbidden Request from Unusual User Agent
+* Kubernetes Suspicious Self-Subject Review via Unusual User Agent
 * Kubernetes Unusual Decision by User Agent
 * LSASS Memory Dump Handle Access
 * Linux Audio Recording Activity Detected
@@ -296,9 +302,9 @@ Rules version: 9.3.2
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (111)
+### Unsupported rule type: esql (124)
 
-111 rules:
+124 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -335,12 +341,20 @@ Rules version: 9.3.2
 * Entra ID Sign-in Brute Force Attempted (Microsoft 365)
 * Entra ID User Sign-in Brute Force Attempted
 * File Transfer Utility Launched from Unusual Parent
+* First-Time FortiGate Administrator Login
+* FortiGate Administrator Login from Multiple IP Addresses
+* FortiGate FortiCloud SSO Login from Unusual Source
 * GitHub Actions Workflow Modification Blocked
 * GitHub Exfiltration via High Number of Repository Clones by User
 * High Number of Closed Pull Requests by User
 * High Number of Egress Network Connections from Unusual Executable
 * High Number of Okta Device Token Cookies Generated for Authentication
 * High Number of Protected Branch Force Pushes by User
+* Kubernetes Creation or Modification of Sensitive Role
+* Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
+* Kubernetes Potential Endpoint Permission Enumeration Attempt by Anonymous User Detected
+* LLM-Based Attack Chain Triage by Host
+* LLM-Based Compromised User Triage by User
 * LSASS Process Access via Windows API
 * Lateral Movement Alerts from a Newly Observed Source Address
 * Lateral Movement Alerts from a Newly Observed User
@@ -358,6 +372,7 @@ Rules version: 9.3.2
 * Multiple Elastic Defend Alerts from a Single Process Tree
 * Multiple External EDR Alerts by Host
 * Multiple Logon Failure from the same Source Address
+* Multiple Machine Learning Alerts by Influencer Field
 * Multiple Okta User Authentication Events with Client Address
 * Multiple Okta User Authentication Events with Same Device Token Hash
 * Multiple Vulnerabilities by Asset via Wiz
@@ -366,6 +381,8 @@ Rules version: 9.3.2
 * Newly Observed High Severity Detection Alert
 * Newly Observed High Severity Suricata Alert
 * Newly Observed Palo Alto Network Alert
+* Newly Observed Process Exhibiting High CPU Usage
+* Okta AiTM Session Cookie Replay
 * Okta User Sessions Started from Different Geolocations
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
 * Potential Azure OpenAI Model Theft
@@ -397,6 +414,8 @@ Rules version: 9.3.2
 * Rare Connection to WebDAV Target
 * Several Failed Protected Branch Force Pushes by User
 * Suspected Lateral Movement from Compromised Host
+* Suspicious AWS S3 Connection via Script Interpreter
+* Suspicious TCC Access Granted for User Folders
 * Unusual Base64 Encoding/Decoding Activity
 * Unusual Command Execution from Web Server Parent
 * Unusual File Creation by Web Server
@@ -534,6 +553,7 @@ Rules version: 9.3.2
 * Azure Compute Restore Point Collections Deleted
 * Azure Compute Snapshot Deletions by User
 * Azure Storage Account Deletions by User
+* Deprecated - Sudo Heap-Based Buffer Overflow Attempt
 * Entra ID Excessive Account Lockouts Detected
 * Excessive AWS S3 Object Encryption with SSE-C
 * GitHub UEBA - Multiple Alerts from a GitHub Account
@@ -555,7 +575,6 @@ Rules version: 9.3.2
 * Potential Network Sweep Detected
 * Potential SYN-Based Port Scan Detected
 * Potential macOS SSH Brute Force Detected
-* Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
 ### Unsupported rule type: threat_match (6)
@@ -580,15 +599,16 @@ Rules version: 9.3.2
 
 ## Generation errors
 
-### Unsupported function: match (28)
+### Unsupported function: match (30)
 
-28 rules:
+30 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * Command Obfuscation via Unicode Modifier Letters
 * Creation of Hidden Files and Directories via CommandLine
 * Entra ID Sign-in BloodHound Suite User-Agent Detected
 * Executable File Creation with Multiple Extensions
 * File Deletion via Shred
+* File Download Detected via Defend for Containers
 * GenAI Process Connection to Suspicious Top Level Domain
 * Masquerading Space After Filename
 * Network Activity to a Suspicious Top Level Domain
@@ -606,6 +626,7 @@ Rules version: 9.3.2
 * SUID/SGID Bit Set
 * Simple HTTP Web Server Connection
 * Simple HTTP Web Server Creation
+* Suspicious Curl from macOS Application
 * Suspicious Execution via Microsoft Office Add-Ins
 * Suspicious Service was Installed in the System
 * Unusual Child Processes of RunDLL32
@@ -643,10 +664,10 @@ Rules version: 9.3.2
 
 17 rules:
 * Connection to Commonly Abused Web Services
-* Deprecated - Potential Pspy Process Monitoring Detected
 * Execution from Unusual Directory - Command Line
 * External IP Lookup from Non-Browser Process
 * GenAI or MCP Server Child Process Execution
+* Kubelet Pod Discovery Detected via Defend for Containers
 * Potential DNS Tunneling via NsLookup
 * Potential Evasion via Windows Filtering Platform
 * Potential External Linux SSH Brute Force Detected
@@ -676,11 +697,10 @@ Rules version: 9.3.2
 * SentinelOne Threat External Alerts
 * Splunk External Alerts
 
-### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)
+### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)
 
-12 rules:
+11 rules:
 * AdminSDHolder SDProp Exclusion Added
-* Deprecated - Potential curl CVE-2023-38545 Exploitation
 * Image File Execution Options Injection
 * Ingress Transfer via Windows BITS
 * Memory Dump File with Unusual Extension
@@ -692,10 +712,9 @@ Rules version: 9.3.2
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
 
-### Root without branches (10)
+### Root without branches (9)
 
-10 rules:
-* Deprecated - Potential Protocol Tunneling via Chisel Server
+9 rules:
 * Initramfs Extraction via CPIO
 * Interactive Shell Spawn Detected via Defend for Containers
 * Interactive Terminal Spawned via Perl
@@ -773,12 +792,6 @@ Rules version: 9.3.2
 * Potential Machine Account Relay Attack via SMB
 * Unusual Execution via Microsoft Common Console File
 
-### Pipes are unsupported (2)
-
-2 rules:
-* Deprecated - Potential Successful Linux FTP Brute Force Attack Detected
-* Deprecated - Potential Successful Linux RDP Brute Force Attack Detected
-
 ### Unsolvable constraints: event.category & event.type (empty intersection) (2)
 
 2 rules:
@@ -831,6 +844,11 @@ Rules version: 9.3.2
 1 rules:
 * Potential Okta MFA Bombing via Push Notifications
 
+### Cannot choose from an empty set (1)
+
+1 rules:
+* DNS Request for IP Lookup Service via Unsigned Binary
+
 ### Field type solver: flattened (1)
 
 1 rules:
@@ -860,6 +878,11 @@ Rules version: 9.3.2
 
 1 rules:
 * Creation of Hidden Shared Object File
+
+### Unsolvable constraints: fortinet.firewall.cfgattr (not in Strings({'*srcaddr[all]*'}): ('*dstaddr[all]*')) (1)
+
+1 rules:
+* FortiGate Overly Permissive Firewall Policy Created
 
 ### Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)
 
@@ -1020,6 +1043,21 @@ Rules version: 9.3.2
 
 1 rules:
 * Remote File Copy to a Hidden Share
+
+### Unsolvable constraints: process.command_line (not in Strings({'*com.apple.Safari*'}): ('*IncludeDevelopMenu*')) (1)
+
+1 rules:
+* Modification of Safari Settings via Defaults Command
+
+### Unsolvable constraints: process.command_line (not in Strings({'*connect=*'}): ('*restrict=off*')) (1)
+
+1 rules:
+* Potential Traffic Tunneling using QEMU
+
+### Unsolvable constraints: process.command_line (not in Strings({'*csrutil*status*'}): ('*enabled*')) (1)
+
+1 rules:
+* Suspicious SIP Check by macOS Application
 
 ### Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)
 
@@ -1220,11 +1258,6 @@ Rules version: 9.3.2
 
 1 rules:
 * Suspicious Inter-Process Communication via Outlook
-
-### Unsupported &keyword 'user.id' constraint: >= (1)
-
-1 rules:
-* Deprecated - Potential Privilege Escalation via UID INT_MAX Bug Detected
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 
