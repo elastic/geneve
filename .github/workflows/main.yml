@@ -184,9 +184,10 @@ jobs:
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
         if: always()
         run: |
-          docker logs geneve-test-es01-1 >es01-${{ matrix.stack-version }}.log
-          docker logs geneve-test-es02-1 >es02-${{ matrix.stack-version }}.log
-          docker logs geneve-test-kbn-1 >kbn-${{ matrix.stack-version }}.log
+          docker logs geneve-test-certs-1 >certs-${{ matrix.stack-version }}.log 2>&1
+          docker logs geneve-test-es01-1 >es01-${{ matrix.stack-version }}.log 2>&1
+          docker logs geneve-test-es02-1 >es02-${{ matrix.stack-version }}.log 2>&1
+          docker logs geneve-test-kbn-1 >kbn-${{ matrix.stack-version }}.log 2>&1
           make down
 
       - name: Upload logs
@@ -194,16 +195,14 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: logs-${{ matrix.stack-version }}
-          path: |
-            es-*.log
-            kbn-*.log
+          path: '*.log'
 
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: test-reports-${{ matrix.stack-version }}
-          path: tests/reports/*.new.md
+          path: 'tests/reports/*.new.md'
 
   package-build:
     name: Package build (${{ matrix.os }}/py-${{ matrix.python-version }})
