@@ -154,35 +154,11 @@ jobs:
       - name: Install dependencies
         run: make prereq
 
-      - name: Setup cache
-        id: elastic-stack-cache
-        if: "! contains(matrix.stack-version, '-SNAPSHOT')"
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
-        with:
-          key: elastic-stack-cache-${{ matrix.stack-version }}
-          path: ~/elastic-stack-cache
-
-      - name: Reuse Elastic Stack ${{ matrix.stack-version }} Docker images
-        if: steps.elastic-stack-cache.outputs.cache-hit == 'true'
-        run: |
-          docker load -i ~/elastic-stack-cache/elasticsearch-${{ matrix.stack-version }}.tar
-          docker load -i ~/elastic-stack-cache/kibana-${{ matrix.stack-version }}.tar
-
       - name: Pull Elastic Stack ${{ matrix.stack-version }} Docker images
-        if: steps.elastic-stack-cache.outputs.cache-hit != 'true'
         env:
           TEST_STACK_VERSION: ${{ matrix.stack-version }}
         run: |
           docker compose pull -q
-
-      - name: Save Elastic Stack ${{ matrix.stack-version }} Docker images
-        if: "steps.elastic-stack-cache.outputs.cache-hit != 'true' && ! contains(matrix.stack-version, '-SNAPSHOT')"
-        run: |
-          mkdir ~/elastic-stack-cache
-          docker save -o ~/elastic-stack-cache/elasticsearch-${{ matrix.stack-version }}.tar \
-            docker.elastic.co/elasticsearch/elasticsearch:${{ matrix.stack-version }}
-          docker save -o ~/elastic-stack-cache/kibana-${{ matrix.stack-version }}.tar \
-            docker.elastic.co/kibana/kibana:${{ matrix.stack-version }}
 
       - name: Start Elastic Stack ${{ matrix.stack-version }}
         env:
