@@ -2,7 +2,6 @@ name: geneve-test
 
 services:
   certs:
-    container_name: certs
     image: ${TEST_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:${TEST_STACK_VERSION:-9.2.0}}
     command: >
       bash -ec '

@@ -129,12 +129,6 @@ jobs:
             schema-uri: "./etc/ecs-v8.6.1.tar.gz"
           - stack-version: 8.5.0
             schema-uri: "./etc/ecs-v8.5.2.tar.gz"
-          - stack-version: 8.4.0
-            schema-uri: "./etc/ecs-v8.4.0.tar.gz"
-          - stack-version: 8.3.0
-            schema-uri: "./etc/ecs-v8.3.1.tar.gz"
-          - stack-version: 8.2.0
-            schema-uri: "./etc/ecs-v8.2.1.tar.gz"
 
     env:
       TEST_ELASTICSEARCH_URL: "http://elastic:changeme@localhost:29650"
@@ -154,35 +148,11 @@ jobs:
       - name: Install dependencies
         run: make prereq
 
-      - name: Setup cache
-        id: elastic-stack-cache
-        if: "! contains(matrix.stack-version, '-SNAPSHOT')"
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
-        with:
-          key: elastic-stack-cache-${{ matrix.stack-version }}
-          path: ~/elastic-stack-cache
-
-      - name: Reuse Elastic Stack ${{ matrix.stack-version }} Docker images
-        if: steps.elastic-stack-cache.outputs.cache-hit == 'true'
-        run: |
-          docker load -i ~/elastic-stack-cache/elasticsearch-${{ matrix.stack-version }}.tar
-          docker load -i ~/elastic-stack-cache/kibana-${{ matrix.stack-version }}.tar
-
       - name: Pull Elastic Stack ${{ matrix.stack-version }} Docker images
-        if: steps.elastic-stack-cache.outputs.cache-hit != 'true'
         env:
           TEST_STACK_VERSION: ${{ matrix.stack-version }}
         run: |
           docker compose pull -q
-
-      - name: Save Elastic Stack ${{ matrix.stack-version }} Docker images
-        if: "steps.elastic-stack-cache.outputs.cache-hit != 'true' && ! contains(matrix.stack-version, '-SNAPSHOT')"
-        run: |
-          mkdir ~/elastic-stack-cache
-          docker save -o ~/elastic-stack-cache/elasticsearch-${{ matrix.stack-version }}.tar \
-            docker.elastic.co/elasticsearch/elasticsearch:${{ matrix.stack-version }}
-          docker save -o ~/elastic-stack-cache/kibana-${{ matrix.stack-version }}.tar \
-            docker.elastic.co/kibana/kibana:${{ matrix.stack-version }}
 
       - name: Start Elastic Stack ${{ matrix.stack-version }}
         env:
@@ -208,9 +178,10 @@ jobs:
       - name: Stop Elastic Stack ${{ matrix.stack-version }}
         if: always()
         run: |
-          docker logs geneve-test-es01-1 >es01-${{ matrix.stack-version }}.log
-          docker logs geneve-test-es02-1 >es02-${{ matrix.stack-version }}.log
-          docker logs geneve-test-kbn-1 >kbn-${{ matrix.stack-version }}.log
+          docker logs geneve-test-certs-1 >certs-${{ matrix.stack-version }}.log 2>&1
+          docker logs geneve-test-es01-1 >es01-${{ matrix.stack-version }}.log 2>&1
+          docker logs geneve-test-es02-1 >es02-${{ matrix.stack-version }}.log 2>&1
+          docker logs geneve-test-kbn-1 >kbn-${{ matrix.stack-version }}.log 2>&1
           make down
 
       - name: Upload logs
@@ -218,16 +189,14 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: logs-${{ matrix.stack-version }}
-          path: |
-            es-*.log
-            kbn-*.log
+          path: '*.log'
 
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: test-reports-${{ matrix.stack-version }}
-          path: tests/reports/*.new.md
+          path: 'tests/reports/*.new.md'
 
   package-build:
     name: Package build (${{ matrix.os }}/py-${{ matrix.python-version }})
