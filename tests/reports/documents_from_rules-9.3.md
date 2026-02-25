@@ -5,18 +5,18 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.3
+Rules version: 9.3.4
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (171)](#unsupported-rule-type-new_terms-171)
-      1. [Unsupported rule type: esql (124)](#unsupported-rule-type-esql-124)
+      1. [Unsupported rule type: new_terms (175)](#unsupported-rule-type-new_terms-175)
+      1. [Unsupported rule type: esql (130)](#unsupported-rule-type-esql-130)
       1. [Unsupported rule type: machine_learning (105)](#unsupported-rule-type-machine_learning-105)
-      1. [Unsupported rule type: threshold (31)](#unsupported-rule-type-threshold-31)
+      1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Unsupported function: match (30)](#unsupported-function-match-30)
+      1. [Unsupported function: match (32)](#unsupported-function-match-32)
       1. [Unsupported function: stringContains (23)](#unsupported-function-stringcontains-23)
       1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
       1. [Field type solver: constant_keyword (12)](#field-type-solver-constant_keyword-12)
@@ -37,6 +37,7 @@ Rules version: 9.3.3
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-2)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
+      1. [Unsupported is_negated: {'is_negated': True} (2)](#unsupported-is_negated-is_negated-true-2)
       1. ['NoneType' object is not subscriptable (1)](#nonetype-object-is-not-subscriptable-1)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
@@ -66,10 +67,10 @@ Rules version: 9.3.3
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstartupinfoex-updateprocthreadattribute-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Set-MpPreference'}): ('DisableArchiveScanning')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsset-mppreference-disablearchivescanning-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookEx'}): ('GetForegroundWindow')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssetwindowshookex-getforegroundwindow-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'System.IO.Compression.DeflateStream'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemiocompressiondeflatestream-frombase64string-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'VirtualAlloc'}): ('WriteProcessMemory')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsvirtualalloc-writeprocessmemory-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswindowsclipboard-gettext-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[Ref].Assembly.GetType(('System.Management.Automation'}): ('.SetValue(')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsrefassemblygettypesystemmanagementautomation-setvalue-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Reflection.Assembly]::Load'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemreflectionassemblyload-frombase64string-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[dbo].[Credentials]'}): ('Veeam')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdbocredentials-veeam-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[string]::join'}): ('$pSHoMe[')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstringjoin-pshome-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
@@ -78,6 +79,7 @@ Rules version: 9.3.3
       1. [Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*')) (1)](#unsolvable-constraints-processcommand_line-excluded-by-stringsprocsysvmdrop_caches-drop_caches-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-o--c--1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*@/*.zip*'}): ('*http*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringszip-http-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*Remove-Item*'}): ('*ConsoleHost_history.txt*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsremove-item-consolehost_historytxt-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('* copy*')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings--copy-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*com.apple.Safari*'}): ('*IncludeDevelopMenu*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringscomapplesafari-includedevelopmenu-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*connect=*'}): ('*restrict=off*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsconnect-restrictoff-1)
@@ -117,18 +119,20 @@ Rules version: 9.3.3
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: < (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (1)](#unsupported-keyword-fileextentropy-constraint--1)
+      1. [Unsupported &keyword 'kibana.alert.risk_score' constraint: > (1)](#unsupported-keyword-kibanaalertrisk_score-constraint--1)
       1. [Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)](#unsupported-keyword-ml_is_dgamalicious_probability-constraint--1)
       1. [Unsupported &keyword 'o365.audit.OperationCount' constraint: >= (1)](#unsupported-keyword-o365auditoperationcount-constraint--1)
+      1. [Unsupported &keyword 'powershell.file.script_block_entropy_bits' constraint: >= (1)](#unsupported-keyword-powershellfilescript_block_entropy_bits-constraint--1)
+      1. [Unsupported &keyword 'powershell.file.script_block_length' constraint: > (1)](#unsupported-keyword-powershellfilescript_block_length-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: <= (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: > (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
-      1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (171)
+### Unsupported rule type: new_terms (175)
 
-171 rules:
+175 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -142,11 +146,13 @@ Rules version: 9.3.3
 * AWS IAM Assume Role Policy Update
 * AWS IAM Create User via Assumed Role on EC2 Instance
 * AWS IAM Customer-Managed Policy Attached to Role by Rare User
+* AWS IAM OIDC Provider Created by Rare User
 * AWS S3 Unauthenticated Bucket Access by Rare Source
 * AWS SNS Rare Protocol Subscription by User
 * AWS SNS Topic Created by Rare User
 * AWS SNS Topic Message Publish by Rare User
 * AWS SSM Command Document Created by Rare User
+* AWS SSM Inventory Reconnaissance by Rare User
 * AWS SSM Session Started to EC2 Instance
 * AWS SSM `SendCommand` Execution by Rare User
 * AWS SSM `SendCommand` with Run Shell Command Parameters
@@ -171,6 +177,8 @@ Rules version: 9.3.3
 * Azure Storage Blob Retrieval via AzCopy
 * DPKG Package Installed by Unusual Parent Process
 * Delegated Managed Service Account Modification by an Unusual User
+* Deprecated - Suspicious PrintSpooler Service Executable File Creation
+* Deprecated - Unusual Discovery Activity by User
 * Discovery of Internet Capabilities via Built-in Tools
 * Entra ID Conditional Access Policy (CAP) Modified
 * Entra ID Elevated Access to User Access Administrator
@@ -181,7 +189,8 @@ Rules version: 9.3.3
 * Entra ID OAuth ROPC Grant Login Detected
 * Entra ID OAuth user_impersonation Scope for Unusual User and Client
 * Entra ID Service Principal Credentials Created by Unusual User
-* Entra ID SharePoint Accessed by Unusual User and Microsoft Authentication Broker Client
+* Entra ID Service Principal Federated Credential Authentication by Unusual Client
+* Entra ID Sharepoint or OneDrive Accessed by Unusual Client
 * Entra ID User Sign-in with Unusual Authentication Type
 * Entra ID User Sign-in with Unusual Client
 * Entra ID User Sign-in with Unusual Non-Managed Device
@@ -232,6 +241,7 @@ Rules version: 9.3.3
 * M365 Exchange Mailbox High-Risk Permission Delegated
 * M365 Identity Login from Atypical Travel Location
 * M365 Identity OAuth Illicit Consent Grant by Rare Client and User
+* M365 Identity Unusual SSO Authentication Errors for User
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
 * Microsoft Graph Request Email Access by Unusual User and Client
@@ -267,7 +277,6 @@ Rules version: 9.3.3
 * Suspicious Network Activity to the Internet by Previously Unknown Executable
 * Suspicious Path Invocation from Command Line
 * Suspicious PowerShell Engine ImageLoad
-* Suspicious PrintSpooler Service Executable File Creation
 * Suspicious Sysctl File Event
 * Suspicious System Commands Executed by Previously Unknown Executable
 * Svchost spawning Cmd
@@ -279,7 +288,6 @@ Rules version: 9.3.3
 * Unauthorized Scope for Public App OAuth2 Token Grant with Client Credentials
 * Unknown Execution of Binary with RWX Memory Region
 * Unusual AWS S3 Object Encryption with SSE-C
-* Unusual Discovery Activity by User
 * Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 * Unusual Execution from Kernel Thread (kthreadd) Parent
@@ -302,9 +310,9 @@ Rules version: 9.3.3
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (124)
+### Unsupported rule type: esql (130)
 
-124 rules:
+130 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -327,17 +335,18 @@ Rules version: 9.3.3
 * Azure Key Vault Excessive Secret or Key Retrieved
 * Azure OpenAI Insecure Output Handling
 * Command Line Obfuscation via Whitespace Padding
+* Correlated Alerts on Similar User Identities
 * Detection Alert on a Process Exhibiting CPU Spike
 * Dynamic IEX Reconstruction via Method String Access
 * Elastic Defend and Email Alerts Correlation
 * Elastic Defend and Network Security Alerts Correlation
 * Entra ID Actor Token User Impersonation Abuse
 * Entra ID Concurrent Sign-in with Suspicious Properties
+* Entra ID Federated Identity Credential Issuer Modified
 * Entra ID MFA TOTP Brute Force Attempted
 * Entra ID OAuth Device Code Flow with Concurrent Sign-ins
 * Entra ID OAuth Flow by Microsoft Authentication Broker to Device Registration Service (DRS)
 * Entra ID OAuth User Impersonation to Microsoft Graph
-* Entra ID OIDC Discovery URL Modified
 * Entra ID Sign-in Brute Force Attempted (Microsoft 365)
 * Entra ID User Sign-in Brute Force Attempted
 * File Transfer Utility Launched from Unusual Parent
@@ -348,7 +357,6 @@ Rules version: 9.3.3
 * GitHub Exfiltration via High Number of Repository Clones by User
 * High Number of Closed Pull Requests by User
 * High Number of Egress Network Connections from Unusual Executable
-* High Number of Okta Device Token Cookies Generated for Authentication
 * High Number of Protected Branch Force Pushes by User
 * Kubernetes Creation or Modification of Sensitive Role
 * Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
@@ -373,8 +381,8 @@ Rules version: 9.3.3
 * Multiple External EDR Alerts by Host
 * Multiple Logon Failure from the same Source Address
 * Multiple Machine Learning Alerts by Influencer Field
-* Multiple Okta User Authentication Events with Client Address
 * Multiple Okta User Authentication Events with Same Device Token Hash
+* Multiple Rare Elastic Defend Behavior Rules by Host
 * Multiple Vulnerabilities by Asset via Wiz
 * Newly Observed Elastic Defend Behavior Alert
 * Newly Observed FortiGate Alert
@@ -383,6 +391,7 @@ Rules version: 9.3.3
 * Newly Observed Palo Alto Network Alert
 * Newly Observed Process Exhibiting High CPU Usage
 * Okta AiTM Session Cookie Replay
+* Okta Successful Login After Credential Attack
 * Okta User Sessions Started from Different Geolocations
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
 * Potential Azure OpenAI Model Theft
@@ -393,6 +402,11 @@ Rules version: 9.3.3
 * Potential Malware-Driven SSH Brute Force Attempt
 * Potential Masquerading as Svchost
 * Potential Network Scan Detected
+* Potential Okta Brute Force (Device Token Rotation)
+* Potential Okta Brute Force (Multi-Source)
+* Potential Okta Credential Stuffing (Single Source)
+* Potential Okta Password Spray (Multi-Source)
+* Potential Okta Password Spray (Single Source)
 * Potential Password Spraying Attack via SSH
 * Potential Port Scanning Activity from Compromised Host
 * Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
@@ -541,9 +555,9 @@ Rules version: 9.3.3
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: threshold (31)
+### Unsupported rule type: threshold (29)
 
-31 rules:
+29 rules:
 
 * AWS IAM Principal Enumeration via UpdateAssumeRolePolicy
 * AWS Management Console Brute Force of Root User Identity
@@ -561,13 +575,11 @@ Rules version: 9.3.3
 * High Number of Okta User Password Reset or Unlock Attempts
 * High Number of Process Terminations
 * High Number of Process and/or Service Terminations
-* M365 Identity Excessive SSO Login Errors Reported
 * M365 Identity Login from Impossible Travel Location
 * Multiple Alerts in Different ATT&CK Tactics on a Single Host
 * Multiple Okta Sessions Detected for a Single User
 * Multiple Okta User Auth Events with Same Device Token Hash Behind a Proxy
 * My First Rule
-* Okta Brute Force or Password Spraying Attack
 * Okta Multiple OS Names Detected for a Single DT Hash
 * Potential Buffer Overflow Attack Detected
 * Potential LSASS Memory Dump via PssCaptureSnapShot
@@ -599,9 +611,9 @@ Rules version: 9.3.3
 
 ## Generation errors
 
-### Unsupported function: match (30)
+### Unsupported function: match (32)
 
-30 rules:
+32 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * Command Obfuscation via Unicode Modifier Letters
 * Creation of Hidden Files and Directories via CommandLine
@@ -616,6 +628,7 @@ Rules version: 9.3.3
 * Potential Command Shell via NetCat
 * Potential Credential Access via Windows Utilities
 * Potential Exploitation of an Unquoted Service Path Vulnerability
+* Potential Linux Tunneling and/or Port Forwarding
 * Potential Linux Tunneling and/or Port Forwarding via Command Line
 * Potential Windows Error Manager Masquerading
 * Process Created with a Duplicated Token
@@ -629,6 +642,7 @@ Rules version: 9.3.3
 * Suspicious Curl from macOS Application
 * Suspicious Execution via Microsoft Office Add-Ins
 * Suspicious Service was Installed in the System
+* Tunneling and/or Port Forwarding Detected via Defend for Containers
 * Unusual Child Processes of RunDLL32
 * Unusual Network Connection via RunDLL32
 * Unusual Process Execution Path - Alternate Data Stream
@@ -834,6 +848,12 @@ Rules version: 9.3.3
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
 
+### Unsupported is_negated: {'is_negated': True} (2)
+
+2 rules:
+* Elastic Defend Alert Followed by Telemetry Loss
+* MFA Deactivation with no Re-Activation for Okta User Account
+
 ### 'NoneType' object is not subscriptable (1)
 
 1 rules:
@@ -932,7 +952,7 @@ Rules version: 9.3.3
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-WmiObject'}): ('AntiVirusProduct')) (1)
 
 1 rules:
-* PowerShell Script with Discovery Capabilities
+* Deprecated - PowerShell Script with Discovery Capabilities
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'IO.Compression.ZipFile'}): ('CompressionLevel')) (1)
 
@@ -942,7 +962,7 @@ Rules version: 9.3.3
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Invoke-WmiMethod'}): ('ComputerName')) (1)
 
 1 rules:
-* PowerShell Script with Remote Execution Capabilities via WinRM
+* Deprecated - PowerShell Script with Remote Execution Capabilities via WinRM
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'LsaCallAuthenticationPackage'}): ('KerbRetrieveEncodedTicketMessage')) (1)
 
@@ -979,11 +999,6 @@ Rules version: 9.3.3
 1 rules:
 * PowerShell Keylogging Script
 
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'System.IO.Compression.DeflateStream'}): ('FromBase64String')) (1)
-
-1 rules:
-* PowerShell Suspicious Payload Encoded and Compressed
-
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'VirtualAlloc'}): ('WriteProcessMemory')) (1)
 
 1 rules:
@@ -999,6 +1014,11 @@ Rules version: 9.3.3
 1 rules:
 * Potential Antimalware Scan Interface Bypass via PowerShell
 
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Reflection.Assembly]::Load'}): ('FromBase64String')) (1)
+
+1 rules:
+* Suspicious .NET Reflection via PowerShell
+
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[dbo].[Credentials]'}): ('Veeam')) (1)
 
 1 rules:
@@ -1007,7 +1027,7 @@ Rules version: 9.3.3
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[string]::join'}): ('$pSHoMe[')) (1)
 
 1 rules:
-* Potential PowerShell Obfuscated Script
+* Deprecated - Potential PowerShell Obfuscated Script
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)
 
@@ -1038,6 +1058,11 @@ Rules version: 9.3.3
 
 1 rules:
 * Potential Data Exfiltration Through Curl
+
+### Unsolvable constraints: process.command_line (not in Strings({'*Remove-Item*'}): ('*ConsoleHost_history.txt*')) (1)
+
+1 rules:
+* Clearing Windows Console History
 
 ### Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('* copy*')) (1)
 
@@ -1234,6 +1259,11 @@ Rules version: 9.3.3
 1 rules:
 * Suspicious HTML File Creation
 
+### Unsupported &keyword 'kibana.alert.risk_score' constraint: > (1)
+
+1 rules:
+* FortiGate SSL VPN Login Followed by SIEM Alert by User
+
 ### Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)
 
 1 rules:
@@ -1243,6 +1273,16 @@ Rules version: 9.3.3
 
 1 rules:
 * M365 Exchange Mailbox Items Accessed Excessively
+
+### Unsupported &keyword 'powershell.file.script_block_entropy_bits' constraint: >= (1)
+
+1 rules:
+* PowerShell Suspicious Payload Encoded and Compressed
+
+### Unsupported &keyword 'powershell.file.script_block_length' constraint: > (1)
+
+1 rules:
+* Potential PowerShell Obfuscated Script via High Entropy
 
 ### Unsupported &keyword 'problemchild.prediction_probability' constraint: <= (1)
 
@@ -1258,8 +1298,3 @@ Rules version: 9.3.3
 
 1 rules:
 * Suspicious Inter-Process Communication via Outlook
-
-### Unsupported is_negated: {'is_negated': True} (1)
-
-1 rules:
-* MFA Deactivation with no Re-Activation for Okta User Account
