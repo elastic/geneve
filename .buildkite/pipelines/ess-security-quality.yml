@@ -1,17 +1,19 @@
 agents:
   image: "docker.elastic.co/appex-qa/qaf:latest@sha256:3a12bc30471237189882a30cb549702fb67a0099530838cd66e07184b770117a"
-  memory: "3G"
+  memory: "4G"
 
 env:
   EC_REGISTER_BACKEND: "appex-qa-team-cluster"
   EC_REGION: "gcp-us-central1"
   EC_ENV: "qa"
   EC_DEPLOYMENT_NAME: "bk-ess-security-geneve-${BUILDKITE_BUILD_NUMBER}"
+  STACK_VERSION_DEFAULT: "9.3.0"
 
 steps:
   - label: ":pipeline: Create environment `ess-geneve-test-environment`"
     key: create_geneve_environment
     command:
+      - "export STACK_VERSION=$${STACK_VERSION:-$STACK_VERSION_DEFAULT}"
       - "qaf elastic-cloud deployments create"
 
   - label: ":rocket: Deploy Geneve tests"
