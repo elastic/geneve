@@ -5,16 +5,16 @@ learn what rules are supported and what not and why.
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.4
+Rules version: 9.3.5
 
 ## Table of contents
-   1. [Failed rules (27)](#failed-rules-27)
-   1. [Unsuccessful rules with signals (22)](#unsuccessful-rules-with-signals-22)
+   1. [Failed rules (26)](#failed-rules-26)
+   1. [Unsuccessful rules with signals (21)](#unsuccessful-rules-with-signals-21)
    1. [Rules with no signals (7)](#rules-with-no-signals-7)
-   1. [Rules with too few signals (24)](#rules-with-too-few-signals-24)
-   1. [Rules with the correct signals (989)](#rules-with-the-correct-signals-989)
+   1. [Rules with too few signals (23)](#rules-with-too-few-signals-23)
+   1. [Rules with the correct signals (1001)](#rules-with-the-correct-signals-1001)
 
-## Failed rules (27)
+## Failed rules (26)
 
 ### Cloud Credential Search Detected via Defend for Containers
 
@@ -163,7 +163,7 @@ network where host.os.type in ("macos", "windows") and dns.question.name != null
 
 Branch count: 516  
 Document count: 1032  
-Index: geneve-ut-0332  
+Index: geneve-ut-0333  
 Failure message(s):  
   SDE says:
 > verification_exception
@@ -206,13 +206,13 @@ sequence with maxspan=1s
 
 Branch count: 528  
 Document count: 1056  
-Index: geneve-ut-0333  
+Index: geneve-ut-0334  
 Failure message(s):  
   SDE says:
 > verification_exception
 	Root causes:
 		verification_exception: Found 1 problem
-line 47:8: Unknown column [kubernetes.audit.user.extra.authentication.kubernetes.io/pod-name]  
+line 50:8: Unknown column [kubernetes.audit.user.extra.authentication.kubernetes.io/pod-name]  
 
 ```python
 sequence with maxspan=1s
@@ -242,7 +242,10 @@ sequence with maxspan=1s
        )
      ) or
      /* General exclusions for utilities that are not typically used for Kubernetes API requests */
-     process.name in ("sleep", "head", "tail")
+     process.name in (
+       "sleep", "head", "tail", "apk", "apt", "apt-get", "dnf", "microdnf", "yum", "zypper", "tdnf",
+       "pacman", "rpm", "dpkg"
+     )
    )] by orchestrator.resource.name
   [any where
      event.dataset == "kubernetes.audit_logs" and
@@ -270,7 +273,7 @@ sequence with maxspan=1s
 
 Branch count: 3  
 Document count: 9  
-Index: geneve-ut-0413  
+Index: geneve-ut-0415  
 Failure message(s):  
   SDE says:
 > verification_exception
@@ -305,7 +308,7 @@ sequence by azure.correlation_id with maxspan=5m
 
 Branch count: 8448  
 Document count: 16896  
-Index: geneve-ut-0441  
+Index: geneve-ut-0443  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -331,7 +334,7 @@ sequence by host.id, user.id with maxspan=3m
 
 Branch count: 4608  
 Document count: 13824  
-Index: geneve-ut-0466  
+Index: geneve-ut-0468  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -356,42 +359,11 @@ sequence by host.id, user.id with maxspan=1m
 
 
 
-### File Execution Permission Modification Detected via Defend for Containers
-
-Branch count: 3626  
-Document count: 3626  
-Index: geneve-ut-0469  
-Failure message(s):  
-  SDE says:
-> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
-
-```python
-file where host.os.type == "linux" and event.type in ("change", "creation") and (
-  process.name == "chmod" or
-  (
-    /* account for tools that execute utilities as a subprocess, in this case the target utility name will appear as a process arg */
-    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox") and
-    process.args in (
-      "chmod", "/bin/chmod", "/usr/bin/chmod", "/usr/local/bin/chmod"
-    ) and
-    /* default exclusion list to not FP on default multi-process commands */
-    not process.args in (
-      "which", "/bin/which", "/usr/bin/which", "/usr/local/bin/which",
-      "man", "/bin/man", "/usr/bin/man", "/usr/local/bin/man"
-    )
-  )
-) and process.args in ("4755", "755", "777", "0777", "444", "+x", "a+x") and
-process.args like ("/dev/shm/*", "/tmp/*", "/var/tmp/*", "/run/*", "/var/run/*", "/mnt/*", "/media/*") and
-process.interactive == true and container.id like "*" and not process.args == "-x"
-```
-
-
-
 ### Forbidden Direct Interactive Kubernetes API Request
 
 Branch count: 516  
 Document count: 1032  
-Index: geneve-ut-0500  
+Index: geneve-ut-0503  
 Failure message(s):  
   SDE says:
 > verification_exception
@@ -436,7 +408,7 @@ sequence with maxspan=1s
 
 Branch count: 2300  
 Document count: 2300  
-Index: geneve-ut-0545  
+Index: geneve-ut-0548  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -467,7 +439,7 @@ not process.name in ("git", "dirname")
 
 Branch count: 2352  
 Document count: 4704  
-Index: geneve-ut-0802  
+Index: geneve-ut-0817  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -500,7 +472,7 @@ sequence by process.parent.entity_id with maxspan=3s
 
 Branch count: 1110  
 Document count: 1110  
-Index: geneve-ut-0826  
+Index: geneve-ut-0841  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -539,11 +511,52 @@ process.args like~ (
 
 
 
+### Payload Execution via Shell Pipe Detected by Defend for Containers
+
+Branch count: 2352  
+Document count: 4704  
+Index: geneve-ut-0903  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by process.parent.entity_id, container.id with maxspan=1s
+  [process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget")]
+  [process where event.action in ("exec", "end") and
+  /*
+    If the flow is executed from a parent script, the event action will be "exec".
+    If the flow is executed manually, the event action will be "end".
+  */
+   process.name like (
+     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox",
+     "python*", "perl*", "ruby*", "lua*", "php*"
+   ) and
+   process.args like (
+     "-bash", "-dash", "-sh", "-tcsh", "-csh", "-zsh", "-ksh", "-fish",
+     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish",
+     "/bin/bash", "/bin/dash", "/bin/sh", "/bin/tcsh", "/bin/csh",
+     "/bin/zsh", "/bin/ksh", "/bin/fish",
+     "/usr/bin/bash", "/usr/bin/dash", "/usr/bin/sh", "/usr/bin/tcsh",
+     "/usr/bin/csh", "/usr/bin/zsh", "/usr/bin/ksh", "/usr/bin/fish",
+     "-busybox", "busybox", "/bin/busybox", "/usr/bin/busybox",
+     "*python*", "*perl*", "*ruby*", "*lua*", "*php*", "/dev/fd/*"
+   ) and
+   not process.args in (
+     "which", "/bin/which", "/usr/bin/which", "/usr/local/bin/which",
+     "man", "/bin/man", "/usr/bin/man", "/usr/local/bin/man",
+     "chmod", "/bin/chmod", "/usr/bin/chmod", "/usr/local/bin/chmod",
+     "chown", "/bin/chown", "/usr/bin/chown", "/usr/local/bin/chown"
+   )]
+```
+
+
+
 ### Pod or Container Creation with Suspicious Command-Line
 
 Branch count: 8448  
 Document count: 8448  
-Index: geneve-ut-0914  
+Index: geneve-ut-0931  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -569,7 +582,7 @@ process.command_line like~ (
 
 Branch count: 3600  
 Document count: 7200  
-Index: geneve-ut-0928  
+Index: geneve-ut-0947  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -607,7 +620,7 @@ sequence by process.entity_id with maxspan=3s
 
 Branch count: 2500  
 Document count: 5000  
-Index: geneve-ut-0982  
+Index: geneve-ut-1001  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -629,7 +642,7 @@ sequence by host.id with maxspan=1m
 
 Branch count: 1085  
 Document count: 1085  
-Index: geneve-ut-0996  
+Index: geneve-ut-1015  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -668,7 +681,7 @@ process.args like~ (
 
 Branch count: 1794  
 Document count: 1794  
-Index: geneve-ut-1078  
+Index: geneve-ut-1097  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -731,7 +744,7 @@ registry where host.os.type == "windows" and event.type == "change" and process.
 
 Branch count: 8880  
 Document count: 8880  
-Index: geneve-ut-1283  
+Index: geneve-ut-1303  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -777,7 +790,7 @@ process.args like~ (
 
 Branch count: 2997  
 Document count: 2997  
-Index: geneve-ut-1286  
+Index: geneve-ut-1306  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -820,7 +833,7 @@ process.args like~ (
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-1293  
+Index: geneve-ut-1313  
 Failure message(s):  
   SDE says:
 > verification_exception
@@ -842,7 +855,7 @@ sequence with maxspan=60s
 
 Branch count: 1368  
 Document count: 2736  
-Index: geneve-ut-1361  
+Index: geneve-ut-1381  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -888,9 +901,9 @@ sequence by host.id with maxspan=5s
 
 ### Suspicious Echo or Printf Execution Detected via Defend for Containers
 
-Branch count: 1152  
-Document count: 1152  
-Index: geneve-ut-1385  
+Branch count: 1728  
+Document count: 1728  
+Index: geneve-ut-1405  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -898,7 +911,8 @@ Failure message(s):
 ```python
 process where event.type == "start" and event.action == "exec" and process.interactive == true and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
-process.args in ("-lc", "-c") and process.args like ("*echo *", "*printf *") and process.args like (
+process.args in ("-lc", "-c", "-cl") and process.args like ("*echo *", "*printf *") and
+process.args like (
   "*/etc/cron*", "*/etc/rc.local*", "*/dev/tcp/*", "*/etc/init.d*", "*/etc/update-motd.d*",
   "*/etc/ld.so*", "*/etc/sudoers*", "*base64 *", "*base32 *", "*base16 *", "*/etc/profile*",
   "*/dev/shm/*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*" , "*~/.ssh/*", "*xxd *",
@@ -914,7 +928,7 @@ process.args in ("-lc", "-c") and process.args like ("*echo *", "*printf *") and
 
 Branch count: 6144  
 Document count: 6144  
-Index: geneve-ut-1394  
+Index: geneve-ut-1415  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -977,7 +991,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 4032  
 Document count: 8064  
-Index: geneve-ut-1399  
+Index: geneve-ut-1420  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -1005,7 +1019,7 @@ sequence by process.entity_id with maxspan=30s
 
 Branch count: 1053  
 Document count: 1053  
-Index: geneve-ut-1494  
+Index: geneve-ut-1515  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -1073,7 +1087,7 @@ network where host.os.type == "windows" and dns.question.name != null and proces
 
 Branch count: 2035  
 Document count: 2035  
-Index: geneve-ut-1521  
+Index: geneve-ut-1542  
 Failure message(s):  
   SDE says:
 > This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
@@ -1116,47 +1130,7 @@ process.interactive == true and container.id like "*"
 
 
 
-### Web Server Child Shell Spawn Detected via Defend for Containers
-
-Branch count: 2070  
-Document count: 2070  
-Index: geneve-ut-1679  
-Failure message(s):  
-  SDE says:
-> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
-
-```python
-process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
-  process.parent.name in (
-      "apache", "nginx", "apache2", "httpd", "lighttpd", "caddy", "mongrel_rails", "gunicorn",
-      "uwsgi", "openresty", "cherokee", "h2o", "resin", "puma", "unicorn", "traefik", "tornado", "hypercorn",
-      "daphne", "twistd", "yaws", "webfsd", "httpd.worker", "flask", "rails", "mongrel", "php-cgi",
-      "php-fcgi", "php-cgi.cagefs", "catalina.sh", "hiawatha", "lswsctrl"
-  ) or
-  process.parent.name like "php-fpm*" or
-  user.name in ("apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9") or
-  user.id in ("33", "498", "48") or
-  (process.parent.name == "java" and process.parent.working_directory like "/u0?/*") or
-  process.parent.working_directory like "/var/www/*"
-) and (
-  (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox")) or
-  (process.args in (
-    "bash", "/bin/bash", "/usr/bin/bash", "/usr/local/bin/bash",
-    "dash", "/bin/dash", "/usr/bin/dash", "/usr/local/bin/dash",
-    "sh", "/bin/sh", "/usr/bin/sh", "/usr/local/bin/sh",
-    "tcsh", "/bin/tcsh", "/usr/bin/tcsh", "/usr/local/bin/tcsh",
-    "csh", "/bin/csh", "/usr/bin/csh", "/usr/local/bin/csh",
-    "zsh", "/bin/zsh", "/usr/bin/zsh", "/usr/local/bin/zsh",
-    "ksh", "/bin/ksh", "/usr/bin/ksh", "/usr/local/bin/ksh",
-    "fish", "/bin/fish", "/usr/bin/fish", "/usr/local/bin/fish",
-    "busybox", "/bin/busybox", "/usr/bin/busybox", "/usr/local/bin/busybox"
-  ))
-) and process.args == "-c" and container.id like "?*"
-```
-
-
-
-## Unsuccessful rules with signals (22)
+## Unsuccessful rules with signals (21)
 
 ### Cloud Credential Search Detected via Defend for Containers
 
@@ -1299,7 +1273,7 @@ network where host.os.type in ("macos", "windows") and dns.question.name != null
 
 Branch count: 8448  
 Document count: 16896  
-Index: geneve-ut-0441
+Index: geneve-ut-0443
 
 ```python
 sequence by host.id, user.id with maxspan=3m
@@ -1322,7 +1296,7 @@ sequence by host.id, user.id with maxspan=3m
 
 Branch count: 4608  
 Document count: 13824  
-Index: geneve-ut-0466
+Index: geneve-ut-0468
 
 ```python
 sequence by host.id, user.id with maxspan=1m
@@ -1344,39 +1318,11 @@ sequence by host.id, user.id with maxspan=1m
 
 
 
-### File Execution Permission Modification Detected via Defend for Containers
-
-Branch count: 3626  
-Document count: 3626  
-Index: geneve-ut-0469
-
-```python
-file where host.os.type == "linux" and event.type in ("change", "creation") and (
-  process.name == "chmod" or
-  (
-    /* account for tools that execute utilities as a subprocess, in this case the target utility name will appear as a process arg */
-    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox") and
-    process.args in (
-      "chmod", "/bin/chmod", "/usr/bin/chmod", "/usr/local/bin/chmod"
-    ) and
-    /* default exclusion list to not FP on default multi-process commands */
-    not process.args in (
-      "which", "/bin/which", "/usr/bin/which", "/usr/local/bin/which",
-      "man", "/bin/man", "/usr/bin/man", "/usr/local/bin/man"
-    )
-  )
-) and process.args in ("4755", "755", "777", "0777", "444", "+x", "a+x") and
-process.args like ("/dev/shm/*", "/tmp/*", "/var/tmp/*", "/run/*", "/var/run/*", "/mnt/*", "/media/*") and
-process.interactive == true and container.id like "*" and not process.args == "-x"
-```
-
-
-
 ### Git Hook Child Process
 
 Branch count: 2300  
 Document count: 2300  
-Index: geneve-ut-0545
+Index: geneve-ut-0548
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -1404,7 +1350,7 @@ not process.name in ("git", "dirname")
 
 Branch count: 2352  
 Document count: 4704  
-Index: geneve-ut-0802
+Index: geneve-ut-0817
 
 ```python
 sequence by process.parent.entity_id with maxspan=3s
@@ -1434,7 +1380,7 @@ sequence by process.parent.entity_id with maxspan=3s
 
 Branch count: 1110  
 Document count: 1110  
-Index: geneve-ut-0826
+Index: geneve-ut-0841
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -1470,11 +1416,49 @@ process.args like~ (
 
 
 
+### Payload Execution via Shell Pipe Detected by Defend for Containers
+
+Branch count: 2352  
+Document count: 4704  
+Index: geneve-ut-0903
+
+```python
+sequence by process.parent.entity_id, container.id with maxspan=1s
+  [process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget")]
+  [process where event.action in ("exec", "end") and
+  /*
+    If the flow is executed from a parent script, the event action will be "exec".
+    If the flow is executed manually, the event action will be "end".
+  */
+   process.name like (
+     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox",
+     "python*", "perl*", "ruby*", "lua*", "php*"
+   ) and
+   process.args like (
+     "-bash", "-dash", "-sh", "-tcsh", "-csh", "-zsh", "-ksh", "-fish",
+     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish",
+     "/bin/bash", "/bin/dash", "/bin/sh", "/bin/tcsh", "/bin/csh",
+     "/bin/zsh", "/bin/ksh", "/bin/fish",
+     "/usr/bin/bash", "/usr/bin/dash", "/usr/bin/sh", "/usr/bin/tcsh",
+     "/usr/bin/csh", "/usr/bin/zsh", "/usr/bin/ksh", "/usr/bin/fish",
+     "-busybox", "busybox", "/bin/busybox", "/usr/bin/busybox",
+     "*python*", "*perl*", "*ruby*", "*lua*", "*php*", "/dev/fd/*"
+   ) and
+   not process.args in (
+     "which", "/bin/which", "/usr/bin/which", "/usr/local/bin/which",
+     "man", "/bin/man", "/usr/bin/man", "/usr/local/bin/man",
+     "chmod", "/bin/chmod", "/usr/bin/chmod", "/usr/local/bin/chmod",
+     "chown", "/bin/chown", "/usr/bin/chown", "/usr/local/bin/chown"
+   )]
+```
+
+
+
 ### Pod or Container Creation with Suspicious Command-Line
 
 Branch count: 8448  
 Document count: 8448  
-Index: geneve-ut-0914
+Index: geneve-ut-0931
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and (
@@ -1497,7 +1481,7 @@ process.command_line like~ (
 
 Branch count: 3600  
 Document count: 7200  
-Index: geneve-ut-0928
+Index: geneve-ut-0947
 
 ```python
 sequence by process.entity_id with maxspan=3s
@@ -1532,7 +1516,7 @@ sequence by process.entity_id with maxspan=3s
 
 Branch count: 2500  
 Document count: 5000  
-Index: geneve-ut-0982
+Index: geneve-ut-1001
 
 ```python
 sequence by host.id with maxspan=1m
@@ -1551,7 +1535,7 @@ sequence by host.id with maxspan=1m
 
 Branch count: 1085  
 Document count: 1085  
-Index: geneve-ut-0996
+Index: geneve-ut-1015
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -1587,7 +1571,7 @@ process.args like~ (
 
 Branch count: 1794  
 Document count: 1794  
-Index: geneve-ut-1078
+Index: geneve-ut-1097
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and process.executable != null and
@@ -1647,7 +1631,7 @@ registry where host.os.type == "windows" and event.type == "change" and process.
 
 Branch count: 8880  
 Document count: 8880  
-Index: geneve-ut-1283
+Index: geneve-ut-1303
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -1690,7 +1674,7 @@ process.args like~ (
 
 Branch count: 2997  
 Document count: 2997  
-Index: geneve-ut-1286
+Index: geneve-ut-1306
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -1730,7 +1714,7 @@ process.args like~ (
 
 Branch count: 1368  
 Document count: 2736  
-Index: geneve-ut-1361
+Index: geneve-ut-1381
 
 ```python
 sequence by host.id with maxspan=5s
@@ -1773,14 +1757,15 @@ sequence by host.id with maxspan=5s
 
 ### Suspicious Echo or Printf Execution Detected via Defend for Containers
 
-Branch count: 1152  
-Document count: 1152  
-Index: geneve-ut-1385
+Branch count: 1728  
+Document count: 1728  
+Index: geneve-ut-1405
 
 ```python
 process where event.type == "start" and event.action == "exec" and process.interactive == true and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
-process.args in ("-lc", "-c") and process.args like ("*echo *", "*printf *") and process.args like (
+process.args in ("-lc", "-c", "-cl") and process.args like ("*echo *", "*printf *") and
+process.args like (
   "*/etc/cron*", "*/etc/rc.local*", "*/dev/tcp/*", "*/etc/init.d*", "*/etc/update-motd.d*",
   "*/etc/ld.so*", "*/etc/sudoers*", "*base64 *", "*base32 *", "*base16 *", "*/etc/profile*",
   "*/dev/shm/*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*" , "*~/.ssh/*", "*xxd *",
@@ -1796,7 +1781,7 @@ process.args in ("-lc", "-c") and process.args like ("*echo *", "*printf *") and
 
 Branch count: 6144  
 Document count: 6144  
-Index: geneve-ut-1394
+Index: geneve-ut-1415
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -1856,7 +1841,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 4032  
 Document count: 8064  
-Index: geneve-ut-1399
+Index: geneve-ut-1420
 
 ```python
 sequence by process.entity_id with maxspan=30s
@@ -1881,7 +1866,7 @@ sequence by process.entity_id with maxspan=30s
 
 Branch count: 1053  
 Document count: 1053  
-Index: geneve-ut-1494
+Index: geneve-ut-1515
 
 ```python
 network where host.os.type == "windows" and dns.question.name != null and process.name != null and
@@ -1946,7 +1931,7 @@ network where host.os.type == "windows" and dns.question.name != null and proces
 
 Branch count: 2035  
 Document count: 2035  
-Index: geneve-ut-1521
+Index: geneve-ut-1542
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -1986,50 +1971,13 @@ process.interactive == true and container.id like "*"
 
 
 
-### Web Server Child Shell Spawn Detected via Defend for Containers
-
-Branch count: 2070  
-Document count: 2070  
-Index: geneve-ut-1679
-
-```python
-process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
-  process.parent.name in (
-      "apache", "nginx", "apache2", "httpd", "lighttpd", "caddy", "mongrel_rails", "gunicorn",
-      "uwsgi", "openresty", "cherokee", "h2o", "resin", "puma", "unicorn", "traefik", "tornado", "hypercorn",
-      "daphne", "twistd", "yaws", "webfsd", "httpd.worker", "flask", "rails", "mongrel", "php-cgi",
-      "php-fcgi", "php-cgi.cagefs", "catalina.sh", "hiawatha", "lswsctrl"
-  ) or
-  process.parent.name like "php-fpm*" or
-  user.name in ("apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9") or
-  user.id in ("33", "498", "48") or
-  (process.parent.name == "java" and process.parent.working_directory like "/u0?/*") or
-  process.parent.working_directory like "/var/www/*"
-) and (
-  (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox")) or
-  (process.args in (
-    "bash", "/bin/bash", "/usr/bin/bash", "/usr/local/bin/bash",
-    "dash", "/bin/dash", "/usr/bin/dash", "/usr/local/bin/dash",
-    "sh", "/bin/sh", "/usr/bin/sh", "/usr/local/bin/sh",
-    "tcsh", "/bin/tcsh", "/usr/bin/tcsh", "/usr/local/bin/tcsh",
-    "csh", "/bin/csh", "/usr/bin/csh", "/usr/local/bin/csh",
-    "zsh", "/bin/zsh", "/usr/bin/zsh", "/usr/local/bin/zsh",
-    "ksh", "/bin/ksh", "/usr/bin/ksh", "/usr/local/bin/ksh",
-    "fish", "/bin/fish", "/usr/bin/fish", "/usr/local/bin/fish",
-    "busybox", "/bin/busybox", "/usr/bin/busybox", "/usr/local/bin/busybox"
-  ))
-) and process.args == "-c" and container.id like "?*"
-```
-
-
-
 ## Rules with no signals (7)
 
 ### Kubernetes Forbidden Creation Request
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0670
+Index: geneve-ut-0674
 
 ```python
 any where event.dataset == "kubernetes.audit_logs" and kubernetes.audit.verb == "create" and
@@ -2042,7 +1990,7 @@ kubernetes.audit.stage == "ResponseComplete" and `kubernetes.audit.annotations.a
 
 Branch count: 36  
 Document count: 72  
-Index: geneve-ut-0680
+Index: geneve-ut-0684
 
 ```python
 sequence by user.name with maxspan=5m
@@ -2065,7 +2013,7 @@ sequence by user.name with maxspan=5m
 
 Branch count: 128  
 Document count: 128  
-Index: geneve-ut-0686
+Index: geneve-ut-0690
 
 ```python
 any where event.dataset == "kubernetes.audit_logs" and kubernetes.audit.verb in ("get", "create") and
@@ -2098,7 +2046,7 @@ not (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0698
+Index: geneve-ut-0702
 
 ```python
 iam where host.os.type == "linux" and event.type == "group" and event.type == "creation" and event.outcome == "success"
@@ -2110,7 +2058,7 @@ iam where host.os.type == "linux" and event.type == "group" and event.type == "c
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0705
+Index: geneve-ut-0709
 
 ```python
 iam where host.os.type == "linux" and event.type == "user" and event.type == "creation" and event.outcome == "success"
@@ -2122,7 +2070,7 @@ iam where host.os.type == "linux" and event.type == "user" and event.type == "cr
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-1030
+Index: geneve-ut-1049
 
 ```python
 sequence by user.name, source.port, source.ip with maxspan=15s 
@@ -2140,7 +2088,7 @@ sequence by user.name, source.port, source.ip with maxspan=15s
 
 Branch count: 16  
 Document count: 16  
-Index: geneve-ut-1066
+Index: geneve-ut-1085
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and process.name == "sqlite*" and
@@ -2150,7 +2098,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 
 
-## Rules with too few signals (24)
+## Rules with too few signals (23)
 
 ### Cloud Credential Search Detected via Defend for Containers
 
@@ -2297,7 +2245,7 @@ network where host.os.type in ("macos", "windows") and dns.question.name != null
 
 Branch count: 8448  
 Document count: 16896  
-Index: geneve-ut-0441  
+Index: geneve-ut-0443  
 Failure message(s):  
   got 1000 signals, expected 8448  
 
@@ -2322,7 +2270,7 @@ sequence by host.id, user.id with maxspan=3m
 
 Branch count: 4608  
 Document count: 13824  
-Index: geneve-ut-0466  
+Index: geneve-ut-0468  
 Failure message(s):  
   got 1000 signals, expected 4608  
 
@@ -2346,41 +2294,11 @@ sequence by host.id, user.id with maxspan=1m
 
 
 
-### File Execution Permission Modification Detected via Defend for Containers
-
-Branch count: 3626  
-Document count: 3626  
-Index: geneve-ut-0469  
-Failure message(s):  
-  got 1000 signals, expected 3626  
-
-```python
-file where host.os.type == "linux" and event.type in ("change", "creation") and (
-  process.name == "chmod" or
-  (
-    /* account for tools that execute utilities as a subprocess, in this case the target utility name will appear as a process arg */
-    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox") and
-    process.args in (
-      "chmod", "/bin/chmod", "/usr/bin/chmod", "/usr/local/bin/chmod"
-    ) and
-    /* default exclusion list to not FP on default multi-process commands */
-    not process.args in (
-      "which", "/bin/which", "/usr/bin/which", "/usr/local/bin/which",
-      "man", "/bin/man", "/usr/bin/man", "/usr/local/bin/man"
-    )
-  )
-) and process.args in ("4755", "755", "777", "0777", "444", "+x", "a+x") and
-process.args like ("/dev/shm/*", "/tmp/*", "/var/tmp/*", "/run/*", "/var/run/*", "/mnt/*", "/media/*") and
-process.interactive == true and container.id like "*" and not process.args == "-x"
-```
-
-
-
 ### Git Hook Child Process
 
 Branch count: 2300  
 Document count: 2300  
-Index: geneve-ut-0545  
+Index: geneve-ut-0548  
 Failure message(s):  
   got 1000 signals, expected 2300  
 
@@ -2410,7 +2328,7 @@ not process.name in ("git", "dirname")
 
 Branch count: 2352  
 Document count: 4704  
-Index: geneve-ut-0802  
+Index: geneve-ut-0817  
 Failure message(s):  
   got 1000 signals, expected 2352  
 
@@ -2442,7 +2360,7 @@ sequence by process.parent.entity_id with maxspan=3s
 
 Branch count: 1110  
 Document count: 1110  
-Index: geneve-ut-0826  
+Index: geneve-ut-0841  
 Failure message(s):  
   got 1000 signals, expected 1110  
 
@@ -2480,11 +2398,51 @@ process.args like~ (
 
 
 
+### Payload Execution via Shell Pipe Detected by Defend for Containers
+
+Branch count: 2352  
+Document count: 4704  
+Index: geneve-ut-0903  
+Failure message(s):  
+  got 1000 signals, expected 2352  
+
+```python
+sequence by process.parent.entity_id, container.id with maxspan=1s
+  [process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget")]
+  [process where event.action in ("exec", "end") and
+  /*
+    If the flow is executed from a parent script, the event action will be "exec".
+    If the flow is executed manually, the event action will be "end".
+  */
+   process.name like (
+     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox",
+     "python*", "perl*", "ruby*", "lua*", "php*"
+   ) and
+   process.args like (
+     "-bash", "-dash", "-sh", "-tcsh", "-csh", "-zsh", "-ksh", "-fish",
+     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish",
+     "/bin/bash", "/bin/dash", "/bin/sh", "/bin/tcsh", "/bin/csh",
+     "/bin/zsh", "/bin/ksh", "/bin/fish",
+     "/usr/bin/bash", "/usr/bin/dash", "/usr/bin/sh", "/usr/bin/tcsh",
+     "/usr/bin/csh", "/usr/bin/zsh", "/usr/bin/ksh", "/usr/bin/fish",
+     "-busybox", "busybox", "/bin/busybox", "/usr/bin/busybox",
+     "*python*", "*perl*", "*ruby*", "*lua*", "*php*", "/dev/fd/*"
+   ) and
+   not process.args in (
+     "which", "/bin/which", "/usr/bin/which", "/usr/local/bin/which",
+     "man", "/bin/man", "/usr/bin/man", "/usr/local/bin/man",
+     "chmod", "/bin/chmod", "/usr/bin/chmod", "/usr/local/bin/chmod",
+     "chown", "/bin/chown", "/usr/bin/chown", "/usr/local/bin/chown"
+   )]
+```
+
+
+
 ### Pod or Container Creation with Suspicious Command-Line
 
 Branch count: 8448  
 Document count: 8448  
-Index: geneve-ut-0914  
+Index: geneve-ut-0931  
 Failure message(s):  
   got 1000 signals, expected 8448  
 
@@ -2509,7 +2467,7 @@ process.command_line like~ (
 
 Branch count: 3600  
 Document count: 7200  
-Index: geneve-ut-0928  
+Index: geneve-ut-0947  
 Failure message(s):  
   got 1000 signals, expected 3600  
 
@@ -2546,7 +2504,7 @@ sequence by process.entity_id with maxspan=3s
 
 Branch count: 2500  
 Document count: 5000  
-Index: geneve-ut-0982  
+Index: geneve-ut-1001  
 Failure message(s):  
   got 1000 signals, expected 2500  
 
@@ -2567,7 +2525,7 @@ sequence by host.id with maxspan=1m
 
 Branch count: 1085  
 Document count: 1085  
-Index: geneve-ut-0996  
+Index: geneve-ut-1015  
 Failure message(s):  
   got 1000 signals, expected 1085  
 
@@ -2605,7 +2563,7 @@ process.args like~ (
 
 Branch count: 6  
 Document count: 12  
-Index: geneve-ut-1070  
+Index: geneve-ut-1089  
 Failure message(s):  
   got 5 signals, expected 6  
 
@@ -2622,7 +2580,7 @@ sequence by host.id, process.parent.entity_id with maxspan=5s
 
 Branch count: 1794  
 Document count: 1794  
-Index: geneve-ut-1078  
+Index: geneve-ut-1097  
 Failure message(s):  
   got 1000 signals, expected 1794  
 
@@ -2684,7 +2642,7 @@ registry where host.os.type == "windows" and event.type == "change" and process.
 
 Branch count: 32  
 Document count: 64  
-Index: geneve-ut-1169  
+Index: geneve-ut-1188  
 Failure message(s):  
   got 24 signals, expected 32  
 
@@ -2709,7 +2667,7 @@ sequence by host.id, process.pid with maxspan=1s
 
 Branch count: 8880  
 Document count: 8880  
-Index: geneve-ut-1283  
+Index: geneve-ut-1303  
 Failure message(s):  
   got 1000 signals, expected 8880  
 
@@ -2754,7 +2712,7 @@ process.args like~ (
 
 Branch count: 2997  
 Document count: 2997  
-Index: geneve-ut-1286  
+Index: geneve-ut-1306  
 Failure message(s):  
   got 1000 signals, expected 2997  
 
@@ -2796,7 +2754,7 @@ process.args like~ (
 
 Branch count: 1368  
 Document count: 2736  
-Index: geneve-ut-1361  
+Index: geneve-ut-1381  
 Failure message(s):  
   got 1000 signals, expected 1368  
 
@@ -2841,16 +2799,17 @@ sequence by host.id with maxspan=5s
 
 ### Suspicious Echo or Printf Execution Detected via Defend for Containers
 
-Branch count: 1152  
-Document count: 1152  
-Index: geneve-ut-1385  
+Branch count: 1728  
+Document count: 1728  
+Index: geneve-ut-1405  
 Failure message(s):  
-  got 1000 signals, expected 1152  
+  got 1000 signals, expected 1728  
 
 ```python
 process where event.type == "start" and event.action == "exec" and process.interactive == true and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
-process.args in ("-lc", "-c") and process.args like ("*echo *", "*printf *") and process.args like (
+process.args in ("-lc", "-c", "-cl") and process.args like ("*echo *", "*printf *") and
+process.args like (
   "*/etc/cron*", "*/etc/rc.local*", "*/dev/tcp/*", "*/etc/init.d*", "*/etc/update-motd.d*",
   "*/etc/ld.so*", "*/etc/sudoers*", "*base64 *", "*base32 *", "*base16 *", "*/etc/profile*",
   "*/dev/shm/*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*" , "*~/.ssh/*", "*xxd *",
@@ -2866,7 +2825,7 @@ process.args in ("-lc", "-c") and process.args like ("*echo *", "*printf *") and
 
 Branch count: 6144  
 Document count: 6144  
-Index: geneve-ut-1394  
+Index: geneve-ut-1415  
 Failure message(s):  
   got 1000 signals, expected 6144  
 
@@ -2928,7 +2887,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 4032  
 Document count: 8064  
-Index: geneve-ut-1399  
+Index: geneve-ut-1420  
 Failure message(s):  
   got 1000 signals, expected 4032  
 
@@ -2955,7 +2914,7 @@ sequence by process.entity_id with maxspan=30s
 
 Branch count: 1053  
 Document count: 1053  
-Index: geneve-ut-1494  
+Index: geneve-ut-1515  
 Failure message(s):  
   got 1000 signals, expected 1053  
 
@@ -3022,7 +2981,7 @@ network where host.os.type == "windows" and dns.question.name != null and proces
 
 Branch count: 2035  
 Document count: 2035  
-Index: geneve-ut-1521  
+Index: geneve-ut-1542  
 Failure message(s):  
   got 1000 signals, expected 2035  
 
@@ -3064,46 +3023,7 @@ process.interactive == true and container.id like "*"
 
 
 
-### Web Server Child Shell Spawn Detected via Defend for Containers
-
-Branch count: 2070  
-Document count: 2070  
-Index: geneve-ut-1679  
-Failure message(s):  
-  got 1000 signals, expected 2070  
-
-```python
-process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
-  process.parent.name in (
-      "apache", "nginx", "apache2", "httpd", "lighttpd", "caddy", "mongrel_rails", "gunicorn",
-      "uwsgi", "openresty", "cherokee", "h2o", "resin", "puma", "unicorn", "traefik", "tornado", "hypercorn",
-      "daphne", "twistd", "yaws", "webfsd", "httpd.worker", "flask", "rails", "mongrel", "php-cgi",
-      "php-fcgi", "php-cgi.cagefs", "catalina.sh", "hiawatha", "lswsctrl"
-  ) or
-  process.parent.name like "php-fpm*" or
-  user.name in ("apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9") or
-  user.id in ("33", "498", "48") or
-  (process.parent.name == "java" and process.parent.working_directory like "/u0?/*") or
-  process.parent.working_directory like "/var/www/*"
-) and (
-  (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox")) or
-  (process.args in (
-    "bash", "/bin/bash", "/usr/bin/bash", "/usr/local/bin/bash",
-    "dash", "/bin/dash", "/usr/bin/dash", "/usr/local/bin/dash",
-    "sh", "/bin/sh", "/usr/bin/sh", "/usr/local/bin/sh",
-    "tcsh", "/bin/tcsh", "/usr/bin/tcsh", "/usr/local/bin/tcsh",
-    "csh", "/bin/csh", "/usr/bin/csh", "/usr/local/bin/csh",
-    "zsh", "/bin/zsh", "/usr/bin/zsh", "/usr/local/bin/zsh",
-    "ksh", "/bin/ksh", "/usr/bin/ksh", "/usr/local/bin/ksh",
-    "fish", "/bin/fish", "/usr/bin/fish", "/usr/local/bin/fish",
-    "busybox", "/bin/busybox", "/usr/bin/busybox", "/usr/local/bin/busybox"
-  ))
-) and process.args == "-c" and container.id like "?*"
-```
-
-
-
-## Rules with the correct signals (989)
+## Rules with the correct signals (1001)
 
 ### A scheduled task was created
 
@@ -6428,7 +6348,7 @@ container.security_context.privileged == true and process.interactive == true an
 
 Branch count: 9  
 Document count: 9  
-Index: geneve-ut-0309
+Index: geneve-ut-0310
 
 ```python
 (event.dataset: network_traffic.tls or event.category: (network or network_traffic))
@@ -6443,7 +6363,7 @@ Index: geneve-ut-0309
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0312
+Index: geneve-ut-0313
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -6457,7 +6377,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0313
+Index: geneve-ut-0314
 
 ```python
 file where host.os.type == "windows" and event.type == "creation" and
@@ -6478,7 +6398,7 @@ file where host.os.type == "windows" and event.type == "creation" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0314
+Index: geneve-ut-0315
 
 ```python
 event.category:process and event.type:(process_started or start) and process.name:espl and process.args:eyJkZWJ1ZyI6*
@@ -6490,7 +6410,7 @@ event.category:process and event.type:(process_started or start) and process.nam
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0315
+Index: geneve-ut-0316
 
 ```python
 registry where host.os.type == "windows" and
@@ -6504,7 +6424,7 @@ registry where host.os.type == "windows" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0316
+Index: geneve-ut-0317
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Remove-DlpPolicy" and event.outcome:success
@@ -6516,7 +6436,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0317
+Index: geneve-ut-0318
 
 ```python
 event.dataset:o365.audit and event.provider:SecurityComplianceCenter and event.action:AlertTriggered and rule.name:"Email reported by user as malware or phish"
@@ -6528,7 +6448,7 @@ event.dataset:o365.audit and event.provider:SecurityComplianceCenter and event.a
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0318
+Index: geneve-ut-0319
 
 ```python
 event.dataset:o365.audit and
@@ -6544,7 +6464,7 @@ event.dataset:o365.audit and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0319
+Index: geneve-ut-0320
 
 ```python
 event.dataset:o365.audit and event.provider:SecurityComplianceCenter and event.category:web and event.action:"Unusual volume of file deletion" and event.outcome:success
@@ -6556,7 +6476,7 @@ event.dataset:o365.audit and event.provider:SecurityComplianceCenter and event.c
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0320
+Index: geneve-ut-0321
 
 ```python
 event.dataset:o365.audit and event.provider:SecurityComplianceCenter and event.category:web and event.action:"User restricted from sending email" and event.outcome:success
@@ -6568,7 +6488,7 @@ event.dataset:o365.audit and event.provider:SecurityComplianceCenter and event.c
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0321
+Index: geneve-ut-0322
 
 ```python
 event.dataset:o365.audit and event.provider:(SkypeForBusiness or MicrosoftTeams) and
@@ -6582,7 +6502,7 @@ o365.audit.Parameters.AllowFederatedUsers:True and event.outcome:success
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0322
+Index: geneve-ut-0323
 
 ```python
 event.dataset:o365.audit and event.provider:(SkypeForBusiness or MicrosoftTeams) and
@@ -6596,7 +6516,7 @@ o365.audit.Parameters.AllowGuestUser:True and event.outcome:success
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0323
+Index: geneve-ut-0324
 
 ```python
 event.category: "process" and host.os.type:windows and
@@ -6620,7 +6540,7 @@ event.category: "process" and host.os.type:windows and
 
 Branch count: 56  
 Document count: 56  
-Index: geneve-ut-0331
+Index: geneve-ut-0332
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -6674,7 +6594,7 @@ process.interactive == true and container.id like "*"
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-0334
+Index: geneve-ut-0335
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -6690,7 +6610,7 @@ not process.parent.executable in ("/usr/bin/make", "/bin/make")
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0335
+Index: geneve-ut-0336
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -6718,7 +6638,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0336
+Index: geneve-ut-0337
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -6735,7 +6655,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0337
+Index: geneve-ut-0338
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -6752,7 +6672,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0338
+Index: geneve-ut-0339
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -6773,7 +6693,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-0339
+Index: geneve-ut-0340
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -6790,7 +6710,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 144  
 Document count: 288  
-Index: geneve-ut-0340
+Index: geneve-ut-0341
 
 ```python
 sequence by process.entity_id with maxspan=15s
@@ -6810,7 +6730,7 @@ sequence by process.entity_id with maxspan=15s
 
 Branch count: 15  
 Document count: 15  
-Index: geneve-ut-0341
+Index: geneve-ut-0342
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "executed", "process_started", "ProcessRollup2")
@@ -6825,7 +6745,7 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0343
+Index: geneve-ut-0344
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and file.name in ("release_agent", "notify_on_release") and
@@ -6838,7 +6758,7 @@ not process.executable in ("/usr/bin/podman", "/sbin/sos", "/sbin/sosreport", "/
 
 Branch count: 72  
 Document count: 72  
-Index: geneve-ut-0344
+Index: geneve-ut-0345
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -6858,7 +6778,7 @@ not (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0345
+Index: geneve-ut-0346
 
 ```python
 event.dataset:google_workspace.admin and event.provider:admin and event.category:iam and event.action:ADD_TRUSTED_DOMAINS
@@ -6870,7 +6790,7 @@ event.dataset:google_workspace.admin and event.provider:admin and event.category
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0347
+Index: geneve-ut-0348
 
 ```python
 file where host.os.type == "windows" and event.type == "creation" and file.extension == "url"
@@ -6883,7 +6803,7 @@ file where host.os.type == "windows" and event.type == "creation" and file.exten
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0348
+Index: geneve-ut-0349
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and process.executable != null and
@@ -6921,7 +6841,7 @@ file.path like~ ("/lib/dracut/modules.d/*", "/usr/lib/dracut/modules.d/*") and n
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0349
+Index: geneve-ut-0350
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -6934,7 +6854,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0350
+Index: geneve-ut-0351
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and 
@@ -6947,7 +6867,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0351
+Index: geneve-ut-0352
 
 ```python
 sequence by process.entity_id with maxspan=15s
@@ -6970,7 +6890,7 @@ sequence by process.entity_id with maxspan=15s
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0353
+Index: geneve-ut-0354
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and process.executable != null and
@@ -7001,7 +6921,7 @@ not (
 
 Branch count: 30  
 Document count: 60  
-Index: geneve-ut-0354
+Index: geneve-ut-0355
 
 ```python
 sequence by process.entity_id with maxspan=1m
@@ -7019,7 +6939,7 @@ sequence by process.entity_id with maxspan=1m
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-0355
+Index: geneve-ut-0356
 
 ```python
 file where host.os.type == "linux" and event.action == "creation" and
@@ -7062,7 +6982,7 @@ not (
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0356
+Index: geneve-ut-0357
 
 ```python
 file where host.os.type == "linux" and event.type != "deletion" and
@@ -7076,7 +6996,7 @@ process.interactive == true and container.id like "*"
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-0357
+Index: geneve-ut-0358
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -7091,7 +7011,7 @@ not ?process.parent.executable == "/usr/lib/vmware/viewagent/bin/uninstall_viewa
 
 Branch count: 162  
 Document count: 162  
-Index: geneve-ut-0358
+Index: geneve-ut-0359
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -7107,7 +7027,7 @@ not ?process.parent.executable in ("/usr/share/qemu/init/qemu-kvm-init", "/etc/s
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-0359
+Index: geneve-ut-0360
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -7121,7 +7041,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0360
+Index: geneve-ut-0361
 
 ```python
 sequence by host.id with maxspan=3s
@@ -7147,7 +7067,7 @@ sequence by host.id with maxspan=3s
 
 Branch count: 275  
 Document count: 275  
-Index: geneve-ut-0361
+Index: geneve-ut-0362
 
 ```python
 process where
@@ -7176,7 +7096,7 @@ or
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0366
+Index: geneve-ut-0368
 
 ```python
 file where host.os.type == "macos" and event.action == "modification" and
@@ -7189,7 +7109,7 @@ file where host.os.type == "macos" and event.action == "modification" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0367
+Index: geneve-ut-0369
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -7203,7 +7123,7 @@ process.args : ("firewall", "advfirewall") and process.args : "group=Network Dis
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0368
+Index: geneve-ut-0370
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and process.interactive == true and (
@@ -7225,7 +7145,7 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 Branch count: 20  
 Document count: 20  
-Index: geneve-ut-0369
+Index: geneve-ut-0371
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -7260,7 +7180,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0370
+Index: geneve-ut-0372
 
 ```python
 event.kind:alert and event.module:(endpoint and not endgame)
@@ -7272,7 +7192,7 @@ event.kind:alert and event.module:(endpoint and not endgame)
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0373
+Index: geneve-ut-0375
 
 ```python
 event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Update application - Certificates and secrets management" and event.outcome:(success or Success)
@@ -7284,7 +7204,7 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Update applica
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0379
+Index: geneve-ut-0381
 
 ```python
 event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Invite external user" and azure.auditlogs.properties.target_resources.*.display_name:guest and event.outcome:(Success or success)
@@ -7296,7 +7216,7 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Invite externa
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0381
+Index: geneve-ut-0383
 
 ```python
 event.dataset:azure.auditlogs and
@@ -7311,7 +7231,7 @@ event.dataset:azure.auditlogs and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0382
+Index: geneve-ut-0384
 
 ```python
 event.dataset:azure.auditlogs and azure.auditlogs.properties.category:RoleManagement and
@@ -7327,7 +7247,7 @@ event.dataset:azure.auditlogs and azure.auditlogs.properties.category:RoleManage
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0383
+Index: geneve-ut-0385
 
 ```python
 event.dataset:azure.signinlogs and
@@ -7343,7 +7263,7 @@ event.dataset:azure.signinlogs and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0384
+Index: geneve-ut-0386
 
 ```python
 event.dataset:azure.signinlogs and
@@ -7356,7 +7276,7 @@ event.dataset:azure.signinlogs and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0386
+Index: geneve-ut-0388
 
 ```python
 event.dataset: "azure.auditlogs" and
@@ -7373,7 +7293,7 @@ event.dataset: "azure.auditlogs" and
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0390
+Index: geneve-ut-0392
 
 ```python
 event.dataset:(azure.activitylogs or azure.signinlogs)
@@ -7390,7 +7310,7 @@ event.dataset:(azure.activitylogs or azure.signinlogs)
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-0393
+Index: geneve-ut-0395
 
 ```python
 sequence by azure.signinlogs.properties.user_id, azure.signinlogs.properties.device_detail.device_id with maxspan=1h
@@ -7424,7 +7344,7 @@ sequence by azure.signinlogs.properties.user_id, azure.signinlogs.properties.dev
 
 Branch count: 78  
 Document count: 78  
-Index: geneve-ut-0394
+Index: geneve-ut-0396
 
 ```python
 event.dataset: "azure.signinlogs" and
@@ -7490,7 +7410,7 @@ event.outcome: "success" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0398
+Index: geneve-ut-0400
 
 ```python
 event.dataset:azure.signinlogs and
@@ -7504,7 +7424,7 @@ event.dataset:azure.signinlogs and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0399
+Index: geneve-ut-0401
 
 ```python
 event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Update role setting in PIM" and event.outcome:(Success or success)
@@ -7516,7 +7436,7 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Update role se
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0400
+Index: geneve-ut-0402
 
 ```python
 event.dataset: "azure.identity_protection"
@@ -7528,7 +7448,7 @@ event.dataset: "azure.identity_protection"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0401
+Index: geneve-ut-0403
 
 ```python
 event.dataset: "azure.identity_protection" and
@@ -7545,7 +7465,7 @@ event.dataset: "azure.identity_protection" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0402
+Index: geneve-ut-0404
 
 ```python
 event.dataset: "azure.identity_protection" and
@@ -7562,7 +7482,7 @@ event.dataset: "azure.identity_protection" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0403
+Index: geneve-ut-0405
 
 ```python
 event.dataset: azure.identity_protection and
@@ -7578,7 +7498,7 @@ event.dataset: azure.identity_protection and
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-0404
+Index: geneve-ut-0406
 
 ```python
 sequence by azure.identityprotection.properties.user_principal_name with maxspan=10m
@@ -7591,7 +7511,7 @@ sequence by azure.identityprotection.properties.user_principal_name with maxspan
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-0405
+Index: geneve-ut-0407
 
 ```python
 sequence with maxspan=5m
@@ -7605,7 +7525,7 @@ sequence with maxspan=5m
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0406
+Index: geneve-ut-0408
 
 ```python
 event.dataset:azure.auditlogs
@@ -7626,7 +7546,7 @@ event.dataset:azure.auditlogs
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0412
+Index: geneve-ut-0414
 
 ```python
 event.dataset:("azure.signinlogs" or "o365.audit")
@@ -7640,7 +7560,7 @@ event.dataset:("azure.signinlogs" or "o365.audit")
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0414
+Index: geneve-ut-0416
 
 ```python
 event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Add owner to application" and event.outcome:(Success or success)
@@ -7652,7 +7572,7 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Add owner to a
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0415
+Index: geneve-ut-0417
 
 ```python
 event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Add owner to service principal" and event.outcome:(Success or success)
@@ -7664,7 +7584,7 @@ event.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Add owner to s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0416
+Index: geneve-ut-0418
 
 ```python
 event.dataset: "azure.auditlogs"
@@ -7680,7 +7600,7 @@ event.dataset: "azure.auditlogs"
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0421
+Index: geneve-ut-0423
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -7694,7 +7614,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 21  
 Document count: 21  
-Index: geneve-ut-0422
+Index: geneve-ut-0424
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -7717,7 +7637,7 @@ not (
 
 Branch count: 64  
 Document count: 64  
-Index: geneve-ut-0424
+Index: geneve-ut-0426
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -7744,7 +7664,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 276  
 Document count: 276  
-Index: geneve-ut-0427
+Index: geneve-ut-0429
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -7765,7 +7685,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 74  
 Document count: 74  
-Index: geneve-ut-0428
+Index: geneve-ut-0430
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -7795,7 +7715,7 @@ process.interactive == true and container.id like "*"
 
 Branch count: 648  
 Document count: 648  
-Index: geneve-ut-0431
+Index: geneve-ut-0433
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start") and
@@ -7828,7 +7748,7 @@ process.args : (
 
 Branch count: 10  
 Document count: 20  
-Index: geneve-ut-0433
+Index: geneve-ut-0435
 
 ```python
 sequence by process.entity_id with maxspan=30s
@@ -7845,7 +7765,7 @@ sequence by process.entity_id with maxspan=30s
 
 Branch count: 64  
 Document count: 64  
-Index: geneve-ut-0434
+Index: geneve-ut-0436
 
 ```python
 file where host.os.type == "windows" and event.action != "deletion" and
@@ -7873,7 +7793,7 @@ file where host.os.type == "windows" and event.action != "deletion" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0435
+Index: geneve-ut-0437
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2") and
@@ -7886,7 +7806,7 @@ process.name : ("kworker*", "kthread*") and process.executable != null
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-0437
+Index: geneve-ut-0439
 
 ```python
 sequence by process.entity_id with maxspan=5m
@@ -7906,7 +7826,7 @@ sequence by process.entity_id with maxspan=5m
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0438
+Index: geneve-ut-0440
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -7932,7 +7852,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 72  
 Document count: 144  
-Index: geneve-ut-0439
+Index: geneve-ut-0441
 
 ```python
 sequence with maxspan=2h
@@ -7958,7 +7878,7 @@ sequence with maxspan=2h
 
 Branch count: 54  
 Document count: 162  
-Index: geneve-ut-0440
+Index: geneve-ut-0442
 
 ```python
 /* userinit followed by explorer followed by early child process of explorer (unlikely to be launched interactively) within 1m */
@@ -7987,7 +7907,7 @@ sequence by host.id, user.name with maxspan=1m
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0443
+Index: geneve-ut-0445
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and 
@@ -8000,7 +7920,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 468  
 Document count: 468  
-Index: geneve-ut-0444
+Index: geneve-ut-0446
 
 ```python
 process where event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
@@ -8018,7 +7938,7 @@ process where event.type == "start" and event.action in ("exec", "exec_event", "
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0447
+Index: geneve-ut-0449
 
 ```python
 sequence by user.id with maxspan=5s
@@ -8033,7 +7953,7 @@ sequence by user.id with maxspan=5s
 
 Branch count: 90  
 Document count: 90  
-Index: geneve-ut-0448
+Index: geneve-ut-0450
 
 ```python
 process where event.type == "start" and
@@ -8048,7 +7968,7 @@ process where event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0449
+Index: geneve-ut-0451
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.executable : "\\Device\\Mup\\tsclient\\*.exe"
@@ -8060,7 +7980,7 @@ process where host.os.type == "windows" and event.type == "start" and process.ex
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0450
+Index: geneve-ut-0452
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -8082,7 +8002,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 64  
 Document count: 64  
-Index: geneve-ut-0451
+Index: geneve-ut-0453
 
 ```python
 process where host.os.type == "windows" and event.type : "start" and process.command_line != null and
@@ -8125,7 +8045,7 @@ process where host.os.type == "windows" and event.type : "start" and process.com
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0452
+Index: geneve-ut-0454
 
 ```python
 file where host.os.type == "windows" and file.extension : "dll" and
@@ -8142,7 +8062,7 @@ file where host.os.type == "windows" and file.extension : "dll" and
 
 Branch count: 22  
 Document count: 22  
-Index: geneve-ut-0453
+Index: geneve-ut-0455
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -8156,7 +8076,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0454
+Index: geneve-ut-0456
 
 ```python
 driver where host.os.type == "windows" and process.pid == 4 and
@@ -8169,7 +8089,7 @@ driver where host.os.type == "windows" and process.pid == 4 and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0455
+Index: geneve-ut-0457
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:detection and (event.action:exploit_event or endgame.event_subtype_full:exploit_event)
@@ -8181,7 +8101,7 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0456
+Index: geneve-ut-0458
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:prevention and (event.action:exploit_event or endgame.event_subtype_full:exploit_event)
@@ -8193,7 +8113,7 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0457
+Index: geneve-ut-0459
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -8207,7 +8127,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0458
+Index: geneve-ut-0460
 
 ```python
 event.kind:alert and not event.module:(endgame or endpoint or cloud_defend)
@@ -8219,7 +8139,7 @@ event.kind:alert and not event.module:(endgame or endpoint or cloud_defend)
 
 Branch count: 304  
 Document count: 304  
-Index: geneve-ut-0459
+Index: geneve-ut-0461
 
 ```python
 process where host.os.type == "macos" and event.type == "start" and event.action == "exec" and
@@ -8241,7 +8161,7 @@ process where host.os.type == "macos" and event.type == "start" and event.action
 
 Branch count: 62  
 Document count: 62  
-Index: geneve-ut-0462
+Index: geneve-ut-0464
 
 ```python
 file where host.os.type == "windows" and event.type in ("creation", "change") and
@@ -8290,7 +8210,7 @@ file where host.os.type == "windows" and event.type in ("creation", "change") an
 
 Branch count: 5  
 Document count: 10  
-Index: geneve-ut-0463
+Index: geneve-ut-0465
 
 ```python
 sequence by container.id, user.id with maxspan=3s
@@ -8307,7 +8227,7 @@ sequence by container.id, user.id with maxspan=3s
 
 Branch count: 64  
 Document count: 128  
-Index: geneve-ut-0464
+Index: geneve-ut-0466
 
 ```python
 sequence by host.id with maxspan=10s
@@ -8327,7 +8247,7 @@ sequence by host.id with maxspan=10s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0471
+Index: geneve-ut-0473
 
 ```python
 file where host.os.type == "windows" and event.type == "creation" and
@@ -8342,7 +8262,7 @@ file where host.os.type == "windows" and event.type == "creation" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0472
+Index: geneve-ut-0474
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -8356,7 +8276,7 @@ process.command_line like~ "/dev/sd*" and not process.args == "-R"
 
 Branch count: 180  
 Document count: 180  
-Index: geneve-ut-0474
+Index: geneve-ut-0476
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -8378,7 +8298,7 @@ process.args like~ (
 
 Branch count: 16  
 Document count: 16  
-Index: geneve-ut-0475
+Index: geneve-ut-0477
 
 ```python
 process where event.type == "start" and host.os.type == "windows" and
@@ -8399,7 +8319,7 @@ not (
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0476
+Index: geneve-ut-0478
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -8425,7 +8345,7 @@ not (
 
 Branch count: 11  
 Document count: 11  
-Index: geneve-ut-0477
+Index: geneve-ut-0479
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and 
@@ -8451,7 +8371,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0503
+Index: geneve-ut-0506
 
 ```python
 any where event.dataset == "fortinet_fortigate.log" and
@@ -8465,7 +8385,7 @@ any where event.dataset == "fortinet_fortigate.log" and
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-0506
+Index: geneve-ut-0509
 
 ```python
 sequence by source.port, source.ip, destination.ip with maxspan=1m
@@ -8479,7 +8399,7 @@ sequence by source.port, source.ip, destination.ip with maxspan=1m
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0508
+Index: geneve-ut-0511
 
 ```python
 sequence by observer.name with maxspan=15m
@@ -8498,7 +8418,7 @@ sequence by observer.name with maxspan=15m
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0509
+Index: geneve-ut-0512
 
 ```python
 any where event.dataset == "fortinet_fortigate.log" and
@@ -8514,7 +8434,7 @@ any where event.dataset == "fortinet_fortigate.log" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0510
+Index: geneve-ut-0513
 
 ```python
 event.dataset: google_workspace.alert
@@ -8526,7 +8446,7 @@ event.dataset: google_workspace.alert
 
 Branch count: 10  
 Document count: 10  
-Index: geneve-ut-0511
+Index: geneve-ut-0514
 
 ```python
 file where host.os.type == "macos" and event.action == "open" and
@@ -8543,7 +8463,7 @@ file where host.os.type == "macos" and event.action == "open" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0512
+Index: geneve-ut-0515
 
 ```python
 registry where host.os.type == "windows" and
@@ -8561,7 +8481,7 @@ registry where host.os.type == "windows" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0513
+Index: geneve-ut-0516
 
 ```python
 event.dataset:gcp.audit and event.action:(*.compute.firewalls.insert or google.appengine.*.Firewall.Create*Rule)
@@ -8573,7 +8493,7 @@ event.dataset:gcp.audit and event.action:(*.compute.firewalls.insert or google.a
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0514
+Index: geneve-ut-0517
 
 ```python
 event.dataset:gcp.audit and event.action:(*.compute.firewalls.delete or google.appengine.*.Firewall.Delete*Rule)
@@ -8585,7 +8505,7 @@ event.dataset:gcp.audit and event.action:(*.compute.firewalls.delete or google.a
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0515
+Index: geneve-ut-0518
 
 ```python
 event.dataset:gcp.audit and event.action:(*.compute.firewalls.patch or google.appengine.*.Firewall.Update*Rule)
@@ -8597,7 +8517,7 @@ event.dataset:gcp.audit and event.action:(*.compute.firewalls.patch or google.ap
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0516
+Index: geneve-ut-0519
 
 ```python
 event.dataset:gcp.audit and event.action:google.iam.admin.v*.CreateRole and event.outcome:success
@@ -8609,7 +8529,7 @@ event.dataset:gcp.audit and event.action:google.iam.admin.v*.CreateRole and even
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0517
+Index: geneve-ut-0520
 
 ```python
 event.dataset:gcp.audit and event.action:google.iam.admin.v*.DeleteRole and event.outcome:success
@@ -8621,7 +8541,7 @@ event.dataset:gcp.audit and event.action:google.iam.admin.v*.DeleteRole and even
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0518
+Index: geneve-ut-0521
 
 ```python
 event.dataset:gcp.audit and event.action:google.iam.admin.v*.DeleteServiceAccountKey and event.outcome:success
@@ -8633,7 +8553,7 @@ event.dataset:gcp.audit and event.action:google.iam.admin.v*.DeleteServiceAccoun
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0519
+Index: geneve-ut-0522
 
 ```python
 event.dataset:gcp.audit and event.action:google.logging.v*.ConfigServiceV*.DeleteBucket and event.outcome:success
@@ -8645,7 +8565,7 @@ event.dataset:gcp.audit and event.action:google.logging.v*.ConfigServiceV*.Delet
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0520
+Index: geneve-ut-0523
 
 ```python
 event.dataset:gcp.audit and event.action:google.logging.v*.ConfigServiceV*.DeleteSink and event.outcome:success
@@ -8657,7 +8577,7 @@ event.dataset:gcp.audit and event.action:google.logging.v*.ConfigServiceV*.Delet
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0521
+Index: geneve-ut-0524
 
 ```python
 event.dataset:gcp.audit and event.action:google.logging.v*.ConfigServiceV*.UpdateSink and event.outcome:success
@@ -8669,7 +8589,7 @@ event.dataset:gcp.audit and event.action:google.logging.v*.ConfigServiceV*.Updat
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0522
+Index: geneve-ut-0525
 
 ```python
 event.dataset:gcp.audit and event.action:google.pubsub.v*.Subscriber.CreateSubscription and event.outcome:success
@@ -8681,7 +8601,7 @@ event.dataset:gcp.audit and event.action:google.pubsub.v*.Subscriber.CreateSubsc
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0523
+Index: geneve-ut-0526
 
 ```python
 event.dataset:gcp.audit and event.action:google.pubsub.v*.Subscriber.DeleteSubscription and event.outcome:success
@@ -8693,7 +8613,7 @@ event.dataset:gcp.audit and event.action:google.pubsub.v*.Subscriber.DeleteSubsc
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0524
+Index: geneve-ut-0527
 
 ```python
 event.dataset:gcp.audit and event.action:google.pubsub.v*.Publisher.CreateTopic and event.outcome:success
@@ -8705,7 +8625,7 @@ event.dataset:gcp.audit and event.action:google.pubsub.v*.Publisher.CreateTopic 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0525
+Index: geneve-ut-0528
 
 ```python
 event.dataset:gcp.audit and event.action:google.pubsub.v*.Publisher.DeleteTopic and event.outcome:success
@@ -8717,7 +8637,7 @@ event.dataset:gcp.audit and event.action:google.pubsub.v*.Publisher.DeleteTopic 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0526
+Index: geneve-ut-0529
 
 ```python
 event.dataset:gcp.audit and event.action:google.iam.admin.v*.CreateServiceAccount and event.outcome:success
@@ -8729,7 +8649,7 @@ event.dataset:gcp.audit and event.action:google.iam.admin.v*.CreateServiceAccoun
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0527
+Index: geneve-ut-0530
 
 ```python
 event.dataset:gcp.audit and event.action:google.iam.admin.v*.DeleteServiceAccount and event.outcome:success
@@ -8741,7 +8661,7 @@ event.dataset:gcp.audit and event.action:google.iam.admin.v*.DeleteServiceAccoun
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0528
+Index: geneve-ut-0531
 
 ```python
 event.dataset:gcp.audit and event.action:google.iam.admin.v*.DisableServiceAccount and event.outcome:success
@@ -8753,7 +8673,7 @@ event.dataset:gcp.audit and event.action:google.iam.admin.v*.DisableServiceAccou
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0529
+Index: geneve-ut-0532
 
 ```python
 event.dataset:gcp.audit and event.action:google.iam.admin.v*.CreateServiceAccountKey and event.outcome:success
@@ -8765,7 +8685,7 @@ event.dataset:gcp.audit and event.action:google.iam.admin.v*.CreateServiceAccoun
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0530
+Index: geneve-ut-0533
 
 ```python
 event.dataset:gcp.audit and event.action:"storage.buckets.update" and event.outcome:success
@@ -8777,7 +8697,7 @@ event.dataset:gcp.audit and event.action:"storage.buckets.update" and event.outc
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0531
+Index: geneve-ut-0534
 
 ```python
 event.dataset:gcp.audit and event.action:"storage.buckets.delete"
@@ -8789,7 +8709,7 @@ event.dataset:gcp.audit and event.action:"storage.buckets.delete"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0532
+Index: geneve-ut-0535
 
 ```python
 event.dataset:gcp.audit and event.action:"storage.setIamPermissions" and event.outcome:success
@@ -8801,7 +8721,7 @@ event.dataset:gcp.audit and event.action:"storage.setIamPermissions" and event.o
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0533
+Index: geneve-ut-0536
 
 ```python
 event.dataset:gcp.audit and event.action:v*.compute.networks.delete and event.outcome:success
@@ -8813,7 +8733,7 @@ event.dataset:gcp.audit and event.action:v*.compute.networks.delete and event.ou
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0534
+Index: geneve-ut-0537
 
 ```python
 event.dataset:gcp.audit and event.action:(v*.compute.routes.insert or "beta.compute.routes.insert")
@@ -8825,7 +8745,7 @@ event.dataset:gcp.audit and event.action:(v*.compute.routes.insert or "beta.comp
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0535
+Index: geneve-ut-0538
 
 ```python
 event.dataset:gcp.audit and event.action:v*.compute.routes.delete and event.outcome:success
@@ -8837,7 +8757,7 @@ event.dataset:gcp.audit and event.action:v*.compute.routes.delete and event.outc
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-0536
+Index: geneve-ut-0539
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and process.executable != null and file.path like~ (
@@ -8876,7 +8796,7 @@ file where host.os.type == "linux" and event.type == "creation" and process.exec
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-0537
+Index: geneve-ut-0540
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -8903,7 +8823,7 @@ process.parent.executable != null and process.name in ("grub-mkconfig", "grub2-m
 
 Branch count: 11  
 Document count: 11  
-Index: geneve-ut-0538
+Index: geneve-ut-0541
 
 ```python
 configuration where host.os.type == "macos" and event.action == "gatekeeper_override" and
@@ -8918,7 +8838,7 @@ configuration where host.os.type == "macos" and event.action == "gatekeeper_over
 
 Branch count: 576  
 Document count: 1152  
-Index: geneve-ut-0546
+Index: geneve-ut-0549
 
 ```python
 sequence by host.id with maxspan=3s
@@ -8936,7 +8856,7 @@ sequence by host.id with maxspan=3s
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0547
+Index: geneve-ut-0550
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and file.path like "*.git/hooks/*" and
@@ -8967,7 +8887,7 @@ file.extension == null and process.executable != null and not (
 
 Branch count: 16  
 Document count: 32  
-Index: geneve-ut-0548
+Index: geneve-ut-0551
 
 ```python
 sequence by host.id with maxspan=3s
@@ -8994,7 +8914,7 @@ sequence by host.id with maxspan=3s
 
 Branch count: 9  
 Document count: 18  
-Index: geneve-ut-0549
+Index: geneve-ut-0552
 
 ```python
 sequence by process.entity_id, host.id with maxspan=10s
@@ -9014,7 +8934,7 @@ sequence by process.entity_id, host.id with maxspan=10s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0552
+Index: geneve-ut-0555
 
 ```python
 configuration where event.dataset == "github.audit" and github.category == "integration_installation" and event.type == "deletion"
@@ -9026,7 +8946,7 @@ configuration where event.dataset == "github.audit" and github.category == "inte
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-0553
+Index: geneve-ut-0556
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "ProcessRollup2", "exec_event") and process.parent.name == "node" and
@@ -9039,7 +8959,7 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0555
+Index: geneve-ut-0558
 
 ```python
 iam where event.dataset == "github.audit" and event.action == "org.update_member" and github.permission == "admin"
@@ -9051,7 +8971,7 @@ iam where event.dataset == "github.audit" and event.action == "org.update_member
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0556
+Index: geneve-ut-0559
 
 ```python
 configuration where event.dataset == "github.audit" and event.action == "personal_access_token.access_revoked"
@@ -9063,7 +8983,7 @@ configuration where event.dataset == "github.audit" and event.action == "persona
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0557
+Index: geneve-ut-0560
 
 ```python
 configuration where event.dataset == "github.audit" and github.operation_type == "modify" and github.category == "repo" and
@@ -9076,7 +8996,7 @@ event.action == "repo.access" and github.previous_visibility == "private" and gi
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0558
+Index: geneve-ut-0561
 
 ```python
 configuration where event.dataset == "github.audit"
@@ -9089,7 +9009,7 @@ configuration where event.dataset == "github.audit"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0559
+Index: geneve-ut-0562
 
 ```python
 configuration where event.dataset == "github.audit" and event.action == "repo.create"
@@ -9101,7 +9021,7 @@ configuration where event.dataset == "github.audit" and event.action == "repo.cr
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0560
+Index: geneve-ut-0563
 
 ```python
 configuration where event.module == "github" and event.dataset == "github.audit" and event.action == "repo.destroy"
@@ -9113,7 +9033,7 @@ configuration where event.module == "github" and event.dataset == "github.audit"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0561
+Index: geneve-ut-0564
 
 ```python
 configuration where event.dataset == "github.audit" and event.type == "change" and event.action == "repository_secret_scanning.disable"
@@ -9125,7 +9045,7 @@ configuration where event.dataset == "github.audit" and event.type == "change" a
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0563
+Index: geneve-ut-0566
 
 ```python
 configuration where event.dataset == "github.audit" and event.action == "org.block_user"
@@ -9137,7 +9057,7 @@ configuration where event.dataset == "github.audit" and event.action == "org.blo
 
 Branch count: 5  
 Document count: 10  
-Index: geneve-ut-0565
+Index: geneve-ut-0568
 
 ```python
 sequence by process.entity_id with maxspan=20s
@@ -9154,7 +9074,7 @@ sequence by process.entity_id with maxspan=20s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0566
+Index: geneve-ut-0569
 
 ```python
 event.dataset:"google_workspace.admin" and event.action:"CREATE_DATA_TRANSFER_REQUEST"
@@ -9167,7 +9087,7 @@ event.dataset:"google_workspace.admin" and event.action:"CREATE_DATA_TRANSFER_RE
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0568
+Index: geneve-ut-0571
 
 ```python
 event.dataset:"google_workspace.login" and event.action:"2sv_disable"
@@ -9179,7 +9099,7 @@ event.dataset:"google_workspace.login" and event.action:"2sv_disable"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0569
+Index: geneve-ut-0572
 
 ```python
 event.dataset:google_workspace.admin
@@ -9195,7 +9115,7 @@ event.dataset:google_workspace.admin
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0570
+Index: geneve-ut-0573
 
 ```python
 event.dataset:"google_workspace.admin" and event.category:"iam" and event.action:"ASSIGN_ROLE"
@@ -9208,7 +9128,7 @@ event.dataset:"google_workspace.admin" and event.category:"iam" and event.action
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0571
+Index: geneve-ut-0574
 
 ```python
 event.dataset:google_workspace.admin and event.provider:admin and event.category:iam and event.action:DELETE_ROLE
@@ -9220,7 +9140,7 @@ event.dataset:google_workspace.admin and event.provider:admin and event.category
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0572
+Index: geneve-ut-0575
 
 ```python
 event.dataset:"google_workspace.admin" and event.action:"CHANGE_APPLICATION_SETTING" and event.category:(iam or configuration)
@@ -9233,7 +9153,7 @@ event.dataset:"google_workspace.admin" and event.action:"CHANGE_APPLICATION_SETT
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0573
+Index: geneve-ut-0576
 
 ```python
 event.dataset:google_workspace.admin and event.provider:admin and event.category:iam and event.action:CREATE_ROLE
@@ -9245,7 +9165,7 @@ event.dataset:google_workspace.admin and event.provider:admin and event.category
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0574
+Index: geneve-ut-0577
 
 ```python
 event.dataset:"google_workspace.admin" and event.action:("CREATE_GMAIL_SETTING" or "CHANGE_GMAIL_SETTING")
@@ -9258,7 +9178,7 @@ event.dataset:"google_workspace.admin" and event.action:("CREATE_GMAIL_SETTING" 
 
 Branch count: 105  
 Document count: 105  
-Index: geneve-ut-0575
+Index: geneve-ut-0578
 
 ```python
 file where event.dataset == "google_workspace.drive" and event.action : ("copy", "view", "download") and
@@ -9275,7 +9195,7 @@ file where event.dataset == "google_workspace.drive" and event.action : ("copy",
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0576
+Index: geneve-ut-0579
 
 ```python
 event.dataset:google_workspace.admin and event.provider:admin
@@ -9289,7 +9209,7 @@ event.dataset:google_workspace.admin and event.provider:admin
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-0577
+Index: geneve-ut-0580
 
 ```python
 sequence by source.user.email with maxspan=3m
@@ -9313,7 +9233,7 @@ sequence by source.user.email with maxspan=3m
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0578
+Index: geneve-ut-0581
 
 ```python
 event.dataset:google_workspace.admin and event.provider:admin and event.category:iam and
@@ -9334,7 +9254,7 @@ event.dataset:google_workspace.admin and event.provider:admin and event.category
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0579
+Index: geneve-ut-0582
 
 ```python
 event.dataset:"google_workspace.admin" and event.action:"CHANGE_APPLICATION_SETTING" and event.category:(iam or configuration)
@@ -9348,7 +9268,7 @@ event.dataset:"google_workspace.admin" and event.action:"CHANGE_APPLICATION_SETT
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0580
+Index: geneve-ut-0583
 
 ```python
 event.dataset:google_workspace.admin and event.provider:admin and event.category:iam and event.action:(ADD_PRIVILEGE or UPDATE_ROLE)
@@ -9360,7 +9280,7 @@ event.dataset:google_workspace.admin and event.provider:admin and event.category
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0581
+Index: geneve-ut-0584
 
 ```python
 event.dataset:google_workspace.admin and event.category:iam and event.action:UNSUSPEND_USER
@@ -9372,7 +9292,7 @@ event.dataset:google_workspace.admin and event.category:iam and event.action:UNS
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0582
+Index: geneve-ut-0585
 
 ```python
 event.dataset:"google_workspace.admin" and event.type:change and event.category:iam
@@ -9385,7 +9305,7 @@ event.dataset:"google_workspace.admin" and event.type:change and event.category:
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0584
+Index: geneve-ut-0587
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -9398,7 +9318,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-0586
+Index: geneve-ut-0589
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "start", "exec_event") and
@@ -9422,7 +9342,7 @@ not (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0587
+Index: geneve-ut-0590
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and process.name == "chflags"
@@ -9434,7 +9354,7 @@ file where host.os.type == "linux" and event.type == "creation" and process.name
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-0600
+Index: geneve-ut-0603
 
 ```python
 sequence by process.entity_id with maxspan=5m
@@ -9454,7 +9374,7 @@ sequence by process.entity_id with maxspan=5m
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-0601
+Index: geneve-ut-0604
 
 ```python
 any where process.executable != null and
@@ -9503,7 +9423,7 @@ any where process.executable != null and
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-0602
+Index: geneve-ut-0605
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -9517,7 +9437,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0603
+Index: geneve-ut-0606
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -9532,7 +9452,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0604
+Index: geneve-ut-0607
 
 ```python
 (event.dataset: network_traffic.flow or (event.category: (network or network_traffic))) and network.transport:udp and destination.port:4500
@@ -9544,7 +9464,7 @@ Index: geneve-ut-0604
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0608
+Index: geneve-ut-0611
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -9561,7 +9481,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0610
+Index: geneve-ut-0613
 
 ```python
 sequence with maxspan=1m
@@ -9580,7 +9500,7 @@ sequence with maxspan=1m
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0611
+Index: geneve-ut-0614
 
 ```python
 sequence by host.id with maxspan=1m
@@ -9598,7 +9518,7 @@ sequence by host.id with maxspan=1m
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0612
+Index: geneve-ut-0615
 
 ```python
 sequence by host.id with maxspan=5s
@@ -9617,7 +9537,7 @@ sequence by host.id with maxspan=5s
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-0613
+Index: geneve-ut-0616
 
 ```python
 sequence by host.id with maxspan = 30s
@@ -9633,7 +9553,7 @@ sequence by host.id with maxspan = 30s
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-0614
+Index: geneve-ut-0617
 
 ```python
 sequence by host.id with maxspan=30s
@@ -9649,7 +9569,7 @@ sequence by host.id with maxspan=30s
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0615
+Index: geneve-ut-0618
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -9662,7 +9582,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 5  
 Document count: 5  
-Index: geneve-ut-0619
+Index: geneve-ut-0623
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -9679,7 +9599,7 @@ process.name == "unmkinitramfs" and not (
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-0620
+Index: geneve-ut-0624
 
 ```python
 event.dataset: "aws.cloudtrail"
@@ -9697,7 +9617,7 @@ event.dataset: "aws.cloudtrail"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0621
+Index: geneve-ut-0625
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -9710,7 +9630,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0622
+Index: geneve-ut-0626
 
 ```python
 /* the benefit of doing this as an eql sequence vs kql is this will limit to alerting only on the first network connection */
@@ -9726,7 +9646,7 @@ sequence by process.entity_id
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0623
+Index: geneve-ut-0627
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -9753,7 +9673,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0624
+Index: geneve-ut-0628
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -9777,7 +9697,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 9  
 Document count: 9  
-Index: geneve-ut-0625
+Index: geneve-ut-0629
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -9797,7 +9717,7 @@ process.interactive == true and container.id like "*"
 
 Branch count: 25  
 Document count: 25  
-Index: geneve-ut-0627
+Index: geneve-ut-0631
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and process.interactive == true and (
@@ -9825,7 +9745,7 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 Branch count: 459  
 Document count: 459  
-Index: geneve-ut-0631
+Index: geneve-ut-0635
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start") and
@@ -9849,7 +9769,7 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 Branch count: 32  
 Document count: 32  
-Index: geneve-ut-0632
+Index: geneve-ut-0636
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and process.executable != null and
@@ -9885,7 +9805,7 @@ not (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0633
+Index: geneve-ut-0637
 
 ```python
 iam where host.os.type == "windows" and event.code == "4738" and winlog.event_data.AllowedToDelegateTo : "*krbtgt*"
@@ -9897,7 +9817,7 @@ iam where host.os.type == "windows" and event.code == "4738" and winlog.event_da
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0634
+Index: geneve-ut-0638
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -9911,7 +9831,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0635
+Index: geneve-ut-0639
 
 ```python
 any where host.os.type == "windows" and event.code == "4738" and
@@ -9924,7 +9844,7 @@ any where host.os.type == "windows" and event.code == "4738" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0636
+Index: geneve-ut-0640
 
 ```python
 network where host.os.type == "windows" and event.type == "start" and network.direction == "egress" and
@@ -9983,7 +9903,7 @@ network where host.os.type == "windows" and event.type == "start" and network.di
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0637
+Index: geneve-ut-0641
 
 ```python
 driver where host.os.type == "linux" and event.action == "loaded-kernel-module" and
@@ -9996,7 +9916,7 @@ auditd.data.syscall in ("init_module", "finit_module")
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0638
+Index: geneve-ut-0642
 
 ```python
 driver where host.os.type == "linux" and event.action == "loaded-kernel-module" and
@@ -10009,7 +9929,7 @@ auditd.data.syscall in ("init_module", "finit_module") and user.id != "0"
 
 Branch count: 450  
 Document count: 450  
-Index: geneve-ut-0639
+Index: geneve-ut-0643
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10030,7 +9950,7 @@ process.args like ("/sys/kernel/debug/kprobes/*", "/sys/kernel/debug/tracing/*",
 
 Branch count: 36  
 Document count: 36  
-Index: geneve-ut-0640
+Index: geneve-ut-0644
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10048,7 +9968,7 @@ not (
 
 Branch count: 136  
 Document count: 136  
-Index: geneve-ut-0641
+Index: geneve-ut-0645
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -10082,7 +10002,7 @@ not (
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-0642
+Index: geneve-ut-0646
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10110,7 +10030,7 @@ not (
 
 Branch count: 120  
 Document count: 120  
-Index: geneve-ut-0643
+Index: geneve-ut-0647
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10132,7 +10052,7 @@ not (
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0645
+Index: geneve-ut-0649
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -10159,7 +10079,7 @@ not (
 
 Branch count: 26  
 Document count: 26  
-Index: geneve-ut-0646
+Index: geneve-ut-0650
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -10185,7 +10105,7 @@ not (
 
 Branch count: 128  
 Document count: 128  
-Index: geneve-ut-0647
+Index: geneve-ut-0651
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and event.action == "exec" and
@@ -10201,7 +10121,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 28  
 Document count: 28  
-Index: geneve-ut-0648
+Index: geneve-ut-0652
 
 ```python
 process where host.os.type == "macos" and event.action == "exec" and
@@ -10217,7 +10137,7 @@ process where host.os.type == "macos" and event.action == "exec" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0650
+Index: geneve-ut-0654
 
 ```python
 file where host.os.type == "windows" and event.type == "creation" and file.extension : "kirbi"
@@ -10229,7 +10149,7 @@ file where host.os.type == "windows" and event.type == "creation" and file.exten
 
 Branch count: 16  
 Document count: 16  
-Index: geneve-ut-0651
+Index: geneve-ut-0655
 
 ```python
 file where host.os.type == "linux" and event.type != "deletion" and file.path like (
@@ -10257,7 +10177,7 @@ file where host.os.type == "linux" and event.type != "deletion" and file.path li
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0653
+Index: geneve-ut-0657
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10273,7 +10193,7 @@ not process.args like~ ("*download.elastic.co*", "*github.com/kubernetes-sigs/*"
 
 Branch count: 180  
 Document count: 180  
-Index: geneve-ut-0655
+Index: geneve-ut-0659
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10296,7 +10216,7 @@ process.name == "kubectl" and (
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0656
+Index: geneve-ut-0660
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10310,7 +10230,7 @@ process.name == "kubectl" and process.args == "auth" and process.args == "can-i"
 
 Branch count: 20  
 Document count: 20  
-Index: geneve-ut-0657
+Index: geneve-ut-0661
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10333,7 +10253,7 @@ process.name == "kubectl" and (
 
 Branch count: 36  
 Document count: 36  
-Index: geneve-ut-0658
+Index: geneve-ut-0662
 
 ```python
 any where host.os.type == "linux" and process.interactive == true and container.id like "*" and (
@@ -10360,7 +10280,7 @@ any where host.os.type == "linux" and process.interactive == true and container.
 
 Branch count: 36  
 Document count: 36  
-Index: geneve-ut-0661
+Index: geneve-ut-0665
 
 ```python
 any where event.dataset == "kubernetes.audit_logs" and (
@@ -10377,7 +10297,7 @@ kubernetes.audit.objectRef.resource == "pods"
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0662
+Index: geneve-ut-0666
 
 ```python
 event.dataset: "kubernetes.audit_logs" and kubernetes.audit.objectRef.resource:("clusterrolebindings" or "rolebindings") and
@@ -10392,7 +10312,7 @@ kubernetes.audit.level:"RequestResponse" and kubernetes.audit.stage:"ResponseCom
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0664
+Index: geneve-ut-0668
 
 ```python
 event.dataset: "kubernetes.audit_logs" and kubernetes.audit.requestObject.spec.serviceAccountName:* and
@@ -10406,7 +10326,7 @@ kubernetes.audit.annotations.authorization_k8s_io/decision:"allow"
 
 Branch count: 84  
 Document count: 84  
-Index: geneve-ut-0667
+Index: geneve-ut-0671
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10428,7 +10348,7 @@ process.name in ("curl", "wget") and process.args like~ (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0668
+Index: geneve-ut-0672
 
 ```python
 any where event.dataset == "kubernetes.audit_logs" and kubernetes.audit.verb == "delete" and
@@ -10441,7 +10361,7 @@ kubernetes.audit.objectRef.resource == "events" and kubernetes.audit.stage == "R
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0669
+Index: geneve-ut-0673
 
 ```python
 event.dataset : "kubernetes.audit_logs"
@@ -10457,7 +10377,7 @@ event.dataset : "kubernetes.audit_logs"
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0672
+Index: geneve-ut-0676
 
 ```python
 event.dataset : "kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
@@ -10474,7 +10394,7 @@ not kubernetes.audit.requestObject.spec.containers.image: (
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0673
+Index: geneve-ut-0677
 
 ```python
 event.dataset:kubernetes.audit_logs and kubernetes.audit.annotations.authorization_k8s_io/decision:allow and
@@ -10499,7 +10419,7 @@ not (
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0674
+Index: geneve-ut-0678
 
 ```python
 event.dataset : "kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
@@ -10519,7 +10439,7 @@ not kubernetes.audit.requestObject.spec.containers.image: (
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-0675
+Index: geneve-ut-0679
 
 ```python
 event.dataset : "kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
@@ -10548,7 +10468,7 @@ not kubernetes.audit.requestObject.spec.containers.image: (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0678
+Index: geneve-ut-0682
 
 ```python
 event.dataset : "kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
@@ -10571,7 +10491,7 @@ not kubernetes.audit.requestObject.spec.containers.image: (
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0679
+Index: geneve-ut-0683
 
 ```python
 file where host.os.type == "linux" and event.type != "deletion" and file.path like (
@@ -10590,7 +10510,7 @@ file where host.os.type == "linux" and event.type != "deletion" and file.path li
 
 Branch count: 16  
 Document count: 16  
-Index: geneve-ut-0681
+Index: geneve-ut-0685
 
 ```python
 event.dataset:"kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
@@ -10610,7 +10530,7 @@ kubernetes.audit.verb:("create" or "delete" or "patch" or "update")
 
 Branch count: 72  
 Document count: 72  
-Index: geneve-ut-0682
+Index: geneve-ut-0686
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -10654,7 +10574,7 @@ not (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0683
+Index: geneve-ut-0687
 
 ```python
 event.dataset : "kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
@@ -10673,7 +10593,7 @@ not kubernetes.audit.requestObject.spec.containers.image:(
 
 Branch count: 20  
 Document count: 20  
-Index: geneve-ut-0689
+Index: geneve-ut-0693
 
 ```python
 file where host.os.type == "windows" and event.action != "deletion" and
@@ -10711,7 +10631,7 @@ file where host.os.type == "windows" and event.action != "deletion" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0694
+Index: geneve-ut-0698
 
 ```python
 file where host.os.type == "windows" and event.type in ("creation", "change") and
@@ -10729,7 +10649,7 @@ file where host.os.type == "windows" and event.type in ("creation", "change") an
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0695
+Index: geneve-ut-0699
 
 ```python
 sequence by host.id with maxspan=30s
@@ -10743,7 +10663,7 @@ sequence by host.id with maxspan=30s
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0699
+Index: geneve-ut-0703
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started")
@@ -10758,7 +10678,7 @@ process.args != "1"
 
 Branch count: 303  
 Document count: 303  
-Index: geneve-ut-0700
+Index: geneve-ut-0704
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and process.executable != null and
@@ -10819,7 +10739,7 @@ process where host.os.type == "linux" and event.type == "start" and process.exec
 
 Branch count: 144  
 Document count: 144  
-Index: geneve-ut-0701
+Index: geneve-ut-0705
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2") and
@@ -10833,7 +10753,7 @@ process.parent.name in ("bash", "dash", "ash", "sh", "tcsh", "csh", "zsh", "ksh"
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0704
+Index: geneve-ut-0708
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10847,7 +10767,7 @@ process.name in ("curl", "wget") and process.command_line like "*api.telegram.or
 
 Branch count: 32  
 Document count: 32  
-Index: geneve-ut-0706
+Index: geneve-ut-0710
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -10868,7 +10788,7 @@ not (
 
 Branch count: 360  
 Document count: 360  
-Index: geneve-ut-0707
+Index: geneve-ut-0711
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -10888,7 +10808,7 @@ process.executable != null and process.args in (
 
 Branch count: 40  
 Document count: 40  
-Index: geneve-ut-0711
+Index: geneve-ut-0715
 
 ```python
 file where host.os.type == "linux" and event.action == "creation" and process.executable != null and
@@ -10935,7 +10855,7 @@ file.path like (
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0712
+Index: geneve-ut-0716
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -10962,7 +10882,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 600  
 Document count: 1200  
-Index: geneve-ut-0713
+Index: geneve-ut-0717
 
 ```python
 sequence with maxspan=1m
@@ -10983,11 +10903,49 @@ sequence with maxspan=1m
 
 
 
+### M365 AIR Investigation Signal
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0718
+
+```python
+event.dataset:o365.audit and
+    event.code:(AirInvestigation or AirManualInvestigation or AirAdminActionInvestigation)
+```
+
+
+
+### M365 Defender Alerts Signal
+
+Branch count: 5  
+Document count: 5  
+Index: geneve-ut-0719
+
+```python
+event.dataset:o365.audit and
+    event.code:(WDATPAlerts or MCASAlerts or MicrosoftDefenderForIdentityAudit or MS365DCustomDetection or DefenderExpertsforXDRAdmin)
+```
+
+
+
+### M365 Entra ID Risk Detection Signal
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0720
+
+```python
+event.dataset:o365.audit and event.code:AadRiskDetection
+```
+
+
+
 ### M365 Exchange Anti-Phish Policy Deleted
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0714
+Index: geneve-ut-0721
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Remove-AntiPhishPolicy" and event.outcome:success
@@ -10999,7 +10957,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0715
+Index: geneve-ut-0722
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:("Remove-AntiPhishRule" or "Disable-AntiPhishRule") and event.outcome:success
@@ -11011,7 +10969,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0716
+Index: geneve-ut-0723
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Set-DkimSigningConfig" and o365.audit.Parameters.Enabled:False and event.outcome:success
@@ -11023,7 +10981,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0717
+Index: geneve-ut-0724
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Disable-SafeAttachmentRule" and event.outcome:success
@@ -11035,7 +10993,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0718
+Index: geneve-ut-0725
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Disable-SafeLinksRule" and event.outcome:success
@@ -11047,7 +11005,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0719
+Index: geneve-ut-0726
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:("Set-AcceptedDomain" or
@@ -11061,7 +11019,7 @@ event.outcome:success
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0720
+Index: geneve-ut-0727
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and
@@ -11079,11 +11037,52 @@ event.category:web and event.action:("New-InboxRule" or "Set-InboxRule") and
 
 
 
+### M365 Exchange MFA Notification Email Deleted or Moved
+
+Branch count: 171  
+Document count: 171  
+Index: geneve-ut-0729
+
+```python
+web where event.dataset == "o365.audit" and
+    event.provider == "Exchange" and
+    event.action in ("SoftDelete", "HardDelete", "MoveToDeletedItems") and
+    event.outcome == "success" and
+    (
+        o365.audit.AffectedItems.Subject like~ (
+            /* new + (mfa|multi-|factor|method|device|security) */
+            "*new mfa*", "*new multi*", "*new factor*", "*new method*", "*new device*", "*new security*",
+            /* 2fa and 2-step */
+            "*2fa*", "*2-step*",
+            /* mfa + action verbs */
+            "*mfa enroll*", "*mfa register*", "*mfa added*", "*mfa change*",
+            "*mfa verify*", "*mfa update*", "*mfa activate*", "*mfa configure*", "*mfa setup*",
+            /* factor + action verbs */
+            "*factor enroll*", "*factor register*", "*factor added*", "*factor change*",
+            "*factor verify*", "*factor update*", "*factor activate*", "*factor configure*", "*factor setup*",
+            /* method + action verbs */
+            "*method enroll*", "*method register*", "*method added*", "*method change*",
+            "*method verify*", "*method update*", "*method activate*", "*method configure*", "*method setup*",
+            /* device + action verbs */
+            "*device enroll*", "*device register*", "*device added*", "*device change*",
+            "*device verify*", "*device update*", "*device activate*", "*device configure*", "*device setup*",
+            /* security + action verbs */
+            "*security enroll*", "*security register*", "*security added*", "*security change*",
+            "*security verify*", "*security update*", "*security activate*", "*security configure*", "*security setup*",
+            /* Additional security notifications */
+            "*authenticator*", "*verification code*", "*security info*", "*security alert*"
+        ) and not
+        o365.audit.AffectedItems.Subject like~ ("*sign-in*", "*sign in*", "*log-in*", "*log in*", "*logon*")
+    )
+```
+
+
+
 ### M365 Exchange Mail Flow Transport Rule Created
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0722
+Index: geneve-ut-0730
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"New-TransportRule" and event.outcome:success
@@ -11095,7 +11094,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0723
+Index: geneve-ut-0731
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:("Remove-TransportRule" or "Disable-TransportRule") and event.outcome:success
@@ -11107,7 +11106,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0725
+Index: geneve-ut-0733
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.action:Set-MailboxAuditBypassAssociation and event.outcome:success
@@ -11119,7 +11118,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.action:Set-Mailbo
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0728
+Index: geneve-ut-0736
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Remove-MalwareFilterPolicy" and event.outcome:success
@@ -11131,7 +11130,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0729
+Index: geneve-ut-0737
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:("Remove-MalwareFilterRule" or "Disable-MalwareFilterRule") and event.outcome:success
@@ -11143,7 +11142,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0730
+Index: geneve-ut-0738
 
 ```python
 event.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"New-ManagementRoleAssignment" and event.outcome:success
@@ -11155,7 +11154,7 @@ event.dataset:o365.audit and event.provider:Exchange and event.category:web and 
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0731
+Index: geneve-ut-0739
 
 ```python
 event.dataset:o365.audit
@@ -11175,7 +11174,7 @@ event.dataset:o365.audit
 
 Branch count: 4  
 Document count: 12  
-Index: geneve-ut-0735
+Index: geneve-ut-0743
 
 ```python
 sequence by related.user with maxspan=30m
@@ -11193,7 +11192,7 @@ sequence by related.user with maxspan=30m
 
 Branch count: 246  
 Document count: 246  
-Index: geneve-ut-0737
+Index: geneve-ut-0745
 
 ```python
 event.dataset: "o365.audit"
@@ -11262,10 +11261,73 @@ event.dataset: "o365.audit"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0742
+Index: geneve-ut-0749
 
 ```python
 event.dataset:o365.audit and event.provider:OneDrive and event.code:SharePointFileOperation and event.action:FileMalwareDetected
+```
+
+
+
+### M365 Purview DLP Signal
+
+Branch count: 7  
+Document count: 7  
+Index: geneve-ut-0751
+
+```python
+event.dataset:o365.audit and
+    event.code:(ComplianceDLPSharePoint or ComplianceDLPExchange or ComplianceDLPSharePointClassification or DLPEndpoint or ComplianceDLPExchangeClassification or ComplianceDLMExchange or ComplianceDLMSharePoint)
+```
+
+
+
+### M365 Purview Insider Risk Signal
+
+Branch count: 7  
+Document count: 7  
+Index: geneve-ut-0752
+
+```python
+event.dataset:o365.audit and
+    event.code:(PurviewInsiderRiskCases or PurviewInsiderRiskAlerts or InsiderRiskScopedUserInsights or InsiderRiskScopedUsers or InformationWorkerProtection or HRSignal or PhysicalBadgingSignal)
+```
+
+
+
+### M365 Purview Security Compliance Signal
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0753
+
+```python
+event.dataset:o365.audit and event.provider:SecurityComplianceCenter and event.code:SecurityComplianceAlerts
+```
+
+
+
+### M365 Quarantine and Hygiene Signal
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0754
+
+```python
+event.dataset:o365.audit and event.code:(Quarantine or HygieneEvent or MailSubmission)
+```
+
+
+
+### M365 Security Compliance Admin Signal
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0755
+
+```python
+event.dataset:o365.audit and
+    event.code:(SecurityComplianceCenterEOPCmdlet or SecurityComplianceInsights or SecurityComplianceRBAC or SecurityComplianceUserChange)
 ```
 
 
@@ -11274,10 +11336,68 @@ event.dataset:o365.audit and event.provider:OneDrive and event.code:SharePointFi
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0743
+Index: geneve-ut-0756
 
 ```python
 event.dataset:o365.audit and event.provider:SharePoint and event.code:SharePointFileOperation and event.action:FileMalwareDetected
+```
+
+
+
+### M365 SharePoint Search for Sensitive Content
+
+Branch count: 80  
+Document count: 80  
+Index: geneve-ut-0757
+
+```python
+web where event.dataset == "o365.audit" and
+    event.provider == "SharePoint" and
+    event.action == "SearchQueryPerformed" and
+    event.outcome == "success" and
+    o365.audit.SearchQueryText != null and
+    o365.audit.SearchQueryText != "" and
+    o365.audit.SearchQueryText like~ (
+        /* Credentials and Secrets */
+        "*password*", "*credential*", "*secret*", "*api key*", "*apikey*",
+        "*token*", "*private key*", "*certificate*", "*ssh*", "*aws*",
+        "*azure*", "*gcp*", "*oauth*", "*bearer*", "*connection string*",
+        "*access key*", "*secret key*",
+        /* Financial */
+        "*salary*", "*payroll*", "*compensation*", "*budget*", "*revenue*",
+        "*financial*", "*banking*", "*invoice*", "*wire transfer*", "*account number*",
+        "*credit card*", "*routing number*", "*profit*", "*expense*", "*1099*",
+        /* Legal and Compliance */
+        "*confidential*", "*privileged*", "*attorney*", "*legal hold*", "*settlement*",
+        "*contract*", "*nda*", "*merger*", "*acquisition*", "*litigation*",
+        "*subpoena*", "*trade secret*", "*intellectual property*", "*proprietary*",
+        "*internal*", "*proposal*", "*poc*",
+        /* HR and PII */
+        "*ssn*", "*social security*", "*employee*", "*personnel*", "*performance review*",
+        "*termination*", "*tax*", "*w2*", "*benefits*", "*background check*",
+        "*medical*", "*hipaa*", "*passport*", "*driver license*", "*dob*",
+        /* Infrastructure and IT */
+        "*admin*", "*root*", "*vpn*", "*firewall*", "*network diagram*",
+        "*architecture*", "*topology*", "*production*", "*database*", "*config*",
+        "*backup*", "*disaster recovery*", "*vulnerability*", "*pentest*", "*security audit*",
+        "*salesforce*"
+    )
+```
+
+
+
+### M365 SharePoint/OneDrive File Access via PowerShell
+
+Branch count: 16  
+Document count: 16  
+Index: geneve-ut-0758
+
+```python
+event.dataset: "o365.audit" and
+    event.provider: ("SharePoint" or "OneDrive") and
+    event.action: ("FileDownloaded" or "FileAccessed") and
+    event.outcome: "success" and
+    user_agent.original: (*PowerShell* or *PnPPS* or *PnPCoreSDK* or *SharePointPnP*)
 ```
 
 
@@ -11286,7 +11406,7 @@ event.dataset:o365.audit and event.provider:SharePoint and event.code:SharePoint
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0744
+Index: geneve-ut-0759
 
 ```python
 event.dataset:o365.audit and event.provider:MicrosoftTeams and
@@ -11299,12 +11419,13 @@ o365.audit.NewValue:True and event.outcome:success
 
 ### M365 Threat Intelligence Signal
 
-Branch count: 1  
-Document count: 1  
-Index: geneve-ut-0745
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0760
 
 ```python
-event.dataset: "o365.audit" and event.provider: "ThreatIntelligence"
+event.dataset: "o365.audit" and
+    event.code:(ThreatIntelligence or ThreatFinder or ThreatIntelligenceAtpContent or ThreatIntelligenceUrl or MSTIC or Campaign)
 ```
 
 
@@ -11313,7 +11434,7 @@ event.dataset: "o365.audit" and event.provider: "ThreatIntelligence"
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0748
+Index: geneve-ut-0763
 
 ```python
 event.dataset:google_workspace.admin and event.provider:admin and event.category:iam and event.action:(ENFORCE_STRONG_AUTHENTICATION or ALLOW_STRONG_AUTHENTICATION) and google_workspace.admin.new_value:false
@@ -11325,7 +11446,7 @@ event.dataset:google_workspace.admin and event.provider:admin and event.category
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0749
+Index: geneve-ut-0764
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -11345,7 +11466,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0750
+Index: geneve-ut-0765
 
 ```python
 ml_is_dga.malicious_prediction:1 and dns.question.registered_domain:avsvmcloud.com
@@ -11357,7 +11478,7 @@ ml_is_dga.malicious_prediction:1 and dns.question.registered_domain:avsvmcloud.c
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0751
+Index: geneve-ut-0766
 
 ```python
 ml_is_dga.malicious_prediction:1 and not dns.question.registered_domain:avsvmcloud.com
@@ -11369,7 +11490,7 @@ ml_is_dga.malicious_prediction:1 and not dns.question.registered_domain:avsvmclo
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0755
+Index: geneve-ut-0770
 
 ```python
 event.kind : alert and event.code : malicious_file and (event.type : allowed or (event.type: denied and event.outcome: failure))
@@ -11381,7 +11502,7 @@ event.kind : alert and event.code : malicious_file and (event.type : allowed or 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0756
+Index: geneve-ut-0771
 
 ```python
 event.kind : alert and event.code : malicious_file and event.type : denied and event.outcome : success
@@ -11393,7 +11514,7 @@ event.kind : alert and event.code : malicious_file and event.type : denied and e
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0757
+Index: geneve-ut-0772
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:detection and (event.action:file_classification_event or endgame.event_subtype_full:file_classification_event)
@@ -11405,7 +11526,7 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0758
+Index: geneve-ut-0773
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:prevention and (event.action:file_classification_event or endgame.event_subtype_full:file_classification_event)
@@ -11417,7 +11538,7 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0759
+Index: geneve-ut-0774
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -11442,7 +11563,7 @@ process.name == "dracut" and process.parent.executable != null and not (
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0760
+Index: geneve-ut-0775
 
 ```python
 process where host.os.type == "macos" and event.action == "exec" and
@@ -11462,7 +11583,7 @@ process where host.os.type == "macos" and event.action == "exec" and
 
 Branch count: 42  
 Document count: 42  
-Index: geneve-ut-0761
+Index: geneve-ut-0776
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
@@ -11475,7 +11596,7 @@ process.name in ("cat", "grep", "tail", "less", "more", "egrep", "fgrep") and pr
 
 Branch count: 96  
 Document count: 96  
-Index: geneve-ut-0762
+Index: geneve-ut-0777
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -11490,7 +11611,7 @@ process.command_line like ("/etc/exports", "/etc/fstab")
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0764
+Index: geneve-ut-0779
 
 ```python
 configuration where event.dataset == "github.audit" and event.action == "org.remove_member"
@@ -11502,7 +11623,7 @@ configuration where event.dataset == "github.audit" and event.action == "org.rem
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0767
+Index: geneve-ut-0782
 
 ```python
 event.kind : alert and event.code : (memory_signature or shellcode_thread) and (event.type : allowed or (event.type: denied and event.outcome: failure))
@@ -11514,7 +11635,7 @@ event.kind : alert and event.code : (memory_signature or shellcode_thread) and (
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0768
+Index: geneve-ut-0783
 
 ```python
 event.kind : alert and event.code : (memory_signature or shellcode_thread) and event.type : denied and event.outcome : success
@@ -11526,7 +11647,7 @@ event.kind : alert and event.code : (memory_signature or shellcode_thread) and e
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0769
+Index: geneve-ut-0784
 
 ```python
 file where host.os.type == "linux" and event.action == "creation" and file.path like "/etc/update-motd.d/*" and
@@ -11560,7 +11681,7 @@ not (
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0772
+Index: geneve-ut-0787
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -11574,7 +11695,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0773
+Index: geneve-ut-0788
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -11595,7 +11716,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0774
+Index: geneve-ut-0789
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -11609,7 +11730,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0775
+Index: geneve-ut-0790
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -11644,7 +11765,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-0776
+Index: geneve-ut-0791
 
 ```python
 file where host.os.type == "windows" and event.type == "creation" and
@@ -11669,7 +11790,7 @@ file where host.os.type == "windows" and event.type == "creation" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0777
+Index: geneve-ut-0792
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -11686,7 +11807,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0780
+Index: geneve-ut-0795
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -11700,7 +11821,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0781
+Index: geneve-ut-0796
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -11714,7 +11835,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0782
+Index: geneve-ut-0797
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -11745,7 +11866,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 28  
 Document count: 28  
-Index: geneve-ut-0784
+Index: geneve-ut-0799
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and process.executable != null and
@@ -11799,7 +11920,7 @@ registry where host.os.type == "windows" and event.type == "change" and process.
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0785
+Index: geneve-ut-0800
 
 ```python
 file where host.os.type == "windows" and file.name : "mimilsa.log" and process.name : "lsass.exe"
@@ -11811,7 +11932,7 @@ file where host.os.type == "windows" and file.name : "mimilsa.log" and process.n
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0786
+Index: geneve-ut-0801
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -11829,7 +11950,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0787
+Index: geneve-ut-0802
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -11846,7 +11967,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0789
+Index: geneve-ut-0804
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -11861,7 +11982,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 267  
 Document count: 267  
-Index: geneve-ut-0790
+Index: geneve-ut-0805
 
 ```python
 file where event.type != "deletion" and
@@ -11911,7 +12032,7 @@ not process.name in ("apt", "apt-get", "dnf", "microdnf", "yum", "zypper", "tdnf
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0792
+Index: geneve-ut-0807
 
 ```python
 registry where host.os.type == "windows" and event.type in ("creation", "change") and
@@ -11927,7 +12048,7 @@ registry where host.os.type == "windows" and event.type in ("creation", "change"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0793
+Index: geneve-ut-0808
 
 ```python
 event.code:"5136" and host.os.type:"windows" and winlog.event_data.AttributeLDAPDisplayName:"msPKIAccountCredentials" and
@@ -11941,7 +12062,7 @@ event.code:"5136" and host.os.type:"windows" and winlog.event_data.AttributeLDAP
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0794
+Index: geneve-ut-0809
 
 ```python
 event.dataset:okta.system and event.action:(application.policy.sign_on.update or application.policy.sign_on.rule.delete)
@@ -11953,7 +12074,7 @@ event.dataset:okta.system and event.action:(application.policy.sign_on.update or
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0795
+Index: geneve-ut-0810
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -11976,7 +12097,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 37  
 Document count: 37  
-Index: geneve-ut-0796
+Index: geneve-ut-0811
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -12004,7 +12125,7 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0797
+Index: geneve-ut-0812
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -12026,7 +12147,7 @@ process.entry_leader.entry_meta.type == "container" and process.name == "mount" 
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0798
+Index: geneve-ut-0813
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -12045,7 +12166,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 8  
 Document count: 16  
-Index: geneve-ut-0799
+Index: geneve-ut-0814
 
 ```python
 sequence by process.entity_id with maxspan=30s
@@ -12082,7 +12203,7 @@ sequence by process.entity_id with maxspan=30s
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-0800
+Index: geneve-ut-0815
 
 ```python
 sequence by process.entity_id with maxspan=10m
@@ -12100,7 +12221,7 @@ sequence by process.entity_id with maxspan=10m
 
 Branch count: 12  
 Document count: 24  
-Index: geneve-ut-0801
+Index: geneve-ut-0816
 
 ```python
 sequence by process.entity_id with maxspan=1m
@@ -12141,7 +12262,7 @@ sequence by process.entity_id with maxspan=1m
 
 Branch count: 1  
 Document count: 6  
-Index: geneve-ut-0812
+Index: geneve-ut-0827
 
 ```python
 sequence by winlog.computer_name, source.ip with maxspan=5s
@@ -12167,7 +12288,7 @@ sequence by winlog.computer_name, source.ip with maxspan=5s
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-0819
+Index: geneve-ut-0834
 
 ```python
 sequence by winlog.computer_name, winlog.process.pid with maxspan=1s
@@ -12191,7 +12312,7 @@ sequence by winlog.computer_name, winlog.process.pid with maxspan=1s
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0822
+Index: geneve-ut-0837
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -12205,7 +12326,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 210  
 Document count: 210  
-Index: geneve-ut-0823
+Index: geneve-ut-0838
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -12224,7 +12345,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 9  
 Document count: 9  
-Index: geneve-ut-0824
+Index: geneve-ut-0839
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action : ("exec", "exec_event", "start") and
@@ -12244,7 +12365,7 @@ process.executable: "/usr/bin/unshare" and not (
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-0825
+Index: geneve-ut-0840
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -12265,7 +12386,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 20  
 Document count: 20  
-Index: geneve-ut-0827
+Index: geneve-ut-0842
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -12280,7 +12401,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0828
+Index: geneve-ut-0843
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -12297,7 +12418,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 16  
 Document count: 32  
-Index: geneve-ut-0830
+Index: geneve-ut-0845
 
 ```python
 sequence by host.id, process.entity_id with maxspan=3s
@@ -12321,7 +12442,7 @@ sequence by host.id, process.entity_id with maxspan=3s
 
 Branch count: 35  
 Document count: 70  
-Index: geneve-ut-0832
+Index: geneve-ut-0847
 
 ```python
 sequence by host.id with maxspan=1s
@@ -12363,7 +12484,7 @@ sequence by host.id with maxspan=1s
 
 Branch count: 8  
 Document count: 16  
-Index: geneve-ut-0833
+Index: geneve-ut-0848
 
 ```python
 sequence by host.id with maxspan=10s
@@ -12380,7 +12501,7 @@ sequence by host.id with maxspan=10s
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-0835
+Index: geneve-ut-0850
 
 ```python
 sequence by process.entity_id with maxspan=1m
@@ -12395,7 +12516,7 @@ sequence by process.entity_id with maxspan=1m
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0836
+Index: geneve-ut-0851
 
 ```python
 network where host.os.type == "windows" and process.name : "certutil.exe" and
@@ -12414,7 +12535,7 @@ network where host.os.type == "windows" and process.name : "certutil.exe" and
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-0837
+Index: geneve-ut-0852
 
 ```python
 sequence by process.entity_id
@@ -12434,7 +12555,7 @@ sequence by process.entity_id
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-0838
+Index: geneve-ut-0853
 
 ```python
 sequence by process.entity_id
@@ -12453,7 +12574,7 @@ sequence by process.entity_id
 
 Branch count: 152  
 Document count: 608  
-Index: geneve-ut-0839
+Index: geneve-ut-0854
 
 ```python
 sequence by host.id with maxspan=1m
@@ -12482,7 +12603,7 @@ sequence by host.id with maxspan=1m
 
 Branch count: 18  
 Document count: 36  
-Index: geneve-ut-0840
+Index: geneve-ut-0855
 
 ```python
 sequence by process.entity_id
@@ -12507,7 +12628,7 @@ sequence by process.entity_id
 
 Branch count: 16  
 Document count: 32  
-Index: geneve-ut-0841
+Index: geneve-ut-0856
 
 ```python
 sequence by process.entity_id
@@ -12529,7 +12650,7 @@ sequence by process.entity_id
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0842
+Index: geneve-ut-0857
 
 ```python
 sequence by host.id, process.entity_id with maxspan=1s
@@ -12562,7 +12683,7 @@ sequence by host.id, process.entity_id with maxspan=1s
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0843
+Index: geneve-ut-0858
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -12592,7 +12713,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0846
+Index: geneve-ut-0861
 
 ```python
 registry where host.os.type == "windows" and event.action != "deletion" and registry.value : "UserAuthentication" and
@@ -12609,7 +12730,7 @@ registry where host.os.type == "windows" and event.action != "deletion" and regi
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0847
+Index: geneve-ut-0862
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and file.path like "/etc/NetworkManager/dispatcher.d/*" and
@@ -12646,7 +12767,7 @@ not (
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0848
+Index: geneve-ut-0863
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -12659,7 +12780,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0849
+Index: geneve-ut-0864
 
 ```python
 configuration where event.dataset == "github.audit" and event.action == "integration_installation.create"
@@ -12671,7 +12792,7 @@ configuration where event.dataset == "github.audit" and event.action == "integra
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0850
+Index: geneve-ut-0865
 
 ```python
 iam where event.dataset == "github.audit" and event.action == "org.add_member" and github.permission == "admin"
@@ -12683,7 +12804,7 @@ iam where event.dataset == "github.audit" and event.action == "org.add_member" a
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0851
+Index: geneve-ut-0866
 
 ```python
 configuration where event.dataset == "github.audit" and github.operation_type == "create" and
@@ -12696,7 +12817,7 @@ github.category == "personal_access_token" and event.action == "personal_access_
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0853
+Index: geneve-ut-0868
 
 ```python
 event.dataset:okta.system and okta.debug_context.debug_data.risk_behaviors:*
@@ -12708,7 +12829,7 @@ event.dataset:okta.system and okta.debug_context.debug_data.risk_behaviors:*
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0854
+Index: geneve-ut-0869
 
 ```python
 event.dataset: "okta.system" and event.action: "system.idp.lifecycle.create" and okta.outcome.result: "SUCCESS"
@@ -12720,7 +12841,7 @@ event.dataset: "okta.system" and event.action: "system.idp.lifecycle.create" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0856
+Index: geneve-ut-0871
 
 ```python
 configuration where event.dataset == "github.audit" and event.action == "org.add_member"
@@ -12732,7 +12853,7 @@ configuration where event.dataset == "github.audit" and event.action == "org.add
 
 Branch count: 36  
 Document count: 72  
-Index: geneve-ut-0863
+Index: geneve-ut-0879
 
 ```python
 sequence by host.id with maxspan=10s
@@ -12746,7 +12867,7 @@ sequence by host.id with maxspan=10s
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0864
+Index: geneve-ut-0880
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -12760,7 +12881,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0866
+Index: geneve-ut-0882
 
 ```python
 registry where host.os.type == "windows" and event.action != "deletion" and
@@ -12773,7 +12894,7 @@ registry where host.os.type == "windows" and event.action != "deletion" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0867
+Index: geneve-ut-0883
 
 ```python
 event.dataset: "okta.system"
@@ -12784,11 +12905,33 @@ event.dataset: "okta.system"
 
 
 
+### Okta Alerts Following Unusual Proxy Authentication
+
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-0885
+
+```python
+sequence by user.name with maxspan=30m
+    [any where event.dataset == "okta.system" and
+        kibana.alert.rule.rule_id == "6f1bb4b2-7dc8-11ee-92b2-f661ea17fbcd"]
+    [any where event.dataset == "okta.system" and
+        kibana.alert.rule.rule_id != null and
+        kibana.alert.severity != "low" and
+        kibana.alert.rule.rule_id not in  (
+            "6f1bb4b2-7dc8-11ee-92b2-f661ea17fbcd",
+            "af2d8e4c-3b7c-4e91-8f5a-6c9d0e1f2a3b"
+        )
+    ]
+```
+
+
+
 ### Okta FastPass Phishing Detection
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0869
+Index: geneve-ut-0886
 
 ```python
 event.dataset:okta.system and event.category:authentication and
@@ -12801,7 +12944,7 @@ event.dataset:okta.system and event.category:authentication and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0873
+Index: geneve-ut-0890
 
 ```python
 event.dataset:okta.system and (event.action:security.threat.detected or okta.debug_context.debug_data.threat_suspected: true)
@@ -12813,7 +12956,7 @@ event.dataset:okta.system and (event.action:security.threat.detected or okta.deb
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0874
+Index: geneve-ut-0891
 
 ```python
 event.dataset:okta.system
@@ -12827,7 +12970,7 @@ event.dataset:okta.system
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0875
+Index: geneve-ut-0892
 
 ```python
 event.dataset:okta.system and event.action:user.session.impersonation.initiate
@@ -12839,7 +12982,7 @@ event.dataset:okta.system and event.action:user.session.impersonation.initiate
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0877
+Index: geneve-ut-0894
 
 ```python
 network where event.action == "connection_accepted" and
@@ -12866,7 +13009,7 @@ network where event.action == "connection_accepted" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0878
+Index: geneve-ut-0895
 
 ```python
 network where event.action == "lookup_requested" and
@@ -12886,7 +13029,7 @@ network where event.action == "lookup_requested" and
 
 Branch count: 5  
 Document count: 5  
-Index: geneve-ut-0879
+Index: geneve-ut-0896
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -12901,7 +13044,7 @@ not process.args in ("-help", "--help", "-h")
 
 Branch count: 99  
 Document count: 99  
-Index: geneve-ut-0880
+Index: geneve-ut-0897
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start") and
@@ -12928,7 +13071,7 @@ not process.parent.executable in (
 
 Branch count: 36  
 Document count: 72  
-Index: geneve-ut-0881
+Index: geneve-ut-0898
 
 ```python
 sequence by host.id, process.entity_id with maxspan = 5s
@@ -12943,7 +13086,7 @@ sequence by host.id, process.entity_id with maxspan = 5s
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0882
+Index: geneve-ut-0899
 
 ```python
 registry where host.os.type == "windows" and event.action != "deletion" and registry.value : "URL" and
@@ -12959,7 +13102,7 @@ registry where host.os.type == "windows" and event.action != "deletion" and regi
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0883
+Index: geneve-ut-0900
 
 ```python
 sequence by source.port, source.ip, destination.ip with maxspan=1m
@@ -12969,28 +13112,11 @@ sequence by source.port, source.ip, destination.ip with maxspan=1m
 
 
 
-### Payload Execution via Shell Pipe Detected by Defend for Containers
-
-Branch count: 16  
-Document count: 32  
-Index: geneve-ut-0886
-
-```python
-sequence by process.parent.entity_id, container.id with maxspan=5s
-  [process where event.type == "start" and event.action == "exec" and
-   process.name in ("curl", "wget") and process.interactive == true]
-  [process where event.type == "start" and event.action == "exec" and
-   process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
-   process.interactive == true]
-```
-
-
-
 ### Pbpaste Execution via Unusual Parent Process
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-0887
+Index: geneve-ut-0904
 
 ```python
 process where host.os.type == "macos" and event.type == "start" and event.action == "exec" and
@@ -13005,7 +13131,7 @@ process where host.os.type == "macos" and event.type == "start" and event.action
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0888
+Index: geneve-ut-0905
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -13019,7 +13145,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-0889
+Index: geneve-ut-0906
 
 ```python
 sequence by process.entity_id with maxspan=30s
@@ -13038,7 +13164,7 @@ sequence by process.entity_id with maxspan=30s
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0890
+Index: geneve-ut-0907
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:detection and (event.action:token_protection_event or endgame.event_subtype_full:token_protection_event)
@@ -13050,7 +13176,7 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0891
+Index: geneve-ut-0908
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:prevention and (event.action:token_protection_event or endgame.event_subtype_full:token_protection_event)
@@ -13062,7 +13188,7 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0892
+Index: geneve-ut-0909
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -13080,7 +13206,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0893
+Index: geneve-ut-0910
 
 ```python
 file where host.os.type == "macos" and event.action == "modification" and
@@ -13093,7 +13219,7 @@ file where host.os.type == "macos" and event.action == "modification" and
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-0894
+Index: geneve-ut-0911
 
 ```python
 file where host.os.type == "macos" and event.action == "modification" and
@@ -13108,7 +13234,7 @@ file where host.os.type == "macos" and event.action == "modification" and
 
 Branch count: 22  
 Document count: 22  
-Index: geneve-ut-0895
+Index: geneve-ut-0912
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and process.parent.name == "com.apple.foundation.UserScriptService" and 
@@ -13123,7 +13249,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0897
+Index: geneve-ut-0914
 
 ```python
 process where host.os.type == "macos" and event.type == "start" and
@@ -13143,7 +13269,7 @@ process where host.os.type == "macos" and event.type == "start" and
 
 Branch count: 36  
 Document count: 36  
-Index: geneve-ut-0898
+Index: geneve-ut-0915
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and
@@ -13166,7 +13292,7 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0899
+Index: geneve-ut-0916
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and
@@ -13180,7 +13306,7 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0900
+Index: geneve-ut-0917
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and
@@ -13199,7 +13325,7 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0901
+Index: geneve-ut-0918
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and
@@ -13225,7 +13351,7 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 Branch count: 190  
 Document count: 190  
-Index: geneve-ut-0902
+Index: geneve-ut-0919
 
 ```python
 file where host.os.type == "macos" and event.type != "deletion" and 
@@ -13249,7 +13375,7 @@ file where host.os.type == "macos" and event.type != "deletion" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0903
+Index: geneve-ut-0920
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -13268,7 +13394,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0904
+Index: geneve-ut-0921
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -13296,7 +13422,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0905
+Index: geneve-ut-0922
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -13311,7 +13437,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-0906
+Index: geneve-ut-0923
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -13374,7 +13500,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 20  
 Document count: 20  
-Index: geneve-ut-0907
+Index: geneve-ut-0924
 
 ```python
 file where host.os.type == "macos" and event.type != "deletion" and
@@ -13395,7 +13521,7 @@ file where host.os.type == "macos" and event.type != "deletion" and
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-0908
+Index: geneve-ut-0925
 
 ```python
 any where host.os.type == "windows" and
@@ -13457,7 +13583,7 @@ any where host.os.type == "windows" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0910
+Index: geneve-ut-0927
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and file.name like "pam_*.so" and not file.path like (
@@ -13486,7 +13612,7 @@ file where host.os.type == "linux" and event.type == "creation" and file.name li
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0911
+Index: geneve-ut-0928
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "ProcessRollup2") and
@@ -13500,7 +13626,7 @@ process.args like~ "https://github.com/linux-pam/linux-pam/releases/download/v*/
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0912
+Index: geneve-ut-0929
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -13526,7 +13652,7 @@ not (
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-0915
+Index: geneve-ut-0932
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and process.executable != null and
@@ -13573,7 +13699,7 @@ file.extension in ("rules", "pkla", "policy") and file.path like~ (
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-0916
+Index: geneve-ut-0933
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -13595,7 +13721,7 @@ not (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0917
+Index: geneve-ut-0934
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and 
@@ -13608,7 +13734,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0919
+Index: geneve-ut-0936
 
 ```python
 event.dataset:okta.system and event.action:(application.integration.rate_limit_exceeded or system.org.rate_limit.warning or system.org.rate_limit.violation or core.concurrency.org.limit.violation)
@@ -13620,7 +13746,7 @@ event.dataset:okta.system and event.action:(application.integration.rate_limit_e
 
 Branch count: 16  
 Document count: 16  
-Index: geneve-ut-0924
+Index: geneve-ut-0943
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -13637,7 +13763,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0926
+Index: geneve-ut-0945
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.name : "sdbinst.exe" and
@@ -13662,7 +13788,7 @@ process where host.os.type == "windows" and event.type == "start" and process.na
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0930
+Index: geneve-ut-0949
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and file.path like "/*/etc/nsswitch.conf" and
@@ -13679,7 +13805,7 @@ not file.path like (
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-0931
+Index: geneve-ut-0950
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -13695,7 +13821,7 @@ process.command_line like ("*sudo -R*", "*sudo --chroot*")
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0932
+Index: geneve-ut-0951
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -13716,7 +13842,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 54  
 Document count: 54  
-Index: geneve-ut-0933
+Index: geneve-ut-0952
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -13757,7 +13883,7 @@ event.action in ("exec", "exec_event", "start", "executed", "process_started", "
 
 Branch count: 72  
 Document count: 144  
-Index: geneve-ut-0934
+Index: geneve-ut-0953
 
 ```python
 sequence by host.id, process.parent.entity_id with maxspan=5m
@@ -13774,7 +13900,7 @@ sequence by host.id, process.parent.entity_id with maxspan=5m
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0935
+Index: geneve-ut-0954
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and process.name == "jq" and
@@ -13787,7 +13913,7 @@ process.interactive == true and container.id like "?*"
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-0936
+Index: geneve-ut-0955
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -13811,7 +13937,7 @@ event.action in ("exec", "exec_event", "fork", "fork_event") and user.name == "p
 
 Branch count: 2  
 Document count: 6  
-Index: geneve-ut-0938
+Index: geneve-ut-0957
 
 ```python
 sequence by host.id, user.name with maxspan = 5s
@@ -13840,7 +13966,7 @@ sequence by host.id, user.name with maxspan = 5s
 
 Branch count: 63  
 Document count: 63  
-Index: geneve-ut-0940
+Index: geneve-ut-0959
 
 ```python
 process where event.type in ("start", "process_started", "info") and
@@ -13864,7 +13990,7 @@ process where event.type in ("start", "process_started", "info") and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0942
+Index: geneve-ut-0961
 
 ```python
 process where host.os.type == "windows" and event.code == "10" and
@@ -13882,7 +14008,7 @@ process where host.os.type == "windows" and event.code == "10" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0943
+Index: geneve-ut-0962
 
 ```python
 process where host.os.type == "windows" and event.code == "10" and
@@ -13905,7 +14031,7 @@ process where host.os.type == "windows" and event.code == "10" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0944
+Index: geneve-ut-0963
 
 ```python
 file where host.os.type == "windows" and event.type == "creation" and
@@ -13962,7 +14088,7 @@ file where host.os.type == "windows" and event.type == "creation" and
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0945
+Index: geneve-ut-0964
 
 ```python
 sequence by process.entity_id with maxspan=1m
@@ -13980,7 +14106,7 @@ sequence by process.entity_id with maxspan=1m
 
 Branch count: 16  
 Document count: 32  
-Index: geneve-ut-0946
+Index: geneve-ut-0965
 
 ```python
 sequence by process.entity_id
@@ -13995,7 +14121,7 @@ sequence by process.entity_id
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-0956
+Index: geneve-ut-0975
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -14009,7 +14135,7 @@ process.name == "wget" and process.args like ("--post-file=*", "--body-file=*")
 
 Branch count: 36  
 Document count: 36  
-Index: geneve-ut-0957
+Index: geneve-ut-0976
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -14040,7 +14166,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0958
+Index: geneve-ut-0977
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -14053,7 +14179,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0959
+Index: geneve-ut-0978
 
 ```python
 file where host.os.type == "linux" and event.type != "deletion" and file.path == "/etc/doas.conf"
@@ -14065,7 +14191,7 @@ file where host.os.type == "linux" and event.type != "deletion" and file.path ==
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-0960
+Index: geneve-ut-0979
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2") and
@@ -14078,7 +14204,7 @@ process.parent.name == "proot"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0962
+Index: geneve-ut-0981
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -14091,7 +14217,7 @@ process.args like "http*:10250*" and process.interactive == true and container.i
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-0963
+Index: geneve-ut-0982
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -14112,7 +14238,7 @@ not ?process.parent.executable == "/opt/puppetlabs/puppet/bin/ruby"
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0964
+Index: geneve-ut-0983
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -14126,7 +14252,7 @@ process.name == "setenforce" and process.args == "0"
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-0967
+Index: geneve-ut-0986
 
 ```python
 sequence by process.entity_id with maxspan=3m
@@ -14150,7 +14276,7 @@ sequence by process.entity_id with maxspan=3m
 
 Branch count: 42  
 Document count: 42  
-Index: geneve-ut-0968
+Index: geneve-ut-0987
 
 ```python
 process where event.type == "start" and host.os.type == "windows" and
@@ -14166,7 +14292,7 @@ process where event.type == "start" and host.os.type == "windows" and
 
 Branch count: 90  
 Document count: 180  
-Index: geneve-ut-0969
+Index: geneve-ut-0988
 
 ```python
 sequence by process.entity_id with maxspan=15s
@@ -14183,7 +14309,7 @@ sequence by process.entity_id with maxspan=15s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0970
+Index: geneve-ut-0989
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -14204,7 +14330,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0972
+Index: geneve-ut-0991
 
 ```python
 process where host.os.type == "linux" and event.type == "info" and event.action == "already_running" and
@@ -14217,7 +14343,7 @@ process.parent.args == "/etc/rc.local" and process.parent.args == "start"
 
 Branch count: 8  
 Document count: 16  
-Index: geneve-ut-0974
+Index: geneve-ut-0993
 
 ```python
 sequence by host.id with maxspan=1m
@@ -14245,7 +14371,7 @@ sequence by host.id with maxspan=1m
 
 Branch count: 39  
 Document count: 39  
-Index: geneve-ut-0977
+Index: geneve-ut-0996
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -14261,7 +14387,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 408  
 Document count: 408  
-Index: geneve-ut-0978
+Index: geneve-ut-0997
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -14284,7 +14410,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0979
+Index: geneve-ut-0998
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -14297,7 +14423,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 66  
 Document count: 66  
-Index: geneve-ut-0980
+Index: geneve-ut-0999
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -14328,7 +14454,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0981
+Index: geneve-ut-1000
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -14341,7 +14467,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-0986
+Index: geneve-ut-1005
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -14355,7 +14481,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 5  
 Document count: 5  
-Index: geneve-ut-0987
+Index: geneve-ut-1006
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -14370,7 +14496,7 @@ not process.parent.command_line like "/opt/cloudlinux/*"
 
 Branch count: 375  
 Document count: 375  
-Index: geneve-ut-0988
+Index: geneve-ut-1007
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -14391,7 +14517,7 @@ not process.parent.args like ("/snap/microk8s/*/apiservice-kicker", "/snap/micro
 
 Branch count: 60  
 Document count: 120  
-Index: geneve-ut-0991
+Index: geneve-ut-1010
 
 ```python
 sequence by host.id with maxspan=1m
@@ -14434,7 +14560,7 @@ sequence by host.id with maxspan=1m
 
 Branch count: 16  
 Document count: 16  
-Index: geneve-ut-0992
+Index: geneve-ut-1011
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -14452,7 +14578,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0993
+Index: geneve-ut-1012
 
 ```python
 host.os.type:"windows" and
@@ -14468,7 +14594,7 @@ host.os.type:"windows" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0995
+Index: geneve-ut-1014
 
 ```python
 network where host.os.type == "windows" and dns.question.name : "*UWhRC*BAAAA*"
@@ -14480,7 +14606,7 @@ network where host.os.type == "windows" and dns.question.name : "*UWhRC*BAAAA*"
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0997
+Index: geneve-ut-1016
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -14496,7 +14622,7 @@ process.interactive == true and container.id like "?*"
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-0998
+Index: geneve-ut-1017
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -14514,7 +14640,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-0999
+Index: geneve-ut-1018
 
 ```python
 process where host.os.type == "windows" and event.code:"4688" and
@@ -14528,7 +14654,7 @@ process where host.os.type == "windows" and event.code:"4688" and
 
 Branch count: 24  
 Document count: 48  
-Index: geneve-ut-1001
+Index: geneve-ut-1020
 
 ```python
 sequence by host.id with maxspan=30s
@@ -14547,7 +14673,7 @@ sequence by host.id with maxspan=30s
 
 Branch count: 27  
 Document count: 54  
-Index: geneve-ut-1003
+Index: geneve-ut-1022
 
 ```python
 sequence by host.id, process.parent.name with maxspan=1m
@@ -14563,7 +14689,7 @@ sequence by host.id, process.parent.name with maxspan=1m
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1004
+Index: geneve-ut-1023
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2") and
@@ -14576,7 +14702,7 @@ process.name == "unshadow" and process.args_count >= 3
 
 Branch count: 252  
 Document count: 252  
-Index: geneve-ut-1005
+Index: geneve-ut-1024
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -14606,7 +14732,7 @@ process.name in~ (
 
 Branch count: 72  
 Document count: 72  
-Index: geneve-ut-1010
+Index: geneve-ut-1029
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2") and
@@ -14629,7 +14755,7 @@ not (
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1011
+Index: geneve-ut-1030
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -14648,7 +14774,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 54  
 Document count: 54  
-Index: geneve-ut-1016
+Index: geneve-ut-1035
 
 ```python
 process where host.os.type == "windows" and 
@@ -14790,7 +14916,7 @@ process where host.os.type == "windows" and
 
 Branch count: 20  
 Document count: 20  
-Index: geneve-ut-1017
+Index: geneve-ut-1036
 
 ```python
 process where host.os.type == "windows" and
@@ -14867,7 +14993,7 @@ process where host.os.type == "windows" and
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1021
+Index: geneve-ut-1040
 
 ```python
 library where host.os.type == "windows" and event.action == "load" and
@@ -14884,7 +15010,7 @@ library where host.os.type == "windows" and event.action == "load" and
 
 Branch count: 28  
 Document count: 28  
-Index: geneve-ut-1022
+Index: geneve-ut-1041
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event") and (
@@ -14918,7 +15044,7 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1024
+Index: geneve-ut-1043
 
 ```python
 file where host.os.type == "macos" and event.action in ("modification", "rename") and file.name like~ "~$*.zip"
@@ -14930,7 +15056,7 @@ file where host.os.type == "macos" and event.action in ("modification", "rename"
 
 Branch count: 16  
 Document count: 16  
-Index: geneve-ut-1025
+Index: geneve-ut-1044
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -14969,7 +15095,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1027
+Index: geneve-ut-1046
 
 ```python
 registry where host.os.type == "windows" and event.action != "deletion" and
@@ -14982,7 +15108,7 @@ registry where host.os.type == "windows" and event.action != "deletion" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1032
+Index: geneve-ut-1051
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -14995,7 +15121,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 70  
 Document count: 70  
-Index: geneve-ut-1039
+Index: geneve-ut-1058
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and process.name in ("ssh", "sshd") and
@@ -15032,7 +15158,7 @@ file where host.os.type == "linux" and event.type == "creation" and process.name
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1040
+Index: geneve-ut-1059
 
 ```python
 network where host.os.type == "windows" and
@@ -15058,7 +15184,7 @@ network where host.os.type == "windows" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1043
+Index: geneve-ut-1062
 
 ```python
 file where host.os.type == "macos" and event.action == "modification" and
@@ -15073,7 +15199,7 @@ file where host.os.type == "macos" and event.action == "modification" and
 
 Branch count: 138  
 Document count: 138  
-Index: geneve-ut-1044
+Index: geneve-ut-1063
 
 ```python
 file where host.os.type == "linux" and event.dataset == "fim.event" and event.action == "updated" and
@@ -15191,7 +15317,7 @@ file.path : (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1045
+Index: geneve-ut-1064
 
 ```python
 event.category:file and host.os.type:macos and not event.type:"deletion" and
@@ -15205,7 +15331,7 @@ event.category:file and host.os.type:macos and not event.type:"deletion" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1046
+Index: geneve-ut-1065
 
 ```python
 file where host.os.type == "windows" and
@@ -15219,7 +15345,7 @@ file where host.os.type == "windows" and
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-1047
+Index: geneve-ut-1066
 
 ```python
 file where host.os.type == "macos" and event.action == "modification" and
@@ -15232,7 +15358,7 @@ file where host.os.type == "macos" and event.action == "modification" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1048
+Index: geneve-ut-1067
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -15252,7 +15378,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1049
+Index: geneve-ut-1068
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -15272,7 +15398,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 45  
 Document count: 45  
-Index: geneve-ut-1051
+Index: geneve-ut-1070
 
 ```python
 host.os.type:windows and event.category:process and
@@ -15310,7 +15436,7 @@ host.os.type:windows and event.category:process and
 
 Branch count: 702  
 Document count: 702  
-Index: geneve-ut-1052
+Index: geneve-ut-1071
 
 ```python
 event.category:process and host.os.type:windows and
@@ -15505,7 +15631,7 @@ event.category:process and host.os.type:windows and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1065
+Index: geneve-ut-1084
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -15521,7 +15647,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1067
+Index: geneve-ut-1086
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "ProcessRollup2") and
@@ -15538,7 +15664,7 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 Branch count: 1  
 Document count: 5  
-Index: geneve-ut-1068
+Index: geneve-ut-1087
 
 ```python
 sequence by host.id, process.parent.entity_id, process.executable with maxspan=5s
@@ -15552,7 +15678,7 @@ sequence by host.id, process.parent.entity_id, process.executable with maxspan=5
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1069
+Index: geneve-ut-1088
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -15568,7 +15694,7 @@ process.interactive == true and process.parent.interactive == true
 
 Branch count: 3  
 Document count: 6  
-Index: geneve-ut-1073
+Index: geneve-ut-1092
 
 ```python
 sequence by process.parent.entity_id, host.id with maxspan=5s
@@ -15584,7 +15710,7 @@ sequence by process.parent.entity_id, host.id with maxspan=5s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1074
+Index: geneve-ut-1093
 
 ```python
 file where host.os.type == "linux" and file.path : "/*GCONV_PATH*"
@@ -15596,7 +15722,7 @@ file where host.os.type == "linux" and file.path : "/*GCONV_PATH*"
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-1075
+Index: geneve-ut-1094
 
 ```python
 sequence by host.id, process.entity_id with maxspan=1s
@@ -15612,7 +15738,7 @@ sequence by host.id, process.entity_id with maxspan=1s
 
 Branch count: 6  
 Document count: 24  
-Index: geneve-ut-1076
+Index: geneve-ut-1095
 
 ```python
 sequence by host.id with maxspan=1m
@@ -15632,7 +15758,7 @@ sequence by host.id with maxspan=1m
 
 Branch count: 64  
 Document count: 64  
-Index: geneve-ut-1077
+Index: geneve-ut-1096
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -15669,7 +15795,7 @@ not process.parent.executable in (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1079
+Index: geneve-ut-1098
 
 ```python
 event.category:process and event.type:start and process.args:(echo and *NOPASSWD*ALL*)
@@ -15681,7 +15807,7 @@ event.category:process and event.type:start and process.args:(echo and *NOPASSWD
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1080
+Index: geneve-ut-1099
 
 ```python
 iam where host.os.type == "windows" and event.action == "renamed-user-account" and
@@ -15695,7 +15821,7 @@ iam where host.os.type == "windows" and event.action == "renamed-user-account" a
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-1081
+Index: geneve-ut-1100
 
 ```python
 process where host.os.type == "windows" and event.action == "start" and
@@ -15718,7 +15844,7 @@ process where host.os.type == "windows" and event.action == "start" and
 
 Branch count: 13  
 Document count: 13  
-Index: geneve-ut-1083
+Index: geneve-ut-1102
 
 ```python
 process where host.os.type == "linux" and auditd.data.syscall == "prctl" and auditd.data.a0 == "f" and
@@ -15735,7 +15861,7 @@ not process.executable like ("/home/*/.vscode-server/*", "/tmp/VeeamAgent*", "/h
 
 Branch count: 27  
 Document count: 54  
-Index: geneve-ut-1084
+Index: geneve-ut-1103
 
 ```python
 sequence by host.id, process.entity_id with maxspan=3s
@@ -15758,7 +15884,7 @@ sequence by host.id, process.entity_id with maxspan=3s
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1085
+Index: geneve-ut-1104
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -15772,7 +15898,7 @@ process.args : "-s" and process.args : "-d" and process.args : "rssocks"
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-1086
+Index: geneve-ut-1105
 
 ```python
 any where host.os.type == "windows" and
@@ -15799,7 +15925,7 @@ any where host.os.type == "windows" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1089
+Index: geneve-ut-1108
 
 ```python
 file where host.os.type == "windows" and
@@ -15814,7 +15940,7 @@ file where host.os.type == "windows" and
 
 Branch count: 11  
 Document count: 11  
-Index: geneve-ut-1090
+Index: geneve-ut-1109
 
 ```python
 /* Identifies the modification of RDP Shadow registry or
@@ -15843,7 +15969,7 @@ any where host.os.type == "windows" and
 
 Branch count: 5  
 Document count: 5  
-Index: geneve-ut-1091
+Index: geneve-ut-1110
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -15858,7 +15984,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 48  
 Document count: 144  
-Index: geneve-ut-1092
+Index: geneve-ut-1111
 
 ```python
 sequence with maxspan=1m
@@ -15900,7 +16026,7 @@ sequence with maxspan=1m
 
 Branch count: 100  
 Document count: 100  
-Index: geneve-ut-1093
+Index: geneve-ut-1112
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -15918,7 +16044,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 64  
 Document count: 64  
-Index: geneve-ut-1094
+Index: geneve-ut-1113
 
 ```python
 registry where host.os.type == "windows" and event.action != "deletion" and
@@ -15972,7 +16098,7 @@ registry where host.os.type == "windows" and event.action != "deletion" and
 
 Branch count: 864  
 Document count: 1728  
-Index: geneve-ut-1095
+Index: geneve-ut-1114
 
 ```python
 sequence by host.id with maxspan=5s
@@ -15992,7 +16118,7 @@ sequence by host.id with maxspan=5s
 
 Branch count: 80  
 Document count: 80  
-Index: geneve-ut-1096
+Index: geneve-ut-1115
 
 ```python
 process where event.type in ("start", "process_started") and
@@ -16013,7 +16139,7 @@ process where event.type in ("start", "process_started") and
 
 Branch count: 64  
 Document count: 64  
-Index: geneve-ut-1097
+Index: geneve-ut-1116
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -16028,7 +16154,7 @@ process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish
 
 Branch count: 432  
 Document count: 864  
-Index: geneve-ut-1098
+Index: geneve-ut-1117
 
 ```python
 sequence by host.id, process.entity_id with maxspan=5s
@@ -16048,7 +16174,7 @@ sequence by host.id, process.entity_id with maxspan=5s
 
 Branch count: 288  
 Document count: 576  
-Index: geneve-ut-1099
+Index: geneve-ut-1118
 
 ```python
 sequence by host.id with maxspan=5s
@@ -16090,7 +16216,7 @@ sequence by host.id with maxspan=5s
 
 Branch count: 216  
 Document count: 216  
-Index: geneve-ut-1103
+Index: geneve-ut-1122
 
 ```python
 process where event.type == "start" and host.os.type in ("linux", "windows") and
@@ -16125,7 +16251,7 @@ process where event.type == "start" and host.os.type in ("linux", "windows") and
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-1104
+Index: geneve-ut-1123
 
 ```python
 file where host.os.type in ("linux", "windows") and event.action == "creation" and
@@ -16142,7 +16268,7 @@ file where host.os.type in ("linux", "windows") and event.action == "creation" a
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-1105
+Index: geneve-ut-1124
 
 ```python
 sequence by host.id with maxspan=3s
@@ -16156,7 +16282,7 @@ sequence by host.id with maxspan=3s
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-1107
+Index: geneve-ut-1126
 
 ```python
 process where event.type == "start" and event.action like ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started", "Process Create*") and
@@ -16169,7 +16295,7 @@ process.name : ("gitleaks.exe", "gitleaks")
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1108
+Index: geneve-ut-1127
 
 ```python
 file where host.os.type == "windows" and event.type == "change" and file.name : "*AAA.AAA"
@@ -16181,7 +16307,7 @@ file where host.os.type == "windows" and event.type == "change" and file.name : 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1109
+Index: geneve-ut-1128
 
 ```python
 event.code:"5136" and host.os.type:"windows" and winlog.event_data.AttributeLDAPDisplayName:"msDS-KeyCredentialLink" and
@@ -16195,7 +16321,7 @@ event.code:"5136" and host.os.type:"windows" and winlog.event_data.AttributeLDAP
 
 Branch count: 32  
 Document count: 96  
-Index: geneve-ut-1111
+Index: geneve-ut-1130
 
 ```python
 /* Incoming RDP followed by a new RunMRU string value set to cmd, powershell, taskmgr or tsclient, followed by process execution within 1m */
@@ -16223,7 +16349,7 @@ sequence by host.id with maxspan=1m
 
 Branch count: 648  
 Document count: 1296  
-Index: geneve-ut-1112
+Index: geneve-ut-1131
 
 ```python
 sequence by host.id with maxspan=1s
@@ -16248,7 +16374,7 @@ sequence by host.id with maxspan=1s
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1116
+Index: geneve-ut-1135
 
 ```python
 file where host.os.type == "linux" and event.action in ("creation", "rename") and
@@ -16282,7 +16408,7 @@ file.path in ("/usr/bin/sudo", "/bin/sudo") and not (
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1117
+Index: geneve-ut-1136
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -16296,7 +16422,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-1118
+Index: geneve-ut-1137
 
 ```python
 sequence by host.id, process.session_leader.entity_id with maxspan=15s
@@ -16312,7 +16438,7 @@ sequence by host.id, process.session_leader.entity_id with maxspan=15s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1119
+Index: geneve-ut-1138
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -16326,7 +16452,7 @@ not user.Ext.real.id == "0" and not group.Ext.real.id == "0"
 
 Branch count: 94  
 Document count: 94  
-Index: geneve-ut-1120
+Index: geneve-ut-1139
 
 ```python
 file where host.os.type == "linux" and event.action in ("creation", "file_create_event") and file.extension == "swp" and
@@ -16356,7 +16482,7 @@ file.path : (
 
 Branch count: 16  
 Document count: 16  
-Index: geneve-ut-1121
+Index: geneve-ut-1140
 
 ```python
 file where host.os.type == "windows" and event.type in ("change", "deletion") and
@@ -16382,7 +16508,7 @@ file where host.os.type == "windows" and event.type in ("change", "deletion") an
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-1122
+Index: geneve-ut-1141
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -16396,14 +16522,14 @@ process where host.os.type == "linux" and event.type == "start" and
 
 ### Potential Telnet Authentication Bypass (CVE-2026-24061)
 
-Branch count: 5  
-Document count: 5  
-Index: geneve-ut-1123
+Branch count: 10  
+Document count: 10  
+Index: geneve-ut-1142
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
   event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed") and
-  process.name == "login" and process.parent.name == "telnetd" and process.args : "-*f*"
+  process.name == "login" and process.parent.name in ("telnetd", "xinetd") and process.args : "-*f*"
 ```
 
 
@@ -16412,7 +16538,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 84  
 Document count: 84  
-Index: geneve-ut-1124
+Index: geneve-ut-1143
 
 ```python
 file where host.os.type == "windows" and
@@ -16448,7 +16574,7 @@ file where host.os.type == "windows" and
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1127
+Index: geneve-ut-1146
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -16462,7 +16588,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1128
+Index: geneve-ut-1147
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -16482,7 +16608,7 @@ not process.parent.command_line like ("linode-longview", "*bootstrap*", "*homebr
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1130
+Index: geneve-ut-1149
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -16499,7 +16625,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1131
+Index: geneve-ut-1150
 
 ```python
 any where host.os.type == "windows" and event.code == "5137" and winlog.event_data.ObjectDN : "DC=wpad,*"
@@ -16511,7 +16637,7 @@ any where host.os.type == "windows" and event.code == "5137" and winlog.event_da
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1132
+Index: geneve-ut-1151
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.parent.name : "wuauclt.exe" and
@@ -16528,7 +16654,7 @@ process.executable : (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1133
+Index: geneve-ut-1152
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and
@@ -16546,7 +16672,7 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1139
+Index: geneve-ut-1158
 
 ```python
 file where host.os.type == "linux" and event.type == "change" and event.action == "open" and
@@ -16559,7 +16685,7 @@ file.name == "notify_on_release" and process.interactive == true and container.i
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1140
+Index: geneve-ut-1159
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and
@@ -16586,7 +16712,7 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1141
+Index: geneve-ut-1160
 
 ```python
 file where host.os.type == "linux" and event.type == "change" and event.action == "open" and
@@ -16599,7 +16725,7 @@ file.name == "release_agent" and process.interactive == true and container.id li
 
 Branch count: 128  
 Document count: 768  
-Index: geneve-ut-1142
+Index: geneve-ut-1161
 
 ```python
 sequence by okta.actor.id with maxspan=10m
@@ -16632,7 +16758,7 @@ sequence by okta.actor.id with maxspan=10m
 
 Branch count: 144  
 Document count: 144  
-Index: geneve-ut-1143
+Index: geneve-ut-1162
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -16649,7 +16775,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 21  
 Document count: 21  
-Index: geneve-ut-1144
+Index: geneve-ut-1163
 
 ```python
 event.category:process and host.os.type:windows and
@@ -16674,7 +16800,7 @@ event.category:process and host.os.type:windows and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1146
+Index: geneve-ut-1165
 
 ```python
 event.category:process and host.os.type:windows and
@@ -16693,7 +16819,7 @@ event.category:process and host.os.type:windows and
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-1149
+Index: geneve-ut-1168
 
 ```python
 event.category:process and host.os.type:windows and powershell.file.script_block_text:(MiniDumpWriteDump or MiniDumpWithFullMemory or pmuDetirWpmuDiniM) and not user.id : "S-1-5-18"
@@ -16705,7 +16831,7 @@ event.category:process and host.os.type:windows and powershell.file.script_block
 
 Branch count: 9  
 Document count: 9  
-Index: geneve-ut-1151
+Index: geneve-ut-1170
 
 ```python
 event.category:process and host.os.type:windows and
@@ -16729,7 +16855,7 @@ event.category:process and host.os.type:windows and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1152
+Index: geneve-ut-1171
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -16757,7 +16883,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 240  
 Document count: 240  
-Index: geneve-ut-1167
+Index: geneve-ut-1186
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -16778,7 +16904,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-1170
+Index: geneve-ut-1189
 
 ```python
 sequence by host.id, process.entity_id with maxspan=1s
@@ -16815,7 +16941,7 @@ sequence by host.id, process.entity_id with maxspan=1s
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-1171
+Index: geneve-ut-1190
 
 ```python
 sequence by host.id, process.entry_leader.entity_id with maxspan=1m
@@ -16832,7 +16958,7 @@ sequence by host.id, process.entry_leader.entity_id with maxspan=1m
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1172
+Index: geneve-ut-1191
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -16846,7 +16972,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1173
+Index: geneve-ut-1192
 
 ```python
 file where host.os.type == "windows" and
@@ -16865,7 +16991,7 @@ file where host.os.type == "windows" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1174
+Index: geneve-ut-1193
 
 ```python
 file where host.os.type == "macos" and event.action == "modification" and
@@ -16879,7 +17005,7 @@ file where host.os.type == "macos" and event.action == "modification" and
 
 Branch count: 434  
 Document count: 434  
-Index: geneve-ut-1175
+Index: geneve-ut-1194
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and (
@@ -16930,7 +17056,7 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1176
+Index: geneve-ut-1195
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -16948,7 +17074,7 @@ registry.path : (
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-1178
+Index: geneve-ut-1197
 
 ```python
 process where event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
@@ -16966,7 +17092,7 @@ not (
 
 Branch count: 7  
 Document count: 7  
-Index: geneve-ut-1181
+Index: geneve-ut-1200
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -16980,7 +17106,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-1183
+Index: geneve-ut-1202
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -16995,7 +17121,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-1184
+Index: geneve-ut-1203
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start") and
@@ -17018,7 +17144,7 @@ process.name == "setcap" and not (
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-1186
+Index: geneve-ut-1205
 
 ```python
 /* This rule is only compatible with Elastic Endpoint 8.4+ */
@@ -17103,7 +17229,7 @@ not (process.parent.executable : ("?\\Windows\\System32\\spoolsv.exe", "C:\\Wind
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-1187
+Index: geneve-ut-1206
 
 ```python
 sequence by winlog.computer_name with maxspan=1m
@@ -17124,7 +17250,7 @@ sequence by winlog.computer_name with maxspan=1m
 
 Branch count: 11  
 Document count: 11  
-Index: geneve-ut-1188
+Index: geneve-ut-1207
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.args != null and 
@@ -17150,7 +17276,7 @@ process where host.os.type == "windows" and event.type == "start" and process.ar
 
 Branch count: 66  
 Document count: 66  
-Index: geneve-ut-1190
+Index: geneve-ut-1209
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -17203,7 +17329,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1191
+Index: geneve-ut-1210
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:detection and (event.action:kernel_shellcode_event or endgame.event_subtype_full:kernel_shellcode_event)
@@ -17215,7 +17341,7 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1192
+Index: geneve-ut-1211
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:prevention and (event.action:kernel_shellcode_event or endgame.event_subtype_full:kernel_shellcode_event)
@@ -17227,7 +17353,7 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1193
+Index: geneve-ut-1212
 
 ```python
 process where host.os.type == "windows" and
@@ -17238,11 +17364,41 @@ process where host.os.type == "windows" and
 
 
 
+### Process Killing Detected via Defend for Containers
+
+Branch count: 111  
+Document count: 111  
+Index: geneve-ut-1213
+
+```python
+process where event.type == "start" and event.action == "exec" and container.id like "*?" and 
+(
+  process.name in ("kill", "pkill", "killall") or
+  (
+    /* Account for tools that execute utilities as a subprocess, in this case the target utility name will appear as a process arg */
+    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox") and
+    process.args in (
+      "kill", "/bin/kill", "/usr/bin/kill", "/usr/local/bin/kill",
+      "pkill", "/bin/pkill", "/usr/bin/pkill", "/usr/local/bin/pkill",
+      "killall", "/bin/killall", "/usr/bin/killall", "/usr/local/bin/killall"
+    ) and
+    /* default exclusion list to not FP on default multi-process commands */
+    not process.args in (
+      "man", "/bin/man", "/usr/bin/man", "/usr/local/bin/man",
+      "chmod", "/bin/chmod", "/usr/bin/chmod", "/usr/local/bin/chmod",
+      "chown", "/bin/chown", "/usr/bin/chown", "/usr/local/bin/chown"
+    )
+  )
+)
+```
+
+
+
 ### Process Spawned from Message-of-the-Day (MOTD)
 
 Branch count: 171  
 Document count: 171  
-Index: geneve-ut-1194
+Index: geneve-ut-1214
 
 ```python
 process where event.type == "start" and host.os.type == "linux" and event.action in ("exec", "exec_event", "start") and
@@ -17302,7 +17458,7 @@ not (
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1197
+Index: geneve-ut-1217
 
 ```python
 process where event.type == "start" and event.action in ("exec", "exec_event", "executed", "process_started") and
@@ -17315,7 +17471,7 @@ process.name : "* "
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1198
+Index: geneve-ut-1218
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -17347,7 +17503,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-1199
+Index: geneve-ut-1219
 
 ```python
 process where event.action == "exec" and host.os.type == "macos" and
@@ -17371,7 +17527,7 @@ process where event.action == "exec" and host.os.type == "macos" and
 
 Branch count: 17  
 Document count: 17  
-Index: geneve-ut-1200
+Index: geneve-ut-1220
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -17385,7 +17541,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-1201
+Index: geneve-ut-1221
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.name : ("ssh.exe", "sftp.exe") and
@@ -17399,7 +17555,7 @@ process where host.os.type == "windows" and event.type == "start" and process.na
 
 Branch count: 72  
 Document count: 72  
-Index: geneve-ut-1202
+Index: geneve-ut-1222
 
 ```python
 process where host.os.type == "linux" and  event.type == "start" and event.action == "exec" and process.parent.name == "busybox" and
@@ -17428,7 +17584,7 @@ not (
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1203
+Index: geneve-ut-1223
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -17442,7 +17598,7 @@ process.name == "proxychains"
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-1204
+Index: geneve-ut-1224
 
 ```python
 sequence by process.entity_id
@@ -17466,7 +17622,7 @@ sequence by process.entity_id
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1205
+Index: geneve-ut-1225
 
 ```python
 file where host.os.type == "linux" and event.action == "creation" and file.extension == "pth" and
@@ -17503,7 +17659,7 @@ file.path like (
 
 Branch count: 7  
 Document count: 7  
-Index: geneve-ut-1206
+Index: geneve-ut-1226
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and process.executable != null and
@@ -17536,7 +17692,7 @@ file.path like (
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1207
+Index: geneve-ut-1227
 
 ```python
 file where event.action == "extended_attributes_delete" and host.os.type == "macos" and process.executable != null and
@@ -17555,7 +17711,7 @@ file where event.action == "extended_attributes_delete" and host.os.type == "mac
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1210
+Index: geneve-ut-1230
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -17583,7 +17739,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-1211
+Index: geneve-ut-1231
 
 ```python
 sequence by process.entity_id with maxspan=1m
@@ -17598,7 +17754,7 @@ sequence by process.entity_id with maxspan=1m
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1215
+Index: geneve-ut-1235
 
 ```python
 event.kind : alert and event.code : ransomware and (event.type : allowed or (event.type: denied and event.outcome: failure))
@@ -17610,7 +17766,7 @@ event.kind : alert and event.code : ransomware and (event.type : allowed or (eve
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1216
+Index: geneve-ut-1236
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:detection and (event.action:ransomware_event or endgame.event_subtype_full:ransomware_event)
@@ -17622,7 +17778,7 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:detection an
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1217
+Index: geneve-ut-1237
 
 ```python
 event.kind : alert and event.code : ransomware and event.type : denied and event.outcome : success
@@ -17634,7 +17790,7 @@ event.kind : alert and event.code : ransomware and event.type : denied and event
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1218
+Index: geneve-ut-1238
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:prevention and (event.action:ransomware_event or endgame.event_subtype_full:ransomware_event)
@@ -17646,7 +17802,7 @@ event.kind:alert and event.module:endgame and endgame.metadata.type:prevention a
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1228
+Index: geneve-ut-1248
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -17659,7 +17815,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1229
+Index: geneve-ut-1249
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -17697,7 +17853,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-1231
+Index: geneve-ut-1251
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -17712,7 +17868,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1232
+Index: geneve-ut-1252
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -17731,7 +17887,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 48  
 Document count: 96  
-Index: geneve-ut-1233
+Index: geneve-ut-1253
 
 ```python
 sequence with maxspan=1m
@@ -17774,7 +17930,7 @@ sequence with maxspan=1m
 
 Branch count: 22  
 Document count: 22  
-Index: geneve-ut-1235
+Index: geneve-ut-1255
 
 ```python
 file where host.os.type == "windows" and event.type == "creation" and process.name : "TeamViewer.exe" and
@@ -17797,7 +17953,7 @@ file where host.os.type == "windows" and event.type == "creation" and process.na
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1237
+Index: geneve-ut-1257
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -17811,7 +17967,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1238
+Index: geneve-ut-1258
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -17825,7 +17981,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 8  
 Document count: 16  
-Index: geneve-ut-1240
+Index: geneve-ut-1260
 
 ```python
 sequence by host.id, process.entity_id
@@ -17841,7 +17997,7 @@ sequence by host.id, process.entity_id
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1241
+Index: geneve-ut-1261
 
 ```python
 process where event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
@@ -17855,7 +18011,7 @@ process where event.type == "start" and event.action in ("exec", "exec_event", "
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1242
+Index: geneve-ut-1262
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -17872,7 +18028,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-1243
+Index: geneve-ut-1263
 
 ```python
 /* Task Scheduler service incoming connection followed by TaskCache registry modification  */
@@ -17892,7 +18048,7 @@ sequence by host.id, process.entity_id with maxspan = 1m
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1244
+Index: geneve-ut-1264
 
 ```python
 iam where host.os.type == "windows" and event.action == "scheduled-task-created" and
@@ -17905,7 +18061,7 @@ iam where host.os.type == "windows" and event.action == "scheduled-task-created"
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-1246
+Index: geneve-ut-1266
 
 ```python
 sequence by winlog.logon.id, winlog.computer_name with maxspan=1m
@@ -17947,7 +18103,7 @@ sequence by winlog.logon.id, winlog.computer_name with maxspan=1m
 
 Branch count: 16  
 Document count: 32  
-Index: geneve-ut-1247
+Index: geneve-ut-1267
 
 ```python
 sequence with maxspan=1m
@@ -17970,7 +18126,7 @@ sequence with maxspan=1m
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-1248
+Index: geneve-ut-1268
 
 ```python
 sequence with maxspan=1s
@@ -18018,7 +18174,7 @@ sequence with maxspan=1s
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1249
+Index: geneve-ut-1269
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -18035,7 +18191,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 5  
 Document count: 5  
-Index: geneve-ut-1251
+Index: geneve-ut-1271
 
 ```python
 event.category:file and host.os.type:linux and event.type:change and 
@@ -18064,7 +18220,7 @@ not (
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1252
+Index: geneve-ut-1272
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start") and
@@ -18092,7 +18248,7 @@ process.name in ("update-ca-trust", "update-ca-certificates") and not (
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-1253
+Index: geneve-ut-1273
 
 ```python
 sequence by host.id, process.entry_leader.entity_id with maxspan=30s
@@ -18109,7 +18265,7 @@ sequence by host.id, process.entry_leader.entity_id with maxspan=30s
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-1254
+Index: geneve-ut-1274
 
 ```python
 (event.dataset: (network_traffic.http or network_traffic.tls) or
@@ -18156,7 +18312,7 @@ Index: geneve-ut-1254
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1255
+Index: geneve-ut-1275
 
 ```python
 file where host.os.type == "linux" and event.action in ("creation", "file_create_event", "rename", "file_rename_event")
@@ -18175,7 +18331,7 @@ and file.path : "/etc/selinux/config" and not (
 
 Branch count: 32  
 Document count: 32  
-Index: geneve-ut-1256
+Index: geneve-ut-1276
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and registry.value : ("Dll", "$Dll") and
@@ -18196,7 +18352,7 @@ registry where host.os.type == "windows" and event.type == "change" and registry
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1259
+Index: geneve-ut-1279
 
 ```python
 (event.dataset: (network_traffic.flow or zeek.smtp) or event.category:(network or network_traffic)) and network.transport:tcp and destination.port:26
@@ -18208,7 +18364,7 @@ Index: geneve-ut-1259
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1260
+Index: geneve-ut-1280
 
 ```python
 file where host.os.type == "linux" and event.type in ("change", "creation") and
@@ -18222,7 +18378,7 @@ process.interactive == true and container.id like "*"
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1262
+Index: geneve-ut-1282
 
 ```python
 file where host.os.type == "linux" and event.type == "deletion" and file.name in ("authorized_keys", "authorized_keys2") and
@@ -18241,7 +18397,7 @@ not (
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1263
+Index: geneve-ut-1283
 
 ```python
 file where host.os.type == "linux" and event.action in ("creation", "file_create_event") and
@@ -18255,7 +18411,7 @@ not file.name : "known_hosts.*"
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1264
+Index: geneve-ut-1284
 
 ```python
 file where host.os.type == "linux" and event.type == "deletion" and process.executable != null and
@@ -18275,7 +18431,7 @@ not (
 
 Branch count: 36  
 Document count: 36  
-Index: geneve-ut-1266
+Index: geneve-ut-1286
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -18293,7 +18449,7 @@ process.name == "find" and process.args : "-perm" and process.args : (
 
 Branch count: 60  
 Document count: 120  
-Index: geneve-ut-1268
+Index: geneve-ut-1288
 
 ```python
 sequence by host.id with maxspan = 30s
@@ -18314,7 +18470,7 @@ sequence by host.id with maxspan = 30s
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1270
+Index: geneve-ut-1290
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -18328,7 +18484,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 9  
 Document count: 9  
-Index: geneve-ut-1271
+Index: geneve-ut-1291
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -18343,7 +18499,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 27  
 Document count: 27  
-Index: geneve-ut-1272
+Index: geneve-ut-1292
 
 ```python
 file where host.os.type == "macos" and event.action == "modification" and
@@ -18384,7 +18540,7 @@ file where host.os.type == "macos" and event.action == "modification" and
 
 Branch count: 9  
 Document count: 18  
-Index: geneve-ut-1274
+Index: geneve-ut-1294
 
 ```python
 sequence by process.entity_id with maxspan=1m
@@ -18409,7 +18565,7 @@ sequence by process.entity_id with maxspan=1m
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1275
+Index: geneve-ut-1295
 
 ```python
 any where host.os.type == "windows" and event.provider: "Microsoft-Windows-Security-Auditing" and
@@ -18448,7 +18604,7 @@ any where host.os.type == "windows" and event.provider: "Microsoft-Windows-Secur
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1276
+Index: geneve-ut-1296
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -18462,7 +18618,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 672  
 Document count: 672  
-Index: geneve-ut-1277
+Index: geneve-ut-1297
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -18496,7 +18652,7 @@ process.args like (
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1278
+Index: geneve-ut-1298
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -18510,7 +18666,7 @@ process.args : "/namespace:\\\\root\\SecurityCenter2" and process.args : "Get"
 
 Branch count: 480  
 Document count: 480  
-Index: geneve-ut-1279
+Index: geneve-ut-1299
 
 ```python
 process where event.type == "start" and
@@ -18582,7 +18738,7 @@ process.name : ("grep", "egrep", "pgrep") and user.id != "0" and
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1281
+Index: geneve-ut-1301
 
 ```python
 event.code : "4719" and host.os.type : "windows" and
@@ -18603,7 +18759,7 @@ event.code : "4719" and host.os.type : "windows" and
 
 Branch count: 33  
 Document count: 66  
-Index: geneve-ut-1282
+Index: geneve-ut-1302
 
 ```python
 sequence by process.entity_id with maxspan=30s
@@ -18624,7 +18780,7 @@ sequence by process.entity_id with maxspan=30s
 
 Branch count: 60  
 Document count: 60  
-Index: geneve-ut-1285
+Index: geneve-ut-1305
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -18641,7 +18797,7 @@ process.command_line like~ (
 
 Branch count: 42  
 Document count: 42  
-Index: geneve-ut-1287
+Index: geneve-ut-1307
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -18659,7 +18815,7 @@ process.command_line like~ (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1288
+Index: geneve-ut-1308
 
 ```python
 event.code:4704 and host.os.type:"windows" and winlog.event_data.PrivilegeList:"SeEnableDelegationPrivilege"
@@ -18671,7 +18827,7 @@ event.code:4704 and host.os.type:"windows" and winlog.event_data.PrivilegeList:"
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1289
+Index: geneve-ut-1309
 
 ```python
 file where host.os.type == "windows" and 
@@ -18692,7 +18848,7 @@ file where host.os.type == "windows" and
 
 Branch count: 37  
 Document count: 37  
-Index: geneve-ut-1292
+Index: geneve-ut-1312
 
 ```python
 any where host.os.type == "linux" and process.interactive == true and container.id like "*" and (
@@ -18724,7 +18880,7 @@ any where host.os.type == "linux" and process.interactive == true and container.
 
 Branch count: 74  
 Document count: 74  
-Index: geneve-ut-1294
+Index: geneve-ut-1314
 
 ```python
 any where host.os.type == "linux" and process.interactive == true and container.id like "*" and (
@@ -18760,7 +18916,7 @@ any where host.os.type == "linux" and process.interactive == true and container.
 
 Branch count: 16  
 Document count: 32  
-Index: geneve-ut-1295
+Index: geneve-ut-1315
 
 ```python
 sequence by process.entity_id with maxspan = 1m
@@ -18777,7 +18933,7 @@ sequence by process.entity_id with maxspan = 1m
 
 Branch count: 96  
 Document count: 96  
-Index: geneve-ut-1296
+Index: geneve-ut-1316
 
 ```python
 /* This rule is not compatible with Sysmon due to user.id issues */
@@ -18797,7 +18953,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 10  
 Document count: 10  
-Index: geneve-ut-1298
+Index: geneve-ut-1318
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -18812,7 +18968,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1299
+Index: geneve-ut-1319
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -18833,7 +18989,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1300
+Index: geneve-ut-1320
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -18856,7 +19012,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1301
+Index: geneve-ut-1321
 
 ```python
 process where event.type == "start" and process.name : "sc.exe" and
@@ -18869,7 +19025,7 @@ process where event.type == "start" and process.name : "sc.exe" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1302
+Index: geneve-ut-1322
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -18886,7 +19042,7 @@ process.name == "setcap" and process.args : "cap_set?id+ep" and not (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1304
+Index: geneve-ut-1324
 
 ```python
 file where host.os.type == "linux" and event.type == "change" and event.action == "rename" and
@@ -18911,7 +19067,7 @@ not (
 
 Branch count: 60  
 Document count: 60  
-Index: geneve-ut-1306
+Index: geneve-ut-1326
 
 ```python
 any where host.os.type == "linux" and event.category in ("file", "process") and process.interactive == true and container.id like "?*" and (
@@ -18942,7 +19098,7 @@ any where host.os.type == "linux" and event.category in ("file", "process") and 
 
 Branch count: 140  
 Document count: 140  
-Index: geneve-ut-1307
+Index: geneve-ut-1327
 
 ```python
 file where host.os.type == "linux" and event.action == "creation" and file.path : (
@@ -18991,7 +19147,7 @@ file where host.os.type == "linux" and event.action == "creation" and file.path 
 
 Branch count: 60  
 Document count: 120  
-Index: geneve-ut-1308
+Index: geneve-ut-1328
 
 ```python
 sequence by host.id with maxspan=10s
@@ -19005,7 +19161,7 @@ sequence by host.id with maxspan=10s
 
 Branch count: 162  
 Document count: 162  
-Index: geneve-ut-1309
+Index: geneve-ut-1329
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and file.extension == "lnk" and
@@ -19027,7 +19183,7 @@ file where host.os.type == "windows" and event.type != "deletion" and file.exten
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1310
+Index: geneve-ut-1330
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -19048,7 +19204,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1313
+Index: geneve-ut-1333
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -19062,7 +19218,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-1314
+Index: geneve-ut-1334
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and registry.value : "Start" and
@@ -19085,7 +19241,7 @@ registry where host.os.type == "windows" and event.type == "change" and registry
 
 Branch count: 12  
 Document count: 24  
-Index: geneve-ut-1342
+Index: geneve-ut-1362
 
 ```python
 sequence by host.id, process.entity_id with maxspan=5s
@@ -19110,7 +19266,7 @@ sequence by host.id, process.entity_id with maxspan=5s
 
 Branch count: 36  
 Document count: 36  
-Index: geneve-ut-1343
+Index: geneve-ut-1363
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and
@@ -19143,7 +19299,7 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 Branch count: 40  
 Document count: 40  
-Index: geneve-ut-1344
+Index: geneve-ut-1364
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and 
@@ -19202,7 +19358,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1346
+Index: geneve-ut-1366
 
 ```python
 beacon_stats.is_beaconing: true and
@@ -19220,7 +19376,7 @@ not process.name: ("WaAppAgent.exe" or "metricbeat.exe" or "packetbeat.exe" or "
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1347
+Index: geneve-ut-1367
 
 ```python
 beacon_stats.beaconing_score: 3
@@ -19232,7 +19388,7 @@ beacon_stats.beaconing_score: 3
 
 Branch count: 2  
 Document count: 6  
-Index: geneve-ut-1348
+Index: geneve-ut-1368
 
 ```python
 sequence by user.name with maxspan=12h
@@ -19247,7 +19403,7 @@ sequence by user.name with maxspan=12h
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1349
+Index: geneve-ut-1369
 
 ```python
 file where host.os.type == "macos" and event.action == "modification" and file.extension == "py" and
@@ -19272,7 +19428,7 @@ file where host.os.type == "macos" and event.action == "modification" and file.e
 
 Branch count: 32  
 Document count: 32  
-Index: geneve-ut-1354
+Index: geneve-ut-1374
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -19287,7 +19443,7 @@ process where host.os.type == "linux" and event.type == "start" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1355
+Index: geneve-ut-1375
 
 ```python
 file where host.os.type in ("linux", "macos") and event.type in ("creation", "change") and
@@ -19310,7 +19466,7 @@ file.path like ("/etc/sudoers*", "/private/etc/sudoers*") and not (
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-1356
+Index: geneve-ut-1376
 
 ```python
 sequence by source.port, source.ip, destination.ip with maxspan=5s
@@ -19329,7 +19485,7 @@ sequence by source.port, source.ip, destination.ip with maxspan=5s
 
 Branch count: 16  
 Document count: 16  
-Index: geneve-ut-1358
+Index: geneve-ut-1378
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -19343,7 +19499,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-1360
+Index: geneve-ut-1380
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -19365,7 +19521,7 @@ not (
 
 Branch count: 8  
 Document count: 16  
-Index: geneve-ut-1362
+Index: geneve-ut-1382
 
 ```python
 sequence by host.id with maxspan=5s
@@ -19392,7 +19548,7 @@ sequence by host.id with maxspan=5s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1365
+Index: geneve-ut-1385
 
 ```python
 event.dataset:okta.system and event.action:user.account.report_suspicious_activity_by_enduser
@@ -19404,7 +19560,7 @@ event.dataset:okta.system and event.action:user.account.report_suspicious_activi
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1366
+Index: geneve-ut-1386
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and file.path != null and
@@ -19441,7 +19597,7 @@ file where host.os.type == "windows" and event.type != "deletion" and file.path 
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1367
+Index: geneve-ut-1387
 
 ```python
 file where host.os.type == "macos" and event.type != "deletion" and
@@ -19464,7 +19620,7 @@ file where host.os.type == "macos" and event.type != "deletion" and
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-1368
+Index: geneve-ut-1388
 
 ```python
 sequence by host.id, process.entity_id with maxspan=15s
@@ -19478,7 +19634,7 @@ sequence by host.id, process.entity_id with maxspan=15s
 
 Branch count: 518  
 Document count: 518  
-Index: geneve-ut-1369
+Index: geneve-ut-1389
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -19494,7 +19650,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1370
+Index: geneve-ut-1390
 
 ```python
 file where host.os.type == "macos" and event.action == "modification" and
@@ -19510,7 +19666,7 @@ file where host.os.type == "macos" and event.action == "modification" and
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-1371
+Index: geneve-ut-1391
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -19524,7 +19680,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1373
+Index: geneve-ut-1393
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -19547,7 +19703,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 5  
 Document count: 5  
-Index: geneve-ut-1374
+Index: geneve-ut-1394
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -19562,7 +19718,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 22  
 Document count: 44  
-Index: geneve-ut-1375
+Index: geneve-ut-1395
 
 ```python
 sequence by process.entity_id with maxspan=15s
@@ -19589,7 +19745,7 @@ sequence by process.entity_id with maxspan=15s
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1377
+Index: geneve-ut-1397
 
 ```python
 process where host.os.type == "linux" and event.action in ("exec", "exec_event", "start", "ProcessRollup2") and
@@ -19605,7 +19761,7 @@ not (process.parent.name in ("sh", "sudo") and ?process.parent.command_line : "*
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1378
+Index: geneve-ut-1398
 
 ```python
 file where host.os.type == "macos" and event.type != "deletion" and process.name != null and
@@ -19618,7 +19774,7 @@ file where host.os.type == "macos" and event.type != "deletion" and process.name
 
 Branch count: 8  
 Document count: 16  
-Index: geneve-ut-1380
+Index: geneve-ut-1400
 
 ```python
 sequence by process.entity_id with maxspan=15s
@@ -19634,7 +19790,7 @@ sequence by process.entity_id with maxspan=15s
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-1381
+Index: geneve-ut-1401
 
 ```python
 process where host.os.type == "macos" and event.type == "start" and event.action == "exec" and
@@ -19650,7 +19806,7 @@ process where host.os.type == "macos" and event.type == "start" and event.action
 
 Branch count: 83  
 Document count: 83  
-Index: geneve-ut-1382
+Index: geneve-ut-1402
 
 ```python
 any where host.os.type == "windows" and 
@@ -19717,7 +19873,7 @@ any where host.os.type == "windows" and
 
 Branch count: 30  
 Document count: 30  
-Index: geneve-ut-1384
+Index: geneve-ut-1404
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started")
@@ -19733,7 +19889,7 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 Branch count: 44  
 Document count: 44  
-Index: geneve-ut-1386
+Index: geneve-ut-1406
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -19769,7 +19925,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1387
+Index: geneve-ut-1407
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -19807,7 +19963,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 352  
 Document count: 352  
-Index: geneve-ut-1388
+Index: geneve-ut-1408
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start", "ProcessRollup2") and
@@ -19842,7 +19998,7 @@ process.parent.name in ("foomatic-rip", "cupsd") and process.command_line like (
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1389
+Index: geneve-ut-1409
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -19876,7 +20032,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 70  
 Document count: 70  
-Index: geneve-ut-1390
+Index: geneve-ut-1411
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.executable : "C:\\*" and
@@ -19897,7 +20053,7 @@ process where host.os.type == "windows" and event.type == "start" and process.ex
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-1395
+Index: geneve-ut-1416
 
 ```python
 process where host.os.type == "windows" and event.type : "start" and
@@ -19925,7 +20081,7 @@ process where host.os.type == "windows" and event.type : "start" and
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-1396
+Index: geneve-ut-1417
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -19947,7 +20103,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-1397
+Index: geneve-ut-1418
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -19971,7 +20127,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1398
+Index: geneve-ut-1419
 
 ```python
 file where host.os.type == "linux" and event.action in ("creation", "file_create_event") and
@@ -19992,7 +20148,7 @@ process.name : "kworker*" and not (
 
 Branch count: 84  
 Document count: 84  
-Index: geneve-ut-1401
+Index: geneve-ut-1422
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -20007,7 +20163,7 @@ process.args like ("/dev/shm/*", "/tmp/*", "/var/tmp/*", "/run/*", "/var/run/*",
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1404
+Index: geneve-ut-1425
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -20020,7 +20176,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 30  
 Document count: 30  
-Index: geneve-ut-1405
+Index: geneve-ut-1426
 
 ```python
 any where host.os.type == "windows" and
@@ -20035,7 +20191,7 @@ any where host.os.type == "windows" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1406
+Index: geneve-ut-1427
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -20051,7 +20207,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 16  
 Document count: 32  
-Index: geneve-ut-1407
+Index: geneve-ut-1428
 
 ```python
 sequence by host.id, process.entity_id with maxspan=15s
@@ -20065,7 +20221,7 @@ sequence by host.id, process.entity_id with maxspan=15s
 
 Branch count: 405  
 Document count: 405  
-Index: geneve-ut-1409
+Index: geneve-ut-1430
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and process.interactive == true and
@@ -20122,7 +20278,7 @@ process.parent.executable != null and (
 
 Branch count: 4  
 Document count: 8  
-Index: geneve-ut-1411
+Index: geneve-ut-1432
 
 ```python
 sequence by source.port, source.ip with maxspan=3s
@@ -20145,7 +20301,7 @@ sequence by source.port, source.ip with maxspan=3s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1413
+Index: geneve-ut-1434
 
 ```python
 process where host.os.type == "linux" and event.action == "session_id_change" and process.name : "kworker*" and
@@ -20158,7 +20314,7 @@ user.id == "0"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1414
+Index: geneve-ut-1435
 
 ```python
 process where host.os.type == "windows" and event.code == "10" and
@@ -20177,7 +20333,7 @@ process where host.os.type == "windows" and event.code == "10" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1415
+Index: geneve-ut-1436
 
 ```python
 process where host.os.type == "windows" and event.code == "10" and
@@ -20223,7 +20379,7 @@ process where host.os.type == "windows" and event.code == "10" and
 
 Branch count: 52  
 Document count: 52  
-Index: geneve-ut-1417
+Index: geneve-ut-1438
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -20244,7 +20400,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1418
+Index: geneve-ut-1439
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and
@@ -20264,7 +20420,7 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 Branch count: 72  
 Document count: 72  
-Index: geneve-ut-1419
+Index: geneve-ut-1440
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -20278,7 +20434,7 @@ process.name in ("grep", "egrep", "fgrep", "rgrep") and process.args in ("[stack
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1420
+Index: geneve-ut-1441
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -20310,7 +20466,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1422
+Index: geneve-ut-1443
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -20327,7 +20483,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-1423
+Index: geneve-ut-1444
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and event.action in ("creation", "file_create_event") and (
@@ -20348,7 +20504,7 @@ file where host.os.type == "linux" and event.type == "creation" and event.action
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1425
+Index: geneve-ut-1446
 
 ```python
 any where event.category in ("library", "driver") and host.os.type == "windows" and
@@ -20428,7 +20584,7 @@ any where event.category in ("library", "driver") and host.os.type == "windows" 
 
 Branch count: 34  
 Document count: 68  
-Index: geneve-ut-1428
+Index: geneve-ut-1449
 
 ```python
 sequence by host.id with maxspan=5s
@@ -20476,7 +20632,7 @@ sequence by host.id with maxspan=5s
 
 Branch count: 2  
 Document count: 4  
-Index: geneve-ut-1431
+Index: geneve-ut-1452
 
 ```python
 sequence by process.entity_id with maxspan=1m
@@ -20502,7 +20658,7 @@ sequence by process.entity_id with maxspan=1m
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1432
+Index: geneve-ut-1453
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -20547,7 +20703,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 212  
 Document count: 212  
-Index: geneve-ut-1433
+Index: geneve-ut-1454
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -20571,7 +20727,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-1434
+Index: geneve-ut-1455
 
 ```python
 sequence by host.id, process.parent.pid with maxspan=1m
@@ -20587,7 +20743,7 @@ sequence by host.id, process.parent.pid with maxspan=1m
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1436
+Index: geneve-ut-1457
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and process.name == "mount" and 
@@ -20612,7 +20768,7 @@ not (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1437
+Index: geneve-ut-1458
 
 ```python
 event.category:process and host.os.type:windows and
@@ -20627,7 +20783,7 @@ event.category:process and host.os.type:windows and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1440
+Index: geneve-ut-1461
 
 ```python
 file where host.os.type == "windows" and event.type == "deletion" and
@@ -20641,7 +20797,7 @@ file where host.os.type == "windows" and event.type == "deletion" and
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-1441
+Index: geneve-ut-1462
 
 ```python
 sequence by host.id with maxspan=30s
@@ -20661,7 +20817,7 @@ sequence by host.id with maxspan=30s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1442
+Index: geneve-ut-1463
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and
@@ -20696,7 +20852,7 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 Branch count: 9  
 Document count: 9  
-Index: geneve-ut-1446
+Index: geneve-ut-1467
 
 ```python
 process where event.type == "start" and event.action == "exec" and process.interactive == true and (
@@ -20714,7 +20870,7 @@ process where event.type == "start" and event.action == "exec" and process.inter
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1447
+Index: geneve-ut-1468
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -20727,7 +20883,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-1448
+Index: geneve-ut-1469
 
 ```python
 any where host.os.type == "windows" and
@@ -20760,7 +20916,7 @@ any where host.os.type == "windows" and
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-1450
+Index: geneve-ut-1471
 
 ```python
 sequence by winlog.computer_name, winlog.event_data.SubjectLogonId with maxspan=1m
@@ -20778,7 +20934,7 @@ sequence by winlog.computer_name, winlog.event_data.SubjectLogonId with maxspan=
 
 Branch count: 10  
 Document count: 10  
-Index: geneve-ut-1451
+Index: geneve-ut-1472
 
 ```python
 file where host.os.type == "linux" and event.action == "rename" and (
@@ -20800,7 +20956,7 @@ and not (
 
 Branch count: 152  
 Document count: 152  
-Index: geneve-ut-1453
+Index: geneve-ut-1474
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -20830,7 +20986,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1454
+Index: geneve-ut-1475
 
 ```python
 any where host.os.type == "windows" and
@@ -20864,7 +21020,7 @@ any where host.os.type == "windows" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1455
+Index: geneve-ut-1476
 
 ```python
 event.category:iam and host.os.type:"windows" and event.code:"4674" and
@@ -20878,7 +21034,7 @@ winlog.event_data.AccessMask:"512" and not winlog.event_data.SubjectUserSid:("S-
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1457
+Index: geneve-ut-1478
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -20909,7 +21065,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1458
+Index: geneve-ut-1479
 
 ```python
 any where host.os.type == "windows" and
@@ -20929,7 +21085,7 @@ any where host.os.type == "windows" and
 
 Branch count: 32  
 Document count: 32  
-Index: geneve-ut-1459
+Index: geneve-ut-1480
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -20970,7 +21126,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1460
+Index: geneve-ut-1481
 
 ```python
 file where host.os.type == "macos" and event.type != "deletion" and 
@@ -20986,7 +21142,7 @@ file where host.os.type == "macos" and event.type != "deletion" and
 
 Branch count: 918  
 Document count: 918  
-Index: geneve-ut-1461
+Index: geneve-ut-1482
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -21016,7 +21172,7 @@ process.name == "ln" and process.args in ("-s", "-sf") and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1465
+Index: geneve-ut-1486
 
 ```python
 process where host.os.type == "linux" and event.type == "end" and process.name in ("vmware-vmx", "vmx")
@@ -21029,7 +21185,7 @@ and process.parent.name == "kill"
 
 Branch count: 160  
 Document count: 160  
-Index: geneve-ut-1466
+Index: geneve-ut-1487
 
 ```python
 process where host.os.type == "windows" and event.action == "start" and
@@ -21053,7 +21209,7 @@ process where host.os.type == "windows" and event.action == "start" and
 
 Branch count: 204  
 Document count: 204  
-Index: geneve-ut-1468
+Index: geneve-ut-1489
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -21071,7 +21227,7 @@ process.name == "proxychains" and process.args : (
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1469
+Index: geneve-ut-1490
 
 ```python
 any where host.os.type == "windows" and
@@ -21090,7 +21246,7 @@ any where host.os.type == "windows" and
 
 Branch count: 30  
 Document count: 30  
-Index: geneve-ut-1470
+Index: geneve-ut-1491
 
 ```python
 any where host.os.type == "windows" and
@@ -21105,7 +21261,7 @@ any where host.os.type == "windows" and
 
 Branch count: 48  
 Document count: 96  
-Index: geneve-ut-1471
+Index: geneve-ut-1492
 
 ```python
 sequence by process.entity_id with maxspan = 2m
@@ -21123,7 +21279,7 @@ sequence by process.entity_id with maxspan = 2m
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-1472
+Index: geneve-ut-1493
 
 ```python
 file where event.action == "open" and host.os.type == "macos" and process.executable != null and
@@ -21144,7 +21300,7 @@ file where event.action == "open" and host.os.type == "macos" and process.execut
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1473
+Index: geneve-ut-1494
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -21163,7 +21319,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 231  
 Document count: 231  
-Index: geneve-ut-1475
+Index: geneve-ut-1496
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -21274,7 +21430,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1476
+Index: geneve-ut-1497
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -21287,7 +21443,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 5  
-Index: geneve-ut-1478
+Index: geneve-ut-1499
 
 ```python
 sequence by host.hostname, host.id with maxspan=1m
@@ -21300,7 +21456,7 @@ sequence by host.hostname, host.id with maxspan=1m
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-1480
+Index: geneve-ut-1501
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -21323,7 +21479,7 @@ process.parent.name in ("bash", "dash", "ash", "sh", "tcsh", "csh", "zsh", "ksh"
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1482
+Index: geneve-ut-1503
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -21342,7 +21498,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-1483
+Index: geneve-ut-1504
 
 ```python
 file where host.os.type == "linux" and event.action in ("rename", "creation") and process.name in ("cp", "mv") and
@@ -21364,7 +21520,7 @@ file.Ext.original.path : (
 
 Branch count: 54  
 Document count: 54  
-Index: geneve-ut-1484
+Index: geneve-ut-1505
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and process.name == "chmod" and
@@ -21397,7 +21553,7 @@ process.args in ("4755", "755", "000", "777", "444", "+x") and not (
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-1486
+Index: geneve-ut-1507
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -21415,7 +21571,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 32  
 Document count: 32  
-Index: geneve-ut-1487
+Index: geneve-ut-1508
 
 ```python
 process where event.type == "start" and event.action in ("exec", "exec_event", "executed", "process_started") and
@@ -21429,7 +21585,7 @@ not ?process.working_directory in ("/opt/SolarWinds/Agent/bin/Plugins/SCM", "/op
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1488
+Index: geneve-ut-1509
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -21453,7 +21609,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-1489
+Index: geneve-ut-1510
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start") and
@@ -21476,7 +21632,7 @@ process.parent.args == "-c" and not (
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-1490
+Index: geneve-ut-1511
 
 ```python
 file where host.os.type == "linux" and event.type == "deletion" and file.path in (
@@ -21495,7 +21651,7 @@ file where host.os.type == "linux" and event.type == "deletion" and file.path in
 
 Branch count: 54  
 Document count: 54  
-Index: geneve-ut-1493
+Index: geneve-ut-1514
 
 ```python
 file where host.os.type == "linux" and event.type == "creation" and process.interactive == true and
@@ -21514,7 +21670,7 @@ file.path like (
 
 Branch count: 14  
 Document count: 14  
-Index: geneve-ut-1495
+Index: geneve-ut-1516
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.parent.executable != null and
@@ -21549,7 +21705,7 @@ process where host.os.type == "windows" and event.type == "start" and process.pa
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1496
+Index: geneve-ut-1517
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -21566,7 +21722,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1497
+Index: geneve-ut-1518
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -21586,7 +21742,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 128  
 Document count: 128  
-Index: geneve-ut-1498
+Index: geneve-ut-1519
 
 ```python
 file where host.os.type == "linux" and event.action in ("creation", "file_create_event", "rename", "file_rename_event")
@@ -21626,7 +21782,7 @@ and file.path like "/etc/init.d/*" and not (
 
 Branch count: 10  
 Document count: 10  
-Index: geneve-ut-1499
+Index: geneve-ut-1520
 
 ```python
 file where host.os.type == "macos" and event.action == "open" and 
@@ -21642,7 +21798,7 @@ file where host.os.type == "macos" and event.action == "open" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1500
+Index: geneve-ut-1521
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -21656,7 +21812,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-1501
+Index: geneve-ut-1522
 
 ```python
 file where host.os.type == "linux" and event.action in ("rename", "creation") and file.path : (
@@ -21694,7 +21850,7 @@ file where host.os.type == "linux" and event.action in ("rename", "creation") an
 
 Branch count: 80  
 Document count: 80  
-Index: geneve-ut-1502
+Index: geneve-ut-1523
 
 ```python
 file where host.os.type == "linux" and event.action in ("rename", "creation") and file.path : (
@@ -21748,7 +21904,7 @@ file where host.os.type == "linux" and event.action in ("rename", "creation") an
 
 Branch count: 7  
 Document count: 7  
-Index: geneve-ut-1504
+Index: geneve-ut-1525
 
 ```python
 process where host.os.type == "linux" and event.type == "info" and event.action == "already_running" and
@@ -21762,7 +21918,7 @@ process.parent.command_line == "/sbin/init" and process.args_count >= 2
 
 Branch count: 80  
 Document count: 80  
-Index: geneve-ut-1505
+Index: geneve-ut-1526
 
 ```python
 file where host.os.type == "linux" and event.action in ("rename", "creation") and file.path : (
@@ -21808,7 +21964,7 @@ file where host.os.type == "linux" and event.action in ("rename", "creation") an
 
 Branch count: 10  
 Document count: 10  
-Index: geneve-ut-1506
+Index: geneve-ut-1527
 
 ```python
 file where host.os.type == "linux" and event.action == "creation" and
@@ -21847,7 +22003,7 @@ file.path like (
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1507
+Index: geneve-ut-1528
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and process.name == "mount_apfs" and
@@ -21860,7 +22016,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 180  
 Document count: 180  
-Index: geneve-ut-1510
+Index: geneve-ut-1531
 
 ```python
 process where event.action in ("exec", "exec_event", "executed", "process_started") and event.type == "start" and
@@ -21893,7 +22049,7 @@ process where event.action in ("exec", "exec_event", "executed", "process_starte
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1511
+Index: geneve-ut-1532
 
 ```python
 process where host.os.type in ("linux", "macos") and event.type == "start" and event.action == "exec" and
@@ -21905,13 +22061,13 @@ not process.env_vars like~ "RUNNER_TRACKING_ID=github_*"
 
 ### Telnet Authentication Bypass via User Environment Variable
 
-Branch count: 4  
-Document count: 8  
-Index: geneve-ut-1512
+Branch count: 8  
+Document count: 16  
+Index: geneve-ut-1533
 
 ```python
 sequence by host.id with maxspan=1s
- [process where host.os.type == "linux" and event.type == "start" and event.action in ("process_started", "executed") and process.name == "telnetd"] by process.pid
+ [process where host.os.type == "linux" and event.type == "start" and event.action in ("process_started", "executed") and process.name in ("telnetd", "xinetd")] by process.pid
  [process where host.os.type == "linux" and event.type == "start" and event.action in ("process_started", "executed") and process.name == "login" and process.args : "-*f*"] by process.parent.pid
 ```
 
@@ -21921,7 +22077,7 @@ sequence by host.id with maxspan=1s
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-1513
+Index: geneve-ut-1534
 
 ```python
 sequence by winlog.computer_name, winlog.event_data.TaskName with maxspan=5m
@@ -21935,7 +22091,7 @@ sequence by winlog.computer_name, winlog.event_data.TaskName with maxspan=5m
 
 Branch count: 30  
 Document count: 30  
-Index: geneve-ut-1514
+Index: geneve-ut-1535
 
 ```python
 file where host.os.type == "windows" and event.type == "deletion" and
@@ -21974,7 +22130,7 @@ file where host.os.type == "windows" and event.type == "deletion" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1520
+Index: geneve-ut-1541
 
 ```python
 process where event.type == "start" and event.action == "exec" and process.name == "touch" and
@@ -22016,7 +22172,7 @@ process.parent.executable != null and process.args like (
 
 Branch count: 325  
 Document count: 325  
-Index: geneve-ut-1522
+Index: geneve-ut-1543
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and process.interactive == true and (
@@ -22038,7 +22194,7 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1523
+Index: geneve-ut-1544
 
 ```python
 process where event.type == "start" and event.action in ("exec", "exec_event", "executed", "process_started") and
@@ -22051,7 +22207,7 @@ process.name == "trap" and process.args : "SIG*"
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1525
+Index: geneve-ut-1546
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22068,7 +22224,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1526
+Index: geneve-ut-1547
 
 ```python
 file where host.os.type == "windows" and event.type : "change" and process.name : "dllhost.exe" and
@@ -22084,7 +22240,7 @@ file where host.os.type == "windows" and event.type : "change" and process.name 
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1527
+Index: geneve-ut-1548
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22097,7 +22253,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1528
+Index: geneve-ut-1549
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.name : "Clipup.exe" and
@@ -22112,7 +22268,7 @@ process where host.os.type == "windows" and event.type == "start" and process.na
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1529
+Index: geneve-ut-1550
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22135,7 +22291,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1530
+Index: geneve-ut-1551
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22150,7 +22306,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1531
+Index: geneve-ut-1552
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22166,7 +22322,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1533
+Index: geneve-ut-1554
 
 ```python
 event.dataset:okta.system and event.action:app.generic.unauth_app_access_attempt
@@ -22178,7 +22334,7 @@ event.dataset:okta.system and event.action:app.generic.unauth_app_access_attempt
 
 Branch count: 45  
 Document count: 45  
-Index: geneve-ut-1535
+Index: geneve-ut-1556
 
 ```python
 network where host.os.type == "linux" and event.type == "start" and event.action == "connection_attempted" and (
@@ -22205,7 +22361,7 @@ not cidrmatch(destination.ip, "127.0.0.0/8", "::1","FE80::/10", "FF00::/8", "10.
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1537
+Index: geneve-ut-1558
 
 ```python
 process where host.os.type == "macos" and event.type == "start" and process.parent.name == "ScreenSaverEngine"
@@ -22217,7 +22373,7 @@ process where host.os.type == "macos" and event.type == "start" and process.pare
 
 Branch count: 68  
 Document count: 68  
-Index: geneve-ut-1538
+Index: geneve-ut-1559
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -22246,7 +22402,7 @@ not (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1540
+Index: geneve-ut-1561
 
 ```python
 library where dll.name : "Bitsproxy.dll" and process.executable != null and
@@ -22260,7 +22416,7 @@ not process.code_signature.status : ("errorExpired", "errorCode_endpoint*")
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1545
+Index: geneve-ut-1566
 
 ```python
 any where host.os.type == "windows" and process.name : "AzureADConnectAuthenticationAgentService.exe" and
@@ -22294,7 +22450,7 @@ not (?dll.code_signature.trusted == true or file.code_signature.status == "Valid
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1546
+Index: geneve-ut-1567
 
 ```python
 driver where host.os.type == "windows" and process.pid == 4 and
@@ -22308,7 +22464,7 @@ driver where host.os.type == "windows" and process.pid == 4 and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1551
+Index: geneve-ut-1572
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22322,7 +22478,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1552
+Index: geneve-ut-1573
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22343,7 +22499,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1561
+Index: geneve-ut-1582
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event", "start") and
@@ -22377,7 +22533,7 @@ process.parent.name == "dbus-daemon" and process.args_count > 1 and not (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1563
+Index: geneve-ut-1584
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action == "exec" and
@@ -22396,7 +22552,7 @@ process.group_leader.name != null and not (
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-1566
+Index: geneve-ut-1587
 
 ```python
 file where host.os.type == "windows" and event.type != "deletion" and
@@ -22418,7 +22574,7 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 Branch count: 168  
 Document count: 168  
-Index: geneve-ut-1570
+Index: geneve-ut-1591
 
 ```python
 file where host.os.type == "windows" and event.type == "creation" and
@@ -22437,7 +22593,7 @@ file where host.os.type == "windows" and event.type == "creation" and
 
 Branch count: 141  
 Document count: 282  
-Index: geneve-ut-1582
+Index: geneve-ut-1603
 
 ```python
 sequence by host.id, process.parent.entity_id with maxspan=3s
@@ -22554,7 +22710,7 @@ sequence by host.id, process.parent.entity_id with maxspan=3s
 
 Branch count: 39  
 Document count: 39  
-Index: geneve-ut-1585
+Index: geneve-ut-1606
 
 ```python
 process where host.os.type == "linux" and event.action == "killed-pid" and auditd.data.syscall == "kill" and
@@ -22571,7 +22727,7 @@ auditd.data.a1 in (
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1587
+Index: geneve-ut-1609
 
 ```python
 library where host.os.type == "macos" and event.action == "load" and
@@ -22588,7 +22744,7 @@ library where host.os.type == "macos" and event.action == "load" and
 
 Branch count: 1  
 Document count: 2  
-Index: geneve-ut-1603
+Index: geneve-ut-1625
 
 ```python
 sequence by host.id, process.entity_id with maxspan=1m
@@ -22607,7 +22763,7 @@ sequence by host.id, process.entity_id with maxspan=1m
 
 Branch count: 32  
 Document count: 32  
-Index: geneve-ut-1607
+Index: geneve-ut-1629
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22648,7 +22804,7 @@ process.parent.name != null and
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-1608
+Index: geneve-ut-1630
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -22693,7 +22849,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 32  
 Document count: 32  
-Index: geneve-ut-1611
+Index: geneve-ut-1633
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22735,7 +22891,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1615
+Index: geneve-ut-1637
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22759,7 +22915,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 256  
 Document count: 256  
-Index: geneve-ut-1616
+Index: geneve-ut-1638
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22799,7 +22955,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 198  
 Document count: 198  
-Index: geneve-ut-1617
+Index: geneve-ut-1639
 
 ```python
 process where event.type == "start" and host.os.type == "windows" and
@@ -22846,7 +23002,7 @@ process where event.type == "start" and host.os.type == "windows" and
 
 Branch count: 144  
 Document count: 288  
-Index: geneve-ut-1621
+Index: geneve-ut-1643
 
 ```python
 sequence by process.entity_id
@@ -22883,7 +23039,7 @@ sequence by process.entity_id
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1655
+Index: geneve-ut-1677
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -22897,7 +23053,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 20  
 Document count: 20  
-Index: geneve-ut-1656
+Index: geneve-ut-1678
 
 ```python
 iam where host.os.type == "windows" and event.action == "added-member-to-group" and
@@ -22940,7 +23096,7 @@ iam where host.os.type == "windows" and event.action == "added-member-to-group" 
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1657
+Index: geneve-ut-1679
 
 ```python
 configuration where host.os.type == "macos" and event.type == "change" and
@@ -22953,7 +23109,7 @@ configuration where host.os.type == "macos" and event.type == "change" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1659
+Index: geneve-ut-1681
 
 ```python
 event.code:5136 and host.os.type:"windows" and winlog.event_data.OperationType:"%%14674" and
@@ -22967,7 +23123,7 @@ event.code:5136 and host.os.type:"windows" and winlog.event_data.OperationType:"
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1660
+Index: geneve-ut-1682
 
 ```python
 iam where host.os.type == "linux" and event.type in ("creation", "change") and auditd.result == "success" and
@@ -22980,7 +23136,7 @@ event.action in ("changed-password", "added-user-account", "added-group-account-
 
 Branch count: 9  
 Document count: 9  
-Index: geneve-ut-1661
+Index: geneve-ut-1683
 
 ```python
 (event.dataset: network_traffic.flow or (event.category: (network or network_traffic))) and
@@ -23026,7 +23182,7 @@ Index: geneve-ut-1661
 
 Branch count: 9  
 Document count: 9  
-Index: geneve-ut-1662
+Index: geneve-ut-1684
 
 ```python
 (event.dataset: network_traffic.flow  or (event.category: (network or network_traffic))) and
@@ -23072,7 +23228,7 @@ Index: geneve-ut-1662
 
 Branch count: 10  
 Document count: 10  
-Index: geneve-ut-1663
+Index: geneve-ut-1685
 
 ```python
 library where host.os.type == "windows" and event.action == "load" and
@@ -23090,7 +23246,7 @@ library where host.os.type == "windows" and event.action == "load" and
 
 Branch count: 25  
 Document count: 25  
-Index: geneve-ut-1664
+Index: geneve-ut-1686
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and 
@@ -23115,7 +23271,7 @@ process.args in (
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1665
+Index: geneve-ut-1687
 
 ```python
 process where event.type == "start" and
@@ -23130,7 +23286,7 @@ process where event.type == "start" and
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1666
+Index: geneve-ut-1688
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
@@ -23147,7 +23303,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1667
+Index: geneve-ut-1689
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23161,7 +23317,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 60  
 Document count: 60  
-Index: geneve-ut-1668
+Index: geneve-ut-1690
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23177,7 +23333,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1669
+Index: geneve-ut-1691
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23191,7 +23347,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1670
+Index: geneve-ut-1692
 
 ```python
 file where host.os.type == "windows" and event.action != "deletion" and
@@ -23214,7 +23370,7 @@ file where host.os.type == "windows" and event.action != "deletion" and
 
 Branch count: 24  
 Document count: 48  
-Index: geneve-ut-1671
+Index: geneve-ut-1693
 
 ```python
 sequence by host.id with maxspan = 20s
@@ -23250,7 +23406,7 @@ sequence by host.id with maxspan = 20s
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1672
+Index: geneve-ut-1694
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.name : "wbemtest.exe"
@@ -23262,7 +23418,7 @@ process where host.os.type == "windows" and event.type == "start" and process.na
 
 Branch count: 3  
 Document count: 3  
-Index: geneve-ut-1673
+Index: geneve-ut-1695
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23278,7 +23434,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 6  
 Document count: 6  
-Index: geneve-ut-1674
+Index: geneve-ut-1696
 
 ```python
 any where host.os.type == "windows" and process.name : "promecefpluginhost.exe" and
@@ -23301,7 +23457,7 @@ any where host.os.type == "windows" and process.name : "promecefpluginhost.exe" 
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1675
+Index: geneve-ut-1697
 
 ```python
 host.os.type: "windows" and event.action : ("Directory Service Access" or "object-operation-performed") and
@@ -23314,7 +23470,7 @@ host.os.type: "windows" and event.action : ("Directory Service Access" or "objec
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1676
+Index: geneve-ut-1698
 
 ```python
 http.response.status_code:403 and http.request.method:post
@@ -23326,7 +23482,7 @@ http.response.status_code:403 and http.request.method:post
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1677
+Index: geneve-ut-1699
 
 ```python
 http.response.status_code:405
@@ -23338,7 +23494,7 @@ http.response.status_code:405
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1678
+Index: geneve-ut-1700
 
 ```python
 user_agent.original:"sqlmap/1.3.11#stable (http://sqlmap.org)"
@@ -23350,7 +23506,7 @@ user_agent.original:"sqlmap/1.3.11#stable (http://sqlmap.org)"
 
 Branch count: 61  
 Document count: 61  
-Index: geneve-ut-1684
+Index: geneve-ut-1706
 
 ```python
 any where url.original like~ (
@@ -23371,7 +23527,7 @@ any where url.original like~ (
 
 Branch count: 40  
 Document count: 40  
-Index: geneve-ut-1686
+Index: geneve-ut-1708
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -23392,7 +23548,7 @@ not process.parent.executable == "/usr/lib/systemd/systemd"
 
 Branch count: 48  
 Document count: 48  
-Index: geneve-ut-1689
+Index: geneve-ut-1711
 
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and event.action == "exec" and
@@ -23406,7 +23562,7 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 Branch count: 5  
 Document count: 5  
-Index: geneve-ut-1690
+Index: geneve-ut-1712
 
 ```python
 file where event.type == "deletion" and
@@ -23423,7 +23579,7 @@ file where event.type == "deletion" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1691
+Index: geneve-ut-1713
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -23441,7 +23597,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 61  
 Document count: 61  
-Index: geneve-ut-1692
+Index: geneve-ut-1714
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.name : "whoami.exe" and
@@ -23484,7 +23640,7 @@ process where host.os.type == "windows" and event.type == "start" and process.na
 
 Branch count: 36  
 Document count: 36  
-Index: geneve-ut-1693
+Index: geneve-ut-1715
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23522,7 +23678,7 @@ and not process.parent.name : "LTSVC.exe" and not user.id : "S-1-5-18"
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-1695
+Index: geneve-ut-1717
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and
@@ -23559,7 +23715,7 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1696
+Index: geneve-ut-1718
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23574,7 +23730,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1697
+Index: geneve-ut-1719
 
 ```python
 host.os.type:windows and event.action:("audit-log-cleared" or "Log clear") and
@@ -23587,7 +23743,7 @@ host.os.type:windows and event.action:("audit-log-cleared" or "Log clear") and
 
 Branch count: 24  
 Document count: 24  
-Index: geneve-ut-1698
+Index: geneve-ut-1720
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23606,7 +23762,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 10  
 Document count: 20  
-Index: geneve-ut-1699
+Index: geneve-ut-1721
 
 ```python
 sequence with maxspan=1m
@@ -23631,7 +23787,7 @@ sequence with maxspan=1m
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1700
+Index: geneve-ut-1722
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23657,7 +23813,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1701
+Index: geneve-ut-1723
 
 ```python
 file where host.os.type == "windows" and event.type == "creation" and
@@ -23679,7 +23835,7 @@ file where host.os.type == "windows" and event.type == "creation" and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1702
+Index: geneve-ut-1724
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23696,7 +23852,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 15  
 Document count: 15  
-Index: geneve-ut-1704
+Index: geneve-ut-1726
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.name : "wscript.exe" and
@@ -23715,7 +23871,7 @@ process where host.os.type == "windows" and event.type == "start" and process.na
 
 Branch count: 216  
 Document count: 432  
-Index: geneve-ut-1705
+Index: geneve-ut-1727
 
 ```python
 sequence by host.id with maxspan = 5s
@@ -23755,7 +23911,7 @@ sequence by host.id with maxspan = 5s
 
 Branch count: 12  
 Document count: 12  
-Index: geneve-ut-1706
+Index: geneve-ut-1728
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23772,7 +23928,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1708
+Index: geneve-ut-1730
 
 ```python
 registry where host.os.type == "windows" and event.type == "change" and registry.value : "PackageFamilyName" and
@@ -23785,7 +23941,7 @@ registry where host.os.type == "windows" and event.type == "change" and registry
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1709
+Index: geneve-ut-1731
 
 ```python
 process where host.os.type == "windows" and event.type : "start" and
@@ -23799,7 +23955,7 @@ process where host.os.type == "windows" and event.type : "start" and
 
 Branch count: 4  
 Document count: 4  
-Index: geneve-ut-1710
+Index: geneve-ut-1732
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23827,7 +23983,7 @@ process.parent.executable : (
 
 Branch count: 18  
 Document count: 18  
-Index: geneve-ut-1711
+Index: geneve-ut-1733
 
 ```python
 process where event.type == "start" and
@@ -23852,7 +24008,7 @@ process where event.type == "start" and
 
 Branch count: 2  
 Document count: 2  
-Index: geneve-ut-1712
+Index: geneve-ut-1734
 
 ```python
 process where host.os.type == "windows" and event.type == "start" and
@@ -23866,7 +24022,7 @@ process where host.os.type == "windows" and event.type == "start" and
 
 Branch count: 16  
 Document count: 16  
-Index: geneve-ut-1713
+Index: geneve-ut-1735
 
 ```python
 file where host.os.type == "linux" and event.action in ("rename", "creation") and
@@ -23901,7 +24057,7 @@ file.path : ("/usr/lib/yum-plugins/*", "/etc/yum/pluginconf.d/*") and not (
 
 Branch count: 36  
 Document count: 36  
-Index: geneve-ut-1714
+Index: geneve-ut-1736
 
 ```python
 process where host.os.type == "linux" and event.type == "start" and
@@ -23919,7 +24075,7 @@ not ?process.parent.executable == "/usr/lib/venv-salt-minion/bin/python.original
 
 Branch count: 1  
 Document count: 1  
-Index: geneve-ut-1715
+Index: geneve-ut-1737
 
 ```python
 event.type:creation and event.module:zoom and event.dataset:zoom.webhook and
@@ -23932,7 +24088,7 @@ event.type:creation and event.module:zoom and event.dataset:zoom.webhook and
 
 Branch count: 8  
 Document count: 8  
-Index: geneve-ut-1717
+Index: geneve-ut-1739
 
 ```python
 file where host.os.type == "linux" and event.action == "creation" and
