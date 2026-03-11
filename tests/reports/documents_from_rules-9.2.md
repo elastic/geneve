@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.2.8
+Rules version: 9.2.9
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (175)](#unsupported-rule-type-new_terms-175)
-      1. [Unsupported rule type: esql (127)](#unsupported-rule-type-esql-127)
+      1. [Unsupported rule type: new_terms (177)](#unsupported-rule-type-new_terms-177)
+      1. [Unsupported rule type: esql (130)](#unsupported-rule-type-esql-130)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -24,7 +24,7 @@ Rules version: 9.2.8
       1. [Field type solver: match_only_text (8)](#field-type-solver-match_only_text-8)
       1. [Root without branches (8)](#root-without-branches-8)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-4)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (5)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-5)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
@@ -130,9 +130,9 @@ Rules version: 9.2.8
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (175)
+### Unsupported rule type: new_terms (177)
 
-175 rules:
+177 rules:
 
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
@@ -212,10 +212,11 @@ Rules version: 9.2.8
 * First Occurrence of User-Agent For a GitHub User
 * First Time AWS CloudFormation Stack Creation
 * First Time Seen AWS Secret Value Accessed in Secrets Manager
-* First Time Seen Commonly Abused Remote Access Tool Execution
+* First Time Seen DNS Query to RMM Domain
 * First Time Seen Driver Loaded
 * First Time Seen Google Workspace OAuth Login from Third-Party Application
 * First Time Seen NewCredentials Logon Process
+* First Time Seen Remote Monitoring and Management Tool
 * First Time Seen Removable Device
 * FirstTime Seen Account Performing DCSync
 * FortiGate Administrator Account Creation from Unusual Source
@@ -295,6 +296,7 @@ Rules version: 9.2.8
 * Unusual File Operation by dns.exe
 * Unusual Interactive Shell Launched from System User
 * Unusual Kernel Module Enumeration
+* Unusual Kubernetes Sensitive Workload Modification
 * Unusual LD_PRELOAD/LD_LIBRARY_PATH Command Line Arguments
 * Unusual Login via System User
 * Unusual Network Connection to Suspicious Top Level Domain
@@ -310,9 +312,9 @@ Rules version: 9.2.8
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (127)
+### Unsupported rule type: esql (130)
 
-127 rules:
+130 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -367,7 +369,7 @@ Rules version: 9.2.8
 * M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
 * M365 Identity User Account Lockouts
 * M365 Identity User Brute Force Attempted
-* M365 OneDrive Excessive File Downloads with OAuth Token
+* M365 OneDrive/SharePoint Excessive File Downloads
 * M365 or Entra ID Identity Sign-in from a Suspicious Source
 * Multiple Alerts Involving a User
 * Multiple Alerts in Same ATT&CK Tactic by Host
@@ -387,10 +389,13 @@ Rules version: 9.2.8
 * Newly Observed High Severity Suricata Alert
 * Newly Observed Palo Alto Network Alert
 * Newly Observed Process Exhibiting High CPU Usage
+* Newly Observed ScreenConnect Host Server
 * Okta AiTM Session Cookie Replay
 * Okta Successful Login After Credential Attack
 * Okta User Sessions Started from Different Geolocations
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Account Takeover - Logon from New Source IP
+* Potential Account Takeover - Mixed Logon Types
 * Potential Azure OpenAI Model Theft
 * Potential Denial of Azure OpenAI ML Service
 * Potential Dynamic IEX Reconstruction via Environment Variables
@@ -745,10 +750,11 @@ Rules version: 9.2.8
 * Unusual Network Activity from a Windows System Binary
 * Windows Service Installed via an Unusual Client
 
-### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (4)
+### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (5)
 
-4 rules:
+5 rules:
 * Execution via MS VisualStudio Pre/Post Build Events
+* Suspicious Execution from VS Code Extension
 * Suspicious Execution from a WebDav Share
 * Suspicious JetBrains TeamCity Child Process
 * Suspicious Windows Command Shell Arguments
