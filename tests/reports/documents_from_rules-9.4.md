@@ -5,26 +5,26 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.5
+Rules version: 9.3.6
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (177)](#unsupported-rule-type-new_terms-177)
-      1. [Unsupported rule type: esql (134)](#unsupported-rule-type-esql-134)
+      1. [Unsupported rule type: new_terms (181)](#unsupported-rule-type-new_terms-181)
+      1. [Unsupported rule type: esql (139)](#unsupported-rule-type-esql-139)
       1. [Unsupported rule type: machine_learning (105)](#unsupported-rule-type-machine_learning-105)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Unsupported function: match (33)](#unsupported-function-match-33)
+      1. [Unsupported function: match (35)](#unsupported-function-match-35)
       1. [Unsupported function: stringContains (23)](#unsupported-function-stringcontains-23)
-      1. [Root with too many branches (limit: 10000) (19)](#root-with-too-many-branches-limit-10000-19)
-      1. [Field type solver: constant_keyword (12)](#field-type-solver-constant_keyword-12)
+      1. [Root with too many branches (limit: 10000) (20)](#root-with-too-many-branches-limit-10000-20)
+      1. [Field type solver: constant_keyword (13)](#field-type-solver-constant_keyword-13)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Root without branches (9)](#root-without-branches-9)
       1. [Field type solver: match_only_text (8)](#field-type-solver-match_only_text-8)
-      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (5)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-5)
+      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (8)](#unsupported-argument-types-class-eqlastfield-8)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (6)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-6)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (3)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-3)
@@ -78,7 +78,6 @@ Rules version: 9.3.5
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
       1. [Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*')) (1)](#unsolvable-constraints-processcommand_line-excluded-by-stringsprocsysvmdrop_caches-drop_caches-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-o--c--1)
-      1. [Unsolvable constraints: process.command_line (not in Strings({'*@/*.zip*'}): ('*http*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringszip-http-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*Remove-Item*'}): ('*ConsoleHost_history.txt*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsremove-item-consolehost_historytxt-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('* copy*')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings--copy-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*com.apple.Safari*'}): ('*IncludeDevelopMenu*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringscomapplesafari-includedevelopmenu-1)
@@ -130,10 +129,11 @@ Rules version: 9.3.5
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (177)
+### Unsupported rule type: new_terms (181)
 
-177 rules:
+181 rules:
 
+* AWS API Activity from Uncommon S3 Client by Rare User
 * AWS CLI Command with Custom Endpoint URL
 * AWS DynamoDB Scan by Unusual User
 * AWS DynamoDB Table Exported to S3
@@ -166,6 +166,7 @@ Rules version: 9.3.5
 * Abnormal Process ID or Lock File Created
 * Account or Group Discovery via Built-In Tools
 * Authentication via Unusual PAM Grantor
+* Azure Arc Cluster Credential Access by Identity from Unusual Source
 * Azure Compute Restore Point Collection Deleted by Unusual User
 * Azure Compute Snapshot Deletion by Unusual User and Resource Group
 * Azure Diagnostic Settings Deleted
@@ -211,8 +212,10 @@ Rules version: 9.3.5
 * First Occurrence of User Agent For a GitHub Personal Access Token (PAT)
 * First Occurrence of User-Agent For a GitHub User
 * First Time AWS CloudFormation Stack Creation
+* First Time Python Accessed Sensitive Credential Files
+* First Time Python Created a LaunchAgent or LaunchDaemon
+* First Time Python Spawned a Shell on Host
 * First Time Seen AWS Secret Value Accessed in Secrets Manager
-* First Time Seen DNS Query to RMM Domain
 * First Time Seen Driver Loaded
 * First Time Seen Google Workspace OAuth Login from Third-Party Application
 * First Time Seen NewCredentials Logon Process
@@ -312,9 +315,9 @@ Rules version: 9.3.5
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (134)
+### Unsupported rule type: esql (139)
 
-134 rules:
+139 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -336,6 +339,7 @@ Rules version: 9.3.5
 * Alerts in Different ATT&CK Tactics by Host
 * Azure Key Vault Excessive Secret or Key Retrieved
 * Azure OpenAI Insecure Output Handling
+* Azure Service Principal Authentication from Multiple Countries
 * Command Line Obfuscation via Whitespace Padding
 * Correlated Alerts on Similar User Identities
 * Detection Alert on a Process Exhibiting CPU Spike
@@ -353,6 +357,7 @@ Rules version: 9.3.5
 * Entra ID Sign-in Brute Force Attempted (Microsoft 365)
 * Entra ID User Sign-in Brute Force Attempted
 * File Transfer Utility Launched from Unusual Parent
+* First Time Seen DNS Query to RMM Domain
 * First-Time FortiGate Administrator Login
 * FortiGate Administrator Login from Multiple IP Addresses
 * FortiGate FortiCloud SSO Login from Unusual Source
@@ -364,6 +369,7 @@ Rules version: 9.3.5
 * Kubernetes Creation or Modification of Sensitive Role
 * Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
 * Kubernetes Potential Endpoint Permission Enumeration Attempt by Anonymous User Detected
+* Kubernetes Secret or ConfigMap Access via Azure Arc Proxy
 * LLM-Based Attack Chain Triage by Host
 * LLM-Based Compromised User Triage by User
 * LSASS Process Access via Windows API
@@ -386,6 +392,7 @@ Rules version: 9.3.5
 * Multiple Machine Learning Alerts by Influencer Field
 * Multiple Okta User Authentication Events with Same Device Token Hash
 * Multiple Rare Elastic Defend Behavior Rules by Host
+* Multiple Remote Management Tool Vendors on Same Host
 * Multiple Vulnerabilities by Asset via Wiz
 * Newly Observed Elastic Defend Behavior Alert
 * Newly Observed FortiGate Alert
@@ -430,8 +437,9 @@ Rules version: 9.3.5
 * Potential Subnet Scanning Activity from Compromised Host
 * Potential Widespread Malware Infection Across Multiple Hosts
 * PowerShell Obfuscation via Negative Index String Reversal
-* Privileged Account Brute Force
+* Privileged Accounts Brute Force
 * Rare Connection to WebDAV Target
+* Sensitive Audit Policy Sub-Category Disabled
 * Several Failed Protected Branch Force Pushes by User
 * Suspected Lateral Movement from Compromised Host
 * Suspicious AWS S3 Connection via Script Interpreter
@@ -617,9 +625,9 @@ Rules version: 9.3.5
 
 ## Generation errors
 
-### Unsupported function: match (33)
+### Unsupported function: match (35)
 
-33 rules:
+35 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * Command Obfuscation via Unicode Modifier Letters
 * Creation of Hidden Files and Directories via CommandLine
@@ -633,6 +641,8 @@ Rules version: 9.3.5
 * Potential AWS S3 Bucket Ransomware Note Uploaded
 * Potential Command Shell via NetCat
 * Potential Credential Access via Windows Utilities
+* Potential Data Exfiltration Through Curl
+* Potential Data Exfiltration Through Wget
 * Potential Exploitation of an Unquoted Service Path Vulnerability
 * Potential Linux Tunneling and/or Port Forwarding
 * Potential Linux Tunneling and/or Port Forwarding via Command Line
@@ -681,12 +691,13 @@ Rules version: 9.3.5
 * AWS S3 Bucket Server Access Logging Disabled
 * AWS S3 Object Versioning Suspended
 
-### Root with too many branches (limit: 10000) (19)
+### Root with too many branches (limit: 10000) (20)
 
-19 rules:
+20 rules:
 * Connection to Commonly Abused Web Services
 * Decoded Payload Piped to Interpreter Detected via Defend for Containers
 * Execution from Unusual Directory - Command Line
+* Execution of a Downloaded Windows Script
 * External IP Lookup from Non-Browser Process
 * GenAI or MCP Server Child Process Execution
 * Ingress Tool Transfer Followed by Execution and Deletion Detected via Defend for Containers
@@ -704,12 +715,13 @@ Rules version: 9.3.5
 * Suspicious React Server Child Process
 * Unusual User Privilege Enumeration via id
 
-### Field type solver: constant_keyword (12)
+### Field type solver: constant_keyword (13)
 
-12 rules:
+13 rules:
 * CrowdStrike External Alerts
 * Elastic Security External Alerts
 * Google SecOps External Alerts
+* IBM QRadar External Alerts
 * Initial Access via File Upload Followed by GET Request
 * Microsoft Sentinel External Alerts
 * Potential DLL Side-Loading via Trusted Microsoft Programs
@@ -760,24 +772,26 @@ Rules version: 9.3.5
 * Tainted Out-Of-Tree Kernel Module Load
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
-### Unsupported argument type(s): <class 'eql.ast.Field'> (7)
+### Unsupported argument type(s): <class 'eql.ast.Field'> (8)
 
-7 rules:
+8 rules:
 * External User Added to Google Workspace Group
 * Image Loaded with Invalid Signature
 * Interactive Logon by an Unusual Process
+* M365 Exchange Inbox Forwarding Rule Created
 * Potential Ransomware Note File Dropped via SMB
 * Suspicious File Renamed via SMB
 * Unusual Network Activity from a Windows System Binary
 * Windows Service Installed via an Unusual Client
 
-### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (5)
+### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (6)
 
-5 rules:
+6 rules:
 * Execution via MS VisualStudio Pre/Post Build Events
 * Suspicious Execution from VS Code Extension
 * Suspicious Execution from a WebDav Share
 * Suspicious JetBrains TeamCity Child Process
+* Suspicious Shell Execution via Velociraptor
 * Suspicious Windows Command Shell Arguments
 
 ### Unsupported function: startsWith (4)
@@ -1064,11 +1078,6 @@ Rules version: 9.3.5
 
 1 rules:
 * GenAI Process Compiling or Generating Executables
-
-### Unsolvable constraints: process.command_line (not in Strings({'*@/*.zip*'}): ('*http*')) (1)
-
-1 rules:
-* Potential Data Exfiltration Through Curl
 
 ### Unsolvable constraints: process.command_line (not in Strings({'*Remove-Item*'}): ('*ConsoleHost_history.txt*')) (1)
 
