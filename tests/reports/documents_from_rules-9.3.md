@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.6
+Rules version: 9.3.7
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (181)](#unsupported-rule-type-new_terms-181)
-      1. [Unsupported rule type: esql (139)](#unsupported-rule-type-esql-139)
+      1. [Unsupported rule type: new_terms (183)](#unsupported-rule-type-new_terms-183)
+      1. [Unsupported rule type: esql (142)](#unsupported-rule-type-esql-142)
       1. [Unsupported rule type: machine_learning (105)](#unsupported-rule-type-machine_learning-105)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -21,7 +21,7 @@ Rules version: 9.3.6
       1. [Root with too many branches (limit: 10000) (20)](#root-with-too-many-branches-limit-10000-20)
       1. [Field type solver: constant_keyword (13)](#field-type-solver-constant_keyword-13)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
-      1. [Root without branches (9)](#root-without-branches-9)
+      1. [Root without branches (10)](#root-without-branches-10)
       1. [Field type solver: match_only_text (8)](#field-type-solver-match_only_text-8)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (8)](#unsupported-argument-types-class-eqlastfield-8)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (6)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-6)
@@ -129,9 +129,9 @@ Rules version: 9.3.6
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (181)
+### Unsupported rule type: new_terms (183)
 
-181 rules:
+183 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS CLI Command with Custom Endpoint URL
@@ -232,6 +232,7 @@ Rules version: 9.3.6
 * Kubernetes Anonymous Request Authorized by Unusual User Agent
 * Kubernetes Denied Service Account Request via Unusual User Agent
 * Kubernetes Forbidden Request from Unusual User Agent
+* Kubernetes Secret Access via Unusual User Agent
 * Kubernetes Suspicious Self-Subject Review via Unusual User Agent
 * Kubernetes Unusual Decision by User Agent
 * LSASS Memory Dump Handle Access
@@ -246,6 +247,7 @@ Rules version: 9.3.6
 * M365 Identity Login from Atypical Travel Location
 * M365 Identity OAuth Illicit Consent Grant by Rare Client and User
 * M365 Identity Unusual SSO Authentication Errors for User
+* M365 SharePoint/OneDrive File Access via PowerShell
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
 * Microsoft Graph Request Email Access by Unusual User and Client
@@ -315,9 +317,9 @@ Rules version: 9.3.6
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (139)
+### Unsupported rule type: esql (142)
 
-139 rules:
+142 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -375,6 +377,7 @@ Rules version: 9.3.6
 * LSASS Process Access via Windows API
 * Lateral Movement Alerts from a Newly Observed Source Address
 * Lateral Movement Alerts from a Newly Observed User
+* M365 Azure Monitor Alert Email with Financial or Billing Theme
 * M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
 * M365 Identity User Account Lockouts
 * M365 Identity User Brute Force Attempted
@@ -408,6 +411,7 @@ Rules version: 9.3.6
 * Potential Account Takeover - Logon from New Source IP
 * Potential Account Takeover - Mixed Logon Types
 * Potential Azure OpenAI Model Theft
+* Potential Credential Discovery via Recursive Grep
 * Potential Denial of Azure OpenAI ML Service
 * Potential Dynamic IEX Reconstruction via Environment Variables
 * Potential Linux Local Account Brute Force Detected
@@ -443,6 +447,7 @@ Rules version: 9.3.6
 * Several Failed Protected Branch Force Pushes by User
 * Suspected Lateral Movement from Compromised Host
 * Suspicious AWS S3 Connection via Script Interpreter
+* Suspicious Python Shell Command Execution
 * Suspicious TCC Access Granted for User Folders
 * Unusual Base64 Encoding/Decoding Activity
 * Unusual Command Execution from Web Server Parent
@@ -747,13 +752,14 @@ Rules version: 9.3.6
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
 
-### Root without branches (9)
+### Root without branches (10)
 
-9 rules:
+10 rules:
 * Initramfs Extraction via CPIO
 * Interactive Shell Spawn Detected via Defend for Containers
 * Interactive Terminal Spawned via Perl
 * Kubectl Configuration Discovery
+* Kubectl Secrets Enumeration Across All Namespaces
 * Linux User or Group Deletion
 * Linux init (PID 1) Secret Dump via GDB
 * Potential Docker Escape via Nsenter
