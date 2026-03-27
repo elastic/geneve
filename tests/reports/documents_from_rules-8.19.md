@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.19.18
+Rules version: 8.19.19
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (180)](#unsupported-rule-type-new_terms-180)
-      1. [Unsupported rule type: esql (132)](#unsupported-rule-type-esql-132)
+      1. [Unsupported rule type: new_terms (182)](#unsupported-rule-type-new_terms-182)
+      1. [Unsupported rule type: esql (135)](#unsupported-rule-type-esql-135)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -129,9 +129,9 @@ Rules version: 8.19.18
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (180)
+### Unsupported rule type: new_terms (182)
 
-180 rules:
+182 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS CLI Command with Custom Endpoint URL
@@ -232,6 +232,7 @@ Rules version: 8.19.18
 * Kubernetes Anonymous Request Authorized by Unusual User Agent
 * Kubernetes Denied Service Account Request via Unusual User Agent
 * Kubernetes Forbidden Request from Unusual User Agent
+* Kubernetes Secret Access via Unusual User Agent
 * Kubernetes Suspicious Self-Subject Review via Unusual User Agent
 * Kubernetes Unusual Decision by User Agent
 * LSASS Memory Dump Handle Access
@@ -246,6 +247,7 @@ Rules version: 8.19.18
 * M365 Identity Login from Atypical Travel Location
 * M365 Identity OAuth Illicit Consent Grant by Rare Client and User
 * M365 Identity Unusual SSO Authentication Errors for User
+* M365 SharePoint/OneDrive File Access via PowerShell
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
 * Microsoft Graph Request Email Access by Unusual User and Client
@@ -314,9 +316,9 @@ Rules version: 8.19.18
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (132)
+### Unsupported rule type: esql (135)
 
-132 rules:
+135 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -371,6 +373,7 @@ Rules version: 8.19.18
 * LSASS Process Access via Windows API
 * Lateral Movement Alerts from a Newly Observed Source Address
 * Lateral Movement Alerts from a Newly Observed User
+* M365 Azure Monitor Alert Email with Financial or Billing Theme
 * M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
 * M365 Identity User Account Lockouts
 * M365 Identity User Brute Force Attempted
@@ -404,6 +407,7 @@ Rules version: 8.19.18
 * Potential Account Takeover - Logon from New Source IP
 * Potential Account Takeover - Mixed Logon Types
 * Potential Azure OpenAI Model Theft
+* Potential Credential Discovery via Recursive Grep
 * Potential Denial of Azure OpenAI ML Service
 * Potential Dynamic IEX Reconstruction via Environment Variables
 * Potential Linux Local Account Brute Force Detected
@@ -437,6 +441,7 @@ Rules version: 8.19.18
 * Several Failed Protected Branch Force Pushes by User
 * Suspected Lateral Movement from Compromised Host
 * Suspicious AWS S3 Connection via Script Interpreter
+* Suspicious Python Shell Command Execution
 * Suspicious TCC Access Granted for User Folders
 * Unusual Base64 Encoding/Decoding Activity
 * Unusual Command Execution from Web Server Parent
