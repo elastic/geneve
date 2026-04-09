@@ -5,11 +5,11 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.19.19
+Rules version: 8.19.20
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (182)](#unsupported-rule-type-new_terms-182)
+      1. [Unsupported rule type: new_terms (183)](#unsupported-rule-type-new_terms-183)
       1. [Unsupported rule type: esql (135)](#unsupported-rule-type-esql-135)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
@@ -74,6 +74,7 @@ Rules version: 8.19.19
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
+      1. [Unsolvable constraints: process.code_signature.subject_name (excluded by Strings({'OpenJS Foundation'}): ('OpenJS Foundation')) (1)](#unsolvable-constraints-processcode_signaturesubject_name-excluded-by-stringsopenjs-foundation-openjs-foundation-1)
       1. [Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*')) (1)](#unsolvable-constraints-processcommand_line-excluded-by-stringsprocsysvmdrop_caches-drop_caches-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-o--c--1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*Remove-Item*'}): ('*ConsoleHost_history.txt*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsremove-item-consolehost_historytxt-1)
@@ -129,9 +130,9 @@ Rules version: 8.19.19
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (182)
+### Unsupported rule type: new_terms (183)
 
-182 rules:
+183 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS CLI Command with Custom Endpoint URL
@@ -146,6 +147,7 @@ Rules version: 8.19.19
 * AWS IAM Assume Role Policy Update
 * AWS IAM Create User via Assumed Role on EC2 Instance
 * AWS IAM Customer-Managed Policy Attached to Role by Rare User
+* AWS IAM Long-Term Access Key First Seen from Source IP
 * AWS IAM OIDC Provider Created by Rare User
 * AWS S3 Unauthenticated Bucket Access by Rare Source
 * AWS SNS Rare Protocol Subscription by User
@@ -184,13 +186,13 @@ Rules version: 8.19.19
 * Entra ID Conditional Access Policy (CAP) Modified
 * Entra ID Elevated Access to User Access Administrator
 * Entra ID External Authentication Methods (EAM) Modified
-* Entra ID Illicit Consent Grant via Registered Application
 * Entra ID OAuth Authorization Code Grant for Unusual User, App, and Resource
 * Entra ID OAuth Device Code Grant by Unusual User
 * Entra ID OAuth ROPC Grant Login Detected
 * Entra ID OAuth user_impersonation Scope for Unusual User and Client
 * Entra ID Service Principal Credentials Created by Unusual User
 * Entra ID Service Principal Federated Credential Authentication by Unusual Client
+* Entra ID Service Principal with Unusual Source ASN
 * Entra ID Sharepoint or OneDrive Accessed by Unusual Client
 * Entra ID User Sign-in with Unusual Authentication Type
 * Entra ID User Sign-in with Unusual Client
@@ -340,7 +342,6 @@ Rules version: 8.19.19
 * Alerts in Different ATT&CK Tactics by Host
 * Azure Key Vault Excessive Secret or Key Retrieved
 * Azure OpenAI Insecure Output Handling
-* Azure Service Principal Authentication from Multiple Countries
 * Command Line Obfuscation via Whitespace Padding
 * Correlated Alerts on Similar User Identities
 * Detection Alert on a Process Exhibiting CPU Spike
@@ -350,6 +351,7 @@ Rules version: 8.19.19
 * Entra ID Actor Token User Impersonation Abuse
 * Entra ID Concurrent Sign-in with Suspicious Properties
 * Entra ID Federated Identity Credential Issuer Modified
+* Entra ID Illicit Consent Grant via Registered Application
 * Entra ID MFA TOTP Brute Force Attempted
 * Entra ID OAuth Device Code Flow with Concurrent Sign-ins
 * Entra ID OAuth Flow by Microsoft Authentication Broker to Device Registration Service (DRS)
@@ -650,7 +652,6 @@ Rules version: 8.19.19
 ### Unsupported function: stringContains (23)
 
 23 rules:
-* AWS CLI with Kali Linux Fingerprint Identified
 * AWS EC2 EBS Snapshot Access Removed
 * AWS EC2 EBS Snapshot Shared or Made Public
 * AWS EC2 Instance Console Login via Assumed Role
@@ -673,6 +674,7 @@ Rules version: 8.19.19
 * AWS S3 Bucket Replicated to Another Account
 * AWS S3 Bucket Server Access Logging Disabled
 * AWS S3 Object Versioning Suspended
+* AWS Suspicious User Agent Fingerprint
 
 ### Root with too many branches (limit: 10000) (16)
 
@@ -897,7 +899,7 @@ Rules version: 8.19.19
 ### Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)
 
 1 rules:
-* SUNBURST Command and Control Activity
+* Deprecated - SUNBURST Command and Control Activity
 
 ### Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)
 
@@ -1033,6 +1035,11 @@ Rules version: 8.19.19
 
 1 rules:
 * PowerShell Share Enumeration Script
+
+### Unsolvable constraints: process.code_signature.subject_name (excluded by Strings({'OpenJS Foundation'}): ('OpenJS Foundation')) (1)
+
+1 rules:
+* Connection to Common Large Language Model Endpoints
 
 ### Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*')) (1)
 
