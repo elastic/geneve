@@ -5,24 +5,24 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.8
+Rules version: 9.4.1
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (185)](#unsupported-rule-type-new_terms-185)
-      1. [Unsupported rule type: esql (145)](#unsupported-rule-type-esql-145)
-      1. [Unsupported rule type: machine_learning (105)](#unsupported-rule-type-machine_learning-105)
+      1. [Unsupported rule type: new_terms (186)](#unsupported-rule-type-new_terms-186)
+      1. [Unsupported rule type: esql (148)](#unsupported-rule-type-esql-148)
+      1. ['types.SimpleNamespace' object has no attribute 'type' (111)](#typessimplenamespace-object-has-no-attribute-type-111)
+      1. [Unsupported rule type: machine_learning (106)](#unsupported-rule-type-machine_learning-106)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
+      1. [Field type solver: constant_keyword (279)](#field-type-solver-constant_keyword-279)
       1. [Unsupported function: match (35)](#unsupported-function-match-35)
       1. [Unsupported function: stringContains (23)](#unsupported-function-stringcontains-23)
-      1. [Root with too many branches (limit: 10000) (20)](#root-with-too-many-branches-limit-10000-20)
-      1. [Field type solver: constant_keyword (13)](#field-type-solver-constant_keyword-13)
+      1. [Root with too many branches (limit: 10000) (22)](#root-with-too-many-branches-limit-10000-22)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Root without branches (10)](#root-without-branches-10)
-      1. [Field type solver: match_only_text (8)](#field-type-solver-match_only_text-8)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (8)](#unsupported-argument-types-class-eqlastfield-8)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (6)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-6)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
@@ -31,7 +31,7 @@ Rules version: 9.3.8
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
-      1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
+      1. [Field type solver: match_only_text (2)](#field-type-solver-match_only_text-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'kubectl'}): ('kubectl')) (2)](#unsolvable-constraints-processname-excluded-by-stringskubectl-kubectl-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'nc.traditional'}): ('nc.traditional')) (2)](#unsolvable-constraints-processname-excluded-by-stringsnctraditional-nctraditional-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-2)
@@ -41,13 +41,9 @@ Rules version: 9.3.8
       1. ['NoneType' object is not subscriptable (1)](#nonetype-object-is-not-subscriptable-1)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
-      1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
-      1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
-      1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)](#unsolvable-constraints-fileextheader_bytes-excluded-by-strings504b0304-504b0304-1)
       1. [Unsolvable constraints: file.extension (cannot be non-null) (1)](#unsolvable-constraints-fileextension-cannot-be-non-null-1)
       1. [Unsolvable constraints: file.name (not in Strings({'*.so.*'}): ('.*.so')) (1)](#unsolvable-constraints-filename-not-in-stringsso-so-1)
-      1. [Unsolvable constraints: fortinet.firewall.cfgattr (not in Strings({'*srcaddr[all]*'}): ('*dstaddr[all]*')) (1)](#unsolvable-constraints-fortinetfirewallcfgattr-not-in-stringssrcaddrall-dstaddrall-1)
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringsswipuploadashx-post-1)
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringschild_process-exec-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
@@ -76,8 +72,8 @@ Rules version: 9.3.8
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
-      1. [Unsolvable constraints: process.code_signature.subject_name (excluded by Strings({'OpenJS Foundation'}): ('OpenJS Foundation')) (1)](#unsolvable-constraints-processcode_signaturesubject_name-excluded-by-stringsopenjs-foundation-openjs-foundation-1)
       1. [Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*')) (1)](#unsolvable-constraints-processcommand_line-excluded-by-stringsprocsysvmdrop_caches-drop_caches-1)
+      1. [Unsolvable constraints: process.command_line (not in Strings({'*-e *'}): ('*RABpAHMAYQBiAGwAZQBSAGUAYQBsAHQAaQBtAGUATQBvAG4AaQB0AG8AcgBpAG4AZwAgA*')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-e--rabpahmayqbiagwazqbsaguayqbsahqaaqbtaguatqbvag4aaqb0ag8acgbpag4azwaga-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-o--c--1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*Remove-Item*'}): ('*ConsoleHost_history.txt*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsremove-item-consolehost_historytxt-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('* copy*')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings--copy-1)
@@ -90,7 +86,6 @@ Rules version: 9.3.8
       1. [Unsolvable constraints: process.command_line (not in Strings({'*net.ipv4.ip_forward*'}): ('*echo *')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsnetipv4ip_forward-echo--1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*vm.swappiness*'}): ('*echo *')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsvmswappiness-echo--1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsarpexe-arpexe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'claude.exe'}): ('claude.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsclaudeexe-claudeexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cp'}): ('cp')) (1)](#unsolvable-constraints-processname-excluded-by-stringscp-cp-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
@@ -119,9 +114,7 @@ Rules version: 9.3.8
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: < (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (1)](#unsupported-keyword-fileextentropy-constraint--1)
-      1. [Unsupported &keyword 'kibana.alert.risk_score' constraint: > (1)](#unsupported-keyword-kibanaalertrisk_score-constraint--1)
       1. [Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)](#unsupported-keyword-ml_is_dgamalicious_probability-constraint--1)
-      1. [Unsupported &keyword 'o365.audit.OperationCount' constraint: >= (1)](#unsupported-keyword-o365auditoperationcount-constraint--1)
       1. [Unsupported &keyword 'powershell.file.script_block_entropy_bits' constraint: >= (1)](#unsupported-keyword-powershellfilescript_block_entropy_bits-constraint--1)
       1. [Unsupported &keyword 'powershell.file.script_block_length' constraint: > (1)](#unsupported-keyword-powershellfilescript_block_length-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: <= (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
@@ -130,9 +123,9 @@ Rules version: 9.3.8
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (185)
+### Unsupported rule type: new_terms (186)
 
-185 rules:
+186 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Account Discovery By Rare User
@@ -203,6 +196,7 @@ Rules version: 9.3.8
 * Execution of an Unsigned Service
 * Execution via MSSQL xp_cmdshell Stored Procedure
 * File Creation in /var/log via Suspicious Process
+* File Creation in World-Writable Directory by Unusual Process
 * File Permission Modification in Writable Directory
 * First Occurrence GitHub Event for a Personal Access Token (PAT)
 * First Occurrence of GitHub Repo Interaction From a New IP
@@ -320,9 +314,9 @@ Rules version: 9.3.8
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (145)
+### Unsupported rule type: esql (148)
 
-145 rules:
+148 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
@@ -330,11 +324,13 @@ Rules version: 9.3.8
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
 * AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
 * AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
+* AWS Credentials Used from GitHub Actions and Non-CI/CD Infrastructure
 * AWS Discovery API Calls via CLI from a Single Resource
 * AWS EC2 LOLBin Execution via SSM SendCommand
 * AWS EC2 Multi-Region DescribeInstances API Calls
 * AWS IAM Long-Term Access Key Correlated with Elevated Detection Alerts
 * AWS IAM User Created Access Keys For Another User
+* AWS Rare Source AS Organization Activity
 * AWS S3 Object Encryption Using External KMS Key
 * AWS S3 Rapid Bucket Posture API Calls from a Single Principal
 * AWS S3 Static Site JavaScript File Uploaded
@@ -383,6 +379,7 @@ Rules version: 9.3.8
 * LSASS Process Access via Windows API
 * Lateral Movement Alerts from a Newly Observed Source Address
 * Lateral Movement Alerts from a Newly Observed User
+* Long Base64 Encoded Command via Scripting Interpreter
 * M365 Azure Monitor Alert Email with Financial or Billing Theme
 * M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
 * M365 Identity User Account Lockouts
@@ -470,9 +467,125 @@ Rules version: 9.3.8
 * Web Server Potential Spike in Error Response Codes
 * Web Server Suspicious User Agent Requests
 
-### Unsupported rule type: machine_learning (105)
+### 'types.SimpleNamespace' object has no attribute 'type' (111)
 
-105 rules:
+111 rules:
+
+* AWS RDS Snapshot Export
+* Attempt to Disable IPTables or Firewall
+* Auditd Login Attempt at Forbidden Time
+* Auditd Login from Forbidden Location
+* Auditd Max Failed Login Attempts
+* Auditd Max Login Sessions
+* Base64 Encoding/Decoding Activity
+* DNS Activity to the Internet
+* Deprecated - AWS EC2 Snapshot Activity
+* Deprecated - AWS EC2 VM Export Failure
+* Deprecated - AWS ElastiCache Security Group Created
+* Deprecated - AWS ElastiCache Security Group Modified or Deleted
+* Deprecated - AWS RDS Cluster Creation
+* Deprecated - AWS RDS Instance Creation
+* Deprecated - AWS RDS Instance/Cluster Stoppage
+* Deprecated - AWS RDS Security Group Creation
+* Deprecated - AWS RDS Security Group Deletion
+* Deprecated - AWS Redshift Cluster Creation
+* Deprecated - AWS Root Login Without MFA
+* Deprecated - Agent Spoofing - Mismatched Agent ID
+* Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
+* Deprecated - Azure Virtual Network Device Modified or Deleted
+* Deprecated - CAP_SYS_ADMIN Assigned to Binary
+* Deprecated - Creation of Kernel Module
+* Deprecated - Execution of File Written or Modified by PDF Reader
+* Deprecated - LaunchDaemon Creation or Modification and Immediate Loading
+* Deprecated - Modification of Standard Authentication Module or Configuration
+* Deprecated - Network Connection via Sudo Binary
+* Deprecated - Potential DNS Tunneling via Iodine
+* Deprecated - Potential Non-Standard Port HTTP/HTTPS connection
+* Deprecated - Potential Non-Standard Port SSH connection
+* Deprecated - Potential Password Spraying of Microsoft 365 User Accounts
+* Deprecated - Potential Privilege Escalation via UID INT_MAX Bug Detected
+* Deprecated - Potential Process Injection via LD_PRELOAD Environment Variable
+* Deprecated - Potential Protocol Tunneling via Chisel Server
+* Deprecated - Potential Pspy Process Monitoring Detected
+* Deprecated - Potential Reverse Shell via Suspicious Parent Process
+* Deprecated - Potential Successful Linux FTP Brute Force Attack Detected
+* Deprecated - Potential Successful Linux RDP Brute Force Attack Detected
+* Deprecated - Potential curl CVE-2023-38545 Exploitation
+* Deprecated - Process Termination followed by Deletion
+* Deprecated - Remote File Creation on a Sensitive Directory
+* Deprecated - SSH Connection Established Inside A Running Container
+* Deprecated - SSH Process Launched From Inside A Container
+* Deprecated - SSH Process Launched From Inside A Container via Elastic Defend
+* Deprecated - Suspicious File Creation in /etc for Persistence
+* Deprecated - Suspicious JAVA Child Process
+* Deprecated - Suspicious Renaming of ESXI index.html File
+* Deprecated - Threat Intel Filebeat Module (v8.x) Indicator Match
+* Deprecated - Threat Intel Indicator Match
+* Execution via Regsvcs/Regasm
+* FTP (File Transfer Protocol) Activity to the Internet
+* File and Directory Discovery
+* GCP Kubernetes Rolebindings Created or Patched
+* Google Workspace User Group Access Modified to Allow External Access
+* Hex Encoding/Decoding Activity
+* IRC (Internet Relay Chat) Protocol Activity to the Internet
+* Linux Restricted Shell Breakout via  apt/apt-get Changelog Escape
+* Linux Restricted Shell Breakout via awk Commands
+* Linux Restricted Shell Breakout via busybox Shell Evasion
+* Linux Restricted Shell Breakout via c89/c99 Shell evasion
+* Linux Restricted Shell Breakout via cpulimit Shell Evasion
+* Linux Restricted Shell Breakout via crash Shell evasion
+* Linux Restricted Shell Breakout via env Shell Evasion
+* Linux Restricted Shell Breakout via flock Shell evasion
+* Linux Restricted Shell Breakout via the SSH command
+* Linux Restricted Shell Breakout via the expect command
+* Linux Restricted Shell Breakout via the find command
+* Linux Restricted Shell Breakout via the gcc command
+* Linux Restricted Shell Breakout via the mysql command
+* Linux Restricted Shell Breakout via the vi command
+* Malicious Remote File Creation
+* Mknod Process Activity
+* Network Connection via Mshta
+* Network Sniffing via Tcpdump
+* Nmap Process Activity
+* PPTP (Point to Point Tunneling Protocol) Activity
+* Persistence via Kernel Module Modification
+* Potential Cross Site Scripting (XSS)
+* Potential Linux Reverse Connection through Port Knocking
+* Potential Persistence via Cron Job
+* Potential PrintNightmare Exploit Registry Modification
+* Potential PrintNightmare File Modification
+* Potential Privilege Escalation via Local Kerberos Relay over LDAP
+* Potential Process Herpaderping Attempt
+* Potential SSH Brute Force Detected on Privileged Account
+* Potential Shell via Web Server
+* PowerShell spawning Cmd
+* Process Discovery via Tasklist
+* Proxy Port Activity to the Internet
+* Query Registry via reg.exe
+* RDP (Remote Desktop Protocol) to the Internet
+* Reverse Shell Created via Named Pipe
+* SMTP to the Internet
+* SQL Traffic to the Internet
+* SSH (Secure Shell) from the Internet
+* SSH (Secure Shell) to the Internet
+* Setgid Bit Set via chmod
+* Socat Process Activity
+* Strace Process Activity
+* Suspicious File Changes Activity Detected
+* Suspicious Network Connection Attempt by Root
+* Suspicious Process from Conhost
+* TCP Port 8000 Activity to the Internet
+* Threat Intel Filebeat Module (v7.x) Indicator Match
+* Tor Activity to the Internet
+* Trusted Developer Application Usage
+* Unusual Process Execution - Temp
+* User Discovery via Whoami
+* Web Application Suspicious Activity: No User Agent
+* Whitespace Padding in Process Command Line
+
+### Unsupported rule type: machine_learning (106)
+
+106 rules:
 
 * Anomalous Linux Compiler Activity
 * Anomalous Process For a Linux Population
@@ -495,6 +608,7 @@ Rules version: 9.3.8
 * Rare AWS Error Code
 * Rare Azure Activity Logs Event Failures
 * Rare GCP Audit Failure Event Code
+* Rare Powershell Script
 * Rare User Logon
 * Spike in AWS Error Messages
 * Spike in Azure Activity Logs Failed Messages
@@ -636,6 +750,289 @@ Rules version: 9.3.8
 
 ## Generation errors
 
+### Field type solver: constant_keyword (279)
+
+279 rules:
+* AWS CloudShell Environment Created
+* AWS CloudTrail Log Created
+* AWS CloudTrail Log Deleted
+* AWS CloudTrail Log Evasion
+* AWS CloudTrail Log Suspended
+* AWS CloudTrail Log Updated
+* AWS CloudWatch Alarm Deletion
+* AWS CloudWatch Log Group Deletion
+* AWS CloudWatch Log Stream Deletion
+* AWS Config Resource Deletion
+* AWS Configuration Recorder Stopped
+* AWS EC2 AMI Shared with Another Account
+* AWS EC2 Deprecated AMI Discovery
+* AWS EC2 Encryption Disabled
+* AWS EC2 Export Task
+* AWS EC2 Full Network Packet Capture Detected
+* AWS EC2 Instance Connect SSH Public Key Uploaded
+* AWS EC2 Network Access Control List Creation
+* AWS EC2 Network Access Control List Deletion
+* AWS EC2 Security Group Configuration Change
+* AWS EC2 Serial Console Access Enabled
+* AWS EFS File System Deleted
+* AWS EventBridge Rule Disabled or Deleted
+* AWS GuardDuty Detector Deletion
+* AWS GuardDuty Member Account Manipulation
+* AWS IAM Deactivation of MFA Device
+* AWS IAM Group Creation
+* AWS IAM Group Deletion
+* AWS IAM Roles Anywhere Profile Creation
+* AWS IAM SAML Provider Created
+* AWS IAM SAML Provider Updated
+* AWS IAM User Addition to Group
+* AWS KMS Customer Managed Key Disabled or Scheduled for Deletion
+* AWS Lambda Layer Added to Existing Function
+* AWS Management Console Root Login
+* AWS RDS DB Instance Restored
+* AWS RDS DB Instance or Cluster Deleted
+* AWS RDS Snapshot Export
+* AWS Route 53 Domain Transfer Lock Disabled
+* AWS Route 53 Domain Transferred to Another Account
+* AWS Route 53 Private Hosted Zone Associated With a VPC
+* AWS Route 53 Resolver Query Log Configuration Deleted
+* AWS S3 Bucket Configuration Deletion
+* AWS SQS Queue Purge
+* AWS Sensitive IAM Operations Performed via CloudShell
+* AWS Sign-In Console Login with Federated User
+* AWS Sign-In Root Password Recovery Requested
+* AWS VPC Flow Logs Deletion
+* AWS WAF Access Control List Deletion
+* AWS WAF Rule or Rule Group Deletion
+* Abnormally Large DNS Response
+* Accepted Default Telnet Port Connection
+* Administrator Privileges Assigned to an Okta Group
+* Application Added to Google Workspace Domain
+* Application Removed from Blocklist in Google Workspace
+* Attempt to Create Okta API Token
+* Attempt to Deactivate an Okta Application
+* Attempt to Deactivate an Okta Network Zone
+* Attempt to Deactivate an Okta Policy
+* Attempt to Deactivate an Okta Policy Rule
+* Attempt to Delete an Okta Application
+* Attempt to Delete an Okta Network Zone
+* Attempt to Delete an Okta Policy
+* Attempt to Delete an Okta Policy Rule
+* Attempt to Modify an Okta Application
+* Attempt to Modify an Okta Network Zone
+* Attempt to Modify an Okta Policy
+* Attempt to Modify an Okta Policy Rule
+* Attempt to Reset MFA Factors for an Okta User Account
+* Attempt to Revoke Okta API Token
+* Attempted Bypass of Okta MFA
+* Azure Automation Account Created
+* Azure Automation Runbook Created or Modified
+* Azure Automation Runbook Deleted
+* Azure Automation Webhook Created
+* Azure Blob Storage Container Access Level Modified
+* Azure Blob Storage Permissions Modified
+* Azure Compute VM Command Executed
+* Azure Diagnostic Settings Alert Suppression Rule Created or Modified
+* Azure Event Hub Authorization Rule Created or Updated
+* Azure Event Hub Deleted
+* Azure Kubernetes Services (AKS) Kubernetes Events Deleted
+* Azure Kubernetes Services (AKS) Kubernetes Pods Deleted
+* Azure Kubernetes Services (AKS) Kubernetes Rolebindings Created
+* Azure RBAC Built-In Administrator Roles Assigned
+* Azure Resource Group Deleted
+* Azure Service Principal Sign-In Followed by Arc Cluster Credential Access
+* Azure Storage Account Key Regenerated
+* Azure VNet Firewall Front Door WAF Policy Deleted
+* Azure VNet Firewall Policy Deleted
+* Azure VNet Full Network Packet Capture Enabled
+* Azure VNet Network Watcher Deleted
+* Command and Scripting Interpreter via Windows Scripts
+* CrowdStrike External Alerts
+* CyberArk Privileged Access Security Error
+* CyberArk Privileged Access Security Recommended Monitor
+* Default Cobalt Strike Team Server Certificate
+* Deprecated - M365 Exchange DLP Policy Deleted
+* Deprecated - M365 Security Compliance Email Reported by User as Malware or Phish
+* Deprecated - M365 Security Compliance Potential Ransomware Activity
+* Deprecated - M365 Security Compliance Unusual Volume of File Deletion
+* Deprecated - M365 Security Compliance User Restricted from Sending Email
+* Deprecated - M365 Teams External Access Enabled
+* Deprecated - M365 Teams Guest Access Enabled
+* Direct Interactive Kubernetes API Request by Common Utilities
+* Direct Interactive Kubernetes API Request by Unusual Utilities
+* Domain Added to Google Workspace Trusted Domains
+* Elastic Security External Alerts
+* Entra ID ADRS Token Request by Microsoft Authentication Broker
+* Entra ID Application Credential Modified
+* Entra ID Custom Domain Added or Verified
+* Entra ID Domain Federation Configuration Change
+* Entra ID External Guest User Invited
+* Entra ID Global Administrator Role Assigned
+* Entra ID Global Administrator Role Assigned (PIM User)
+* Entra ID High Risk Sign-in
+* Entra ID High Risk User Sign-in Heuristic
+* Entra ID MFA Disabled for User
+* Entra ID OAuth Device Code Grant by Microsoft Authentication Broker
+* Entra ID OAuth PRT Issuance to Non-Managed Device Detected
+* Entra ID OAuth Phishing via First-Party Microsoft Application
+* Entra ID PowerShell Sign-in
+* Entra ID Privileged Identity Management (PIM) Role Modified
+* Entra ID Protection - Risk Detection - Sign-in Risk
+* Entra ID Protection - Risk Detection - User Risk
+* Entra ID Protection Admin Confirmed Compromise
+* Entra ID Protection Alerts for User Detected
+* Entra ID Protection User Alert and Device Registration
+* Entra ID Service Principal Created
+* Entra ID Sign-in TeamFiltration User-Agent Detected
+* Entra ID Unusual Cloud Device Registration
+* Entra ID User Added as Registered Application Owner
+* Entra ID User Added as Service Principal Owner
+* Entra ID User Reported Suspicious Activity
+* Enumerating Domain Trusts via NLTEST.EXE
+* Execution via Windows Subsystem for Linux
+* Forbidden Direct Interactive Kubernetes API Request
+* FortiGate Configuration File Downloaded
+* FortiGate Overly Permissive Firewall Policy Created
+* FortiGate SOCKS Traffic from an Unusual Process
+* FortiGate SSL VPN Login Followed by SIEM Alert by User
+* FortiGate SSO Login Followed by Administrator Account Creation
+* FortiGate Super Admin Account Creation
+* Forwarded Google Workspace Security Alert
+* GCP Firewall Rule Creation
+* GCP Firewall Rule Deletion
+* GCP Firewall Rule Modification
+* GCP IAM Custom Role Creation
+* GCP IAM Role Deletion
+* GCP IAM Service Account Key Deletion
+* GCP Logging Bucket Deletion
+* GCP Logging Sink Deletion
+* GCP Logging Sink Modification
+* GCP Pub/Sub Subscription Creation
+* GCP Pub/Sub Subscription Deletion
+* GCP Pub/Sub Topic Creation
+* GCP Pub/Sub Topic Deletion
+* GCP Service Account Creation
+* GCP Service Account Deletion
+* GCP Service Account Disabled
+* GCP Service Account Key Creation
+* GCP Storage Bucket Configuration Modification
+* GCP Storage Bucket Deletion
+* GCP Storage Bucket Permissions Modification
+* GCP Virtual Private Cloud Network Deletion
+* GCP Virtual Private Cloud Route Creation
+* GCP Virtual Private Cloud Route Deletion
+* GitHub App Deleted
+* GitHub Owner Role Granted To User
+* GitHub Private Repository Turned Public
+* GitHub Protected Branch Settings Changed
+* GitHub Repository Deleted
+* GitHub Secret Scanning Disabled
+* Google Drive Ownership Transferred via Google Workspace
+* Google SecOps External Alerts
+* Google Workspace 2SV Policy Disabled
+* Google Workspace API Access Granted via Domain-Wide Delegation
+* Google Workspace Admin Role Assigned to a User
+* Google Workspace Admin Role Deletion
+* Google Workspace Bitlocker Setting Disabled
+* Google Workspace Custom Admin Role Created
+* Google Workspace Custom Gmail Route Created or Modified
+* Google Workspace Drive Encryption Key(s) Accessed from Anonymous User
+* Google Workspace MFA Enforcement Disabled
+* Google Workspace Object Copied to External Drive with App Consent
+* Google Workspace Password Policy Modified
+* Google Workspace Restrictions for Marketplace Modified to Allow Any App
+* Google Workspace Role Modified
+* Google Workspace Suspended User Account Renewed
+* Google Workspace User Organizational Unit Changed
+* IBM QRadar External Alerts
+* IPSEC NAT Traversal Port Activity
+* Initial Access via File Upload Followed by GET Request
+* Insecure AWS EC2 VPC Security Group Ingress Rule Added
+* Kubernetes Anonymous User Create/Update/Patch Pods Request
+* Kubernetes Cluster-Admin Role Binding Created
+* Kubernetes Creation of a RoleBinding Referencing a ServiceAccount
+* Kubernetes Events Deleted
+* Kubernetes Exposed Service Created With Type NodePort
+* Kubernetes Forbidden Creation Request
+* Kubernetes Pod Created With HostIPC
+* Kubernetes Pod Created With HostNetwork
+* Kubernetes Pod Created With HostPID
+* Kubernetes Pod Created with a Sensitive hostPath Volume
+* Kubernetes Privileged Pod Created
+* Kubernetes Sensitive RBAC Change Followed by Workload Modification
+* Kubernetes Service Account Modified RBAC Objects
+* Kubernetes Suspicious Assignment of Controller Service Account
+* Kubernetes User Exec into Pod
+* M365 Exchange Anti-Phish Policy Deleted
+* M365 Exchange Anti-Phish Rule Modification
+* M365 Exchange DKIM Signing Configuration Disabled
+* M365 Exchange Email Safe Attachment Rule Disabled
+* M365 Exchange Email Safe Link Policy Disabled
+* M365 Exchange Federated Domain Created or Modified
+* M365 Exchange MFA Notification Email Deleted or Moved
+* M365 Exchange Mail Flow Transport Rule Created
+* M365 Exchange Mail Flow Transport Rule Modified
+* M365 Exchange Mailbox Audit Logging Bypass Added
+* M365 Exchange Mailbox Items Accessed Excessively
+* M365 Exchange Malware Filter Policy Deleted
+* M365 Exchange Malware Filter Rule Modified
+* M365 Exchange Management Group Role Assigned
+* M365 Identity Global Administrator Role Assigned
+* M365 Identity OAuth Flow by User Sign-in to Device Registration
+* M365 Identity OAuth Phishing via First-Party Microsoft Application
+* M365 OneDrive Malware File Upload
+* M365 SharePoint Malware File Detected
+* M365 SharePoint Search for Sensitive Content
+* M365 SharePoint Site Administrator Added
+* M365 SharePoint Site Sharing Policy Weakened
+* M365 Teams Custom Application Interaction Enabled
+* MFA Disabled for Google Workspace Organization
+* Microsoft Sentinel External Alerts
+* Modification or Removal of an Okta Application Sign-On Policy
+* New GitHub App Installed
+* New GitHub Owner Added
+* New GitHub Personal Access Token (PAT) Added
+* New Okta Identity Provider (IdP) Added by Admin
+* Okta Alerts Following Unusual Proxy Authentication
+* Okta FastPass Phishing Detection
+* Okta ThreatInsight Threat Suspected Promotion
+* Okta User Assigned Administrator Role
+* Okta User Session Impersonation
+* Possible Okta DoS Attack
+* Potential Credential Access via Renamed COM+ Services DLL
+* Potential DLL Side-Loading via Trusted Microsoft Programs
+* Potential File Transfer via Curl for Windows
+* Potential Persistence via File Modification
+* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
+* Potential VIEWSTATE RCE Attempt on SharePoint/IIS
+* Potential Webshell Deployed via Apache Struts CVE-2023-50164 Exploitation
+* Potentially Successful Okta MFA Bombing via Push Notifications
+* Process Started with Executable Stack
+* RDP (Remote Desktop Protocol) from the Internet
+* RPC (Remote Procedure Call) from the Internet
+* RPC (Remote Procedure Call) to the Internet
+* React2Shell Network Security Alert
+* Roshal Archive (RAR) or PowerShell File Downloaded from the Internet
+* SMTP on Port 26/TCP
+* SentinelOne Alert External Alerts
+* SentinelOne Threat External Alerts
+* Service Account Token or Certificate Access Followed by Kubernetes API Request
+* Splunk External Alerts
+* Stolen Credentials Used to Login to Okta Account After MFA Reset
+* Suricata and Elastic Defend Network Correlation
+* Suspicious Activity Reported by Okta User
+* Suspicious Usage of bpf_probe_write_user Helper
+* Suspicious WMI Event Subscription Created
+* Suspicious Windows Powershell Arguments
+* Suspicious rc.local Error Message
+* Tainted Kernel Module Load
+* Tainted Out-Of-Tree Kernel Module Load
+* Unauthorized Access to an Okta Application
+* VNC (Virtual Network Computing) from the Internet
+* VNC (Virtual Network Computing) to the Internet
+* WMI Incoming Lateral Movement
+* Whoami Process Activity
+* Zoom Meeting with no Passcode
+
 ### Unsupported function: match (35)
 
 35 rules:
@@ -702,14 +1099,16 @@ Rules version: 9.3.8
 * AWS S3 Object Versioning Suspended
 * AWS Suspicious User Agent Fingerprint
 
-### Root with too many branches (limit: 10000) (20)
+### Root with too many branches (limit: 10000) (22)
 
-20 rules:
+22 rules:
+* Connection to Common Large Language Model Endpoints
 * Connection to Commonly Abused Web Services
 * Decoded Payload Piped to Interpreter Detected via Defend for Containers
 * Execution from Unusual Directory - Command Line
 * Execution of a Downloaded Windows Script
 * External IP Lookup from Non-Browser Process
+* GenAI Process Accessing Sensitive Files
 * GenAI or MCP Server Child Process Execution
 * Ingress Tool Transfer Followed by Execution and Deletion Detected via Defend for Containers
 * Kubelet Pod Discovery Detected via Defend for Containers
@@ -725,23 +1124,6 @@ Rules version: 9.3.8
 * Potential Successful SSH Brute Force Attack
 * Suspicious React Server Child Process
 * Unusual User Privilege Enumeration via id
-
-### Field type solver: constant_keyword (13)
-
-13 rules:
-* CrowdStrike External Alerts
-* Elastic Security External Alerts
-* Google SecOps External Alerts
-* IBM QRadar External Alerts
-* Initial Access via File Upload Followed by GET Request
-* Microsoft Sentinel External Alerts
-* Potential DLL Side-Loading via Trusted Microsoft Programs
-* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
-* Potential VIEWSTATE RCE Attempt on SharePoint/IIS
-* Potential Webshell Deployed via Apache Struts CVE-2023-50164 Exploitation
-* SentinelOne Alert External Alerts
-* SentinelOne Threat External Alerts
-* Splunk External Alerts
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)
 
@@ -771,18 +1153,6 @@ Rules version: 9.3.8
 * Potential Docker Escape via Nsenter
 * Potential Linux Backdoor User Account Creation
 * Suspicious Data Encryption via OpenSSL Utility
-
-### Field type solver: match_only_text (8)
-
-8 rules:
-* Process Started with Executable Stack
-* React2Shell Network Security Alert
-* Segfault Detected
-* Suspicious Usage of bpf_probe_write_user Helper
-* Suspicious rc.local Error Message
-* Tainted Kernel Module Load
-* Tainted Out-Of-Tree Kernel Module Load
-* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Unsupported argument type(s): <class 'eql.ast.Field'> (8)
 
@@ -849,11 +1219,11 @@ Rules version: 9.3.8
 * Potential Machine Account Relay Attack via SMB
 * Unusual Execution via Microsoft Common Console File
 
-### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)
+### Field type solver: match_only_text (2)
 
 2 rules:
-* RPC (Remote Procedure Call) from the Internet
-* RPC (Remote Procedure Call) to the Internet
+* Segfault Detected
+* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Unsolvable constraints: process.name (excluded by Strings({'kubectl'}): ('kubectl')) (2)
 
@@ -906,21 +1276,6 @@ Rules version: 9.3.8
 1 rules:
 * DNS Request for IP Lookup Service via Unsigned Binary
 
-### Field type solver: flattened (1)
-
-1 rules:
-* Entra ID ADRS Token Request by Microsoft Authentication Broker
-
-### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)
-
-1 rules:
-* Abnormally Large DNS Response
-
-### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)
-
-1 rules:
-* RDP (Remote Desktop Protocol) from the Internet
-
 ### Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)
 
 1 rules:
@@ -935,11 +1290,6 @@ Rules version: 9.3.8
 
 1 rules:
 * Creation of Hidden Shared Object File
-
-### Unsolvable constraints: fortinet.firewall.cfgattr (not in Strings({'*srcaddr[all]*'}): ('*dstaddr[all]*')) (1)
-
-1 rules:
-* FortiGate Overly Permissive Firewall Policy Created
 
 ### Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)
 
@@ -1081,15 +1431,15 @@ Rules version: 9.3.8
 1 rules:
 * PowerShell Share Enumeration Script
 
-### Unsolvable constraints: process.code_signature.subject_name (excluded by Strings({'OpenJS Foundation'}): ('OpenJS Foundation')) (1)
-
-1 rules:
-* Connection to Common Large Language Model Endpoints
-
 ### Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*')) (1)
 
 1 rules:
 * Suspicious Kernel Feature Activity
+
+### Unsolvable constraints: process.command_line (not in Strings({'*-e *'}): ('*RABpAHMAYQBiAGwAZQBSAGUAYQBsAHQAaQBtAGUATQBvAG4AaQB0AG8AcgBpAG4AZwAgA*')) (1)
+
+1 rules:
+* Disabling Windows Defender Security Settings via PowerShell
 
 ### Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)
 
@@ -1150,11 +1500,6 @@ Rules version: 9.3.8
 
 1 rules:
 * Remote System Discovery Commands
-
-### Unsolvable constraints: process.name (excluded by Strings({'claude.exe'}): ('claude.exe')) (1)
-
-1 rules:
-* GenAI Process Accessing Sensitive Files
 
 ### Unsolvable constraints: process.name (excluded by Strings({'cp'}): ('cp')) (1)
 
@@ -1296,20 +1641,10 @@ Rules version: 9.3.8
 1 rules:
 * Suspicious HTML File Creation
 
-### Unsupported &keyword 'kibana.alert.risk_score' constraint: > (1)
-
-1 rules:
-* FortiGate SSL VPN Login Followed by SIEM Alert by User
-
 ### Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)
 
 1 rules:
 * Machine Learning Detected a DNS Request With a High DGA Probability Score
-
-### Unsupported &keyword 'o365.audit.OperationCount' constraint: >= (1)
-
-1 rules:
-* M365 Exchange Mailbox Items Accessed Excessively
 
 ### Unsupported &keyword 'powershell.file.script_block_entropy_bits' constraint: >= (1)
 
