@@ -5,7 +5,7 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.2.13
+Rules version: 9.2.14
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
@@ -16,7 +16,7 @@ Rules version: 9.2.13
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (275)](#field-type-solver-constant_keyword-275)
+      1. [Field type solver: constant_keyword (274)](#field-type-solver-constant_keyword-274)
       1. [Unsupported function: match (32)](#unsupported-function-match-32)
       1. [Unsupported function: stringContains (23)](#unsupported-function-stringcontains-23)
       1. [Root with too many branches (limit: 10000) (19)](#root-with-too-many-branches-limit-10000-19)
@@ -616,9 +616,9 @@ Rules version: 9.2.13
 
 ## Generation errors
 
-### Field type solver: constant_keyword (275)
+### Field type solver: constant_keyword (274)
 
-275 rules:
+274 rules:
 * AWS CloudShell Environment Created
 * AWS CloudTrail Log Created
 * AWS CloudTrail Log Deleted
@@ -855,7 +855,6 @@ Rules version: 9.2.13
 * New GitHub Owner Added
 * New GitHub Personal Access Token (PAT) Added
 * New Okta Identity Provider (IdP) Added by Admin
-* Okta Alerts Following Unusual Proxy Authentication
 * Okta FastPass Phishing Detection
 * Okta ThreatInsight Threat Suspected Promotion
 * Okta User Assigned Administrator Role

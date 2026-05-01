@@ -5,14 +5,14 @@ learn what rules are supported and what not and why.
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.9
+Rules version: 9.3.10
 
 ## Table of contents
    1. [Failed rules (20)](#failed-rules-20)
    1. [Unsuccessful rules with signals (20)](#unsuccessful-rules-with-signals-20)
    1. [Rules with no signals (5)](#rules-with-no-signals-5)
    1. [Rules with too few signals (23)](#rules-with-too-few-signals-23)
-   1. [Rules with the correct signals (769)](#rules-with-the-correct-signals-769)
+   1. [Rules with the correct signals (770)](#rules-with-the-correct-signals-770)
 
 ## Failed rules (20)
 
@@ -2651,7 +2651,7 @@ process.interactive == true and container.id like "*"
 
 
 
-## Rules with the correct signals (769)
+## Rules with the correct signals (770)
 
 ### A scheduled task was created
 
@@ -9250,6 +9250,28 @@ event.dataset: "okta.system"
     and event.category: "authentication"
     and okta.target.alternate_id: "Okta Admin Console"
     and okta.outcome.result: "FAILURE"
+```
+
+
+
+### Okta Alerts Following Unusual Proxy Authentication
+
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-0918
+
+```python
+sequence by user.name with maxspan=30m
+    [any where event.dataset == "okta.system" and
+        kibana.alert.rule.rule_id == "6f1bb4b2-7dc8-11ee-92b2-f661ea17fbcd"]
+    [any where event.dataset == "okta.system" and
+        kibana.alert.rule.rule_id != null and
+        kibana.alert.severity != "low" and
+        kibana.alert.rule.rule_id not in  (
+            "6f1bb4b2-7dc8-11ee-92b2-f661ea17fbcd",
+            "af2d8e4c-3b7c-4e91-8f5a-6c9d0e1f2a3b"
+        )
+    ]
 ```
 
 
