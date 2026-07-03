@@ -7,7 +7,7 @@ steps:
   - label: "Verify Renovate configuration"
     command: "renovate-config-validator"
     agents:
-      image: "docker.elastic.co/ci-agent-images/pipelib:0.30.0@sha256:91ae509593bd26475318c80356831af13a4063a9bd8f7a935618d3f9fb678584"
+      image: "docker.elastic.co/ci-agent-images/pipelib:0.31.0@sha256:58c0aab1ff8f47341fb3bd35248bf071ab225f3f57f7e38e6b25e3ac0cc4dec9"
     if_changed:
       - "renovate.json"
 
@@ -15,7 +15,7 @@ steps:
   - label: Validate TokenPolicy RREs
     command: "/agent/check-catalog-info.sh"
     agents:
-      image: "docker.elastic.co/ci-agent-images/pipelib:0.30.0@sha256:91ae509593bd26475318c80356831af13a4063a9bd8f7a935618d3f9fb678584"
+      image: "docker.elastic.co/ci-agent-images/pipelib:0.31.0@sha256:58c0aab1ff8f47341fb3bd35248bf071ab225f3f57f7e38e6b25e3ac0cc4dec9"
     if_changed:
       - "catalog-info.yaml"
 
