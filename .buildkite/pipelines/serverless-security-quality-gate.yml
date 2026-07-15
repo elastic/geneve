@@ -1,5 +1,5 @@
 agents:
-  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:286569819e10b5c1c64467610a955ada41acaea8c99d17faecd45522c792c16f"
+  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:7e03e7a2efa6024d38c298fe2e0543a3fefc8a000a1832809b06d1f6f26b8bc4"
 
 env:
   EC_REGISTER_BACKEND: "appex-qa-team-cluster"
