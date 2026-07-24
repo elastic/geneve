@@ -65,9 +65,7 @@ def get_node_id(label):
 def visit_ast(node, ctx, negate=False):
     node_id = get_node_id(node.render())
 
-    if isinstance(node, eql.ast.Literal):
-        ctx.graph.node(node_id, node.render())
-    elif type(node) is eql.ast.Field:
+    if isinstance(node, eql.ast.Literal) or type(node) is eql.ast.Field:
         ctx.graph.node(node_id, node.render())
     elif type(node) is eql.ast.Or:
         ctx.graph.node(node_id, "or")

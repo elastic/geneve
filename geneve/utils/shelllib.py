@@ -34,7 +34,7 @@ class ShellExpansionError(Exception):
 
 def _repl_subshell(match):
     command = match.group(1)
-    p = subprocess.run(command, stdout=subprocess.PIPE, shell=True, text=True)
+    p = subprocess.run(command, stdout=subprocess.PIPE, shell=True, text=True, check=False)
     if p.returncode:
         raise ShellExpansionError(f"Command '{command}' failed: status={p.returncode}")
     value = p.stdout
@@ -66,11 +66,11 @@ def _shell_expand_str(value):
 
 def shell_expand(value):
     if isinstance(value, dict):
-        return dict((k, shell_expand(v)) for k, v in value.items())
+        return {k: shell_expand(v) for k, v in value.items()}
     elif isinstance(value, set):
-        return set(shell_expand(v) for v in value)
+        return {shell_expand(v) for v in value}
     elif isinstance(value, list):
-        return list(shell_expand(v) for v in value)
+        return [shell_expand(v) for v in value]
     elif isinstance(value, tuple):
         return tuple(shell_expand(v) for v in value)
     elif isinstance(value, str):

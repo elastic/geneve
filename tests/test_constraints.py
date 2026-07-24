@@ -846,14 +846,14 @@ constraints_keyword_exceptions = [
             ("not wildcard", "*.exe"),
         ],
         "Unsolvable constraints: test_var (excluded by Strings({'cmd.exe', 'powershell.exe'}): ('*.exe'))",
-    ),  # noqa: E501
+    ),
     (
         [
             ("wildcard", ("cmd.exe", "powershell.exe")),
             ("not wildcard", ("*.exe", "cmd.*")),
         ],
         "Unsolvable constraints: test_var (excluded by Strings({'cmd.exe', 'powershell.exe'}): ('*.exe', 'cmd.*'))",
-    ),  # noqa: E501
+    ),
 ]
 
 branch_fields = [

@@ -222,7 +222,7 @@ class TestStrings(tu.SeededTestCase, unittest.TestCase):
         self.assertEqual(Strings({}) - {}, {})
 
         values = [
-            "FTa{LKYi\E%,:r:$oJQq*8/P0d1fZv",
+            r"FTa{LKYi\E%,:r:$oJQq*8/P0d1fZv",
             'XWI{=\n,"N/anm;<\x0c@c`E}Sg',
             "\x0c:9#1]VbN[&g*]ir!wnKG",
             "/w\x0ci9K*D\x0c9%NnfXZb0G)V&t",

@@ -57,10 +57,9 @@ def expand_wildcards(s, alphabet, min_star_len, max_star_len):
 def load_schema(uri, path, basedir=None):
     from ruamel.yaml import YAML
 
-    with resource(uri, basedir=basedir, cachedir=dirs.cache) as resource_dir:
-        with open(resource_dir / path) as f:
-            yaml = YAML(typ="safe")
-            return yaml.load(f)
+    with resource(uri, basedir=basedir, cachedir=dirs.cache) as resource_dir, open(resource_dir / path) as f:
+        yaml = YAML(typ="safe")
+        return yaml.load(f)
 
 
 def load_integration_schema(name, kibana_version):
@@ -86,8 +85,8 @@ def load_integration_schema(name, kibana_version):
                 fields = tree["fields"]
             except KeyError:
                 fields = tree["field"]
-            for tree in fields:
-                yield from field_schema(tree, path)
+            for subtree in fields:
+                yield from field_schema(subtree, path)
         else:
             schema = {"type": tree["type"]}
             if is_array(tree):
@@ -236,7 +235,7 @@ class TreeTraverser:
 
 
 def split_path(field):
-    return list(p[1:-1] if len(p) > 1 and p.startswith("`") and p.endswith("`") else p for p in field.split("."))
+    return [p[1:-1] if len(p) > 1 and p.startswith("`") and p.endswith("`") else p for p in field.split(".")]
 
 
 if sys.version_info >= (3, 12):

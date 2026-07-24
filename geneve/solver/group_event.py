@@ -17,6 +17,8 @@
 
 """Event constraints solver."""
 
+from typing import ClassVar
+
 from geneve.solver import CombinedFields, Entity, solver
 from geneve.utils.solution_space import transpose
 
@@ -48,7 +50,7 @@ event_categories = {
 
 @solver.group("event")
 class EventEntity(Entity):
-    ecs_constraints = {
+    ecs_constraints: ClassVar[dict] = {
         "category": [("wildcard", sorted(event_categories))],
         "type": [("wildcard", sorted(transpose(event_categories)))],
     }

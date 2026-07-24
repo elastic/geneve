@@ -18,6 +18,7 @@
 """Constraints solver for date fields."""
 
 import time
+from typing import ClassVar
 
 from ..constraints import ConflictError
 from . import Field, solver
@@ -25,7 +26,7 @@ from . import Field, solver
 
 @solver.type("date")
 class DateField(Field):
-    valid_constraints = ["=="]
+    valid_constraints: ClassVar[list] = ["=="]
 
     def __init__(self, field, constraints, field_constraints, schema):
         super().__init__(field, constraints, field_constraints, schema)

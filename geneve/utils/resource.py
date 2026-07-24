@@ -86,9 +86,8 @@ def _gz_compress(base_name, base_dir, **kwargs):
 
     if Path(base_dir).is_dir():
         raise ValueError("cannot compress dirs with gzip")
-    with open(base_dir, "rb") as f_in:
-        with gzip.open(base_name + ".gz", "wb") as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    with open(base_dir, "rb") as f_in, gzip.open(base_name + ".gz", "wb") as f_out:
+        shutil.copyfileobj(f_in, f_out)
 
 
 def _bz2_compress(base_name, base_dir, **kwargs):
@@ -96,9 +95,8 @@ def _bz2_compress(base_name, base_dir, **kwargs):
 
     if Path(base_dir).is_dir():
         raise ValueError("cannot compress dirs with bzip2")
-    with open(base_dir, "rb") as f_in:
-        with bz2.open(base_name + ".bz2", "wb") as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    with open(base_dir, "rb") as f_in, bz2.open(base_name + ".bz2", "wb") as f_out:
+        shutil.copyfileobj(f_in, f_out)
 
 
 def _xz_compress(base_name, base_dir, **kwargs):
@@ -106,9 +104,8 @@ def _xz_compress(base_name, base_dir, **kwargs):
 
     if Path(base_dir).is_dir():
         raise ValueError("cannot compress dirs with lzma")
-    with open(base_dir, "rb") as f_in:
-        with lzma.open(base_name + ".xz", "wb") as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    with open(base_dir, "rb") as f_in, lzma.open(base_name + ".xz", "wb") as f_out:
+        shutil.copyfileobj(f_in, f_out)
 
 
 shutil.register_archive_format("gz", _gz_compress, description="compress a file with gzip")
@@ -120,27 +117,24 @@ def _gz_uncompress(archive_name, dest_dir, **kwargs):
     import gzip
 
     dest_name = Path(dest_dir) / Path(archive_name).stem
-    with gzip.open(archive_name, "rb") as f_in:
-        with open(dest_name, "wb") as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    with gzip.open(archive_name, "rb") as f_in, open(dest_name, "wb") as f_out:
+        shutil.copyfileobj(f_in, f_out)
 
 
 def _bz2_uncompress(archive_name, dest_dir, **kwargs):
     import bz2
 
     dest_name = Path(dest_dir) / Path(archive_name).stem
-    with bz2.open(archive_name, "rb") as f_in:
-        with open(dest_name, "wb") as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    with bz2.open(archive_name, "rb") as f_in, open(dest_name, "wb") as f_out:
+        shutil.copyfileobj(f_in, f_out)
 
 
 def _xz_uncompress(archive_name, dest_dir, **kwargs):
     import lzma
 
     dest_name = Path(dest_dir) / Path(archive_name).stem
-    with lzma.open(archive_name, "rb") as f_in:
-        with open(dest_name, "wb") as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    with lzma.open(archive_name, "rb") as f_in, open(dest_name, "wb") as f_out:
+        shutil.copyfileobj(f_in, f_out)
 
 
 shutil.register_unpack_format("gz", [".gz"], _gz_uncompress, description="decompress a file with gzip")

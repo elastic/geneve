@@ -115,10 +115,9 @@ class TestResource(unittest.TestCase):
             ]
 
             for uri, basedir in tests:
-                with self.subTest(uri=uri, basedir=basedir):
-                    with resource(uri, basedir=basedir) as resource_dir:
-                        manifest = resource_dir / "manifest.yml"
-                        self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
+                with self.subTest(uri=uri, basedir=basedir), resource(uri, basedir=basedir) as resource_dir:
+                    manifest = resource_dir / "manifest.yml"
+                    self.assertTrue(manifest.exists(), msg=f"{manifest} does not exist")
 
         for ext in ["bz2", "gz", "xz"]:
             tests = [
@@ -129,13 +128,12 @@ class TestResource(unittest.TestCase):
             ]
 
             for uri, basedir in tests:
-                with self.subTest(uri=uri, basedir=basedir):
-                    with resource(uri, basedir=basedir) as resource_dir:
-                        self.assertTrue(resource_dir.exists(), msg=f"{resource_dir} does not exist")
+                with self.subTest(uri=uri, basedir=basedir), resource(uri, basedir=basedir) as resource_dir:
+                    self.assertTrue(resource_dir.exists(), msg=f"{resource_dir} does not exist")
 
     def test_remote(self):
         with http_server(data_dir) as server:
-            uri = "http://%s:%s/%s.zip" % (*server.server_address, self.resource.name)
+            uri = "http://{}:{}/{}.zip".format(*server.server_address, self.resource.name)
 
             with resource(uri) as resource_dir:
                 manifest = resource_dir / "manifest.yml"
@@ -143,7 +141,7 @@ class TestResource(unittest.TestCase):
 
     def test_cached(self):
         with http_server(data_dir) as server:
-            uri = "http://%s:%s/%s.zip" % (*server.server_address, self.resource.name)
+            uri = "http://{}:{}/{}.zip".format(*server.server_address, self.resource.name)
 
             with tempdir() as cachedir:
                 cached_resource = cachedir / self.resource_zip.name
