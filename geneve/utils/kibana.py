@@ -60,8 +60,8 @@ class Kibana:
         if cloud_id:
             import base64
 
-            cluster_name, cloud_info = cloud_id.split(":")
-            domain, es_uuid, kibana_uuid = base64.b64decode(cloud_info.encode("utf-8")).decode("utf-8").split("$")
+            _cluster_name, cloud_info = cloud_id.split(":")
+            domain, _es_uuid, kibana_uuid = base64.b64decode(cloud_info.encode("utf-8")).decode("utf-8").split("$")
 
             if domain.endswith(":443"):
                 domain = domain[:-4]

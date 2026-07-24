@@ -18,6 +18,7 @@
 """Constraints solver for long fields."""
 
 from collections import namedtuple
+from typing import ClassVar
 
 from ..constraints import ConflictError
 from ..utils import random
@@ -31,8 +32,8 @@ LongLimits = NumberLimits(-(2**63), 2**63 - 1)
 
 @solver.type("long")
 class LongField(Field):
-    valid_constraints = ["==", "!=", ">=", "<=", ">", "<"]
-    ecs_constraints = {
+    valid_constraints: ClassVar[list] = ["==", "!=", ">=", "<=", ">", "<"]
+    ecs_constraints: ClassVar[dict] = {
         "as.number": [(">=", 0), ("<", 2**16)],
         "bytes": [(">=", 0), ("<", 2**32)],
         "pid": [(">", 0), ("<", 2**32)],
@@ -49,20 +50,16 @@ class LongField(Field):
         for k, v, *_ in constraints + field_constraints:
             if k == ">=":
                 v = int(v)
-                if self.min_value < v:
-                    self.min_value = v
+                self.min_value = max(self.min_value, v)
             elif k == "<=":
                 v = int(v)
-                if self.max_value > v:
-                    self.max_value = v
+                self.max_value = min(self.max_value, v)
             elif k == ">":
                 v = int(v)
-                if self.min_value < v + 1:
-                    self.min_value = v + 1
+                self.min_value = max(self.min_value, v + 1)
             elif k == "<":
                 v = int(v)
-                if self.max_value > v - 1:
-                    self.max_value = v - 1
+                self.max_value = min(self.max_value, v - 1)
         for k, v, *_ in constraints:
             if k == "==":
                 v = int(v)

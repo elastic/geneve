@@ -124,9 +124,7 @@ class Strings:
         new_set = set()
         for s in self.__set:
             for o in other.__set:
-                if s == o:
-                    new_set.add(s)
-                elif o[1] and fnmatchcase(s[0].lower(), o[0].lower()):  # o has wildcards
+                if s == o or o[1] and fnmatchcase(s[0].lower(), o[0].lower()):
                     new_set.add(s)
                 elif s[1] and fnmatchcase(o[0].lower(), s[0].lower()):  # s has wildcards
                     new_set.add(o)
@@ -185,13 +183,9 @@ class Strings:
         excl = set()
         for s in self.__set:
             for o in other.__set:
-                if s == o:
+                if s == o or o[1] and fnmatchcase(s[0].lower(), o[0].lower()):
                     sub.add(s)
-                elif o[1] and fnmatchcase(s[0].lower(), o[0].lower()):  # o has wildcards
-                    sub.add(s)
-                elif s[1] and fnmatchcase(o[0].lower(), s[0].lower()):  # s has wildcards
-                    excl.add(o[0])
-                elif s[1] and o[1]:  # both have wildcards
+                elif s[1] and fnmatchcase(o[0].lower(), s[0].lower()) or s[1] and o[1]:  # s has wildcards
                     excl.add(o[0])
         self.__set -= sub
         self.__exclude |= excl

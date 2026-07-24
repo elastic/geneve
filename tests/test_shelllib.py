@@ -46,16 +46,16 @@ class TestShellExpand(unittest.TestCase):
         self.assertEqual("", shell_expand("$(echo $TEST_VAR3)"))
         self.assertEqual("value1", shell_expand("$(echo $TEST_VAR1)"))
 
-        self.assertEqual(tuple(), shell_expand(tuple()))
+        self.assertEqual((), shell_expand(()))
         self.assertEqual(("value1", "value2"), shell_expand(("$TEST_VAR1", "$TEST_VAR2")))
 
-        self.assertEqual(list(), shell_expand(list()))
+        self.assertEqual([], shell_expand([]))
         self.assertEqual(["value1", "value2"], shell_expand(["$TEST_VAR1", "$TEST_VAR2"]))
 
         self.assertEqual(set(), shell_expand(set()))
         self.assertEqual({"value1", "value2"}, shell_expand({"$TEST_VAR1", "$TEST_VAR2"}))
 
-        self.assertEqual(dict(), shell_expand(dict()))
+        self.assertEqual({}, shell_expand({}))
         self.assertEqual({"var1": "value1", "var2": "value2"}, shell_expand({"var1": "$TEST_VAR1", "var2": "$TEST_VAR2"}))
 
         self.assertEqual("xvalue1", shell_expand("x$TEST_VAR1"))
@@ -72,16 +72,16 @@ class TestShellExpand(unittest.TestCase):
         self.assertEqual("value2", shell_expand("${TEST_VAR3:-${TEST_VAR2}}"))
         self.assertEqual("value3", shell_expand("${TEST_VAR3:-$(echo value3)}"))
 
-        self.assertEqual("$TEST_VAR1", shell_expand("\$TEST_VAR1"))
-        self.assertEqual("${TEST_VAR1}", shell_expand("\${TEST_VAR1}"))
-        self.assertEqual("\$TEST_VAR1", shell_expand("\\\$TEST_VAR1"))
-        self.assertEqual("\${TEST_VAR1}", shell_expand("\\\${TEST_VAR1}"))
+        self.assertEqual("$TEST_VAR1", shell_expand(r"\$TEST_VAR1"))
+        self.assertEqual("${TEST_VAR1}", shell_expand(r"\${TEST_VAR1}"))
+        self.assertEqual(r"\$TEST_VAR1", shell_expand("\\\\$TEST_VAR1"))
+        self.assertEqual(r"\${TEST_VAR1}", shell_expand("\\\\${TEST_VAR1}"))
 
-        self.assertEqual("$(true)", shell_expand("\$(true)"))
-        self.assertEqual("\$(true)", shell_expand("\\\$(true)"))
+        self.assertEqual("$(true)", shell_expand(r"\$(true)"))
+        self.assertEqual(r"\$(true)", shell_expand("\\\\$(true)"))
 
         # ideally this should be expanded to $(echo $TEST_VAR) but let's implement this only if needed by somebody
-        self.assertEqual("$(echo value1)", shell_expand("\$(echo $TEST_VAR1)"))
+        self.assertEqual("$(echo value1)", shell_expand(r"\$(echo $TEST_VAR1)"))
 
         with tempenv({"TEST_VAR4": "$TEST_VAR1$TEST_VAR2"}):
             self.assertEqual("value1value2", shell_expand("$TEST_VAR4"))
@@ -98,9 +98,8 @@ class TestShellExpand(unittest.TestCase):
         self.assertEqual(msg, str(cm.exception))
 
         msg = "Environment variable is recursively defined: TEST_VAR4"
-        with self.assertRaises(ShellExpansionError, msg=msg) as cm:
-            with tempenv({"TEST_VAR4": "x${TEST_VAR4}y"}):
-                self.assertEqual(None, shell_expand("$TEST_VAR4"))
+        with self.assertRaises(ShellExpansionError, msg=msg) as cm, tempenv({"TEST_VAR4": "x${TEST_VAR4}y"}):
+            self.assertEqual(None, shell_expand("$TEST_VAR4"))
         self.assertEqual(msg, str(cm.exception))
 
         msg = "Command 'false' failed: status=1"

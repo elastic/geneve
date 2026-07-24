@@ -44,7 +44,7 @@ Event = namedtuple("Event", ["meta", "doc"])
 def ast_from_eql_query(query):
     import eql
 
-    with eql.parser.allow_negation, eql.parser.allow_runs, eql.parser.allow_sample, eql.parser.elasticsearch_syntax, eql.parser.ignore_missing_functions:  # noqa: E501
+    with eql.parser.allow_negation, eql.parser.allow_runs, eql.parser.allow_sample, eql.parser.elasticsearch_syntax, eql.parser.ignore_missing_functions:
         return eql.parse_query(query)
 
 
@@ -58,11 +58,11 @@ def guess_from_query(query):
     exceptions = []
     try:
         return QueryGuess(query, "eql", "eql", ast_from_eql_query(query))
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         exceptions.append(("EQL", e))
     try:
         return QueryGuess(query, "query", "kuery", ast_from_kql_query(query))
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         exceptions.append(("Kuery", e))
 
     def rank(e):
@@ -70,7 +70,7 @@ def guess_from_query(query):
         column = getattr(e[1], "column", -1)
         return (line, column)
 
-    lang, error = sorted(exceptions, key=rank)[-1]
+    lang, error = max(exceptions, key=rank)
     raise ValueError(f"{lang} query error: {error}") from error
 
 
@@ -130,7 +130,7 @@ def events_from_root(root, environment, timestamp, corpus):
 
 
 class SourceEvents:
-    schema = {}
+    schema = {}  # noqa: RUF012
     corpus = None
     stack_version = None
     max_branches = 10000
@@ -183,7 +183,9 @@ class SourceEvents:
     def fields(self):
         return set(chain(*(root.fields() for root in self.__roots)))
 
-    def mappings(self, root=None, *, extra_fields=[]):
+    def mappings(self, root=None, *, extra_fields=None):
+        if extra_fields is None:
+            extra_fields = []
         fields = self.fields() if root is None else root.fields()
         return emit_mappings(fields | set(extra_fields), self.schema)
 

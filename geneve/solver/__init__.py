@@ -20,6 +20,7 @@
 import string
 from functools import wraps
 from itertools import chain
+from typing import ClassVar
 
 import faker
 
@@ -67,8 +68,8 @@ def emit_group(doc, group, values):
         deep_merge(doc, value)
 
 
-class solver:  # noqa: N801
-    solvers = {}
+class solver:
+    solvers: ClassVar[dict] = {}
 
     def __init__(self, name):
         if name in self.solvers:
@@ -130,14 +131,14 @@ class solver:  # noqa: N801
 
 
 class Entity:
-    ecs_constraints = {}
+    ecs_constraints: ClassVar[dict] = {}
 
     def __init__(self, group, fields, schema, stack_version):
         self.group = group
         self.schema = schema
         self.fields = {field: self.field_solver(field, constraints) for field, constraints in fields.items()}
 
-    def field_solver(self, field, constraints=[]):
+    def field_solver(self, field, constraints=[]):  # noqa: B006
         if constraints is not None:
             if self.group:
                 field = f"{self.group}.{field}"
@@ -162,8 +163,8 @@ class Entity:
 
 
 class Field:
-    common_constraints = ["join_value", "max_attempts", "cardinality"]
-    ecs_constraints = {}
+    common_constraints: ClassVar[list] = ["join_value", "max_attempts", "cardinality"]
+    ecs_constraints: ClassVar[dict] = {}
     type = None
 
     def __init__(self, field, constraints, field_constraints, is_array):

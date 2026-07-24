@@ -15,6 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from .events_emitter import *  # noqa: F401, F403
+from .events_emitter import *
 
 version = "0.4.0"
