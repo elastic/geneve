@@ -17,6 +17,8 @@
 
 """Constraints solver for boolean fields."""
 
+from typing import ClassVar
+
 from ..constraints import ConflictError
 from ..utils import random
 from . import Field, solver
@@ -24,7 +26,7 @@ from . import Field, solver
 
 @solver.type("boolean")
 class BooleanField(Field):
-    valid_constraints = ["==", "!="]
+    valid_constraints: ClassVar[list] = ["==", "!="]
 
     def __init__(self, field, constraints, field_constraints, schema):
         super().__init__(field, constraints, field_constraints, schema)

@@ -17,9 +17,11 @@
 
 """Functions for collecting constraints from an EQL AST."""
 
+from __future__ import annotations
+
 import math
 from itertools import chain, product
-from typing import Any, List, NoReturn, Tuple, Union
+from typing import Any, NoReturn
 
 import eql
 
@@ -31,7 +33,7 @@ __all__ = ()
 traverser = TreeTraverser()
 
 
-def collect_constraints(node: eql.ast.BaseNode, negate: bool = False, max_branches: int = None) -> Root:
+def collect_constraints(node: eql.ast.BaseNode, negate: bool = False, max_branches: int | None = None) -> Root:
     return traverser.traverse(node, negate, max_branches)
 
 
@@ -67,7 +69,7 @@ def cc_boolean(node: eql.ast.Boolean, negate: bool, max_branches: int) -> Root:
     return Root(branches)
 
 
-def cc_or_terms(node: Union[eql.ast.Or, eql.ast.And], negate: bool, max_branches: int) -> Root:
+def cc_or_terms(node: eql.ast.Or | eql.ast.And, negate: bool, max_branches: int) -> Root:
     terms = tuple(collect_constraints(term, negate, max_branches) for term in node.terms)
     if max_branches:
         nr_branches = sum(len(branches) for branches in terms)
@@ -76,7 +78,7 @@ def cc_or_terms(node: Union[eql.ast.Or, eql.ast.And], negate: bool, max_branches
     return Root.chain(terms)
 
 
-def cc_and_terms(node: Union[eql.ast.Or, eql.ast.And], negate: bool, max_branches: int) -> Root:
+def cc_and_terms(node: eql.ast.Or | eql.ast.And, negate: bool, max_branches: int) -> Root:
     terms = tuple(collect_constraints(term, negate, max_branches) for term in node.terms)
     if max_branches:
         nr_branches = math.prod(len(branches) for branches in terms)
@@ -161,7 +163,7 @@ def cc_piped_query(node: eql.ast.PipedQuery, negate: bool, max_branches: int) ->
     return collect_constraints(node.first, negate, max_branches)
 
 
-def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool, max_branches: int) -> List[Tuple[Document, List[str]]]:
+def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool, max_branches: int) -> list[tuple[Document, list[str]]]:
     if negate:
         raise NotImplementedError(f"Negation of {type(node)} is not supported")
     if any(not isinstance(value, eql.ast.Field) for value in node.join_values):
@@ -175,7 +177,7 @@ def cc_subquery_by(node: eql.ast.SubqueryBy, negate: bool, max_branches: int) ->
     return [[(doc, join_fields) for doc in branch] for branch in collect_constraints(node.query, negate, max_branches)]
 
 
-def cc_join_branch(seq: List[Tuple[Document, List[str]]]) -> Branch:
+def cc_join_branch(seq: list[tuple[Document, list[str]]]) -> Branch:
     join_doc = Document()
     docs = [join_doc.join_fields(doc, join_fields) for doc, join_fields in seq]
     return Branch(docs)
