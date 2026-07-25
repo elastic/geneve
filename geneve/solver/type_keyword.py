@@ -19,6 +19,7 @@
 
 import string
 from copy import copy
+from typing import ClassVar
 
 from ..constraints import ConflictError
 from ..utils.solution_space import Strings
@@ -54,7 +55,7 @@ def get_templ(field, constraints):
 @solver.type("keyword")
 @solver.type("wildcard")
 class KeywordField(Field):
-    valid_constraints = ["==", "!=", "wildcard", "not wildcard", "min_length", "allowed_chars"]
+    valid_constraints: ClassVar[list] = ["==", "!=", "wildcard", "not wildcard", "min_length", "allowed_chars"]
     alphabet = string.ascii_letters
 
     def __init__(self, field, constraints, field_constraints, schema):

@@ -31,6 +31,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 from functools import partial
 from pathlib import Path
+from typing import ClassVar
 
 from geneve.events_emitter import SourceEvents
 from geneve.utils import batched, dirs, load_schema, random, resource
@@ -38,9 +39,9 @@ from geneve.utils import batched, dirs, load_schema, random, resource
 from . import jupyter
 
 __all__ = (
-    "SeededTestCase",
-    "QueryTestCase",
     "OnlineTestCase",
+    "QueryTestCase",
+    "SeededTestCase",
     "SignalsTestCase",
     "assertReportUnchanged",
 )
@@ -164,7 +165,9 @@ def diff_files(first, second):
     return out.decode("utf-8")
 
 
-def flat_walk(doc, path=[]):
+def flat_walk(doc, path=None):
+    if path is None:
+        path = []
     for k, v in doc.items():
         if isinstance(v, dict):
             yield from flat_walk(v, path + [k])
@@ -172,7 +175,7 @@ def flat_walk(doc, path=[]):
             yield ".".join(path + [k])
 
 
-def assertIdenticalFiles(tc, first, second):  # noqa: N802
+def assertIdenticalFiles(tc, first, second):
     with open(first) as f:
         first_hash = hashlib.sha256(f.read().encode("utf-8")).hexdigest()
     with open(second) as f:
@@ -181,7 +184,7 @@ def assertIdenticalFiles(tc, first, second):  # noqa: N802
     tc.assertEqual(first_hash, second_hash, msg=msg)
 
 
-def assertReportUnchanged(tc, nb, report):  # noqa: N802
+def assertReportUnchanged(tc, nb, report):
     filename = root_dir / "tests" / "reports" / report
     old_filename = Path("{:s}.old{:s}".format(*os.path.splitext(filename)))
     new_filename = Path("{:s}.new{:s}".format(*os.path.splitext(filename)))
@@ -204,25 +207,25 @@ class SeededTestCase:
     def setUpClass(cls):
         cls.__saved_state = random.getstate()
         random.seed("setUpClass")
-        super(SeededTestCase, cls).setUpClass()
+        super().setUpClass()
 
     @classmethod
     def tearDownClass(cls):
         random.seed("tearDownClass")
-        super(SeededTestCase, cls).tearDownClass()
+        super().tearDownClass()
         random.setstate(cls.__saved_state)
 
     def setUp(self):
         random.seed("setUp")
-        super(SeededTestCase, self).setUp()
+        super().setUp()
 
     def tearDown(self):
         random.seed("tearDown")
-        super(SeededTestCase, self).tearDown()
+        super().tearDown()
 
-    def subTest(self, *args, **kwargs):  # noqa: N802
+    def subTest(self, *args, **kwargs):
         random.seed(kwargs.pop("seed", "subTest"))
-        return super(SeededTestCase, self).subTest(*args, **kwargs)
+        return super().subTest(*args, **kwargs)
 
 
 class QueryTestCase:
@@ -230,7 +233,7 @@ class QueryTestCase:
 
     @classmethod
     def setUpClass(cls):
-        super(QueryTestCase, cls).setUpClass()
+        super().setUpClass()
         cls.schema = load_test_schema()
 
     @classmethod
@@ -241,10 +244,10 @@ class QueryTestCase:
             output = "[[" + "],\n [".join(",\n  ".join(str(doc) for doc in branch) for branch in output) + "]]"
         return jupyter.Code(source, output, **kwargs)
 
-    def subTest(self, query, **kwargs):  # noqa: N802
-        return super(QueryTestCase, self).subTest(query, **kwargs, seed=query)
+    def subTest(self, query, **kwargs):
+        return super().subTest(query, **kwargs, seed=query)
 
-    def assertQuery(self, query, docs, *, count=1, corpus=None):  # noqa: N802
+    def assertQuery(self, query, docs, *, count=1, corpus=None):
         se = SourceEvents(self.schema, corpus=corpus)
         se.stack_version = self.stack_version
         se.add_query(query, meta=query)
@@ -269,7 +272,7 @@ class OnlineTestCase:
 
     @classmethod
     def setUpClass(cls):
-        super(OnlineTestCase, cls).setUpClass()
+        super().setUpClass()
 
         from geneve.stack.prober_geneve_test_env import GeneveTestEnvStack
 
@@ -295,13 +298,13 @@ class OnlineTestCase:
 
     @classmethod
     def tearDownClass(cls):
-        super(OnlineTestCase, cls).tearDownClass()
+        super().tearDownClass()
 
         cls.kb.close()
         cls.es.close()
 
     def setUp(self):
-        super(OnlineTestCase, self).setUp()
+        super().setUp()
 
         from elasticsearch import exceptions
 
@@ -324,13 +327,13 @@ class SignalsTestCase:
     """Generate documents, load rules and documents, check triggered signals in unit tests."""
 
     multiplying_factor = int(os.getenv("TEST_SIGNALS_MULTI") or 0) or 1
-    test_tags = ["Geneve"]
+    test_tags: ClassVar[list] = ["Geneve"]
     corpus_file = None
 
     def tearDown(self):
         if self.corpus_file:
             self.corpus_file.close()
-        super(SignalsTestCase, self).tearDown()
+        super().tearDown()
 
     def load_corpus(self):
         corpus = None
@@ -343,7 +346,7 @@ class SignalsTestCase:
                 sys.stderr.flush()
 
             with resource(corpus_uri, cachedir=dirs.cache) as corpus_file:
-                self.corpus_file = open(corpus_file, "r")
+                self.corpus_file = open(corpus_file, "r")  # noqa: SIM115
 
                 def reader(*, wrap_around):
                     import mmap
@@ -399,10 +402,10 @@ class SignalsTestCase:
                     root = se.add_ast(ast)
                     num_docs += sum(len(branch) for branch in root) * self.multiplying_factor
                     roots.append((root, rule))
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     rule["enabled"] = False
                     if verbose > 2:
-                        sys.stderr.write(f"{str(e)}\n")
+                        sys.stderr.write(f"{e!s}\n")
                         sys.stderr.flush()
 
         if verbose and verbose <= 2:
@@ -489,7 +492,7 @@ class SignalsTestCase:
                     if item["create"]["status"] != 201:
                         cells.append(jupyter.Markdown(str(item["create"])))
                         if verbose > 1:
-                            sys.stderr.write(f"{str(item['create'])}\n")
+                            sys.stderr.write(f"{item['create']!s}\n")
                             sys.stderr.flush()
                 if verbose:
                     docs_to_go -= len(chunk) // 2  # bulk: op + doc
@@ -685,7 +688,7 @@ class SignalsTestCase:
                     lines.extend(rule_ids[rule["id"]].split("\n"))
         return "\n" + "\n".join(lines)
 
-    def assertSignals(self, rules, rule_ids, msg, value=0):  # noqa: N802
+    def assertSignals(self, rules, rule_ids, msg, value=0):
         with self.subTest(msg):
             msg = None if verbose < 3 else self.debug_rules(rules, rule_ids)
             self.assertEqual(len(rule_ids), value, msg=msg)

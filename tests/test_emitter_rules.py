@@ -50,7 +50,7 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             try:
                 asts.append(ast_from_rule(rule))
                 rules.append(rule)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 errors.setdefault(str(e), []).append(rule)
                 continue
 
@@ -85,15 +85,15 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                     dt = time.time() - t
                     stats.append((len(root), dt, rule.name))
                 if tu.verbose > 2:
-                    sys.stdout.write("\r{} branches in {:.3f}s ({})\n".format(len(root), dt, rule.name))
+                    sys.stdout.write(f"\r{len(root)} branches in {dt:.3f}s ({rule.name})\n")
                     sys.stdout.flush()
                 _ = se.emit(timestamp=False, complete=True)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 if tu.verbose > 1:
                     dt = time.time() - t
                     stats.append((-1, dt, rule.name))
                 if tu.verbose > 2:
-                    sys.stdout.write("\r{} branches in {:.3f}s ({})\n".format(-1, dt, rule.name))
+                    sys.stdout.write(f"\r{-1} branches in {dt:.3f}s ({rule.name})\n")
                     sys.stdout.flush()
                 if tu.verbose > 3:
                     sys.stdout.write("".join(traceback.format_exception(e)))
@@ -163,9 +163,9 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         for i, rule in enumerate(collection):
             try:
                 asts.append(ast_from_rule(rule))
-            except Exception:
+            except Exception:  # noqa: BLE001, S112
                 continue
-            index_name = "{:s}-{:04d}".format(self.index_template, i)
+            index_name = f"{self.index_template:s}-{i:04d}"
             rules.append(
                 {
                     "rule_id": rule.rule_id,

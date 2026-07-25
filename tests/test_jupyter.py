@@ -142,9 +142,9 @@ md_code = [
 class TestJupyter(unittest.TestCase):
     maxDiff = None
 
-    def subTest(self, *args, **kwargs):  # noqa: N802
+    def subTest(self, *args, **kwargs):
         jupyter.random.seed(str(args[0]))
-        return super(TestJupyter, self).subTest(*args, **kwargs)
+        return super().subTest(*args, **kwargs)
 
     def test_markdown(self):
         for markdown, cell in cells_markdown:

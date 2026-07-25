@@ -53,7 +53,7 @@ event_docs_mappings = {
                     "code_signature": {"properties": {"exists": {"type": "boolean"}}},
                     "pid": {"type": "long"},
                 }
-            },  # noqa: E501
+            },
         },
     },
     """azure.auditlogs.properties.target_resources.*.display_name:guest and azure.activitylogs.level:*
@@ -291,7 +291,7 @@ multi_branch_mono_doc = {
                 "event": {"category": ["process"], "type": ["process_started"]},
                 "process": {"args": ["dump-keychain", "-d"]},
             }
-        ],  # noqa: E501
+        ],
     ],
     """event.type:(start or process_started) and (process.args:"dump-keychain" and process.args:"-d")
     """: [
@@ -412,7 +412,7 @@ multi_branch_multi_doc = {
             {
                 "event": {"category": ["process"]},
                 "process": {"name": "powershell.exe", "parent": {"name": "powershell.exe"}},
-            },  # noqa: E501
+            },
         ],
     ],
     """sequence by user.id
@@ -425,7 +425,7 @@ multi_branch_multi_doc = {
                 "event": {"category": ["process"]},
                 "process": {"name": "cmd.exe", "parent": {"name": "cmd.exe"}},
                 "user": {"id": "v"},
-            },  # noqa: E501
+            },
         ],
         [
             {"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}, "user": {"id": "wmg"}},
@@ -433,7 +433,7 @@ multi_branch_multi_doc = {
                 "event": {"category": ["process"]},
                 "process": {"name": "powershell.exe", "parent": {"name": "cmd.exe"}},
                 "user": {"id": "wmg"},
-            },  # noqa: E501
+            },
         ],
         [
             {"event": {"category": ["process"]}, "process": {"name": "powershell.exe"}, "user": {"id": "dMOeSIvI"}},
@@ -441,7 +441,7 @@ multi_branch_multi_doc = {
                 "event": {"category": ["process"]},
                 "process": {"name": "cmd.exe", "parent": {"name": "powershell.exe"}},
                 "user": {"id": "dMOeSIvI"},
-            },  # noqa: E501
+            },
         ],
         [
             {"event": {"category": ["process"]}, "process": {"name": "powershell.exe"}, "user": {"id": "oI"}},
@@ -449,7 +449,7 @@ multi_branch_multi_doc = {
                 "event": {"category": ["process"]},
                 "process": {"name": "powershell.exe", "parent": {"name": "powershell.exe"}},
                 "user": {"id": "oI"},
-            },  # noqa: E501
+            },
         ],
     ],
 }
@@ -659,7 +659,7 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     @classmethod
     @nb.chapter("## Preliminaries")
     def setUpClass(cls, cells):
-        super(TestQueries, cls).setUpClass()
+        super().setUpClass()
         cells += [
             jupyter.Markdown("""
                 This is an auxiliary cell, it prepares the environment for the rest of this notebook.
@@ -869,13 +869,13 @@ class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCas
         asts = []
         for i, query in enumerate(queries):
             guess = guess_from_query(query)
-            index_name = "{:s}-{:04d}".format(self.index_template, i)
+            index_name = f"{self.index_template:s}-{i:04d}"
             rules.append(
                 {
-                    "rule_id": "test_{:03d}".format(i),
+                    "rule_id": f"test_{i:03d}",
                     "risk_score": 17,
-                    "description": "Test rule {:03d}".format(i),
-                    "name": "Geneve: Rule {:03d}".format(i),
+                    "description": f"Test rule {i:03d}",
+                    "name": f"Geneve: Rule {i:03d}",
                     "index": [index_name],
                     "interval": "90s",
                     "from": "now-2h",

@@ -118,7 +118,7 @@ class Document:
         return doc
 
     def get_join_doc(self):
-        for field, constraints in self.__constraints.items():
+        for field, constraints in self.__constraints.items():  # noqa: PERF102
             for k, v, *_ in constraints or []:
                 if k == "join_value":
                     return v[0]
@@ -172,7 +172,7 @@ class Root(List[Branch]):
     meta = None
 
     def fields(self):
-        return set(["@timestamp"]) | set(chain(*(branch.fields() for branch in self)))
+        return {"@timestamp"} | set(chain(*(branch.fields() for branch in self)))
 
     def constraints(self):
         return chain(*self)

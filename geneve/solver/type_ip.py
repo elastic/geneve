@@ -18,6 +18,7 @@
 """Constraints solver for ip fields."""
 
 import ipaddress
+from typing import ClassVar
 
 from ..constraints import ConflictError
 from ..utils import random
@@ -32,7 +33,7 @@ def match_nets(values, nets):
 
 @solver.type("ip")
 class IPField(Field):
-    valid_constraints = ["==", "!=", "in", "not in"]
+    valid_constraints: ClassVar[list] = ["==", "!=", "in", "not in"]
 
     def __init__(self, field, constraints, field_constraints, schema):
         super().__init__(field, constraints, field_constraints, schema)
@@ -77,14 +78,14 @@ class IPField(Field):
                     try:
                         self.include_nets.add(ipaddress.ip_network(str(v)))
                     except ValueError:
-                        raise ValueError(f"Not an IP network: {str(v)}")
+                        raise ValueError(f"Not an IP network: {v!s}")
             elif k == "not in":
                 values = [v] if isinstance(v, str) else v
                 for v in values:
                     try:
                         self.exclude_nets.add(ipaddress.ip_network(str(v)))
                     except ValueError:
-                        raise ValueError(f"Not an IP network: {str(v)}")
+                        raise ValueError(f"Not an IP network: {v!s}")
 
         if self.include_nets & self.exclude_nets:
             intersecting_nets = ", ".join(str(net) for net in sorted(self.include_nets & self.exclude_nets))
