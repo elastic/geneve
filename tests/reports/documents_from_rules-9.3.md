@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.16
+Rules version: 9.3.17
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (226)](#unsupported-rule-type-new_terms-226)
-      1. [Unsupported rule type: esql (193)](#unsupported-rule-type-esql-193)
+      1. [Unsupported rule type: new_terms (239)](#unsupported-rule-type-new_terms-239)
+      1. [Unsupported rule type: esql (201)](#unsupported-rule-type-esql-201)
       1. [Unsupported rule type: machine_learning (105)](#unsupported-rule-type-machine_learning-105)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -33,14 +33,14 @@ invalid-syntax
 --processargs-curl-or-bincurl-or-wget
 -------------------1)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (378)](#field-type-solver-constant_keyword-378)
+      1. [Field type solver: constant_keyword (388)](#field-type-solver-constant_keyword-388)
       1. [Unsupported function: match (35)](#unsupported-function-match-35)
       1. [Root with too many branches (limit: 10000) (27)](#root-with-too-many-branches-limit-10000-27)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
       1. [Root without branches (11)](#root-without-branches-11)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (8)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-8)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (8)](#unsupported-argument-types-class-eqlastfield-8)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (7)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-7)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
@@ -142,12 +142,13 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (226)
+### Unsupported rule type: new_terms (239)
 
-226 rules:
+239 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Account Discovery By Rare User
+* AWS Batch Job Submitted with Container Override by Unusual Identity
 * AWS Bedrock Agent or Action Group Manipulation
 * AWS Bedrock AgentCore Execution Role Used Outside Its Runtime
 * AWS Bedrock Knowledge Base or RAG Data Source Tampering
@@ -159,6 +160,7 @@ invalid-syntax
 * AWS DynamoDB Scan by Unusual User
 * AWS DynamoDB Table Exported to S3
 * AWS EC2 CreateKeyPair by New Principal from Non-Cloud AS Organization
+* AWS EC2 NACL Entry Created or Replaced Allowing All Traffic by New Identity
 * AWS EC2 Role GetCallerIdentity from New Source AS Organization
 * AWS EC2 Route Table Created
 * AWS EC2 Route Table Modified or Deleted
@@ -171,9 +173,11 @@ invalid-syntax
 * AWS IAM Customer-Managed Policy Attached to Role by Rare User
 * AWS IAM Long-Term Access Key First Seen from Source IP
 * AWS IAM OIDC Provider Created by Rare User
+* AWS IAM Permission Boundary or Guardrail Policy Deleted by Unusual Identity
 * AWS IAM User Console Login Without MFA
 * AWS Lambda Function Invoked by an Unusual Principal
 * AWS Lambda Function Invoked from an Unusual Source ASN
+* AWS S3 Bucket ACL Modified to Allow Public Access by New Identity
 * AWS S3 Unauthenticated Bucket Access by Rare Source
 * AWS SNS Rare Protocol Subscription by User
 * AWS SNS Topic Created by Rare User
@@ -214,6 +218,7 @@ invalid-syntax
 * Deprecated - Suspicious PrintSpooler Service Executable File Creation
 * Deprecated - Unusual Discovery Activity by User
 * Deprecated TLS Version or Weak Cipher Negotiated Externally
+* Direct Process Execution via Background Utility
 * Discovery of Internet Capabilities via Built-in Tools
 * Entra ID Conditional Access MFA Bypass with Unusual User, Client and Source ASN
 * Entra ID Conditional Access Policy (CAP) Modified
@@ -259,14 +264,19 @@ invalid-syntax
 * First Time Seen Account Performing DCSync
 * First Time Seen Driver Loaded
 * First Time Seen Google Workspace OAuth Login from Third-Party Application
+* First Time Seen Memcached Writer
+* First Time Seen NFS AUTH_SYS Root UID Access
 * First Time Seen NewCredentials Logon Process
 * First Time Seen Remote Monitoring and Management Tool
 * First Time Seen Removable Device
+* First-Time Destructive MongoDB Command from a Client IP
 * FortiGate Administrator Account Creation from Unusual Source
 * GKE Anonymous Request Authorized by Unusual User Agent
 * GKE Forbidden Request from Unusual User Agent
+* GKE Secret Access via Unusual User Agent
 * GKE Secrets List from Unusual Source AS Organization
 * GKE Unusual Sensitive Workload Modification
+* GKE Unusual Service Account Secret Access via New User Agent
 * GKE User Exec into Pod
 * GenAI Process Connection to Unusual Domain
 * GitHub Actions Unusual Bot Push to Repository
@@ -339,11 +349,13 @@ invalid-syntax
 * Suspicious PowerShell Engine ImageLoad
 * Suspicious Sysctl File Event
 * Suspicious System Commands Executed by Previously Unknown Executable
+* Suspicious UID Change to Root via Python
 * Svchost spawning Cmd
 * System Binary Symlink to Suspicious Location
 * System Network Connections Discovery
 * System Owner/User Discovery Linux
 * Systemd Service Started by Unusual Parent Process
+* Thrift RPC Method from an External Client
 * UID Elevation from Previously Unknown Executable
 * Unauthorized Scope for Public App OAuth2 Token Grant with Client Credentials
 * Uncommon DNS Request via Bun or Node.js
@@ -355,6 +367,7 @@ invalid-syntax
 * Unusual Discovery Signal Alert with Unusual Process Executable
 * Unusual Execution from Kernel Thread (kthreadd) Parent
 * Unusual Exim4 Child Process
+* Unusual File Creation via Web Server
 * Unusual File Operation by dns.exe
 * Unusual Interactive Shell Launched from System User
 * Unusual Kernel Module Enumeration
@@ -373,9 +386,9 @@ invalid-syntax
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (193)
+### Unsupported rule type: esql (201)
 
-193 rules:
+201 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -385,6 +398,7 @@ invalid-syntax
 * AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
 * AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
+* AWS Bedrock High Risk Filesystem or Execution Tool Invocation
 * AWS Bedrock High-Frequency Single-Model Inference API Probing
 * AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
 * AWS Bedrock Model Prompt or Completion Containing Credentials
@@ -398,6 +412,7 @@ invalid-syntax
 * AWS IAM Long-Term Access Key Correlated with Elevated Detection Alerts
 * AWS IAM User Console Login from Multiple Geolocations
 * AWS IAM User Created Access Keys For Another User
+* AWS IAM User Self-Created Access Key Subsequently Used
 * AWS Lambda Function High-Frequency Invocation by a Single Principal
 * AWS Lambda Function Invoked Cross-Account
 * AWS Lateral Movement from Kubernetes SA via AssumeRoleWithWebIdentity
@@ -406,6 +421,7 @@ invalid-syntax
 * AWS S3 Object Encryption Using External KMS Key
 * AWS S3 Rapid Bucket Posture API Calls from a Single Principal
 * AWS S3 Static Site JavaScript File Uploaded
+* AWS SageMaker Execution Role Passed by Unusual Principal
 * AWS SageMaker Notebook Lifecycle Configuration With Suspicious Script Content
 * AWS Service Quotas Multi-Region GetServiceQuota Requests
 * Agent Spoofing - Multiple Hosts Using Same Agent
@@ -447,7 +463,10 @@ invalid-syntax
 * GKE API Request Failure Burst by User
 * GKE Anonymous Endpoint Permission Enumeration
 * GKE Certificate Signing Request Self-Approved
+* GKE Endpoint Permission Enumeration
+* GKE Multi-Resource Discovery
 * GKE Rapid Secret GET Activity Against Multiple Objects
+* GKE Sensitive RBAC Change Followed by Workload Modification
 * GitHub Actions Workflow Modification Blocked
 * GitHub Exfiltration via High Number of Repository Clones by User
 * Google Workspace Device Registration Burst for Single User
@@ -499,6 +518,7 @@ invalid-syntax
 * Multiple Okta User Authentication Events with Same Device Token Hash
 * Multiple Rare Elastic Defend Behavior Rules by Host
 * Multiple Remote Management Tool Vendors on Same Host
+* Multiple SonicWall Login Failures Followed by Successful Login
 * Multiple Vulnerabilities by Asset via Wiz
 * Newly Observed Elastic Defend Behavior Alert
 * Newly Observed FortiGate Alert
@@ -553,6 +573,7 @@ invalid-syntax
 * Sensitive Audit Policy Sub-Category Disabled
 * Several Failed Protected Branch Force Pushes by User
 * Splunk Enterprise PostgreSQL Backup-to-Restore Potential RCE Sequence
+* Successful AMQP Multi-Queue Purge Burst
 * Suspected Lateral Movement from Compromised Host
 * Suspicious AWS S3 Connection via Script Interpreter
 * Suspicious Python Shell Command Execution
@@ -690,6 +711,7 @@ invalid-syntax
 * AWS S3 Bucket Enumeration or Brute Force
 * AWS Secrets Manager Rapid Secrets Retrieval
 * Attempts to Brute Force an Okta User Account
+* Azure AKS Potential API Enumeration by User
 * Azure Compute Restore Point Collections Deleted
 * Azure Compute Snapshot Deletions by User
 * Azure Storage Account Deletions by User
@@ -701,7 +723,6 @@ invalid-syntax
 * High Number of Process Terminations
 * High Number of Process and/or Service Terminations
 * M365 Identity Login from Impossible Travel Location
-* Multiple Alerts in Different ATT&CK Tactics on a Single Host
 * Multiple Okta Sessions Detected for a Single User
 * Multiple Okta User Auth Events with Same Device Token Hash Behind a Proxy
 * My First Rule
@@ -747,9 +768,9 @@ Invalid syntax
 
 ## Generation errors
 
-### Field type solver: constant_keyword (378)
+### Field type solver: constant_keyword (388)
 
-378 rules:
+388 rules:
 * AWS Account Closed
 * AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
 * AWS Attempt to Leave Organization
@@ -853,7 +874,13 @@ Invalid syntax
 * Attempted Bypass of Okta MFA
 * Azure AKS API Server Proxying Request to Kubelet
 * Azure AKS Attempted User Exec into Pod
+* Azure AKS Certificate Signing Request Created or Approved
+* Azure AKS CoreDNS or Kube-DNS Configuration Modified
+* Azure AKS Ephemeral Container Added to Pod
 * Azure AKS Kubelet Proxy to Command Execution Endpoint
+* Azure AKS Kubernetes Events Deleted
+* Azure AKS Secret get or list with Suspicious User Agent
+* Azure AKS Suspicious Self-Subject Review by Service Account or Node Identity
 * Azure Automation Account Created
 * Azure Automation Runbook Created or Modified
 * Azure Automation Runbook Deleted
@@ -877,6 +904,7 @@ Invalid syntax
 * Azure VNet Full Network Packet Capture Enabled
 * Azure VNet Network Watcher Deleted
 * Azure Virtual Machine Configuration Modified
+* Cassandra JavaScript UDF Creation
 * Command and Scripting Interpreter via Windows Scripts
 * CrowdStrike External Alerts
 * CyberArk Privileged Access Security Error
@@ -992,6 +1020,7 @@ Invalid syntax
 * GKE Pod Exec with Curl or Wget to HTTPS
 * GKE Privileged Pod Created
 * GKE RBAC Wildcard Elevation on Existing Role
+* GKE Secret Access from Node or Denied Service Account
 * GKE Secret get or list with Suspicious User Agent
 * GKE Service Account Modified RBAC Objects
 * GKE Service Account Token Created via TokenRequest API
@@ -1080,6 +1109,7 @@ Invalid syntax
 * Microsoft Defender XDR Incident External Alerts
 * Microsoft Sentinel External Alerts
 * Modification or Removal of an Okta Application Sign-On Policy
+* MySQL User-Defined Function Injection
 * New GitHub App Installed
 * New GitHub Owner Added
 * New GitHub Personal Access Token (PAT) Added
@@ -1089,6 +1119,7 @@ Invalid syntax
 * Okta User Assigned Administrator Role
 * Okta User Session Impersonation
 * Possible Okta DoS Attack
+* PostgreSQL COPY PROGRAM Command Execution
 * Potential DLL Side-Loading via Trusted Microsoft Programs
 * Potential File Transfer via Curl for Windows
 * Potential Persistence via File Modification
@@ -1258,6 +1289,18 @@ Invalid syntax
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
 
+### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (8)
+
+8 rules:
+* Execution via MS VisualStudio Pre/Post Build Events
+* Local Scheduled Task Creation
+* Suspicious Execution from VS Code Extension
+* Suspicious Execution from a WebDav Share
+* Suspicious JetBrains TeamCity Child Process
+* Suspicious Microsoft HTML Application Child Process
+* Suspicious Shell Execution via Velociraptor
+* Suspicious Windows Command Shell Arguments
+
 ### Unsupported argument type(s): <class 'eql.ast.Field'> (8)
 
 8 rules:
@@ -1269,17 +1312,6 @@ Invalid syntax
 * Potential Privilege Escalation via SUID/SGID
 * Unusual Network Activity from a Windows System Binary
 * Windows Service Installed via an Unusual Client
-
-### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (7)
-
-7 rules:
-* Execution via MS VisualStudio Pre/Post Build Events
-* Suspicious Execution from VS Code Extension
-* Suspicious Execution from a WebDav Share
-* Suspicious JetBrains TeamCity Child Process
-* Suspicious Microsoft HTML Application Child Process
-* Suspicious Shell Execution via Velociraptor
-* Suspicious Windows Command Shell Arguments
 
 ### Unsupported function: startsWith (4)
 
