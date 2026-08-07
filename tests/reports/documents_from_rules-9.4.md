@@ -15,6 +15,23 @@ Rules version: 9.4.9
       1. [Unsupported rule type: machine_learning (106)](#unsupported-rule-type-machine_learning-106)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
+      1. [Error at line:10,column:3
+Comparisons against fields are not (currently) supported; offender [length(user.name) - 1] in [==]
+
+ /* Verify the machine account matches the full hostname, not just a prefix substring */
+ (length(host.name) == length(user.name) - 1 or substring(host.name, length(user.name) - 1, length(user.name)) == ".") and
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ /* Verify if the Source IP belongs to the host */
+ not endswith(string(source.ip), string(host.ip)) and (1)](#error-at-line10column3
+comparisons-against-fields-are-not-currently-supported-offender-lengthusername---1-in-
+
+--verify-the-machine-account-matches-the-full-hostname-not-just-a-prefix-substring-
+-lengthhostname--lengthusername---1-or-substringhostname-lengthusername---1-lengthusername---and
+--
+
+--verify-if-the-source-ip-belongs-to-the-host-
+-not-endswithstringsourceip-stringhostip-and-1)
       1. [Error at line:37,column:3
 Invalid syntax
   *confluence/conf/server.xml
@@ -49,7 +66,6 @@ invalid-syntax
       1. [Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (3)](#unsolvable-constraints-processname-excluded-by-stringspowershellexe-powershellexe-3)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
-      1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
       1. [Unsolvable constraints: process.name (excluded by Strings({'bash'}): ('bash')) (2)](#unsolvable-constraints-processname-excluded-by-stringsbash-bash-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'kubectl'}): ('kubectl')) (2)](#unsolvable-constraints-processname-excluded-by-stringskubectl-kubectl-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'nc.traditional'}): ('nc.traditional')) (2)](#unsolvable-constraints-processname-excluded-by-stringsnctraditional-nctraditional-2)
@@ -58,6 +74,7 @@ invalid-syntax
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (2)](#unsupported-keyword-processextrelative_file_creation_time-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
+      1. [Unsupported function: endswith (2)](#unsupported-function-endswith-2)
       1. [Unsupported is_negated: {'is_negated': True} (2)](#unsupported-is_negated-is_negated-true-2)
       1. ['NoneType' object is not subscriptable (1)](#nonetype-object-is-not-subscriptable-1)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
@@ -878,6 +895,20 @@ invalid-syntax
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
 
+### Error at line:10,column:3
+Comparisons against fields are not (currently) supported; offender [length(user.name) - 1] in [==]
+
+ /* Verify the machine account matches the full hostname, not just a prefix substring */
+ (length(host.name) == length(user.name) - 1 or substring(host.name, length(user.name) - 1, length(user.name)) == ".") and
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ /* Verify if the Source IP belongs to the host */
+ not endswith(string(source.ip), string(host.ip)) and (1)
+
+1 rules:
+
+* Potential Computer Account NTLM Relay Activity
+
 ### Error at line:37,column:3
 Invalid syntax
   *confluence/conf/server.xml
@@ -1495,13 +1526,6 @@ Invalid syntax
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
 
-### Unsupported function: endswith (3)
-
-3 rules:
-* Potential Computer Account NTLM Relay Activity
-* Potential Machine Account Relay Attack via SMB
-* Unusual Execution via Microsoft Common Console File
-
 ### Unsolvable constraints: process.name (excluded by Strings({'bash'}): ('bash')) (2)
 
 2 rules:
@@ -1549,6 +1573,12 @@ Invalid syntax
 2 rules:
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
+
+### Unsupported function: endswith (2)
+
+2 rules:
+* Potential Machine Account Relay Attack via SMB
+* Unusual Execution via Microsoft Common Console File
 
 ### Unsupported is_negated: {'is_negated': True} (2)
 
