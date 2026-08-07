@@ -26,6 +26,9 @@ lint:
 license-check:
 	bash scripts/license_check.sh
 
+ruleset-check:
+	$(PYTHON) scripts/check-ruleset-sync.py
+
 tests: tests/*.py
 	$(PYTHON) -m pytest $(PYTEST_VERBOSE) tests/test_*.py
 
