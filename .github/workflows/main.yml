@@ -272,6 +272,32 @@ jobs:
       - name: Install package
         run: make -f code/Makefile pkg-install
 
+  ruleset-check:
+    name: Ruleset sync check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: python -m pip install ruamel.yaml
+
+      - name: Check ruleset sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python3 scripts/check-ruleset-sync.py
+
   publish:
     name: Publish
     runs-on: ubuntu-latest
