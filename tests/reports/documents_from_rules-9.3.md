@@ -5,32 +5,15 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.17
+Rules version: 9.3.18
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (239)](#unsupported-rule-type-new_terms-239)
-      1. [Unsupported rule type: esql (201)](#unsupported-rule-type-esql-201)
+      1. [Unsupported rule type: new_terms (241)](#unsupported-rule-type-new_terms-241)
+      1. [Unsupported rule type: esql (202)](#unsupported-rule-type-esql-202)
       1. [Unsupported rule type: machine_learning (105)](#unsupported-rule-type-machine_learning-105)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
-      1. [Error at line:10,column:3
-Comparisons against fields are not (currently) supported; offender [length(user.name) - 1] in [==]
-
- /* Verify the machine account matches the full hostname, not just a prefix substring */
- (length(host.name) == length(user.name) - 1 or substring(host.name, length(user.name) - 1, length(user.name)) == ".") and
-  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
- /* Verify if the Source IP belongs to the host */
- not endswith(string(source.ip), string(host.ip)) and (1)](#error-at-line10column3
-comparisons-against-fields-are-not-currently-supported-offender-lengthusername---1-in-
-
---verify-the-machine-account-matches-the-full-hostname-not-just-a-prefix-substring-
--lengthhostname--lengthusername---1-or-substringhostname-lengthusername---1-lengthusername---and
---
-
---verify-if-the-source-ip-belongs-to-the-host-
--not-endswithstringsourceip-stringhostip-and-1)
       1. [Error at line:37,column:3
 Invalid syntax
   *confluence/conf/server.xml
@@ -50,7 +33,7 @@ invalid-syntax
 --processargs-curl-or-bincurl-or-wget
 -------------------1)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (388)](#field-type-solver-constant_keyword-388)
+      1. [Field type solver: constant_keyword (389)](#field-type-solver-constant_keyword-389)
       1. [Unsupported function: match (35)](#unsupported-function-match-35)
       1. [Root with too many branches (limit: 10000) (27)](#root-with-too-many-branches-limit-10000-27)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
@@ -65,6 +48,7 @@ invalid-syntax
       1. [Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (3)](#unsolvable-constraints-processname-excluded-by-stringspowershellexe-powershellexe-3)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
+      1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
       1. [Unsolvable constraints: process.name (excluded by Strings({'bash'}): ('bash')) (2)](#unsolvable-constraints-processname-excluded-by-stringsbash-bash-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'kubectl'}): ('kubectl')) (2)](#unsolvable-constraints-processname-excluded-by-stringskubectl-kubectl-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'nc.traditional'}): ('nc.traditional')) (2)](#unsolvable-constraints-processname-excluded-by-stringsnctraditional-nctraditional-2)
@@ -73,7 +57,6 @@ invalid-syntax
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (2)](#unsupported-keyword-processextrelative_file_creation_time-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
-      1. [Unsupported function: endswith (2)](#unsupported-function-endswith-2)
       1. [Unsupported is_negated: {'is_negated': True} (2)](#unsupported-is_negated-is_negated-true-2)
       1. ['NoneType' object is not subscriptable (1)](#nonetype-object-is-not-subscriptable-1)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
@@ -159,9 +142,9 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (239)
+### Unsupported rule type: new_terms (241)
 
-239 rules:
+241 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Account Discovery By Rare User
@@ -284,6 +267,7 @@ invalid-syntax
 * First Time Seen Memcached Writer
 * First Time Seen NFS AUTH_SYS Root UID Access
 * First Time Seen NewCredentials Logon Process
+* First Time Seen RMM Signer Across the Environment
 * First Time Seen Remote Monitoring and Management Tool
 * First Time Seen Removable Device
 * First-Time Destructive MongoDB Command from a Client IP
@@ -335,6 +319,7 @@ invalid-syntax
 * Network Traffic Capture via CAP_NET_RAW
 * New GitHub Self Hosted Action Runner
 * New USB Storage Device Mounted
+* Newly Observed RC4 Kerberos Service Ticket Request
 * Okta Sign-In Events via Third-Party IdP
 * Potential Credential Access via DCSync
 * Potential HTTP Downgrade Attack
@@ -403,9 +388,9 @@ invalid-syntax
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (201)
+### Unsupported rule type: esql (202)
 
-201 rules:
+202 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -587,6 +572,7 @@ invalid-syntax
 * PowerShell Obfuscation via Negative Index String Reversal
 * Privileged Accounts Brute Force
 * Rare Connection to WebDAV Target
+* Repeated Stalled TLS Handshakes via ALPN acme-tls/1 Extension
 * Sensitive Audit Policy Sub-Category Disabled
 * Several Failed Protected Branch Force Pushes by User
 * Splunk Enterprise PostgreSQL Backup-to-Restore Potential RCE Sequence
@@ -763,20 +749,6 @@ invalid-syntax
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
 
-### Error at line:10,column:3
-Comparisons against fields are not (currently) supported; offender [length(user.name) - 1] in [==]
-
- /* Verify the machine account matches the full hostname, not just a prefix substring */
- (length(host.name) == length(user.name) - 1 or substring(host.name, length(user.name) - 1, length(user.name)) == ".") and
-  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
- /* Verify if the Source IP belongs to the host */
- not endswith(string(source.ip), string(host.ip)) and (1)
-
-1 rules:
-
-* Potential Computer Account NTLM Relay Activity
-
 ### Error at line:37,column:3
 Invalid syntax
   *confluence/conf/server.xml
@@ -799,9 +771,9 @@ Invalid syntax
 
 ## Generation errors
 
-### Field type solver: constant_keyword (388)
+### Field type solver: constant_keyword (389)
 
-388 rules:
+389 rules:
 * AWS Account Closed
 * AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
 * AWS Attempt to Leave Organization
@@ -911,6 +883,7 @@ Invalid syntax
 * Azure AKS Kubelet Proxy to Command Execution Endpoint
 * Azure AKS Kubernetes Events Deleted
 * Azure AKS Secret get or list with Suspicious User Agent
+* Azure AKS Service Account Token Created via TokenRequest API
 * Azure AKS Suspicious Self-Subject Review by Service Account or Node Identity
 * Azure Automation Account Created
 * Azure Automation Runbook Created or Modified
@@ -1394,6 +1367,13 @@ Invalid syntax
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
 
+### Unsupported function: endswith (3)
+
+3 rules:
+* Potential Computer Account NTLM Relay Activity
+* Potential Machine Account Relay Attack via SMB
+* Unusual Execution via Microsoft Common Console File
+
 ### Unsolvable constraints: process.name (excluded by Strings({'bash'}): ('bash')) (2)
 
 2 rules:
@@ -1441,12 +1421,6 @@ Invalid syntax
 2 rules:
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
-
-### Unsupported function: endswith (2)
-
-2 rules:
-* Potential Machine Account Relay Attack via SMB
-* Unusual Execution via Microsoft Common Console File
 
 ### Unsupported is_negated: {'is_negated': True} (2)
 
