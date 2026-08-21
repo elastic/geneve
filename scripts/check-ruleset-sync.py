@@ -19,14 +19,27 @@
 
 """
 Verify that the GitHub ruleset 'Require CI to pass' contains exactly the set
-of jobs that run unconditionally on pull_request in .github/workflows/main.yml.
+of checks expected for this repository:
+
+  * Jobs that run unconditionally on pull_request in .github/workflows/main.yml
+    (skipped when main.yml does not exist).
+
+  * Buildkite pipeline checks derived from catalog-info.yaml: every document
+    with spec.type == "buildkite-pipeline" contributes a check context of the
+    form "buildkite/<spec.implementation.metadata.name>" (skipped when
+    catalog-info.yaml does not exist). Pipelines whose
+    spec.implementation.spec.provider_settings.trigger_mode is "none" are
+    excluded because they are not auto-triggered on PRs.
 
 Required environment variables:
-  GITHUB_TOKEN       - token with repo read access
+  GITHUB_TOKEN       - token with repository access; metadata read (always
+                       granted to the built-in GITHUB_TOKEN) is sufficient
+                       for check mode. --fix additionally requires
+                       administration write access.
   GITHUB_REPOSITORY  - "owner/repo" (e.g. elastic/geneve)
 
 Options:
-  --fix   Update the ruleset to match the workflow instead of just reporting.
+  --fix   Update the ruleset to match the expected set instead of just reporting.
 """
 
 from __future__ import annotations
@@ -44,6 +57,7 @@ from pathlib import Path
 from ruamel.yaml import YAML
 
 WORKFLOW_PATH = Path(__file__).parent.parent / ".github" / "workflows" / "main.yml"
+CATALOG_INFO_PATH = Path(__file__).parent.parent / "catalog-info.yaml"
 RULESET_NAME = "Require CI to pass"
 MATRIX_VAR_RE = re.compile(r"\$\{\{\s*matrix\.(\S+?)\s*\}\}")
 
@@ -54,23 +68,51 @@ def load_workflow(path: Path) -> dict:
         return yaml.load(fh)
 
 
+def buildkite_checks_from_catalog(path: Path) -> set[str]:
+    """Return Buildkite check contexts derived from catalog-info.yaml.
+
+    For every YAML document in *path* whose ``spec.type`` is
+    ``"buildkite-pipeline"``, yields ``buildkite/<spec.implementation.metadata.name>``.
+    Skips pipelines whose ``spec.implementation.spec.provider_settings.trigger_mode``
+    is ``"none"`` — those are not auto-triggered on PRs.
+    Returns an empty set when the file does not exist.
+    """
+    if not path.exists():
+        return set()
+    yaml = YAML()
+    checks: set[str] = set()
+    with path.open() as fh:
+        for doc in yaml.load_all(fh):
+            if not isinstance(doc, dict):
+                continue
+            spec = doc.get("spec") or {}
+            if spec.get("type") != "buildkite-pipeline":
+                continue
+            impl_spec = ((spec.get("implementation") or {}).get("spec") or {})
+            trigger_mode = ((impl_spec.get("provider_settings") or {}).get("trigger_mode"))
+            if trigger_mode == "none":
+                continue
+            name = ((spec.get("implementation") or {}).get("metadata") or {}).get("name")
+            if name:
+                checks.add(f"buildkite/{name}")
+    return checks
+
+
 def expand_matrix(name_template: str, matrix: dict) -> list[str]:
     """Return all job check-names produced by expanding *matrix* into *name_template*."""
     keys_in_name = set(MATRIX_VAR_RE.findall(name_template))
 
     # Pure include-style matrix (only key is 'include')
     if list(matrix.keys()) == ["include"]:
-        combos = [
-            {k: str(v) for k, v in entry.items() if k in keys_in_name}
-            for entry in matrix["include"]
-        ]
+        combos = [{k: str(v) for k, v in entry.items() if k in keys_in_name} for entry in matrix["include"]]
     else:
         # Dimension-style: cartesian product of the list-valued keys
         dim_keys = [k for k in matrix if k not in ("include", "exclude")]
-        combos = [
-            dict(zip(dim_keys, (str(v) for v in vals)))
-            for vals in itertools.product(*[matrix[k] for k in dim_keys])
-        ]
+        combos = [dict(zip(dim_keys, (str(v) for v in vals))) for vals in itertools.product(*[matrix[k] for k in dim_keys])]
+        # Apply exclude entries before processing includes
+        for exc in matrix.get("exclude", []):
+            exc_str = {k: str(v) for k, v in exc.items()}
+            combos = [c for c in combos if not all(c.get(k) == v for k, v in exc_str.items())]
         # Additional 'include' entries may introduce extra combinations
         for entry in matrix.get("include", []):
             extra = {k: str(v) for k, v in entry.items()}
@@ -187,15 +229,15 @@ def fix_ruleset(repo: str, token: str, detail: dict, expected: set[str]) -> None
     updated_rules = []
     for rule in detail.get("rules", []):
         if rule["type"] == "required_status_checks":
-            updated_rules.append({
-                "type": "required_status_checks",
-                "parameters": {
-                    **rule["parameters"],
-                    "required_status_checks": [
-                        {"context": name} for name in sorted(expected)
-                    ],
-                },
-            })
+            updated_rules.append(
+                {
+                    "type": "required_status_checks",
+                    "parameters": {
+                        **rule["parameters"],
+                        "required_status_checks": [{"context": name} for name in sorted(expected)],
+                    },
+                }
+            )
         else:
             updated_rules.append(rule)
 
@@ -208,7 +250,7 @@ def fix_ruleset(repo: str, token: str, detail: dict, expected: set[str]) -> None
         "rules": updated_rules,
     }
     github_put(f"/repos/{repo}/rulesets/{detail['id']}", token, payload)
-    print(f"Ruleset updated: {len(expected)} required checks now in sync with the workflow.")
+    print(f"Ruleset updated: {len(expected)} required checks now in sync.")
 
 
 def main() -> None:
@@ -219,7 +261,7 @@ def main() -> None:
     parser.add_argument(
         "--fix",
         action="store_true",
-        help="update the ruleset to match the workflow instead of just reporting",
+        help="update the ruleset to match the expected set instead of just reporting",
     )
     args = parser.parse_args()
 
@@ -229,8 +271,23 @@ def main() -> None:
         print("ERROR: GITHUB_TOKEN and GITHUB_REPOSITORY must be set", file=sys.stderr)
         sys.exit(2)
 
-    workflow = load_workflow(WORKFLOW_PATH)
-    expected = expected_checks(workflow)
+    # Collect expected checks from GitHub Actions workflow (if present)
+    if WORKFLOW_PATH.exists():
+        workflow = load_workflow(WORKFLOW_PATH)
+        expected = expected_checks(workflow)
+    else:
+        expected = set()
+
+    # Merge in Buildkite pipeline checks derived from catalog-info.yaml
+    expected.update(buildkite_checks_from_catalog(CATALOG_INFO_PATH))
+
+    if not expected:
+        print(
+            "ERROR: no expected checks found " "(no .github/workflows/main.yml and no catalog-info.yaml with buildkite-pipeline entries)",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
     detail = get_ruleset_detail(repo, token)
     actual = extract_checks(detail)
 
