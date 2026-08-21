@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.19.30
+Rules version: 8.19.31
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (238)](#unsupported-rule-type-new_terms-238)
-      1. [Unsupported rule type: esql (188)](#unsupported-rule-type-esql-188)
+      1. [Unsupported rule type: new_terms (239)](#unsupported-rule-type-new_terms-239)
+      1. [Unsupported rule type: esql (189)](#unsupported-rule-type-esql-189)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (27)](#unsupported-rule-type-threshold-27)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -141,9 +141,9 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (238)
+### Unsupported rule type: new_terms (239)
 
-238 rules:
+239 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Batch Job Submitted with Container Override by Unusual Identity
@@ -270,6 +270,7 @@ invalid-syntax
 * First Time Seen Removable Device
 * First-Time Destructive MongoDB Command from a Client IP
 * FortiGate Administrator Account Creation from Unusual Source
+* GCP IAM Service Account Impersonation Role Granted
 * GKE Anonymous Request Authorized by Unusual User Agent
 * GKE Forbidden Request from Unusual User Agent
 * GKE Secret Access via Unusual User Agent
@@ -384,9 +385,9 @@ invalid-syntax
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (188)
+### Unsupported rule type: esql (189)
 
-188 rules:
+189 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -523,6 +524,7 @@ invalid-syntax
 * Potential Account Takeover - Logon from New Source IP
 * Potential Account Takeover - Mixed Logon Types
 * Potential Azure OpenAI Model Theft
+* Potential CertiGhost AD CS Machine Identity Mismatch (CVE-2026-54121)
 * Potential Credential Discovery via Recursive Grep
 * Potential DHCP Starvation via High Client MAC Cardinality
 * Potential DNS Exfiltration via Excessive Chunked Queries

@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.5.3
+Rules version: 9.5.2
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (241)](#unsupported-rule-type-new_terms-241)
-      1. [Unsupported rule type: esql (208)](#unsupported-rule-type-esql-208)
+      1. [Unsupported rule type: new_terms (239)](#unsupported-rule-type-new_terms-239)
+      1. [Unsupported rule type: esql (207)](#unsupported-rule-type-esql-207)
       1. ['types.SimpleNamespace' object has no attribute 'type' (119)](#typessimplenamespace-object-has-no-attribute-type-119)
       1. [Unsupported rule type: machine_learning (106)](#unsupported-rule-type-machine_learning-106)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
@@ -34,7 +34,7 @@ invalid-syntax
 --processargs-curl-or-bincurl-or-wget
 -------------------1)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (389)](#field-type-solver-constant_keyword-389)
+      1. [Field type solver: constant_keyword (388)](#field-type-solver-constant_keyword-388)
       1. [Unsupported function: match (35)](#unsupported-function-match-35)
       1. [Root with too many branches (limit: 10000) (27)](#root-with-too-many-branches-limit-10000-27)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
@@ -143,9 +143,9 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (241)
+### Unsupported rule type: new_terms (239)
 
-241 rules:
+239 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Account Discovery By Rare User
@@ -268,7 +268,6 @@ invalid-syntax
 * First Time Seen Memcached Writer
 * First Time Seen NFS AUTH_SYS Root UID Access
 * First Time Seen NewCredentials Logon Process
-* First Time Seen RMM Signer Across the Environment
 * First Time Seen Remote Monitoring and Management Tool
 * First Time Seen Removable Device
 * First-Time Destructive MongoDB Command from a Client IP
@@ -320,7 +319,6 @@ invalid-syntax
 * Network Traffic Capture via CAP_NET_RAW
 * New GitHub Self Hosted Action Runner
 * New USB Storage Device Mounted
-* Newly Observed RC4 Kerberos Service Ticket Request
 * Okta Sign-In Events via Third-Party IdP
 * Potential Credential Access via DCSync
 * Potential HTTP Downgrade Attack
@@ -389,9 +387,9 @@ invalid-syntax
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (208)
+### Unsupported rule type: esql (207)
 
-208 rules:
+207 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -579,7 +577,6 @@ invalid-syntax
 * PowerShell Obfuscation via Negative Index String Reversal
 * Privileged Accounts Brute Force
 * Rare Connection to WebDAV Target
-* Repeated Stalled TLS Handshakes via ALPN acme-tls/1 Extension
 * Sensitive Audit Policy Sub-Category Disabled
 * Several Failed Protected Branch Force Pushes by User
 * Splunk Enterprise PostgreSQL Backup-to-Restore Potential RCE Sequence
@@ -903,9 +900,9 @@ Invalid syntax
 
 ## Generation errors
 
-### Field type solver: constant_keyword (389)
+### Field type solver: constant_keyword (388)
 
-389 rules:
+388 rules:
 * AWS Account Closed
 * AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
 * AWS Attempt to Leave Organization
@@ -1015,7 +1012,6 @@ Invalid syntax
 * Azure AKS Kubelet Proxy to Command Execution Endpoint
 * Azure AKS Kubernetes Events Deleted
 * Azure AKS Secret get or list with Suspicious User Agent
-* Azure AKS Service Account Token Created via TokenRequest API
 * Azure AKS Suspicious Self-Subject Review by Service Account or Node Identity
 * Azure Automation Account Created
 * Azure Automation Runbook Created or Modified

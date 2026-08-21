@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.18
+Rules version: 9.3.19
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (241)](#unsupported-rule-type-new_terms-241)
-      1. [Unsupported rule type: esql (202)](#unsupported-rule-type-esql-202)
+      1. [Unsupported rule type: new_terms (242)](#unsupported-rule-type-new_terms-242)
+      1. [Unsupported rule type: esql (203)](#unsupported-rule-type-esql-203)
       1. [Unsupported rule type: machine_learning (105)](#unsupported-rule-type-machine_learning-105)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -142,9 +142,9 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (241)
+### Unsupported rule type: new_terms (242)
 
-241 rules:
+242 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Account Discovery By Rare User
@@ -272,6 +272,7 @@ invalid-syntax
 * First Time Seen Removable Device
 * First-Time Destructive MongoDB Command from a Client IP
 * FortiGate Administrator Account Creation from Unusual Source
+* GCP IAM Service Account Impersonation Role Granted
 * GKE Anonymous Request Authorized by Unusual User Agent
 * GKE Forbidden Request from Unusual User Agent
 * GKE Secret Access via Unusual User Agent
@@ -388,9 +389,9 @@ invalid-syntax
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (202)
+### Unsupported rule type: esql (203)
 
-202 rules:
+203 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -537,6 +538,7 @@ invalid-syntax
 * Potential Account Takeover - Logon from New Source IP
 * Potential Account Takeover - Mixed Logon Types
 * Potential Azure OpenAI Model Theft
+* Potential CertiGhost AD CS Machine Identity Mismatch (CVE-2026-54121)
 * Potential Credential Discovery via Recursive Grep
 * Potential DHCP Starvation via High Client MAC Cardinality
 * Potential DNS Exfiltration via Excessive Chunked Queries
