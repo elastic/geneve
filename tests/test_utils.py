@@ -20,11 +20,15 @@
 import os
 import unittest
 from shutil import make_archive
+from unittest.mock import Mock, patch
 
-from geneve.utils import deep_merge, resource, tempdir
+from elasticsearch import exceptions
+from requests.exceptions import ConnectTimeout
+
+from geneve.utils import deep_merge, epr, resource, tempdir
 from geneve.utils.hdict import hdict
 
-from .utils import data_dir, flat_walk, http_server, tempenv
+from .utils import SignalsTestCase, data_dir, flat_walk, http_server, tempenv
 
 
 class TestDictUtils(unittest.TestCase):
@@ -61,6 +65,35 @@ class TestTempEnv(unittest.TestCase):
                     self.assertTrue("TEST_VAR" not in os.environ)
                 self.assertEqual("value2", os.environ["TEST_VAR"])
             self.assertEqual("value1", os.environ["TEST_VAR"])
+
+
+class TestSignalsTestCase(unittest.TestCase):
+    def test_load_bulk_chunk_retries_timeout(self):
+        ret = {"items": [{"create": {"status": 409}}]}
+        es = Mock()
+        es.options.return_value.bulk.side_effect = [exceptions.ConnectionTimeout("timeout"), ret]
+        test_case = SignalsTestCase()
+        test_case.es = es
+
+        actual, replayed = test_case.load_bulk_chunk("bulk operations")
+
+        self.assertEqual(actual, ret)
+        self.assertTrue(replayed)
+        es.options.assert_called_with(request_timeout=30)
+        es.options.return_value.bulk.assert_called_with(operations="bulk operations")
+
+
+class TestEPR(unittest.TestCase):
+    def test_get_retries_timeout(self):
+        response = Mock()
+        get = Mock(side_effect=[ConnectTimeout("timeout"), response])
+
+        with patch("requests.get", get):
+            actual = epr.EPR(timeout=17, tries=2).get("https://epr.example.test")
+
+        self.assertIs(actual, response)
+        self.assertEqual(get.call_count, 2)
+        get.assert_called_with("https://epr.example.test", timeout=17)
 
 
 class TestResource(unittest.TestCase):
