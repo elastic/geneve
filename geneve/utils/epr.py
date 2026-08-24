@@ -37,7 +37,7 @@ class EPR:
             try:
                 return requests.get(url, timeout=self.timeout)
             except ConnectTimeout:
-                if n == self.retries - 1:
+                if n == self.tries - 1:
                     raise
 
     def search_package(self, name, **conditions):

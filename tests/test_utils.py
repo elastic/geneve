@@ -20,11 +20,12 @@
 import os
 import unittest
 from shutil import make_archive
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from elasticsearch import exceptions
+from requests.exceptions import ConnectTimeout
 
-from geneve.utils import deep_merge, resource, tempdir
+from geneve.utils import deep_merge, epr, resource, tempdir
 from geneve.utils.hdict import hdict
 
 from .utils import SignalsTestCase, data_dir, flat_walk, http_server, tempenv
@@ -80,6 +81,19 @@ class TestSignalsTestCase(unittest.TestCase):
         self.assertTrue(replayed)
         es.options.assert_called_with(request_timeout=30)
         es.options.return_value.bulk.assert_called_with(operations="bulk operations")
+
+
+class TestEPR(unittest.TestCase):
+    def test_get_retries_timeout(self):
+        response = Mock()
+        get = Mock(side_effect=[ConnectTimeout("timeout"), response])
+
+        with patch("requests.get", get):
+            actual = epr.EPR(timeout=17, tries=2).get("https://epr.example.test")
+
+        self.assertIs(actual, response)
+        self.assertEqual(get.call_count, 2)
+        get.assert_called_with("https://epr.example.test", timeout=17)
 
 
 class TestResource(unittest.TestCase):
