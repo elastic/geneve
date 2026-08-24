@@ -418,7 +418,7 @@ class SignalsTestCase:
 
                 doc_count = 0
                 for event in itertools.chain(*events):
-                    yield json.dumps({"create": {"_index": rule["index"][0]}})
+                    yield json.dumps({"create": {"_index": rule["index"][0], "_id": doc_count}})
                     yield json.dumps(event.doc)
                     if verbose > 2:
                         sys.stderr.write(json.dumps(event.doc, sort_keys=True) + "\n")
@@ -430,7 +430,17 @@ class SignalsTestCase:
 
         return (bulk(), num_docs, se.mappings(extra_fields=corpus_fields))
 
-    def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=200, rules_chunk_size=50):
+    def load_bulk_chunk(self, operations):
+        from elasticsearch import exceptions
+
+        for attempt in range(3):
+            try:
+                return self.es.options(request_timeout=30).bulk(operations=operations), attempt > 0
+            except exceptions.ConnectionTimeout:
+                if attempt == 2:
+                    raise
+
+    def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=100, rules_chunk_size=50):
         bulk, docs_to_go, mappings = self.generate_docs_and_mappings(rules, asts)
 
         # for each doc there are two lines in the bulk: the operation and the doc itself
@@ -484,12 +494,9 @@ class SignalsTestCase:
                 num_chunks = math.ceil(docs_to_go / docs_chunk_size)
                 prev_report_chunk = 0
             for i, chunk in enumerate(batched(bulk, bulk_chunk_size)):
-                kwargs = {
-                    "operations": "\n".join(chunk),
-                }
-                ret = self.es.options(request_timeout=30).bulk(**kwargs)
+                ret, replayed = self.load_bulk_chunk("\n".join(chunk))
                 for item in ret["items"]:
-                    if item["create"]["status"] != 201:
+                    if item["create"]["status"] != 201 and not (replayed and item["create"]["status"] == 409):
                         cells.append(jupyter.Markdown(str(item["create"])))
                         if verbose > 1:
                             sys.stderr.write(f"{item['create']!s}\n")

@@ -20,11 +20,14 @@
 import os
 import unittest
 from shutil import make_archive
+from unittest.mock import Mock
+
+from elasticsearch import exceptions
 
 from geneve.utils import deep_merge, resource, tempdir
 from geneve.utils.hdict import hdict
 
-from .utils import data_dir, flat_walk, http_server, tempenv
+from .utils import SignalsTestCase, data_dir, flat_walk, http_server, tempenv
 
 
 class TestDictUtils(unittest.TestCase):
@@ -61,6 +64,22 @@ class TestTempEnv(unittest.TestCase):
                     self.assertTrue("TEST_VAR" not in os.environ)
                 self.assertEqual("value2", os.environ["TEST_VAR"])
             self.assertEqual("value1", os.environ["TEST_VAR"])
+
+
+class TestSignalsTestCase(unittest.TestCase):
+    def test_load_bulk_chunk_retries_timeout(self):
+        ret = {"items": [{"create": {"status": 409}}]}
+        es = Mock()
+        es.options.return_value.bulk.side_effect = [exceptions.ConnectionTimeout("timeout"), ret]
+        test_case = SignalsTestCase()
+        test_case.es = es
+
+        actual, replayed = test_case.load_bulk_chunk("bulk operations")
+
+        self.assertEqual(actual, ret)
+        self.assertTrue(replayed)
+        es.options.assert_called_with(request_timeout=30)
+        es.options.return_value.bulk.assert_called_with(operations="bulk operations")
 
 
 class TestResource(unittest.TestCase):
