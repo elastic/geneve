@@ -45,7 +45,7 @@ emitter_rules:
     # renovate: datasource=epr package=security_detection_engine-9.3
     "9.3": "9.3.19"
     # renovate: datasource=epr package=security_detection_engine-9.4
-    "9.4": "9.4.11"
+    "9.4": "9.4.12"
     # renovate: datasource=epr package=security_detection_engine-9.5
     "9.5": "9.5.4"
     # renovate: datasource=epr package=security_detection_engine-9.6
