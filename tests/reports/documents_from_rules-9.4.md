@@ -5,13 +5,13 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.4.11
+Rules version: 9.4.12
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (242)](#unsupported-rule-type-new_terms-242)
-      1. [Unsupported rule type: esql (209)](#unsupported-rule-type-esql-209)
-      1. ['types.SimpleNamespace' object has no attribute 'type' (119)](#typessimplenamespace-object-has-no-attribute-type-119)
+      1. [Unsupported rule type: new_terms (241)](#unsupported-rule-type-new_terms-241)
+      1. [Unsupported rule type: esql (218)](#unsupported-rule-type-esql-218)
+      1. ['types.SimpleNamespace' object has no attribute 'type' (129)](#typessimplenamespace-object-has-no-attribute-type-129)
       1. [Unsupported rule type: machine_learning (106)](#unsupported-rule-type-machine_learning-106)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -35,7 +35,7 @@ invalid-syntax
 -------------------1)
    1. [Generation errors](#generation-errors)
       1. [Field type solver: constant_keyword (389)](#field-type-solver-constant_keyword-389)
-      1. [Unsupported function: match (35)](#unsupported-function-match-35)
+      1. [Unsupported function: match (36)](#unsupported-function-match-36)
       1. [Root with too many branches (limit: 10000) (27)](#root-with-too-many-branches-limit-10000-27)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
       1. [Root without branches (11)](#root-without-branches-11)
@@ -65,7 +65,6 @@ invalid-syntax
       1. [Unsolvable constraints: file.extension (cannot be non-null) (1)](#unsolvable-constraints-fileextension-cannot-be-non-null-1)
       1. [Unsolvable constraints: file.name (excluded by Strings({'Local State'}): ('Local State')) (1)](#unsolvable-constraints-filename-excluded-by-stringslocal-state-local-state-1)
       1. [Unsolvable constraints: file.name (not in Strings({'*.so.*'}): ('.*.so')) (1)](#unsolvable-constraints-filename-not-in-stringsso-so-1)
-      1. [Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringsswipuploadashx-post-1)
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringschild_process-exec-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (excluded by Strings({'DsGetSiteName'}): ('DsGetSiteName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-excluded-by-stringsdsgetsitename-dsgetsitename-1)
@@ -90,7 +89,6 @@ invalid-syntax
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[Ref].Assembly.GetType(('System.Management.Automation'}): ('.SetValue(')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsrefassemblygettypesystemmanagementautomation-setvalue-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Reflection.Assembly]::Load'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemreflectionassemblyload-frombase64string-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[dbo].[Credentials]'}): ('Veeam')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdbocredentials-veeam-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[string]::join'}): ('$pSHoMe[')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstringjoin-pshome-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
@@ -109,6 +107,7 @@ invalid-syntax
       1. [Unsolvable constraints: process.command_line (not in Strings({'*vm.swappiness*'}): ('*echo *')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsvmswappiness-echo--1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsarpexe-arpexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cp'}): ('cp')) (1)](#unsolvable-constraints-processname-excluded-by-stringscp-cp-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'elastic-agent.exe'}): ('elastic-agent.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselastic-agentexe-elastic-agentexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'modprobe'}): ('modprobe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmodprobe-modprobe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
@@ -116,6 +115,7 @@ invalid-syntax
       1. [Unsolvable constraints: process.name (excluded by Strings({'net1.exe'}): ('net1.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsnet1exe-net1exe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'nohup'}): ('nohup')) (1)](#unsolvable-constraints-processname-excluded-by-stringsnohup-nohup-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
+      1. [Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh')) (1)](#unsolvable-constraints-processname-excluded-by-stringssh-sh-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'smss.exe'}): ('smss.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringssmssexe-smssexe-1)
       1. [Unsolvable constraints: process.name (excluded by Strings({'sysctl'}): ('sysctl')) (1)](#unsolvable-constraints-processname-excluded-by-stringssysctl-sysctl-1)
       1. [Unsolvable constraints: process.name (not in Strings({'rundll32.exe'}): ('mshta.exe')) (1)](#unsolvable-constraints-processname-not-in-stringsrundll32exe-mshtaexe-1)
@@ -143,9 +143,9 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (242)
+### Unsupported rule type: new_terms (241)
 
-242 rules:
+241 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Account Discovery By Rare User
@@ -180,6 +180,7 @@ invalid-syntax
 * AWS Lambda Function Invoked from an Unusual Source ASN
 * AWS S3 Bucket ACL Modified to Allow Public Access by New Identity
 * AWS S3 Unauthenticated Bucket Access by Rare Source
+* AWS SES Full Access Policy Attached to IAM Entity by Unusual User
 * AWS SNS Rare Protocol Subscription by User
 * AWS SNS Topic Created by Rare User
 * AWS SNS Topic Message Publish by Rare User
@@ -216,7 +217,6 @@ invalid-syntax
 * Azure VM Serial Console Connection with Unusual User and ASN
 * DPKG Package Installed by Unusual Parent Process
 * Delegated Managed Service Account Modification by an Unusual User
-* Deprecated - Suspicious PrintSpooler Service Executable File Creation
 * Deprecated - Unusual Discovery Activity by User
 * Deprecated TLS Version or Weak Cipher Negotiated Externally
 * Direct Process Execution via Background Utility
@@ -257,6 +257,7 @@ invalid-syntax
 * First Occurrence of Private Repo Event from Specific GitHub Personal Access Token (PAT)
 * First Occurrence of User Agent For a GitHub Personal Access Token (PAT)
 * First Occurrence of User-Agent For a GitHub User
+* First Seen SonicWall Remote Access Login by User and Source
 * First Time AWS CloudFormation Stack Creation
 * First Time Python Accessed Sensitive Credential Files
 * First Time Python Created a LaunchAgent or LaunchDaemon
@@ -290,12 +291,10 @@ invalid-syntax
 * Kernel Object File Creation
 * Kill Command Execution
 * Kubernetes Anonymous Request Authorized by Unusual User Agent
-* Kubernetes Denied Service Account Request via Unusual User Agent
 * Kubernetes Forbidden Request from Unusual User Agent
 * Kubernetes Pod Creation Using Common Debug or Base Images
 * Kubernetes Secret Access via Unusual User Agent
 * Kubernetes Suspicious Self-Subject Review via Unusual User Agent
-* Kubernetes Unusual Decision by User Agent
 * LSASS Memory Dump Handle Access
 * Linux Audio Recording Activity Detected
 * Linux Clipboard Activity Detected
@@ -390,9 +389,9 @@ invalid-syntax
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (209)
+### Unsupported rule type: esql (218)
 
-209 rules:
+218 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -425,6 +424,7 @@ invalid-syntax
 * AWS S3 Object Encryption Using External KMS Key
 * AWS S3 Rapid Bucket Posture API Calls from a Single Principal
 * AWS S3 Static Site JavaScript File Uploaded
+* AWS SES Email Identity Verified Then Deleted
 * AWS SageMaker Execution Role Passed by Unusual Principal
 * AWS SageMaker Notebook Lifecycle Configuration With Suspicious Script Content
 * AWS Service Quotas Multi-Region GetServiceQuota Requests
@@ -464,6 +464,7 @@ invalid-syntax
 * First-Time FortiGate Administrator Login
 * FortiGate Administrator Login from Multiple IP Addresses
 * FortiGate FortiCloud SSO Login from Unusual Source
+* GCP Secret Manager ListSecrets Across Multiple Projects
 * GKE API Request Failure Burst by User
 * GKE Anonymous Endpoint Permission Enumeration
 * GKE Certificate Signing Request Self-Approved
@@ -531,6 +532,7 @@ invalid-syntax
 * Newly Observed FortiGate Alert
 * Newly Observed High Severity Detection Alert
 * Newly Observed High Severity Suricata Alert
+* Newly Observed IPSEC NAT Traversal Peer
 * Newly Observed Palo Alto Network Alert
 * Newly Observed Process Exhibiting High CPU Usage
 * Newly Observed ScreenConnect Host Server
@@ -546,8 +548,11 @@ invalid-syntax
 * Potential Credential Discovery via Recursive Grep
 * Potential DHCP Starvation via High Client MAC Cardinality
 * Potential DNS Exfiltration via Excessive Chunked Queries
+* Potential DNS Rebinding from Public to Private Address
+* Potential DNS Tunneling via Long and Unique Subdomains
 * Potential Denial of Azure OpenAI ML Service
 * Potential Dynamic IEX Reconstruction via Environment Variables
+* Potential Evasion via Boot Time Removal Tool
 * Potential Linux Local Account Brute Force Detected
 * Potential Malicious PowerShell Based on Alert Correlation
 * Potential Malware-Driven SSH Brute Force Attempt
@@ -575,6 +580,7 @@ invalid-syntax
 * Potential SIP Extension Enumeration
 * Potential SIP REGISTER Brute Force
 * Potential SQL Injection Against Microsoft SQL Server
+* Potential Self-Signed TLS Certificate Recently Issued on External Connection
 * Potential Spike in Web Server Error Logs
 * Potential Subnet Scanning Activity from Compromised Host
 * Potential Widespread Malware Infection Across Multiple Hosts
@@ -582,6 +588,8 @@ invalid-syntax
 * Privileged Accounts Brute Force
 * Rare Connection to WebDAV Target
 * Repeated Stalled TLS Handshakes via ALPN acme-tls/1 Extension
+* SSFileCopyReceiver Writing to Common Persistence Locations
+* SSFileCopySender Executed as Root
 * Sensitive Audit Policy Sub-Category Disabled
 * Several Failed Protected Branch Force Pushes by User
 * Splunk Enterprise PostgreSQL Backup-to-Restore Potential RCE Sequence
@@ -604,9 +612,9 @@ invalid-syntax
 * Web Server Potential Spike in Error Response Codes
 * Web Server Suspicious User Agent Requests
 
-### 'types.SimpleNamespace' object has no attribute 'type' (119)
+### 'types.SimpleNamespace' object has no attribute 'type' (129)
 
-119 rules:
+129 rules:
 
 * AWS RDS Snapshot Export
 * Attempt to Disable IPTables or Firewall
@@ -627,21 +635,25 @@ invalid-syntax
 * Deprecated - AWS RDS Security Group Deletion
 * Deprecated - AWS Redshift Cluster Creation
 * Deprecated - AWS Root Login Without MFA
+* Deprecated - Adobe Hijack Persistence
 * Deprecated - Agent Spoofing - Mismatched Agent ID
 * Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
 * Deprecated - Azure Virtual Network Device Modified or Deleted
 * Deprecated - CAP_SYS_ADMIN Assigned to Binary
 * Deprecated - Creation of Kernel Module
 * Deprecated - EggShell Backdoor Execution
+* Deprecated - Encoded Executable Stored in the Registry
 * Deprecated - Execution of File Written or Modified by PDF Reader
 * Deprecated - LaunchDaemon Creation or Modification and Immediate Loading
 * Deprecated - Linux Restricted Shell Breakout via Linux Binary(s)
+* Deprecated - M365 Security Compliance Email Reported by User as Malware or Phish
 * Deprecated - Modification of Standard Authentication Module or Configuration
 * Deprecated - Network Connection via Sudo Binary
 * Deprecated - Potential DNS Tunneling via Iodine
 * Deprecated - Potential Non-Standard Port HTTP/HTTPS connection
 * Deprecated - Potential Non-Standard Port SSH connection
 * Deprecated - Potential Password Spraying of Microsoft 365 User Accounts
+* Deprecated - Potential PowerShell Obfuscated Script
 * Deprecated - Potential Privilege Escalation via UID INT_MAX Bug Detected
 * Deprecated - Potential Process Injection via LD_PRELOAD Environment Variable
 * Deprecated - Potential Protocol Tunneling via Chisel Server
@@ -655,9 +667,11 @@ invalid-syntax
 * Deprecated - SSH Connection Established Inside A Running Container
 * Deprecated - SSH Process Launched From Inside A Container
 * Deprecated - SSH Process Launched From Inside A Container via Elastic Defend
+* Deprecated - SUNBURST Command and Control Activity
 * Deprecated - Sudo Heap-Based Buffer Overflow Attempt
 * Deprecated - Suspicious File Creation in /etc for Persistence
 * Deprecated - Suspicious JAVA Child Process
+* Deprecated - Suspicious PrintSpooler Service Executable File Creation
 * Deprecated - Suspicious Renaming of ESXI index.html File
 * Deprecated - Threat Intel Filebeat Module (v8.x) Indicator Match
 * Deprecated - Threat Intel Indicator Match
@@ -668,9 +682,12 @@ invalid-syntax
 * FTP (File Transfer Protocol) Activity to the Internet
 * File and Directory Discovery
 * GCP Kubernetes Rolebindings Created or Patched
+* GKE Service Account Token Created via TokenRequest API
 * Google Workspace User Group Access Modified to Allow External Access
 * Hex Encoding/Decoding Activity
 * IRC (Internet Relay Chat) Protocol Activity to the Internet
+* Kubernetes Denied Service Account Request via Unusual User Agent
+* Kubernetes Unusual Decision by User Agent
 * Linux Restricted Shell Breakout via  apt/apt-get Changelog Escape
 * Linux Restricted Shell Breakout via awk Commands
 * Linux Restricted Shell Breakout via busybox Shell Evasion
@@ -685,6 +702,7 @@ invalid-syntax
 * Linux Restricted Shell Breakout via the gcc command
 * Linux Restricted Shell Breakout via the mysql command
 * Linux Restricted Shell Breakout via the vi command
+* MFA Disabled for Google Workspace Organization
 * Malicious Remote File Creation
 * Mknod Process Activity
 * Multiple Alerts in Different ATT&CK Tactics on a Single Host
@@ -936,6 +954,7 @@ Invalid syntax
 * AWS CloudWatch Log Stream Deletion
 * AWS Config Resource Deletion
 * AWS Configuration Recorder Stopped
+* AWS Detective Graph Deleted
 * AWS EC2 AMI Shared with Another Account
 * AWS EC2 Deprecated AMI Discovery
 * AWS EC2 Encryption Disabled
@@ -947,6 +966,7 @@ Invalid syntax
 * AWS EC2 Security Group Configuration Change
 * AWS EC2 Serial Console Access Enabled
 * AWS EFS File System Deleted
+* AWS EKS Access Entry Created Then Deleted by Same Identity
 * AWS EKS Access Entry Granted Cluster Admin Policy
 * AWS EKS Access Entry Modified
 * AWS EKS Control Plane Logging Disabled
@@ -954,6 +974,8 @@ Invalid syntax
 * AWS GuardDuty Detection Suppression
 * AWS GuardDuty Detector Deletion
 * AWS GuardDuty Member Account Manipulation
+* AWS GuardDuty Publishing Destination Deleted
+* AWS GuardDuty Threat Intelligence Set Deleted
 * AWS IAM Account Password Policy Deleted
 * AWS IAM Deactivation of MFA Device
 * AWS IAM Group Creation
@@ -1049,13 +1071,11 @@ Invalid syntax
 * CyberArk Privileged Access Security Recommended Monitor
 * Default Cobalt Strike Team Server Certificate
 * Deprecated - M365 Exchange DLP Policy Deleted
-* Deprecated - M365 Security Compliance Email Reported by User as Malware or Phish
 * Deprecated - M365 Security Compliance Potential Ransomware Activity
 * Deprecated - M365 Security Compliance Unusual Volume of File Deletion
 * Deprecated - M365 Security Compliance User Restricted from Sending Email
 * Deprecated - M365 Teams External Access Enabled
 * Deprecated - M365 Teams Guest Access Enabled
-* Deprecated - MFA Disabled for Google Workspace Organization
 * Direct Interactive Kubernetes API Request by Common Utilities
 * Direct Interactive Kubernetes API Request by Unusual Utilities
 * Domain Added to Google Workspace Trusted Domains
@@ -1161,7 +1181,6 @@ Invalid syntax
 * GKE Secret Access from Node or Denied Service Account
 * GKE Secret get or list with Suspicious User Agent
 * GKE Service Account Modified RBAC Objects
-* GKE Service Account Token Created via TokenRequest API
 * GKE Suspicious Assignment of Controller Service Account
 * GKE Suspicious Self-Subject Review via Service Account
 * GitHub App Deleted
@@ -1192,7 +1211,6 @@ Invalid syntax
 * IBM QRadar External Alerts
 * ICMP Redirect Message from Internal Host
 * ICMP Timestamp or Information Request from the Internet
-* IPSEC NAT Traversal Port Activity
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Initial Access via File Upload Followed by GET Request
 * Insecure AWS EC2 VPC Security Group Ingress Rule Added
@@ -1211,8 +1229,8 @@ Invalid syntax
 * Kubernetes Pod Created With HostPID
 * Kubernetes Pod Created with a Sensitive hostPath Volume
 * Kubernetes Privileged Pod Created
-* Kubernetes Secret get or list from Node or Pod Service Account
-* Kubernetes Secret get or list with Suspicious User Agent
+* Kubernetes Secret Get or List from Node or Pod Service Account
+* Kubernetes Secret Get or List with Suspicious User Agent
 * Kubernetes Sensitive RBAC Change Followed by Workload Modification
 * Kubernetes Service Account Modified RBAC Objects
 * Kubernetes Service Account Token Created via TokenRequest API
@@ -1298,15 +1316,16 @@ Invalid syntax
 * Whoami Process Activity
 * Zoom Meeting with no Passcode
 
-### Unsupported function: match (35)
+### Unsupported function: match (36)
 
-35 rules:
+36 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * Command Obfuscation via Unicode Modifier Letters
 * Creation of Hidden Files and Directories via CommandLine
 * Entra ID Sign-in BloodHound Suite User-Agent Detected
 * Executable File Creation with Multiple Extensions
 * File Deletion via Shred
+* File Downloaded by Curl/Wget and Piped to Interpreter
 * GenAI Process Connection to Suspicious Top Level Domain
 * Masquerading Space After Filename
 * Network Activity to a Suspicious Top Level Domain
@@ -1592,11 +1611,6 @@ Invalid syntax
 1 rules:
 * Creation of Hidden Shared Object File
 
-### Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)
-
-1 rules:
-* Deprecated - SUNBURST Command and Control Activity
-
 ### Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)
 
 1 rules:
@@ -1717,11 +1731,6 @@ Invalid syntax
 1 rules:
 * PowerShell Script with Veeam Credential Access Capabilities
 
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[string]::join'}): ('$pSHoMe[')) (1)
-
-1 rules:
-* Deprecated - Potential PowerShell Obfuscated Script
-
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)
 
 1 rules:
@@ -1812,6 +1821,11 @@ Invalid syntax
 1 rules:
 * Boot File Copy
 
+### Unsolvable constraints: process.name (excluded by Strings({'elastic-agent.exe'}): ('elastic-agent.exe')) (1)
+
+1 rules:
+* Elastic Agent Service Terminated
+
 ### Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)
 
 1 rules:
@@ -1846,6 +1860,11 @@ Invalid syntax
 
 1 rules:
 * Enumeration Command Spawned via WMIPrvSE
+
+### Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh')) (1)
+
+1 rules:
+* Suspicious Process Execution by Zoom
 
 ### Unsolvable constraints: process.name (excluded by Strings({'smss.exe'}): ('smss.exe')) (1)
 
