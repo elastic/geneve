@@ -5,14 +5,14 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.3.20
+Rules version: 9.3.21
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (241)](#unsupported-rule-type-new_terms-241)
-      1. [Unsupported rule type: esql (212)](#unsupported-rule-type-esql-212)
+      1. [Unsupported rule type: new_terms (250)](#unsupported-rule-type-new_terms-250)
+      1. [Unsupported rule type: esql (218)](#unsupported-rule-type-esql-218)
       1. [Unsupported rule type: machine_learning (105)](#unsupported-rule-type-machine_learning-105)
-      1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
+      1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Error at line:37,column:3
 Invalid syntax
@@ -33,14 +33,14 @@ invalid-syntax
 --processargs-curl-or-bincurl-or-wget
 -------------------1)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (389)](#field-type-solver-constant_keyword-389)
-      1. [Unsupported function: match (36)](#unsupported-function-match-36)
-      1. [Root with too many branches (limit: 10000) (27)](#root-with-too-many-branches-limit-10000-27)
+      1. [Field type solver: constant_keyword (395)](#field-type-solver-constant_keyword-395)
+      1. [Unsupported function: match (37)](#unsupported-function-match-37)
+      1. [Root with too many branches (limit: 10000) (30)](#root-with-too-many-branches-limit-10000-30)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
       1. [Root without branches (11)](#root-without-branches-11)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
+      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (9)](#unsupported-argument-types-class-eqlastfield-9)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (8)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-8)
-      1. [Unsupported argument type(s): <class 'eql.ast.Field'> (8)](#unsupported-argument-types-class-eqlastfield-8)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
@@ -54,6 +54,7 @@ invalid-syntax
       1. [Unsolvable constraints: process.name (excluded by Strings({'nc.traditional'}): ('nc.traditional')) (2)](#unsolvable-constraints-processname-excluded-by-stringsnctraditional-nctraditional-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'python*'}): ('python*')) (2)](#unsolvable-constraints-processname-excluded-by-stringspython-python-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-2)
+      1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (2)](#unsupported-keyword-fileextentropy-constraint--2)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (2)](#unsupported-keyword-processextrelative_file_creation_time-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
@@ -133,7 +134,6 @@ invalid-syntax
       1. [Unsolvable constraints: winlog.event_data.param1 (not in Strings({'*FullControl*'}): ('*setsharingmode*')) (1)](#unsolvable-constraints-winlogevent_dataparam1-not-in-stringsfullcontrol-setsharingmode-1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: < (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
-      1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (1)](#unsupported-keyword-fileextentropy-constraint--1)
       1. [Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)](#unsupported-keyword-ml_is_dgamalicious_probability-constraint--1)
       1. [Unsupported &keyword 'powershell.file.script_block_entropy_bits' constraint: >= (1)](#unsupported-keyword-powershellfilescript_block_entropy_bits-constraint--1)
       1. [Unsupported &keyword 'powershell.file.script_block_length' constraint: > (1)](#unsupported-keyword-powershellfilescript_block_length-constraint--1)
@@ -142,9 +142,9 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (241)
+### Unsupported rule type: new_terms (250)
 
-241 rules:
+250 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Account Discovery By Rare User
@@ -194,10 +194,12 @@ invalid-syntax
 * AWS STS Role Assumption by Service
 * AWS STS Role Assumption by User
 * AWS STS Role Chaining
+* AWS Service Quota Increase Requested by Rare Identity
 * AWS Systems Manager SecureString Parameter Request with Decryption Flag
 * Abnormal Process ID or Lock File Created
 * Account or Group Discovery via Built-In Tools
 * Authentication via Unusual PAM Grantor
+* AzCopy or Azure Storage Explorer Usage on Unusual Host
 * Azure AD Graph Access with Unusual Client and User
 * Azure AD Graph Access with Unusual User and ASN
 * Azure Arc Cluster Credential Access by Identity from Unusual Source
@@ -210,10 +212,12 @@ invalid-syntax
 * Azure Storage Account Blob Public Access Enabled
 * Azure Storage Account Deletion by Unusual User
 * Azure Storage Account Keys Accessed by Privileged User
+* Azure Storage Anonymous Blob Access to Unusual Resource
 * Azure Storage Blob Retrieval via AzCopy
 * Azure VM Extension CRUD Operation with Unusual Source ASN
 * Azure VM Managed Run Command Created or Updated with Unusual Principal
 * Azure VM Serial Console Connection with Unusual User and ASN
+* Azure WireServer Unusual Process Connection
 * DPKG Package Installed by Unusual Parent Process
 * Delegated Managed Service Account Modification by an Unusual User
 * Deprecated - Unusual Discovery Activity by User
@@ -223,6 +227,7 @@ invalid-syntax
 * Entra ID Conditional Access MFA Bypass with Unusual User, Client and Source ASN
 * Entra ID Conditional Access Policy (CAP) Modified
 * Entra ID Device with ROADtools Default OS Build (Entity Analytics)
+* Entra ID Device-Bound PRT from Unusual Device IP
 * Entra ID Elevated Access to User Access Administrator
 * Entra ID External Authentication Methods (EAM) Modified
 * Entra ID OAuth Authorization Code Grant for Unusual User, App, and Resource
@@ -239,6 +244,8 @@ invalid-syntax
 * Entra ID User Sign-in with Unusual Authentication Type
 * Entra ID User Sign-in with Unusual Client
 * Entra ID User Sign-in with Unusual Non-Managed Device
+* Entra ID Windows Hello for Business Credential Registered
+* Entra ID Windows Hello or Passkey Sign-in from Unregistered Device
 * Enumeration of Kernel Modules via Proc
 * Enumeration of Privileged Local Groups Membership
 * Execution of an Unsigned Service
@@ -320,8 +327,10 @@ invalid-syntax
 * New GitHub Self Hosted Action Runner
 * New USB Storage Device Mounted
 * Newly Observed RC4 Kerberos Service Ticket Request
+* Newly Seen Commonly Abused Network Scanner
 * Okta Sign-In Events via Third-Party IdP
 * Potential Credential Access via DCSync
+* Potential Fileless Execution via Unusual memfd Create Call
 * Potential HTTP Downgrade Attack
 * Potential ICMP Tunneling Activity to the Internet
 * Potential Pass-the-Hash (PtH) Attempt
@@ -330,6 +339,7 @@ invalid-syntax
 * Privileged Docker Container Creation
 * Process Backgrounded by Unusual Parent
 * Process Discovery via Built-In Applications
+* Protected Storage Service Access via SMB
 * Query Registry using Built-in Tools
 * RPM Package Installed by Unusual Parent Process
 * Rare SMB Connection to the Internet
@@ -365,7 +375,6 @@ invalid-syntax
 * Unusual AWS S3 Object Encryption with SSE-C
 * Unusual Child Execution via Web Server
 * Unusual Command Execution via Web Server
-* Unusual Discovery Signal Alert with Unusual Process Command Line
 * Unusual Discovery Signal Alert with Unusual Process Executable
 * Unusual Execution from Kernel Thread (kthreadd) Parent
 * Unusual Exim4 Child Process
@@ -388,9 +397,9 @@ invalid-syntax
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (212)
+### Unsupported rule type: esql (218)
 
-212 rules:
+218 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -449,6 +458,7 @@ invalid-syntax
 * Elastic Defend and Network Security Alerts Correlation
 * Entra ID Actor Token User Impersonation Abuse
 * Entra ID Concurrent Sign-in with Suspicious Properties
+* Entra ID Device-Bound PRT Replay via First-Party App from Unusual IP
 * Entra ID Federated Identity Credential Issuer Modified
 * Entra ID Illicit Consent Grant via Registered Application
 * Entra ID MFA TOTP Brute Force Attempted
@@ -459,6 +469,8 @@ invalid-syntax
 * Entra ID Sign-in Brute Force Attempted (Microsoft 365)
 * Entra ID User Sign-in Brute Force Attempted
 * File Transfer Utility Launched from Unusual Parent
+* First Seen Network Flow Exporter
+* First Seen Network Flow Exporter Followed by Suspicious Source Activity
 * First Time Seen DNS Query to RMM Domain
 * First-Time FortiGate Administrator Login
 * FortiGate Administrator Login from Multiple IP Addresses
@@ -548,6 +560,7 @@ invalid-syntax
 * Potential DNS Tunneling via Long and Unique Subdomains
 * Potential Denial of Azure OpenAI ML Service
 * Potential Dynamic IEX Reconstruction via Environment Variables
+* Potential Entra ID PRT Extraction via BrowserCore
 * Potential Evasion via Boot Time Removal Tool
 * Potential Linux Local Account Brute Force Detected
 * Potential Malicious PowerShell Based on Alert Correlation
@@ -573,6 +586,7 @@ invalid-syntax
 * Potential PowerShell Obfuscation via String Reordering
 * Potential Ransomware Behavior - Note Files by System
 * Potential SQL Injection Against Microsoft SQL Server
+* Potential SSH Brute Force Detected via macOS Security Events
 * Potential Self-Signed TLS Certificate Recently Issued on External Connection
 * Potential Spike in Web Server Error Logs
 * Potential Subnet Scanning Activity from Compromised Host
@@ -593,6 +607,7 @@ invalid-syntax
 * Suspicious TCC Access Granted for User Folders
 * Unusual Azure VM Extension Detected
 * Unusual Base64 Encoding/Decoding Activity
+* Unusual DNS Request to Suspicious Top Level Domain
 * Unusual File Creation by Web Server
 * Unusual High Confidence Content Filter Blocks Detected
 * Unusual High Denied Sensitive Information Policy Blocks Detected
@@ -715,12 +730,13 @@ invalid-syntax
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: threshold (28)
+### Unsupported rule type: threshold (29)
 
-28 rules:
+29 rules:
 
 * AWS IAM Principal Enumeration via UpdateAssumeRolePolicy
 * AWS Management Console Brute Force of Root User Identity
+* AWS Root Console Login Password Spraying
 * AWS S3 Bucket Enumeration or Brute Force
 * AWS Secrets Manager Rapid Secrets Retrieval
 * Attempts to Brute Force an Okta User Account
@@ -781,13 +797,14 @@ Invalid syntax
 
 ## Generation errors
 
-### Field type solver: constant_keyword (389)
+### Field type solver: constant_keyword (395)
 
-389 rules:
+395 rules:
 * AWS Account Closed
 * AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
 * AWS Attempt to Leave Organization
 * AWS Backup Recovery Point Deleted
+* AWS Backup Resource Enumeration via Long-Term Access Key
 * AWS Backup Vault Deleted or Vault Lock Removed
 * AWS Bedrock API Key Phantom User Activity Outside Bedrock
 * AWS Bedrock Agent Created by IAM User or Root
@@ -852,6 +869,7 @@ Invalid syntax
 * AWS Lambda Layer Added to Existing Function
 * AWS Lambda Layer Shared Externally
 * AWS Management Console Root Login
+* AWS Organizations Delegated Administrator Registered
 * AWS RDS DB Instance Restored
 * AWS RDS DB Instance or Cluster Deleted
 * AWS RDS Snapshot Export
@@ -860,8 +878,12 @@ Invalid syntax
 * AWS Route 53 Private Hosted Zone Associated With a VPC
 * AWS Route 53 Resolver Query Log Configuration Deleted
 * AWS S3 Bucket Configuration Deletion
+* AWS S3 Bucket MFA Delete Disabled
 * AWS S3 Credential File Retrieved from Bucket
+* AWS SES Account Email Sending Enabled
+* AWS SES Enumeration via Long-Term Access Key
 * AWS SQS Queue Purge
+* AWS Security Hub Disabled
 * AWS Sensitive IAM Operations Performed via CloudShell
 * AWS Sign-In Console Login with Federated User
 * AWS Sign-In Root Password Recovery Requested
@@ -1174,9 +1196,9 @@ Invalid syntax
 * Whoami Process Activity
 * Zoom Meeting with no Passcode
 
-### Unsupported function: match (36)
+### Unsupported function: match (37)
 
-36 rules:
+37 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * Command Obfuscation via Unicode Modifier Letters
 * Creation of Hidden Files and Directories via CommandLine
@@ -1193,6 +1215,7 @@ Invalid syntax
 * Potential Data Exfiltration Through Curl
 * Potential Data Exfiltration Through Wget
 * Potential Exploitation of an Unquoted Service Path Vulnerability
+* Potential Fileless Execution via O_TMPFILE
 * Potential Linux Tunneling and/or Port Forwarding
 * Potential Linux Tunneling and/or Port Forwarding via Command Line
 * Potential SSH Reverse Port Forwarding
@@ -1214,15 +1237,16 @@ Invalid syntax
 * Unusual Process Execution Path - Alternate Data Stream
 * Web Server Exploitation Detected via Defend for Containers
 
-### Root with too many branches (limit: 10000) (27)
+### Root with too many branches (limit: 10000) (30)
 
-27 rules:
+30 rules:
 * Connection to Common Large Language Model Endpoints
 * Connection to Commonly Abused Web Services
 * Decoded Payload Piped to Interpreter Detected via Defend for Containers
 * Execution from Unusual Directory - Command Line
 * Execution of a Downloaded Windows Script
 * External IP Lookup from Non-Browser Process
+* File with Suspicious Double Extension Created by Web Server
 * GenAI or MCP Server Child Process Execution
 * Ingress Tool Transfer Followed by Execution and Deletion Detected via Defend for Containers
 * Kubelet Pod Discovery Detected via Defend for Containers
@@ -1234,10 +1258,12 @@ Invalid syntax
 * Potential Linux Ransomware Note Creation Detected
 * Potential Masquerading as System32 DLL
 * Potential Masquerading as System32 Executable
+* Potential Polyglot Bypass File Created by Web Server
 * Potential Ransomware Note File Dropped via SMB
 * Potential Reverse Shell via Suspicious Binary
 * Potential Reverse Shell via Suspicious Child Process
 * Potential Successful SSH Brute Force Attack
+* Potential Successful SSH Brute Force Attack via macOS Security Events
 * Suspicious Child Execution via Web Server
 * Suspicious Command Execution via Web Server
 * Suspicious File Renamed via SMB
@@ -1304,6 +1330,19 @@ Invalid syntax
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
 
+### Unsupported argument type(s): <class 'eql.ast.Field'> (9)
+
+9 rules:
+* External User Added to Google Workspace Group
+* Image Loaded with Invalid Signature
+* Interactive Logon by an Unusual Process
+* M365 Exchange Inbox Forwarding Rule Created
+* Payload Downloaded by Interpreter and Piped to Interpreter
+* Potential Privilege Escalation via SUID/SGID
+* Unusual Network Activity from a Windows System Binary
+* Unusual Parent-Child Relationship
+* Windows Service Installed via an Unusual Client
+
 ### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (8)
 
 8 rules:
@@ -1315,18 +1354,6 @@ Invalid syntax
 * Suspicious Microsoft HTML Application Child Process
 * Suspicious Shell Execution via Velociraptor
 * Suspicious Windows Command Shell Arguments
-
-### Unsupported argument type(s): <class 'eql.ast.Field'> (8)
-
-8 rules:
-* External User Added to Google Workspace Group
-* Image Loaded with Invalid Signature
-* Interactive Logon by an Unusual Process
-* M365 Exchange Inbox Forwarding Rule Created
-* Payload Downloaded by Interpreter and Piped to Interpreter
-* Potential Privilege Escalation via SUID/SGID
-* Unusual Network Activity from a Windows System Binary
-* Windows Service Installed via an Unusual Client
 
 ### Unsupported function: startsWith (4)
 
@@ -1414,6 +1441,12 @@ Invalid syntax
 2 rules:
 * Potential Execution via FileFix Phishing Attack
 * Suspicious MS Office Child Process
+
+### Unsupported &keyword 'file.Ext.entropy' constraint: >= (2)
+
+2 rules:
+* File with High Entropy Created by Web Server
+* Suspicious HTML File Creation
 
 ### Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)
 
@@ -1813,11 +1846,6 @@ Invalid syntax
 
 1 rules:
 * Unsigned DLL Loaded by Svchost
-
-### Unsupported &keyword 'file.Ext.entropy' constraint: >= (1)
-
-1 rules:
-* Suspicious HTML File Creation
 
 ### Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)
 
