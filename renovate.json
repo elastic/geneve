@@ -9,6 +9,13 @@
   "packageRules": [
     {
       "matchPackageNames": [
+        "python"
+      ],
+      "matchCurrentValue": "^3\\.8$",
+      "enabled": false
+    },
+    {
+      "matchPackageNames": [
         "actions/cache",
         "actions/checkout",
         "actions/download-artifact",
