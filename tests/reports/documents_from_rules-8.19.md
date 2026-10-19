@@ -5,15 +5,33 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.19.33
+Rules version: 8.19.35
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (246)](#unsupported-rule-type-new_terms-246)
-      1. [Unsupported rule type: esql (203)](#unsupported-rule-type-esql-203)
+      1. [Unsupported rule type: new_terms (251)](#unsupported-rule-type-new_terms-251)
+      1. [Unsupported rule type: esql (231)](#unsupported-rule-type-esql-231)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
+      1. [Error at line:14,column:51
+Invalid syntax
+    */.local/bin/q or */usr/local/bin/q or
+    *\\Users\\*\\AppData\\Local\\Programs\\Amazon Q\\q.exe or
+                                                  ^ (1)](#error-at-line14column51
+invalid-syntax
+----localbinq-or-usrlocalbinq-or
+----usersappdatalocalprogramsamazon-qqexe-or
+---------------------------------------------------1)
+      1. [Error at line:18,column:11
+Invalid syntax
+      *cloudfox* or *enumerate_iam* or *enumerate-iam* or *weirdAAL* or *aws_consoler* or
+      *-m pacu* or *pacu.py* or *aws_escalate* or *scoutsuite* or *pmapper* or
+          ^ (1)](#error-at-line18column11
+invalid-syntax
+------cloudfox-or-enumerate_iam-or-enumerate-iam-or-weirdaal-or-aws_consoler-or
+-------m-pacu-or-pacupy-or-aws_escalate-or-scoutsuite-or-pmapper-or
+-----------1)
       1. [Error at line:37,column:3
 Invalid syntax
   *confluence/conf/server.xml
@@ -23,6 +41,15 @@ invalid-syntax
 --confluenceconfserverxml
 --configgcloudapplication_default_credentialsjson-or
 ---1)
+      1. [Error at line:5,column:19
+Invalid syntax
+  process.command_line : (
+  *accessanalyzer delete-analyzer* or
+                  ^ (1)](#error-at-line5column19
+invalid-syntax
+--processcommand_line--
+--accessanalyzer-delete-analyzer-or
+-------------------1)
       1. [Error at line:7,column:19
 Invalid syntax
   process.name:(curl or wget) or
@@ -33,8 +60,8 @@ invalid-syntax
 --processargs-curl-or-bincurl-or-wget
 -------------------1)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (391)](#field-type-solver-constant_keyword-391)
-      1. [Unsupported function: match (35)](#unsupported-function-match-35)
+      1. [Field type solver: constant_keyword (389)](#field-type-solver-constant_keyword-389)
+      1. [Unsupported function: match (36)](#unsupported-function-match-36)
       1. [Root with too many branches (limit: 10000) (25)](#root-with-too-many-branches-limit-10000-25)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
@@ -65,6 +92,7 @@ invalid-syntax
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringschild_process-exec-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (excluded by Strings({'DsGetSiteName'}): ('DsGetSiteName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-excluded-by-stringsdsgetsitename-dsgetsitename-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Clear-Host'}): ('Cloudflare ID:')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsclear-host-cloudflare-id-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdumpcreds-dumpcerts-1)
@@ -141,11 +169,12 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (246)
+### Unsupported rule type: new_terms (251)
 
-246 rules:
+251 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
+* AWS Backup Recovery Point Deleted by Unusual User
 * AWS Batch Job Submitted with Container Override by Unusual Identity
 * AWS Bedrock Agent or Action Group Manipulation
 * AWS Bedrock AgentCore Execution Role Used Outside Its Runtime
@@ -173,6 +202,7 @@ invalid-syntax
 * AWS IAM OIDC Provider Created by Rare User
 * AWS IAM Permission Boundary or Guardrail Policy Deleted by Unusual Identity
 * AWS IAM User Console Login Without MFA
+* AWS Lambda Function Deletion by Unusual User
 * AWS Lambda Function Invoked by an Unusual Principal
 * AWS Lambda Function Invoked from an Unusual Source ASN
 * AWS S3 Bucket ACL Modified to Allow Public Access by New Identity
@@ -196,6 +226,8 @@ invalid-syntax
 * AWS Systems Manager SecureString Parameter Request with Decryption Flag
 * Abnormal Process ID or Lock File Created
 * Account or Group Discovery via Built-In Tools
+* Anthropic MCP Server Created
+* Anthropic Sensitive Claude Project Role Assigned to User
 * Authentication via Unusual PAM Grantor
 * AzCopy or Azure Storage Explorer Usage on Unusual Host
 * Azure AD Graph Access with Unusual Client and User
@@ -261,6 +293,7 @@ invalid-syntax
 * First Occurrence of Private Repo Event from Specific GitHub Personal Access Token (PAT)
 * First Occurrence of User Agent For a GitHub Personal Access Token (PAT)
 * First Occurrence of User-Agent For a GitHub User
+* First Seen External MQTT Broker Connection
 * First Seen SonicWall Remote Access Login by User and Source
 * First Time AWS CloudFormation Stack Creation
 * First Time Python Accessed Sensitive Credential Files
@@ -392,9 +425,9 @@ invalid-syntax
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### Unsupported rule type: esql (203)
+### Unsupported rule type: esql (231)
 
-203 rules:
+231 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -434,6 +467,29 @@ invalid-syntax
 * Alerts From Multiple Integrations by Source Address
 * Alerts From Multiple Integrations by User Name
 * Alerts in Different ATT&CK Tactics by Host
+* Anthropic Activity from a Suspicious User Agent
+* Anthropic Admin API Key Created
+* Anthropic Admin API Key Deleted
+* Anthropic Admin Role Assigned to User
+* Anthropic Compliance API Key Created
+* Anthropic Compliance API Logging Disabled
+* Anthropic Compliance Audit Log Export Accessed
+* Anthropic Excessive Chat Access Failures
+* Anthropic Excessive Chat Creation
+* Anthropic Excessive Chat Deletion
+* Anthropic Excessive Chat Snapshot Creation
+* Anthropic Extra Usage Spend Limit Deleted
+* Anthropic High File Upload Activity
+* Anthropic Magic Link Second Factor Disabled
+* Anthropic Multiple Authentication Failures
+* Anthropic Organization Data Export Accessed
+* Anthropic Organization Deletion
+* Anthropic Organization Domain Boundary Changed
+* Anthropic Organization IP Restriction Deleted
+* Anthropic Organization Member and Group Enumeration
+* Anthropic Organization User Invite Sent
+* Anthropic Primary Owner Transferred
+* Anthropic SSO Disabled or Connection Removed
 * Azure AD Graph Access with Suspicious User-Agent
 * Azure AD Graph High 4xx Error Ratio from User
 * Azure AD Graph Potential Enumeration (ROADrecon)
@@ -442,7 +498,6 @@ invalid-syntax
 * Azure Run Command Correlated with Process Execution
 * Cobalt Strike Command and Control Beacon
 * Command Line Obfuscation via Whitespace Padding
-* Correlated Alerts on Similar User Identities
 * Detection Alert on a Process Exhibiting CPU Spike
 * Dynamic IEX Reconstruction via Method String Access
 * Elastic Defend and Email Alerts Correlation
@@ -459,6 +514,7 @@ invalid-syntax
 * Entra ID OAuth User Impersonation to Microsoft Graph
 * Entra ID Sign-in Brute Force Attempted (Microsoft 365)
 * Entra ID User Sign-in Brute Force Attempted
+* Excessive Sudo Authentication Failures via macOS Security Events
 * File Transfer Utility Launched from Unusual Parent
 * First Seen Network Flow Exporter
 * First Seen Network Flow Exporter Followed by Suspicious Source Activity
@@ -495,6 +551,7 @@ invalid-syntax
 * LSASS Process Access via Windows API
 * Lateral Movement Alerts from a Newly Observed Source Address
 * Lateral Movement Alerts from a Newly Observed User
+* Launch Item Registration with Suspicious Executable Path via macOS Security Events
 * Long Base64 Encoded Command via Scripting Interpreter
 * M365 Azure Monitor Alert Email with Financial or Billing Theme
 * M365 Exchange Inbox Rule with Obfuscated Name
@@ -532,12 +589,14 @@ invalid-syntax
 * Okta AiTM Session Cookie Replay
 * Okta Successful Login After Credential Attack
 * Okta User Sessions Started from Different Geolocations
+* Persistence via a Hidden Plist Filename via macOS Security Events
 * Possible FIN7 DGA Command and Control Behavior
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
 * Potential Account Takeover - Logon from New Source IP
 * Potential Account Takeover - Mixed Logon Types
 * Potential Azure OpenAI Model Theft
 * Potential CertiGhost AD CS Machine Identity Mismatch (CVE-2026-54121)
+* Potential ClickFix Command via Windows Run Dialog
 * Potential Credential Discovery via Recursive Grep
 * Potential DHCP Starvation via High Client MAC Cardinality
 * Potential DNS Exfiltration via Excessive Chunked Queries
@@ -547,6 +606,7 @@ invalid-syntax
 * Potential Dynamic IEX Reconstruction via Environment Variables
 * Potential Entra ID PRT Extraction via BrowserCore
 * Potential Evasion via Boot Time Removal Tool
+* Potential FileFix Command via Windows Explorer Address Bar
 * Potential Linux Local Account Brute Force Detected
 * Potential Malicious PowerShell Based on Alert Correlation
 * Potential Malware-Driven SSH Brute Force Attempt
@@ -576,6 +636,7 @@ invalid-syntax
 * Potential Subnet Scanning Activity from Compromised Host
 * Potential Widespread Malware Infection Across Multiple Hosts
 * PowerShell Obfuscation via Negative Index String Reversal
+* Privilege Escalation via Parallels Appliance Extract Argument Injection
 * Privileged Accounts Brute Force
 * Rare Connection to WebDAV Target
 * Repeated Stalled TLS Handshakes via ALPN acme-tls/1 Extension
@@ -744,6 +805,26 @@ invalid-syntax
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
 
+### Error at line:14,column:51
+Invalid syntax
+    */.local/bin/q or */usr/local/bin/q or
+    *\\Users\\*\\AppData\\Local\\Programs\\Amazon Q\\q.exe or
+                                                  ^ (1)
+
+1 rules:
+
+* Potential Destructive AWS CLI Command Executed by GenAI Agent
+
+### Error at line:18,column:11
+Invalid syntax
+      *cloudfox* or *enumerate_iam* or *enumerate-iam* or *weirdAAL* or *aws_consoler* or
+      *-m pacu* or *pacu.py* or *aws_escalate* or *scoutsuite* or *pmapper* or
+          ^ (1)
+
+1 rules:
+
+* Cloud Offensive Framework Execution
+
 ### Error at line:37,column:3
 Invalid syntax
   *confluence/conf/server.xml
@@ -753,6 +834,16 @@ Invalid syntax
 1 rules:
 
 * Kubernetes and Cloud Credential Path Access via Process Arguments
+
+### Error at line:5,column:19
+Invalid syntax
+  process.command_line : (
+  *accessanalyzer delete-analyzer* or
+                  ^ (1)
+
+1 rules:
+
+* AWS Audit or Security Service Tampering via CLI
 
 ### Error at line:7,column:19
 Invalid syntax
@@ -766,13 +857,12 @@ Invalid syntax
 
 ## Generation errors
 
-### Field type solver: constant_keyword (391)
+### Field type solver: constant_keyword (389)
 
-391 rules:
+389 rules:
 * AWS Account Closed
 * AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
 * AWS Attempt to Leave Organization
-* AWS Backup Recovery Point Deleted
 * AWS Backup Resource Enumeration via Long-Term Access Key
 * AWS Backup Vault Deleted or Vault Lock Removed
 * AWS Bedrock API Key Phantom User Activity Outside Bedrock
@@ -834,7 +924,6 @@ Invalid syntax
 * AWS KMS Customer Managed Key Disabled or Scheduled for Deletion
 * AWS KMS Imported Key Material Deleted
 * AWS Lambda Event Source Mapping Creation
-* AWS Lambda Function Deletion
 * AWS Lambda Layer Added to Existing Function
 * AWS Lambda Layer Shared Externally
 * AWS Management Console Root Login
@@ -1161,9 +1250,9 @@ Invalid syntax
 * Whoami Process Activity
 * Zoom Meeting with no Passcode
 
-### Unsupported function: match (35)
+### Unsupported function: match (36)
 
-35 rules:
+36 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * Command Obfuscation via Unicode Modifier Letters
 * Creation of Hidden Files and Directories via CommandLine
@@ -1183,6 +1272,7 @@ Invalid syntax
 * Potential Fileless Execution via O_TMPFILE
 * Potential Linux Tunneling and/or Port Forwarding
 * Potential Linux Tunneling and/or Port Forwarding via Command Line
+* Potential NetScaler Log Poisoning Command Injection Attempt
 * Potential SSH Reverse Port Forwarding
 * Potential Windows Error Manager Masquerading
 * Process Created with a Duplicated Token
@@ -1453,6 +1543,11 @@ Invalid syntax
 
 1 rules:
 * PowerShell Suspicious Discovery Related Windows API Functions
+
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Clear-Host'}): ('Cloudflare ID:')) (1)
+
+1 rules:
+* Potential TerminalFix Cloudflare Lure in PowerShell
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)
 

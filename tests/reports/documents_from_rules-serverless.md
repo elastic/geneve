@@ -5,16 +5,34 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.5.6
+Rules version: 9.5.8
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: new_terms (250)](#unsupported-rule-type-new_terms-250)
-      1. [Unsupported rule type: esql (228)](#unsupported-rule-type-esql-228)
+      1. [Unsupported rule type: esql (263)](#unsupported-rule-type-esql-263)
+      1. [Unsupported rule type: new_terms (257)](#unsupported-rule-type-new_terms-257)
       1. ['types.SimpleNamespace' object has no attribute 'type' (130)](#typessimplenamespace-object-has-no-attribute-type-130)
       1. [Unsupported rule type: machine_learning (106)](#unsupported-rule-type-machine_learning-106)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
+      1. [Error at line:14,column:51
+Invalid syntax
+    */.local/bin/q or */usr/local/bin/q or
+    *\\Users\\*\\AppData\\Local\\Programs\\Amazon Q\\q.exe or
+                                                  ^ (1)](#error-at-line14column51
+invalid-syntax
+----localbinq-or-usrlocalbinq-or
+----usersappdatalocalprogramsamazon-qqexe-or
+---------------------------------------------------1)
+      1. [Error at line:18,column:11
+Invalid syntax
+      *cloudfox* or *enumerate_iam* or *enumerate-iam* or *weirdAAL* or *aws_consoler* or
+      *-m pacu* or *pacu.py* or *aws_escalate* or *scoutsuite* or *pmapper* or
+          ^ (1)](#error-at-line18column11
+invalid-syntax
+------cloudfox-or-enumerate_iam-or-enumerate-iam-or-weirdaal-or-aws_consoler-or
+-------m-pacu-or-pacupy-or-aws_escalate-or-scoutsuite-or-pmapper-or
+-----------1)
       1. [Error at line:37,column:3
 Invalid syntax
   *confluence/conf/server.xml
@@ -24,6 +42,15 @@ invalid-syntax
 --confluenceconfserverxml
 --configgcloudapplication_default_credentialsjson-or
 ---1)
+      1. [Error at line:5,column:19
+Invalid syntax
+  process.command_line : (
+  *accessanalyzer delete-analyzer* or
+                  ^ (1)](#error-at-line5column19
+invalid-syntax
+--processcommand_line--
+--accessanalyzer-delete-analyzer-or
+-------------------1)
       1. [Error at line:7,column:19
 Invalid syntax
   process.name:(curl or wget) or
@@ -34,8 +61,8 @@ invalid-syntax
 --processargs-curl-or-bincurl-or-wget
 -------------------1)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (395)](#field-type-solver-constant_keyword-395)
-      1. [Unsupported function: match (37)](#unsupported-function-match-37)
+      1. [Field type solver: constant_keyword (393)](#field-type-solver-constant_keyword-393)
+      1. [Unsupported function: match (39)](#unsupported-function-match-39)
       1. [Root with too many branches (limit: 10000) (30)](#root-with-too-many-branches-limit-10000-30)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
       1. [Root without branches (11)](#root-without-branches-11)
@@ -69,6 +96,7 @@ invalid-syntax
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringschild_process-exec-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (excluded by Strings({'DsGetSiteName'}): ('DsGetSiteName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-excluded-by-stringsdsgetsitename-dsgetsitename-1)
+      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Clear-Host'}): ('Cloudflare ID:')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsclear-host-cloudflare-id-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdumpcreds-dumpcerts-1)
@@ -143,12 +171,281 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: new_terms (250)
+### Unsupported rule type: esql (263)
 
-250 rules:
+263 rules:
+
+* AWS Access Token Used from Multiple Addresses
+* AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
+* AWS Bedrock AgentCore Runtime Prompt Containing Credentials
+* AWS Bedrock AgentCore Runtime Prompt Targeting Credentials or Instance Metadata
+* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
+* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
+* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
+* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
+* AWS Bedrock High Risk Filesystem or Execution Tool Invocation
+* AWS Bedrock High-Frequency Single-Model Inference API Probing
+* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
+* AWS Bedrock Model Prompt or Completion Containing Credentials
+* AWS Credentials Used from GitHub Actions and Non-CI/CD Infrastructure
+* AWS Discovery API Calls via CLI from a Single Resource
+* AWS EC2 LOLBin Execution via SSM SendCommand
+* AWS EC2 Multi-Region DescribeInstances API Calls
+* AWS EC2 Stop, Start, and User Data Modification Correlation
+* AWS ECR Repository or Registry Policy Granted Public Access
+* AWS IAM Credentials Added to a Bedrock API Key Phantom User
+* AWS IAM Long-Term Access Key Correlated with Elevated Detection Alerts
+* AWS IAM User Console Login from Multiple Geolocations
+* AWS IAM User Created Access Keys For Another User
+* AWS IAM User Self-Created Access Key Subsequently Used
+* AWS Lambda Function High-Frequency Invocation by a Single Principal
+* AWS Lambda Function Invoked Cross-Account
+* AWS Lateral Movement from Kubernetes SA via AssumeRoleWithWebIdentity
+* AWS Potential Cryptomining via ECS Task Definition Deployment
+* AWS Rare Source AS Organization Activity
+* AWS S3 Object Encryption Using External KMS Key
+* AWS S3 Rapid Bucket Posture API Calls from a Single Principal
+* AWS S3 Static Site JavaScript File Uploaded
+* AWS SES Email Identity Verified Then Deleted
+* AWS SageMaker Execution Role Passed by Unusual Principal
+* AWS SageMaker Notebook Lifecycle Configuration With Suspicious Script Content
+* AWS Service Quotas Multi-Region GetServiceQuota Requests
+* Agent Spoofing - Multiple Hosts Using Same Agent
+* Alerts From Multiple Integrations by Destination Address
+* Alerts From Multiple Integrations by Source Address
+* Alerts From Multiple Integrations by User Name
+* Alerts in Different ATT&CK Tactics by Host
+* Anthropic Activity from a Suspicious User Agent
+* Anthropic Admin API Key Created
+* Anthropic Admin API Key Deleted
+* Anthropic Admin Role Assigned to User
+* Anthropic Artifact Shared Publicly
+* Anthropic Compliance API Key Created
+* Anthropic Compliance API Logging Disabled
+* Anthropic Compliance Audit Log Export Accessed
+* Anthropic Excessive Chat Access Failures
+* Anthropic Excessive Chat Creation
+* Anthropic Excessive Chat Deletion
+* Anthropic Excessive Chat Snapshot Creation
+* Anthropic Extra Usage Spend Limit Deleted
+* Anthropic High File Upload Activity
+* Anthropic Impossible Travel Login
+* Anthropic Magic Link Second Factor Disabled
+* Anthropic Multiple Authentication Failures
+* Anthropic Organization Data Export Accessed
+* Anthropic Organization Deletion
+* Anthropic Organization Domain Boundary Changed
+* Anthropic Organization IP Restriction Deleted
+* Anthropic Organization Member and Group Enumeration
+* Anthropic Organization User Invite Sent
+* Anthropic Primary Owner Transferred
+* Anthropic SSO Disabled or Connection Removed
+* Anthropic Session Reuse Impossible Travel
+* Azure AD Graph Access with Suspicious User-Agent
+* Azure AD Graph High 4xx Error Ratio from User
+* Azure AD Graph Potential Enumeration (ROADrecon)
+* Azure AKS Pod Exec Potential Reverse Shell
+* Azure Key Vault Excessive Secret or Key Retrieved
+* Azure OpenAI Insecure Output Handling
+* Azure Run Command Correlated with Process Execution
+* Cobalt Strike Command and Control Beacon
+* Command Line Obfuscation via Whitespace Padding
+* Correlated Alerts on Similar User Identities
+* Curl Download Activity from npm Package Install
+* Detection Alert on a Process Exhibiting CPU Spike
+* Dynamic IEX Reconstruction via Method String Access
+* Elastic Defend Alert from GenAI Utility or Descendant
+* Elastic Defend Alert from Package Manager Install Ancestry
+* Elastic Defend and Email Alerts Correlation
+* Elastic Defend and Network Security Alerts Correlation
+* Entra ID Actor Token User Impersonation Abuse
+* Entra ID Concurrent Sign-in with Suspicious Properties
+* Entra ID Device-Bound PRT Replay via First-Party App from Unusual IP
+* Entra ID Deviceless Windows Hello Sign-in Followed by Device Registration
+* Entra ID Federated Identity Credential Issuer Modified
+* Entra ID Illicit Consent Grant via Registered Application
+* Entra ID MFA TOTP Brute Force Attempted
+* Entra ID Multiple Device Registrations by a Single User
+* Entra ID OAuth Device Code Flow with Concurrent Sign-ins
+* Entra ID OAuth Flow by Microsoft Authentication Broker to Device Registration Service (DRS)
+* Entra ID OAuth User Impersonation to Microsoft Graph
+* Entra ID Sign-in Brute Force Attempted (Microsoft 365)
+* Entra ID User Sign-in Brute Force Attempted
+* Excessive Sudo Authentication Failures via macOS Security Events
+* File Transfer Utility Launched from Unusual Parent
+* First Seen Network Flow Exporter
+* First Seen Network Flow Exporter Followed by Suspicious Source Activity
+* First Time Seen DNS Query to RMM Domain
+* First-Time FortiGate Administrator Login
+* FortiGate Administrator Login from Multiple IP Addresses
+* FortiGate FortiCloud SSO Login from Unusual Source
+* GCP Secret Manager ListSecrets Across Multiple Projects
+* GKE API Request Failure Burst by User
+* GKE Anonymous Endpoint Permission Enumeration
+* GKE Certificate Signing Request Self-Approved
+* GKE Certificate Signing Request for Privileged Identity
+* GKE Endpoint Permission Enumeration
+* GKE Multi-Resource Discovery
+* GKE Rapid Secret GET Activity Against Multiple Objects
+* GKE Sensitive RBAC Change Followed by Workload Modification
+* GitHub Actions Workflow Modification Blocked
+* GitHub Exfiltration via High Number of Repository Clones by User
+* Google Workspace Device Registration Burst for Single User
+* Google Workspace Impossible Travel Login
+* Halfbaked Command and Control Beacon
+* High Number of Closed Pull Requests by User
+* High Number of Egress Network Connections from Unusual Executable
+* High Number of Protected Branch Force Pushes by User
+* Kubernetes Creation or Modification of Sensitive Role
+* Kubernetes Multi-Resource Discovery
+* Kubernetes Pod Exec Cloud Instance Metadata Access
+* Kubernetes Pod Exec Potential Reverse Shell
+* Kubernetes Pod Exec Sensitive File or Credential Path Access
+* Kubernetes Pod Exec with Curl or Wget to HTTPS
+* Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
+* Kubernetes Potential Endpoint Permission Enumeration Attempt by Anonymous User Detected
+* Kubernetes RBAC Wildcard Elevation on Existing Role
+* Kubernetes Rapid Secret GET Activity Against Multiple Objects
+* Kubernetes Secret or ConfigMap Access via Azure Arc Proxy
+* LLM-Based Attack Chain Triage by Host
+* LLM-Based Compromised User Triage by User
+* LLM-Based Curl Activity Triage
+* LLM-Based Curl Activity Triage via Auditd
+* LLM-Based Wget Activity Triage
+* LLM-Based Wget Activity Triage via Auditd
+* LSASS Process Access via Windows API
+* Lateral Movement Alerts from a Newly Observed Source Address
+* Lateral Movement Alerts from a Newly Observed User
+* Launch Item Registration with Suspicious Executable Path via macOS Security Events
+* Long Base64 Encoded Command via Scripting Interpreter
+* M365 Azure Monitor Alert Email with Financial or Billing Theme
+* M365 Exchange Inbox Rule with Obfuscated Name
+* M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
+* M365 Identity User Account Lockouts
+* M365 Identity User Brute Force Attempted
+* M365 OneDrive/SharePoint Excessive File Downloads
+* M365 or Entra ID Identity Sign-in from a Suspicious Source
+* Microsoft Entra ID Impossible Travel Sign-in
+* Microsoft Graph Multi-Category Reconnaissance Burst
+* Multi-Cloud CLI Token and Credential Access Commands
+* Multiple Alerts Involving a User
+* Multiple Alerts in Same ATT&CK Tactic by Host
+* Multiple Alerts on a Host Exhibiting CPU Spike
+* Multiple Cloud Secrets Accessed by Source Address
+* Multiple DHCP Servers Responding to the Same Transaction
+* Multiple Device Token Hashes for Single Okta Session
+* Multiple Elastic Defend Alerts by Agent
+* Multiple Elastic Defend Alerts from a Single Process Tree
+* Multiple External EDR Alerts by Host
+* Multiple Logon Failure from the same Source Address
+* Multiple Machine Learning Alerts by Influencer Field
+* Multiple Okta User Authentication Events with Same Device Token Hash
+* Multiple Rare Elastic Defend Behavior Rules by Host
+* Multiple Remote Management Tool Vendors on Same Host
+* Multiple SonicWall Login Failures Followed by Successful Login
+* Multiple Vulnerabilities by Asset via Wiz
+* Newly Observed Elastic Defend Behavior Alert
+* Newly Observed FortiGate Alert
+* Newly Observed High Severity Detection Alert
+* Newly Observed High Severity Suricata Alert
+* Newly Observed IPSEC NAT Traversal Peer
+* Newly Observed Palo Alto Network Alert
+* Newly Observed Process Exhibiting High CPU Usage
+* Newly Observed ScreenConnect Host Server
+* Okta AiTM Session Cookie Replay
+* Okta Successful Login After Credential Attack
+* Okta User Sessions Started from Different Geolocations
+* Persistence via a Hidden Plist Filename via macOS Security Events
+* Possible FIN7 DGA Command and Control Behavior
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Account Takeover - Logon from New Source IP
+* Potential Account Takeover - Mixed Logon Types
+* Potential Azure OpenAI Model Theft
+* Potential CertiGhost AD CS Machine Identity Mismatch (CVE-2026-54121)
+* Potential ClickFix Command via Windows Run Dialog
+* Potential Credential Discovery via Recursive Grep
+* Potential DHCP Starvation via High Client MAC Cardinality
+* Potential DNS Exfiltration via Excessive Chunked Queries
+* Potential DNS Rebinding from Public to Private Address
+* Potential DNS Tunneling via NULL or Long DNS Queries
+* Potential Denial of Azure OpenAI ML Service
+* Potential Dynamic IEX Reconstruction via Environment Variables
+* Potential Entra ID PRT Extraction via BrowserCore
+* Potential Evasion via Boot Time Removal Tool
+* Potential FileFix Command via Windows Explorer Address Bar
+* Potential Linux Local Account Brute Force Detected
+* Potential Malicious PowerShell Based on Alert Correlation
+* Potential Malware-Driven SSH Brute Force Attempt
+* Potential Masquerading as Svchost
+* Potential NFS Destructive Operation Burst
+* Potential Network Scan Detected
+* Potential Okta Brute Force (Device Token Rotation)
+* Potential Okta Brute Force (Multi-Source)
+* Potential Okta Credential Stuffing (Single Source)
+* Potential Okta Password Spray (Multi-Source)
+* Potential Okta Password Spray (Single Source)
+* Potential Password Spraying Attack via SSH
+* Potential Port Scanning Activity from Compromised Host
+* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
+* Potential PowerShell Obfuscation via Character Array Reconstruction
+* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
+* Potential PowerShell Obfuscation via High Numeric Character Proportion
+* Potential PowerShell Obfuscation via High Special Character Proportion
+* Potential PowerShell Obfuscation via Invalid Escape Sequences
+* Potential PowerShell Obfuscation via Reverse Keywords
+* Potential PowerShell Obfuscation via Special Character Overuse
+* Potential PowerShell Obfuscation via String Concatenation
+* Potential PowerShell Obfuscation via String Reordering
+* Potential Ransomware Behavior - Note Files by System
+* Potential SIP Extension Enumeration
+* Potential SIP REGISTER Brute Force
+* Potential SQL Injection Against Microsoft SQL Server
+* Potential SSH Brute Force Detected via macOS Security Events
+* Potential Self-Signed TLS Certificate Recently Issued on External Connection
+* Potential Spike in Web Server Error Logs
+* Potential Subnet Scanning Activity from Compromised Host
+* Potential Widespread Malware Infection Across Multiple Hosts
+* PowerShell Obfuscation via Negative Index String Reversal
+* Privilege Escalation via Parallels Appliance Extract Argument Injection
+* Privileged Accounts Brute Force
+* RMM Software Installation from a Commonly Abused Web Service
+* RMM Software Installation from an Internet-Originated MSI
+* Rare Connection to WebDAV Target
+* Repeated Stalled TLS Handshakes via ALPN acme-tls/1 Extension
+* SSFileCopyReceiver Writing to Common Persistence Locations
+* SSFileCopySender Executed as Root
+* Sensitive Audit Policy Sub-Category Disabled
+* Several Failed Protected Branch Force Pushes by User
+* Splunk Enterprise PostgreSQL Backup-to-Restore Potential RCE Sequence
+* Successful AMQP Multi-Queue Purge Burst
+* Suspected Lateral Movement from Compromised Host
+* Suspicious AWS S3 Connection via Script Interpreter
+* Suspicious PowerShell from npm Package Install
+* Suspicious Python Shell Command Execution
+* Suspicious TCC Access Granted for User Folders
+* Unusual Azure VM Extension Detected
+* Unusual Base64 Encoding/Decoding Activity
+* Unusual DNS Request to Suspicious Top Level Domain
+* Unusual File Creation by Web Server
+* Unusual High Confidence Content Filter Blocks Detected
+* Unusual High Denied Sensitive Information Policy Blocks Detected
+* Unusual High Denied Topic Blocks Detected
+* Unusual High Word Policy Blocks Detected
+* Unusual Process Resolving AWS ECS Agent Communication Service Endpoint
+* Web Server Discovery or Fuzzing Activity
+* Web Server Local File Inclusion Activity
+* Web Server Potential Command Injection Request
+* Web Server Potential Remote File Inclusion Activity
+* Web Server Potential Spike in Error Response Codes
+* Web Server Suspicious User Agent Requests
+
+### Unsupported rule type: new_terms (257)
+
+257 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Account Discovery By Rare User
+* AWS Backup Recovery Point Deleted by Unusual User
 * AWS Batch Job Submitted with Container Override by Unusual Identity
 * AWS Bedrock Agent or Action Group Manipulation
 * AWS Bedrock AgentCore Execution Role Used Outside Its Runtime
@@ -157,6 +454,7 @@ invalid-syntax
 * AWS Bedrock Third-Party or External Knowledge Base Associated to Agent
 * AWS CLI Command with Custom Endpoint URL
 * AWS Cognito Unauthenticated Identity Pool Credentials Issued
+* AWS Control Plane Access by Suspicious Process
 * AWS Discovery API Calls from VPN ASN for the First Time by Identity
 * AWS DynamoDB Scan by Unusual User
 * AWS DynamoDB Table Exported to S3
@@ -176,6 +474,7 @@ invalid-syntax
 * AWS IAM OIDC Provider Created by Rare User
 * AWS IAM Permission Boundary or Guardrail Policy Deleted by Unusual Identity
 * AWS IAM User Console Login Without MFA
+* AWS Lambda Function Deletion by Unusual User
 * AWS Lambda Function Invoked by an Unusual Principal
 * AWS Lambda Function Invoked from an Unusual Source ASN
 * AWS S3 Bucket ACL Modified to Allow Public Access by New Identity
@@ -199,6 +498,8 @@ invalid-syntax
 * AWS Systems Manager SecureString Parameter Request with Decryption Flag
 * Abnormal Process ID or Lock File Created
 * Account or Group Discovery via Built-In Tools
+* Anthropic MCP Server Created
+* Anthropic Sensitive Claude Project Role Assigned to User
 * Authentication via Unusual PAM Grantor
 * AzCopy or Azure Storage Explorer Usage on Unusual Host
 * Azure AD Graph Access with Unusual Client and User
@@ -264,6 +565,7 @@ invalid-syntax
 * First Occurrence of Private Repo Event from Specific GitHub Personal Access Token (PAT)
 * First Occurrence of User Agent For a GitHub Personal Access Token (PAT)
 * First Occurrence of User-Agent For a GitHub User
+* First Seen External MQTT Broker Connection
 * First Seen SonicWall Remote Access Login by User and Source
 * First Time AWS CloudFormation Stack Creation
 * First Time Python Accessed Sensitive Credential Files
@@ -337,6 +639,7 @@ invalid-syntax
 * Potential Pass-the-Hash (PtH) Attempt
 * Potential Privilege Escalation via Linux DAC permissions
 * Potential Shadow File Read via Command Line Utilities
+* Potential Third-Party Cloud Storage Client Execution
 * Privileged Docker Container Creation
 * Process Backgrounded by Unusual Parent
 * Process Discovery via Built-In Applications
@@ -397,239 +700,6 @@ invalid-syntax
 * Unusual Web Config File Access
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
-
-### Unsupported rule type: esql (228)
-
-228 rules:
-
-* AWS Access Token Used from Multiple Addresses
-* AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
-* AWS Bedrock AgentCore Runtime Prompt Containing Credentials
-* AWS Bedrock AgentCore Runtime Prompt Targeting Credentials or Instance Metadata
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
-* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* AWS Bedrock High Risk Filesystem or Execution Tool Invocation
-* AWS Bedrock High-Frequency Single-Model Inference API Probing
-* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
-* AWS Bedrock Model Prompt or Completion Containing Credentials
-* AWS Credentials Used from GitHub Actions and Non-CI/CD Infrastructure
-* AWS Discovery API Calls via CLI from a Single Resource
-* AWS EC2 LOLBin Execution via SSM SendCommand
-* AWS EC2 Multi-Region DescribeInstances API Calls
-* AWS EC2 Stop, Start, and User Data Modification Correlation
-* AWS ECR Repository or Registry Policy Granted Public Access
-* AWS IAM Credentials Added to a Bedrock API Key Phantom User
-* AWS IAM Long-Term Access Key Correlated with Elevated Detection Alerts
-* AWS IAM User Console Login from Multiple Geolocations
-* AWS IAM User Created Access Keys For Another User
-* AWS IAM User Self-Created Access Key Subsequently Used
-* AWS Lambda Function High-Frequency Invocation by a Single Principal
-* AWS Lambda Function Invoked Cross-Account
-* AWS Lateral Movement from Kubernetes SA via AssumeRoleWithWebIdentity
-* AWS Potential Cryptomining via ECS Task Definition Deployment
-* AWS Rare Source AS Organization Activity
-* AWS S3 Object Encryption Using External KMS Key
-* AWS S3 Rapid Bucket Posture API Calls from a Single Principal
-* AWS S3 Static Site JavaScript File Uploaded
-* AWS SES Email Identity Verified Then Deleted
-* AWS SageMaker Execution Role Passed by Unusual Principal
-* AWS SageMaker Notebook Lifecycle Configuration With Suspicious Script Content
-* AWS Service Quotas Multi-Region GetServiceQuota Requests
-* Agent Spoofing - Multiple Hosts Using Same Agent
-* Alerts From Multiple Integrations by Destination Address
-* Alerts From Multiple Integrations by Source Address
-* Alerts From Multiple Integrations by User Name
-* Alerts in Different ATT&CK Tactics by Host
-* Azure AD Graph Access with Suspicious User-Agent
-* Azure AD Graph High 4xx Error Ratio from User
-* Azure AD Graph Potential Enumeration (ROADrecon)
-* Azure AKS Pod Exec Potential Reverse Shell
-* Azure Key Vault Excessive Secret or Key Retrieved
-* Azure OpenAI Insecure Output Handling
-* Azure Run Command Correlated with Process Execution
-* Cobalt Strike Command and Control Beacon
-* Command Line Obfuscation via Whitespace Padding
-* Correlated Alerts on Similar User Identities
-* Detection Alert on a Process Exhibiting CPU Spike
-* Dynamic IEX Reconstruction via Method String Access
-* Elastic Defend Alert from GenAI Utility or Descendant
-* Elastic Defend Alert from Package Manager Install Ancestry
-* Elastic Defend and Email Alerts Correlation
-* Elastic Defend and Network Security Alerts Correlation
-* Entra ID Actor Token User Impersonation Abuse
-* Entra ID Concurrent Sign-in with Suspicious Properties
-* Entra ID Device-Bound PRT Replay via First-Party App from Unusual IP
-* Entra ID Deviceless Windows Hello Sign-in Followed by Device Registration
-* Entra ID Federated Identity Credential Issuer Modified
-* Entra ID Illicit Consent Grant via Registered Application
-* Entra ID MFA TOTP Brute Force Attempted
-* Entra ID Multiple Device Registrations by a Single User
-* Entra ID OAuth Device Code Flow with Concurrent Sign-ins
-* Entra ID OAuth Flow by Microsoft Authentication Broker to Device Registration Service (DRS)
-* Entra ID OAuth User Impersonation to Microsoft Graph
-* Entra ID Sign-in Brute Force Attempted (Microsoft 365)
-* Entra ID User Sign-in Brute Force Attempted
-* File Transfer Utility Launched from Unusual Parent
-* First Seen Network Flow Exporter
-* First Seen Network Flow Exporter Followed by Suspicious Source Activity
-* First Time Seen DNS Query to RMM Domain
-* First-Time FortiGate Administrator Login
-* FortiGate Administrator Login from Multiple IP Addresses
-* FortiGate FortiCloud SSO Login from Unusual Source
-* GCP Secret Manager ListSecrets Across Multiple Projects
-* GKE API Request Failure Burst by User
-* GKE Anonymous Endpoint Permission Enumeration
-* GKE Certificate Signing Request Self-Approved
-* GKE Certificate Signing Request for Privileged Identity
-* GKE Endpoint Permission Enumeration
-* GKE Multi-Resource Discovery
-* GKE Rapid Secret GET Activity Against Multiple Objects
-* GKE Sensitive RBAC Change Followed by Workload Modification
-* GitHub Actions Workflow Modification Blocked
-* GitHub Exfiltration via High Number of Repository Clones by User
-* Google Workspace Device Registration Burst for Single User
-* Google Workspace Impossible Travel Login
-* Halfbaked Command and Control Beacon
-* High Number of Closed Pull Requests by User
-* High Number of Egress Network Connections from Unusual Executable
-* High Number of Protected Branch Force Pushes by User
-* Kubernetes Creation or Modification of Sensitive Role
-* Kubernetes Multi-Resource Discovery
-* Kubernetes Pod Exec Cloud Instance Metadata Access
-* Kubernetes Pod Exec Potential Reverse Shell
-* Kubernetes Pod Exec Sensitive File or Credential Path Access
-* Kubernetes Pod Exec with Curl or Wget to HTTPS
-* Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
-* Kubernetes Potential Endpoint Permission Enumeration Attempt by Anonymous User Detected
-* Kubernetes RBAC Wildcard Elevation on Existing Role
-* Kubernetes Rapid Secret GET Activity Against Multiple Objects
-* Kubernetes Secret or ConfigMap Access via Azure Arc Proxy
-* LLM-Based Attack Chain Triage by Host
-* LLM-Based Compromised User Triage by User
-* LLM-Based Curl Activity Triage
-* LLM-Based Curl Activity Triage via Auditd
-* LLM-Based Wget Activity Triage
-* LLM-Based Wget Activity Triage via Auditd
-* LSASS Process Access via Windows API
-* Lateral Movement Alerts from a Newly Observed Source Address
-* Lateral Movement Alerts from a Newly Observed User
-* Long Base64 Encoded Command via Scripting Interpreter
-* M365 Azure Monitor Alert Email with Financial or Billing Theme
-* M365 Exchange Inbox Rule with Obfuscated Name
-* M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
-* M365 Identity User Account Lockouts
-* M365 Identity User Brute Force Attempted
-* M365 OneDrive/SharePoint Excessive File Downloads
-* M365 or Entra ID Identity Sign-in from a Suspicious Source
-* Microsoft Entra ID Impossible Travel Sign-in
-* Microsoft Graph Multi-Category Reconnaissance Burst
-* Multi-Cloud CLI Token and Credential Access Commands
-* Multiple Alerts Involving a User
-* Multiple Alerts in Same ATT&CK Tactic by Host
-* Multiple Alerts on a Host Exhibiting CPU Spike
-* Multiple Cloud Secrets Accessed by Source Address
-* Multiple DHCP Servers Responding to the Same Transaction
-* Multiple Device Token Hashes for Single Okta Session
-* Multiple Elastic Defend Alerts by Agent
-* Multiple Elastic Defend Alerts from a Single Process Tree
-* Multiple External EDR Alerts by Host
-* Multiple Logon Failure from the same Source Address
-* Multiple Machine Learning Alerts by Influencer Field
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Multiple Rare Elastic Defend Behavior Rules by Host
-* Multiple Remote Management Tool Vendors on Same Host
-* Multiple SonicWall Login Failures Followed by Successful Login
-* Multiple Vulnerabilities by Asset via Wiz
-* Newly Observed Elastic Defend Behavior Alert
-* Newly Observed FortiGate Alert
-* Newly Observed High Severity Detection Alert
-* Newly Observed High Severity Suricata Alert
-* Newly Observed IPSEC NAT Traversal Peer
-* Newly Observed Palo Alto Network Alert
-* Newly Observed Process Exhibiting High CPU Usage
-* Newly Observed ScreenConnect Host Server
-* Okta AiTM Session Cookie Replay
-* Okta Successful Login After Credential Attack
-* Okta User Sessions Started from Different Geolocations
-* Possible FIN7 DGA Command and Control Behavior
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Account Takeover - Logon from New Source IP
-* Potential Account Takeover - Mixed Logon Types
-* Potential Azure OpenAI Model Theft
-* Potential CertiGhost AD CS Machine Identity Mismatch (CVE-2026-54121)
-* Potential Credential Discovery via Recursive Grep
-* Potential DHCP Starvation via High Client MAC Cardinality
-* Potential DNS Exfiltration via Excessive Chunked Queries
-* Potential DNS Rebinding from Public to Private Address
-* Potential DNS Tunneling via Long and Unique Subdomains
-* Potential Denial of Azure OpenAI ML Service
-* Potential Dynamic IEX Reconstruction via Environment Variables
-* Potential Entra ID PRT Extraction via BrowserCore
-* Potential Evasion via Boot Time Removal Tool
-* Potential Linux Local Account Brute Force Detected
-* Potential Malicious PowerShell Based on Alert Correlation
-* Potential Malware-Driven SSH Brute Force Attempt
-* Potential Masquerading as Svchost
-* Potential NFS Destructive Operation Burst
-* Potential Network Scan Detected
-* Potential Okta Brute Force (Device Token Rotation)
-* Potential Okta Brute Force (Multi-Source)
-* Potential Okta Credential Stuffing (Single Source)
-* Potential Okta Password Spray (Multi-Source)
-* Potential Okta Password Spray (Single Source)
-* Potential Password Spraying Attack via SSH
-* Potential Port Scanning Activity from Compromised Host
-* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
-* Potential PowerShell Obfuscation via Character Array Reconstruction
-* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
-* Potential PowerShell Obfuscation via High Numeric Character Proportion
-* Potential PowerShell Obfuscation via High Special Character Proportion
-* Potential PowerShell Obfuscation via Invalid Escape Sequences
-* Potential PowerShell Obfuscation via Reverse Keywords
-* Potential PowerShell Obfuscation via Special Character Overuse
-* Potential PowerShell Obfuscation via String Concatenation
-* Potential PowerShell Obfuscation via String Reordering
-* Potential Ransomware Behavior - Note Files by System
-* Potential SIP Extension Enumeration
-* Potential SIP REGISTER Brute Force
-* Potential SQL Injection Against Microsoft SQL Server
-* Potential SSH Brute Force Detected via macOS Security Events
-* Potential Self-Signed TLS Certificate Recently Issued on External Connection
-* Potential Spike in Web Server Error Logs
-* Potential Subnet Scanning Activity from Compromised Host
-* Potential Widespread Malware Infection Across Multiple Hosts
-* PowerShell Obfuscation via Negative Index String Reversal
-* Privileged Accounts Brute Force
-* RMM Software Installation from a Commonly Abused Web Service
-* RMM Software Installation from an Internet-Originated MSI
-* Rare Connection to WebDAV Target
-* Repeated Stalled TLS Handshakes via ALPN acme-tls/1 Extension
-* SSFileCopyReceiver Writing to Common Persistence Locations
-* SSFileCopySender Executed as Root
-* Sensitive Audit Policy Sub-Category Disabled
-* Several Failed Protected Branch Force Pushes by User
-* Splunk Enterprise PostgreSQL Backup-to-Restore Potential RCE Sequence
-* Successful AMQP Multi-Queue Purge Burst
-* Suspected Lateral Movement from Compromised Host
-* Suspicious AWS S3 Connection via Script Interpreter
-* Suspicious Python Shell Command Execution
-* Suspicious TCC Access Granted for User Folders
-* Unusual Azure VM Extension Detected
-* Unusual Base64 Encoding/Decoding Activity
-* Unusual DNS Request to Suspicious Top Level Domain
-* Unusual File Creation by Web Server
-* Unusual High Confidence Content Filter Blocks Detected
-* Unusual High Denied Sensitive Information Policy Blocks Detected
-* Unusual High Denied Topic Blocks Detected
-* Unusual High Word Policy Blocks Detected
-* Web Server Discovery or Fuzzing Activity
-* Web Server Local File Inclusion Activity
-* Web Server Potential Command Injection Request
-* Web Server Potential Remote File Inclusion Activity
-* Web Server Potential Spike in Error Response Codes
-* Web Server Suspicious User Agent Requests
 
 ### 'types.SimpleNamespace' object has no attribute 'type' (130)
 
@@ -922,6 +992,26 @@ invalid-syntax
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
 
+### Error at line:14,column:51
+Invalid syntax
+    */.local/bin/q or */usr/local/bin/q or
+    *\\Users\\*\\AppData\\Local\\Programs\\Amazon Q\\q.exe or
+                                                  ^ (1)
+
+1 rules:
+
+* Potential Destructive AWS CLI Command Executed by GenAI Agent
+
+### Error at line:18,column:11
+Invalid syntax
+      *cloudfox* or *enumerate_iam* or *enumerate-iam* or *weirdAAL* or *aws_consoler* or
+      *-m pacu* or *pacu.py* or *aws_escalate* or *scoutsuite* or *pmapper* or
+          ^ (1)
+
+1 rules:
+
+* Cloud Offensive Framework Execution
+
 ### Error at line:37,column:3
 Invalid syntax
   *confluence/conf/server.xml
@@ -931,6 +1021,16 @@ Invalid syntax
 1 rules:
 
 * Kubernetes and Cloud Credential Path Access via Process Arguments
+
+### Error at line:5,column:19
+Invalid syntax
+  process.command_line : (
+  *accessanalyzer delete-analyzer* or
+                  ^ (1)
+
+1 rules:
+
+* AWS Audit or Security Service Tampering via CLI
 
 ### Error at line:7,column:19
 Invalid syntax
@@ -944,13 +1044,12 @@ Invalid syntax
 
 ## Generation errors
 
-### Field type solver: constant_keyword (395)
+### Field type solver: constant_keyword (393)
 
-395 rules:
+393 rules:
 * AWS Account Closed
 * AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
 * AWS Attempt to Leave Organization
-* AWS Backup Recovery Point Deleted
 * AWS Backup Resource Enumeration via Long-Term Access Key
 * AWS Backup Vault Deleted or Vault Lock Removed
 * AWS Bedrock API Key Phantom User Activity Outside Bedrock
@@ -1012,7 +1111,6 @@ Invalid syntax
 * AWS KMS Customer Managed Key Disabled or Scheduled for Deletion
 * AWS KMS Imported Key Material Deleted
 * AWS Lambda Event Source Mapping Creation
-* AWS Lambda Function Deletion
 * AWS Lambda Layer Added to Existing Function
 * AWS Lambda Layer Shared Externally
 * AWS Management Console Root Login
@@ -1343,9 +1441,9 @@ Invalid syntax
 * Whoami Process Activity
 * Zoom Meeting with no Passcode
 
-### Unsupported function: match (37)
+### Unsupported function: match (39)
 
-37 rules:
+39 rules:
 * Alternate Data Stream Creation/Execution at Volume Root Directory
 * Command Obfuscation via Unicode Modifier Letters
 * Creation of Hidden Files and Directories via CommandLine
@@ -1365,7 +1463,9 @@ Invalid syntax
 * Potential Fileless Execution via O_TMPFILE
 * Potential Linux Tunneling and/or Port Forwarding
 * Potential Linux Tunneling and/or Port Forwarding via Command Line
+* Potential NetScaler Log Poisoning Command Injection Attempt
 * Potential SSH Reverse Port Forwarding
+* Potential Tunneling via AWS IoT Secure Tunneling Localproxy
 * Potential Windows Error Manager Masquerading
 * Process Created with a Duplicated Token
 * Process Started from Process ID (PID) File
@@ -1663,6 +1763,11 @@ Invalid syntax
 
 1 rules:
 * PowerShell Suspicious Discovery Related Windows API Functions
+
+### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Clear-Host'}): ('Cloudflare ID:')) (1)
+
+1 rules:
+* Potential TerminalFix Cloudflare Lure in PowerShell
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)
 
