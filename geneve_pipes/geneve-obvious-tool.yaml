@@ -1,0 +1,96 @@
+#!/usr/bin/env elastic-pipes run
+
+# The selected rules were validated by Geneve's serverless alert report. Keep
+# this explicit allowlist: the POC must not generate data for every rule enabled
+# on a target stack.
+pipes:
+  - elastic.pipes:
+      search-path: [..]
+      logging:
+        level: info
+
+  - geneve_pipes.generate:
+      schema-uri: "https://github.com/elastic/ecs/archive/refs/heads/main.tar.gz"
+      triggers-per-second@: runtime.arguments.triggers-per-second
+      stats-file: /var/run/geneve-stats/generator.json
+      destinations:
+        process: logs-endpoint.events.process-default
+        file: logs-endpoint.events.file-default
+        network: logs-endpoint.events.network-default
+        registry: logs-endpoint.events.registry-default
+        library: logs-endpoint.events.library-default
+        device: logs-endpoint.events.device-default
+        api: logs-endpoint.events.api-default
+        security: logs-endpoint.events.security-default
+      rule-ids:
+        - 092b068f-84ac-485d-8a55-7dd9e006715f # Creation of Hidden Launch Agent or Daemon
+        - cd82e3d6-1346-4afd-8f22-38388bbf34cb # Downloaded URL Files
+        - 35c029c3-090e-4a25-b613-0b8099970fc1 # File System Debugger Launched Inside a Container
+        - cc3dab79-3706-4775-9404-a722e2b00fed # Kernel Module Loaded with Tainting Flags
+        - c73cc6ab-b30e-46bf-b5f2-29d9ab4caf7b # Mount Launched Inside a Container
+        - 7318affb-bfe8-4d50-a425-f617833be160 # Potential Execution of rc.local Script
+        - afe6b0eb-dd9d-4922-b08a-1910124d524d # Potential Privilege Escalation via Container Misconfiguration
+        - 2605aa59-29ac-4662-afad-8d86257c7c91 # Potential Suspicious DebugFS Root Device Access
+        - cdf1a39b-1ca5-4e2a-9739-17fc4d026029 # Shadow File Modification by Unusual Process
+        - 530178da-92ea-43ce-94c2-8877a826783d # Suspicious CronTab Creation or Modification
+        - 48d7f54d-c29e-4430-93a9-9db6b5892270 # Unexpected Child Process of macOS Screensaver Engine
+        - 9a3884d0-282d-45ea-86ce-b9c81100f026 # Unsigned BITS Service Client Process
+        - d6241c90-99f2-44db-b50f-299b6ebd7ee9 # Unusual DPKG Execution
+        - ab9a334a-f2c3-4f49-879f-480de71020d3 # Unusual Library Load via Python
+        - e6c98d38-633d-4b3e-9387-42112cd5ac10 # Authorization Plugin Modification
+        - 89fa6cb7-6b53-4de2-b604-648488841ab8 # Persistence via DirectoryService Plugin Modification
+        - b4449455-f986-4b5a-82ed-e36b129331f7 # Potential Persistence via Atom Init Script Modification
+        - 0ff84c42-873d-41a2-a4ed-08d74d352d01 # Privilege Escalation via Root Crontab File Modification
+        - cb71aa62-55c8-42f0-b0dd-afb0bb0b1f51 # Suspicious Calendar File Modification
+        - 1e6363a6-3af5-41d4-b7ea-d475389c0ceb # Creation of SettingContent-ms Files
+        - 37cb6756-8892-4af3-a6bd-ddc56db0069d # Disabling Lsa Protection via Registry Modification
+        - 57bccf1d-daf5-4e1a-9049-ff79b5254704 # File Staged in Root Folder of Recycle Bin
+        - 5124e65f-df97-4471-8dcb-8e3953b3ea97 # Hidden Files and Directories via Hidden Flag
+        - c5ce48a6-7f57-4ee8-9313-3d0024caee10 # Installation of Custom Shim Databases
+        - b8f8da2d-a9dc-48c0-90e4-955c0aa1259a # Kirbi File Creation
+        - 9d110cb3-5f4b-4c9a-b9f5-53f0a1707ae4 # Microsoft Build Engine Using an Alternate Name
+        - ebb200e8-adf0-43f8-a0bb-4ee5b5d852c6 # Mimikatz Memssp Log File Detected
+        - 3838e0e3-1850-4850-a411-2e8c5ba40ba8 # Network Connection via Certutil
+        - 14dab405-5dd9-450c-8106-72951af2391f # Office Test Registry Persistence
+        - c3b915e0-22f3-4bf7-991d-b643513c722f # Persistence via BITS Job Notify Cmdline
+        - 265db8f5-fc73-4d0d-b434-6483b56372e2 # Persistence via Update Orchestrator Service Hijack
+        - 5c832156-5785-4c9c-a2e7-0d80d2ba3daa # Pluggable Authentication Module (PAM) Creation in Unusual Directory
+        - 3535c8bb-3bd5-40f4-ae32-b7cd589d5372 # Port Forwarding Rule Addition
+        - 26a726d7-126e-4267-b43d-e9a70bfdee1e # Potential Defense Evasion via Doas
+        - 7b75c162-d439-472d-b39f-2eb0d4d2d318 # Potential EDR-Freeze via WerFaultSecure Abuse
+        - 99ac5005-8a9e-4625-a0af-5f7bb447204b # Potential Kerberos SPN Spoofing via Suspicious DNS Query
+        - 7f3521dd-fb80-4548-a7eb-8db37b898dc2 # Potential Notepad Markdown RCE Exploitation
+        - 8da41fc9-7735-4b24-9cc6-c78dfc9fc9c9 # Potential Privilege Escalation via PKEXEC
+        - 9eaa3fb1-3f70-48ed-bb0e-d7ae4d3c8f28 # Potential SSH Password Grabbing via strace
+        - ff9bc8b9-f03b-4283-be58-ee0a16f5a11b # Potential Sudo Token Manipulation via Process Injection
+        - 47f76567-d58a-4fed-b32b-21f571e28910 # Apple Script Execution followed by Network Connection
+        - aba3bc11-e02f-4a03-8889-d86ea1a44f76 # Perl Outbound Network Connection
+        - bd7eefee-f671-494e-98df-f01daf9e5f17 # Suspicious Print Spooler Point and Print DLL
+        - e88d1fe9-b2f4-48d4-bace-a026dc745d4b # Host File System Changes via Windows Subsystem for Linux
+        - c2d90150-0133-451c-a783-533e736c12d7 # Mshta Making Network Connections
+        - b29ee2be-bf99-446c-ab1a-2dc0183394b8 # Network Connection via Compiled HTML File
+        - b86afe07-0d98-4738-b15d-8d7465f95ff5 # Network Connection via MsXsl
+        - 71d6a53d-abbd-40df-afee-c21fff6aafb0 # Suspicious Passwd File Event Action
+        - c7894234-7814-44c2-92a9-f7d851ea246a # Unusual Network Connection via DllHost
+        - 827f8d8f-4117-4ae4-b551-f56d54b9da6b # Apple Scripting Execution with Administrator Privileges
+
+  - elastic.pipes.es.bulk:
+      batch-size: 25
+      flush-interval: 1.0
+      request-timeout: 120
+      stats-file: /var/run/geneve-stats/bulk.json
+
+# The Obvious chart supplies these values from the per-execution
+# geneve-target-stack Secret. They must never be committed or passed as chart
+# inputs.
+stack:
+  shell-expand: true
+  elasticsearch:
+    url: "$GENEVE_TARGET_ES_URL"
+  kibana:
+    url: "$GENEVE_TARGET_KIBANA_URL"
+  credentials:
+    api-key: "$GENEVE_TARGET_ES_API_KEY"
+
+documents: []
+bulk-stats: {}
