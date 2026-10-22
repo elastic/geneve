@@ -1,0 +1,10 @@
+image:
+  repository: us-central1-docker.pkg.dev/sec-eng-prod/geneve/geneve
+  tag: 0.1.0-poc-pipe-name-fix
+  pullPolicy: IfNotPresent
+
+geneve:
+  triggersPerSecond: 1
+
+obvious:
+  executionId: ""
