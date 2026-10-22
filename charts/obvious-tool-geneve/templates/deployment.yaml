@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geneve-obvious-tool-{{ required "obvious.execution.id is required" .Values.obvious.execution.id }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: geneve-obvious-tool
+    app.kubernetes.io/managed-by: obvious-controller
+    obvious.io/execution-id: {{ .Values.obvious.execution.id | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: geneve-obvious-tool
+      obvious.io/execution-id: {{ .Values.obvious.execution.id | quote }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: geneve-obvious-tool
+        obvious.io/execution-id: {{ .Values.obvious.execution.id | quote }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: stats
+          emptyDir: {}
+        - name: pipes-config
+          configMap:
+            name: geneve-obvious-tool-{{ required "obvious.execution.id is required" .Values.obvious.execution.id }}-pipes
+      containers:
+        - name: geneve
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              rm -f /tmp/geneve-ready
+              python /opt/geneve-obvious-tool/geneve/pipes/report.py &
+              exec elastic-pipes run /etc/geneve-pipes/geneve-obvious-tool.yaml \
+                -a "triggers-per-second=$GENEVE_TRIGGERS_PER_SECOND"
+          env:
+            - name: OBVIOUS_EXECUTION_ID
+              value: {{ .Values.obvious.execution.id | quote }}
+            - name: OBVIOUS_EXECUTION_ACTION
+              value: {{ .Values.obvious.execution.action | quote }}
+            - name: GENEVE_TRIGGERS_PER_SECOND
+              value: {{ .Values.geneve.triggersPerSecond | quote }}
+            - name: GENEVE_TARGET_ES_URL
+              value: {{ required "geneve.targetEsUrl is required" .Values.geneve.targetEsUrl | quote }}
+            - name: GENEVE_TARGET_KIBANA_URL
+              value: {{ required "geneve.targetKibanaUrl is required" .Values.geneve.targetKibanaUrl | quote }}
+            - name: GENEVE_TARGET_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "geneve.targetApiKeySecret is required" .Values.geneve.targetApiKeySecret | quote }}
+                  key: value
+            - name: HOME
+              value: /tmp
+            - name: XDG_CACHE_HOME
+              value: /tmp/geneve-cache
+          envFrom:
+            - secretRef:
+                name: obvious-output
+          readinessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "test -f /tmp/geneve-ready"]
+            periodSeconds: 5
+            failureThreshold: 1
+            successThreshold: 1
+          volumeMounts:
+            - name: stats
+              mountPath: /var/run/geneve-stats
+            - name: pipes-config
+              mountPath: /etc/geneve-pipes
+              readOnly: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1
+              memory: 1Gi
