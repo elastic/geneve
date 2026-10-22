@@ -1,0 +1,51 @@
+name: geneve
+
+observe:
+  ready_within: 10m
+  unhealthy_for: 1m
+
+actions:
+  - name: run
+    inputs:
+      - name: execution_id
+        type: string
+        route: obvious.executionId
+      - name: triggers_per_second
+        type: integer
+        route: geneve.triggersPerSecond
+        default: 1
+        description: Aggregate Geneve rule-trigger attempts per second.
+    outputs:
+      - name: status
+        type: keyword
+        description: starting until selected rules are prepared, then running.
+      - name: sequence
+        type: integer
+        description: Monotonically increasing output heartbeat counter.
+      - name: configured_rules
+        type: integer
+        description: Number of rule IDs in the checked-in allowlist.
+      - name: prepared_rules
+        type: integer
+        description: Allowlisted and enabled rules Geneve can generate for.
+      - name: skipped_rules
+        type: integer
+        description: Allowlisted rules that are absent, disabled, or unsupported.
+      - name: trigger_attempts
+        type: long
+        description: Rule-trigger groups attempted by the generator.
+      - name: generated_documents
+        type: long
+        description: Source documents emitted by Geneve.
+      - name: generation_failures
+        type: long
+        description: Rule-trigger attempts that failed before ingestion.
+      - name: bulk_batches
+        type: long
+        description: Elasticsearch bulk requests attempted.
+      - name: bulk_created
+        type: long
+        description: Source documents successfully created in target data streams.
+      - name: bulk_failed
+        type: long
+        description: Source documents rejected by target Elasticsearch.

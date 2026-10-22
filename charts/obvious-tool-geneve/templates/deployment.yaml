@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geneve-obvious-tool-{{ required "obvious.executionId is required" .Values.obvious.executionId }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: geneve-obvious-tool
+    app.kubernetes.io/managed-by: obvious-controller
+    obvious.io/execution-id: {{ .Values.obvious.executionId | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: geneve-obvious-tool
+      obvious.io/execution-id: {{ .Values.obvious.executionId | quote }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: geneve-obvious-tool
+        obvious.io/execution-id: {{ .Values.obvious.executionId | quote }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: stats
+          emptyDir: {}
+      containers:
+        - name: geneve
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              rm -f /tmp/geneve-ready
+              python /opt/geneve-obvious-tool/geneve/geneve_pipes/report.py &
+              exec elastic-pipes run /opt/geneve-obvious-tool/geneve/geneve_pipes/geneve-obvious-tool.yaml \
+                -a "triggers-per-second=$GENEVE_TRIGGERS_PER_SECOND"
+          env:
+            - name: GENEVE_EXECUTION_ID
+              value: {{ .Values.obvious.executionId | quote }}
+            - name: GENEVE_TRIGGERS_PER_SECOND
+              value: {{ .Values.geneve.triggersPerSecond | quote }}
+            - name: HOME
+              value: /tmp
+            - name: XDG_CACHE_HOME
+              value: /tmp/geneve-cache
+          envFrom:
+            - secretRef:
+                name: obvious-output
+            - secretRef:
+                name: geneve-target-stack
+          readinessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "test -f /tmp/geneve-ready"]
+            periodSeconds: 5
+            failureThreshold: 1
+            successThreshold: 1
+          volumeMounts:
+            - name: stats
+              mountPath: /var/run/geneve-stats
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1
+              memory: 1Gi
