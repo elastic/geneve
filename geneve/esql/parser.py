@@ -32,6 +32,7 @@ from lark import Lark, Token, Tree
 from lark.exceptions import UnexpectedInput
 from lark.visitors import Interpreter
 
+from ..utils import has_wildcards
 from .errors import EsqlParseError
 
 __all__ = ("EsqlQuery", "parse", "to_eql")
@@ -45,6 +46,9 @@ grammar_file = Path(__file__).parent / "esql.g"
 lark_parser = Lark(grammar_file.read_text(), start="query", parser="lalr", propagate_positions=True)
 
 field_part_re = re.compile(r"`(?:[^`]|``)+`|[^.`]+")
+escape_re = re.compile(r"\\(.)", re.DOTALL)
+
+string_escapes = {'"': '"', "\\": "\\", "n": "\n", "r": "\r", "t": "\t"}
 
 
 def lark_parse(text):
@@ -69,9 +73,18 @@ def split_field(name):
     return parts
 
 
+def unescape(match):
+    try:
+        return string_escapes[match.group(1)]
+    except KeyError:
+        raise NotImplementedError(f"Unsupported escape sequence in string: \\{match.group(1)}") from None
+
+
 def string_value(token):
-    # escapes and triple-quoted strings are handled in a later step
-    return str(token)[1:-1]
+    text = str(token)
+    if text.startswith('"""'):
+        return text[3:-3]  # triple-quoted strings have no escapes
+    return escape_re.sub(unescape, text[1:-1])
 
 
 class EsqlToEql(Interpreter):
@@ -153,7 +166,18 @@ class EsqlToEql(Interpreter):
         operand = self.visit(operand)
         if not isinstance(operand, eql.ast.Literal):
             self.reject(tree, "right operand, it must be a literal")
+        if isinstance(operand, eql.ast.String) and has_wildcards(operand.value):
+            self.reject(tree, f"string literal with wildcard characters: {operand.value!r}")
         return operand
+
+    def check_pattern(self, tree, pattern):
+        # the solvers expand `*` and `?` only, they don't know about escapes or character classes
+        if "\\" in pattern or "[" in pattern:
+            self.reject(tree, f"LIKE pattern, backslash escapes and character classes are not supported: {pattern!r}")
+
+    @staticmethod
+    def like_call(field, pattern):
+        return eql.ast.FunctionCall("_like", [field, eql.ast.String(pattern)])
 
     def comparison(self, tree):
         left, op, right = tree.children
@@ -175,7 +199,18 @@ class EsqlToEql(Interpreter):
         return eql.ast.IsNotNull(left) if negate else eql.ast.IsNull(left)
 
     def like_expr(self, tree):
-        self.reject(tree, "operator: LIKE")
+        negate = any(isinstance(child, Token) and child.type == "NOT" for child in tree.children)
+        operator = next(child for child in tree.children if isinstance(child, Token) and child.type in ("LIKE", "RLIKE"))
+        left, right = (child for child in tree.children if isinstance(child, Tree))
+        if operator.type == "RLIKE":
+            self.reject(tree, "operator: RLIKE")
+        left = self.field_operand(tree, left)
+        right = self.visit(right)
+        if not isinstance(right, eql.ast.String):
+            self.reject(tree, "LIKE pattern, it must be a string literal")
+        self.check_pattern(tree, right.value)
+        expr = self.like_call(left, right.value)
+        return eql.ast.Not(expr) if negate else expr
 
     # operands
 
@@ -195,7 +230,37 @@ class EsqlToEql(Interpreter):
         self.reject(tree, "time literal")
 
     def func_call(self, tree):
-        self.reject(tree, f"function: {tree.children[0]}")
+        name, *args = tree.children
+        name = str(name)
+        function = getattr(self, f"function_{name.lower()}", None)
+        if function is None:
+            self.reject(tree, f"function: {name}")
+        args = [self.visit(arg) for arg in args]
+        if not args or not isinstance(args[0], eql.ast.Field):
+            self.reject(tree, f"{name.upper()} arguments, the first must be a field")
+        if any(not isinstance(arg, eql.ast.String) for arg in args[1:]):
+            self.reject(tree, f"{name.upper()} arguments, the others must be string literals")
+        return function(tree, name.upper(), args[0], [arg.value for arg in args[1:]])
+
+    def function_starts_with(self, tree, name, field, values):
+        return self.affix_call(tree, name, field, values, "{}*")
+
+    def function_ends_with(self, tree, name, field, values):
+        return self.affix_call(tree, name, field, values, "*{}")
+
+    def affix_call(self, tree, name, field, values, template):
+        if len(values) != 1:
+            self.reject(tree, f"{name} arguments, expected a field and a string literal")
+        if has_wildcards(values[0]):
+            self.reject(tree, f"string literal with wildcard characters: {values[0]!r}")
+        pattern = template.format(values[0])
+        self.check_pattern(tree, pattern)
+        return self.like_call(field, pattern)
+
+    def function_cidr_match(self, tree, name, field, values):
+        if not values:
+            self.reject(tree, f"{name} arguments, expected a field and at least one string literal")
+        return eql.ast.FunctionCall("cidrMatch", [field] + [eql.ast.String(value) for value in values])
 
     def field(self, tree):
         base, *path = split_field(str(tree.children[0]))
