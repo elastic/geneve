@@ -342,10 +342,16 @@ def validate_branches(ast):
 
 
 def parse(text):
+    """Parse a query, `where` of the result is the plain translation of its WHERE clauses, to inspect it."""
     query = EsqlToEql(text).visit(lark_parse(text))
     validate_branches(query.where)
     return query
 
 
 def to_eql(text):
-    return parse(text).where
+    """Return the AST to generate documents from.
+
+    It is the plain translation wrapped in the private function `_esql`, so that the constraints
+    collector knows where it comes from: ES|QL is stricter than EQL and the solvers check more.
+    """
+    return eql.ast.FunctionCall("_esql", [parse(text).where])

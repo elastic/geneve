@@ -17,8 +17,10 @@
 
 """Test the ES|QL parser and its translation to the EQL AST."""
 
+import ipaddress
 import unittest
 from types import SimpleNamespace
+from typing import ClassVar
 
 import eql
 
@@ -26,6 +28,8 @@ import tests.utils as tu
 from geneve import esql
 from geneve.constraints import ConflictError
 from geneve.events_emitter import SourceEvents, ast_from_rule, guess_from_query
+from geneve.events_emitter_eql import collect_constraints
+from geneve.solver import Field, solver
 
 
 def field(name):
@@ -37,9 +41,14 @@ def like(name, pattern):
     return eql.ast.FunctionCall("_like", [field(name), eql.ast.String(pattern)])
 
 
+def where(query):
+    """Return the plain translation of the WHERE clauses, to inspect it."""
+    return esql.parse(query).where
+
+
 class TestEsqlParser(unittest.TestCase):
     def validate(self, esql_source, eql_source):
-        self.assertEqual(esql.to_eql(esql_source), eql.parse_expression(eql_source))
+        self.assertEqual(where(esql_source), eql.parse_expression(eql_source))
 
     def test_comparisons(self):
         self.validate("FROM x | WHERE a == 1", "a == 1")
@@ -62,11 +71,11 @@ class TestEsqlParser(unittest.TestCase):
         self.validate("FROM x | WHERE a == 1 AND (b == 2 OR c == 3)", "a == 1 and (b == 2 or c == 3)")
         # NOT binds tighter than AND
         self.assertEqual(
-            esql.to_eql("FROM x | WHERE NOT a == 1 AND b == 2"),
+            where("FROM x | WHERE NOT a == 1 AND b == 2"),
             eql.ast.And([eql.ast.Not(eql.parse_expression("a == 1")), eql.parse_expression("b == 2")]),
         )
         self.assertEqual(
-            esql.to_eql("FROM x | WHERE NOT (a == 1 OR b == 2)"),
+            where("FROM x | WHERE NOT (a == 1 OR b == 2)"),
             eql.ast.Not(eql.parse_expression("a == 1 or b == 2")),
         )
 
@@ -74,7 +83,7 @@ class TestEsqlParser(unittest.TestCase):
         self.validate("FROM x | WHERE a IN (1, 2)", "a in (1, 2)")
         self.validate('FROM x | WHERE a IN ("x", "y")', "a in ('x', 'y')")
         self.assertEqual(
-            esql.to_eql("FROM x | WHERE a NOT IN (1, 2)"),
+            where("FROM x | WHERE a NOT IN (1, 2)"),
             eql.ast.Not(eql.parse_expression("a in (1, 2)")),
         )
         self.validate("FROM x | WHERE a IS NULL", "a == null")
@@ -83,33 +92,33 @@ class TestEsqlParser(unittest.TestCase):
     def test_dotted_and_quoted_fields(self):
         self.validate('FROM x | WHERE process.name == "x"', "process.name == 'x'")
         self.assertEqual(
-            esql.to_eql('FROM x | WHERE @timestamp != "x"'),
+            where('FROM x | WHERE @timestamp != "x"'),
             eql.ast.Comparison(eql.ast.Field("@timestamp"), "!=", eql.ast.String("x")),
         )
         self.assertEqual(
-            esql.to_eql('FROM x | WHERE `host name` == "x"'),
+            where('FROM x | WHERE `host name` == "x"'),
             eql.ast.Comparison(field("host name"), "==", eql.ast.String("x")),
         )
         # a quoted name with dots is the same path Elasticsearch would resolve
         self.assertEqual(
-            esql.to_eql('FROM x | WHERE a.`b.c`.d == "x"'),
+            where('FROM x | WHERE a.`b.c`.d == "x"'),
             eql.ast.Comparison(eql.ast.Field("a", ["b", "c", "d"]), "==", eql.ast.String("x")),
         )
         self.assertEqual(
-            esql.to_eql('FROM x | WHERE `a.b` == "x"'),
+            where('FROM x | WHERE `a.b` == "x"'),
             eql.ast.Comparison(eql.ast.Field("a", ["b"]), "==", eql.ast.String("x")),
         )
         for query in ("`a..b`", "`.a`", "`a.`", "`a*`", "a.`b?`", "`*`"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported field name"):
-                esql.to_eql(f'FROM x | WHERE {query} == "x"')
+                where(f'FROM x | WHERE {query} == "x"')
 
     def test_case_and_comments(self):
-        expected = esql.to_eql("FROM x | WHERE a == 1")
-        self.assertEqual(esql.to_eql("from x | where a == 1"), expected)
-        self.assertEqual(esql.to_eql("From x | Where a == 1"), expected)
-        self.assertEqual(esql.to_eql("FROM x // trailing comment\n | /* block\ncomment */ WHERE a == 1"), expected)
-        self.assertEqual(esql.to_eql("FROM x\n| WHERE a == 1 // why not"), expected)
-        self.assertEqual(esql.to_eql("FROM x | WHERE a == 1 AND\n  b == 2"), esql.to_eql("FROM x | WHERE a == 1 and b == 2"))
+        expected = where("FROM x | WHERE a == 1")
+        self.assertEqual(where("from x | where a == 1"), expected)
+        self.assertEqual(where("From x | Where a == 1"), expected)
+        self.assertEqual(where("FROM x // trailing comment\n | /* block\ncomment */ WHERE a == 1"), expected)
+        self.assertEqual(where("FROM x\n| WHERE a == 1 // why not"), expected)
+        self.assertEqual(where("FROM x | WHERE a == 1 AND\n  b == 2"), where("FROM x | WHERE a == 1 and b == 2"))
 
     def test_sources_and_metadata(self):
         query = esql.parse("FROM logs-*, other METADATA _id, _index | WHERE a == 1")
@@ -125,8 +134,8 @@ class TestEsqlParser(unittest.TestCase):
         self.assertEqual(query.sources, ("remote:logs-*", "-logs-secret", "quoted-name"))
 
     def test_no_where(self):
-        self.assertEqual(esql.to_eql("FROM x"), eql.ast.Boolean(True))
-        self.assertEqual(esql.to_eql("FROM x | LIMIT 10"), eql.ast.Boolean(True))
+        self.assertEqual(where("FROM x"), eql.ast.Boolean(True))
+        self.assertEqual(where("FROM x | LIMIT 10"), eql.ast.Boolean(True))
 
     def test_multiple_where_anded(self):
         self.validate("FROM x | WHERE a == 1 | WHERE b == 2", "a == 1 and b == 2")
@@ -138,12 +147,12 @@ class TestEsqlParser(unittest.TestCase):
     def test_ignored_pipe_before_where_rejected(self):
         for query in ("FROM x | LIMIT 5 | WHERE a == 1", "FROM x | KEEP a | WHERE a == 1", "FROM x | SORT a | WHERE a == 1"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, r"Unsupported pipe before WHERE: [A-Z]+"):
-                esql.to_eql(query)
+                where(query)
 
     def test_limit_zero_rejected(self):
         for query in ("FROM x | WHERE a == 1 | LIMIT 0", "FROM x | LIMIT 0"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported LIMIT 0"):
-                esql.to_eql(query)
+                where(query)
         self.validate("FROM x | WHERE a == 1 | LIMIT 1", "a == 1")
 
     def test_unsupported_command(self):
@@ -158,42 +167,42 @@ class TestEsqlParser(unittest.TestCase):
         ):
             name = command.split()[0]
             with self.subTest(command), self.assertRaisesRegex(NotImplementedError, rf"Unsupported command: {name}"):
-                esql.to_eql(f"FROM x | WHERE a == 1 | {command}")
+                where(f"FROM x | WHERE a == 1 | {command}")
         with self.assertRaisesRegex(NotImplementedError, "Unsupported command: STATS"):
-            esql.to_eql("from x | stats c = count(*) by a")
+            where("from x | stats c = count(*) by a")
 
     def test_unsupported_source_command(self):
         for query in ("ROW a = 1", "SHOW INFO", "TS metrics"):
             name = query.split()[0]
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, rf"Unsupported source command: {name}"):
-                esql.to_eql(query)
+                where(query)
 
     def test_like(self):
-        self.assertEqual(esql.to_eql('FROM x | WHERE a LIKE "foo*"'), like("a", "foo*"))
-        self.assertEqual(esql.to_eql('FROM x | WHERE a LIKE "foo?"'), like("a", "foo?"))
-        self.assertEqual(esql.to_eql('FROM x | WHERE a.b like "*foo*"'), like("a.b", "*foo*"))
-        self.assertEqual(esql.to_eql('FROM x | WHERE a NOT LIKE "foo*"'), eql.ast.Not(like("a", "foo*")))
+        self.assertEqual(where('FROM x | WHERE a LIKE "foo*"'), like("a", "foo*"))
+        self.assertEqual(where('FROM x | WHERE a LIKE "foo?"'), like("a", "foo?"))
+        self.assertEqual(where('FROM x | WHERE a.b like "*foo*"'), like("a.b", "*foo*"))
+        self.assertEqual(where('FROM x | WHERE a NOT LIKE "foo*"'), eql.ast.Not(like("a", "foo*")))
         self.assertEqual(
-            esql.to_eql('FROM x | WHERE a LIKE "foo*" OR b == 1'),
+            where('FROM x | WHERE a LIKE "foo*" OR b == 1'),
             eql.ast.Or([like("a", "foo*"), eql.parse_expression("b == 1")]),
         )
 
     def test_like_unsupported(self):
         with self.assertRaisesRegex(NotImplementedError, "Unsupported operator: RLIKE"):
-            esql.to_eql('FROM x | WHERE a RLIKE "foo.*"')
+            where('FROM x | WHERE a RLIKE "foo.*"')
         with self.assertRaisesRegex(NotImplementedError, "Unsupported .*LIKE pattern.*string literal"):
-            esql.to_eql("FROM x | WHERE a LIKE 1")
+            where("FROM x | WHERE a LIKE 1")
 
     def test_like_escapes_and_classes_rejected(self):
         for pattern in (r"foo\\*", r"a\\?b", r"a\\\\b", "[ab]*", "a[b"):
             query = f'FROM x | WHERE a LIKE "{pattern}"'
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported LIKE pattern"):
-                esql.to_eql(query)
+                where(query)
 
     def test_starts_ends_with(self):
-        self.assertEqual(esql.to_eql('FROM x | WHERE STARTS_WITH(a, "foo")'), like("a", "foo*"))
-        self.assertEqual(esql.to_eql('FROM x | WHERE ends_with(a.b, "foo")'), like("a.b", "*foo"))
-        self.assertEqual(esql.to_eql('FROM x | WHERE NOT STARTS_WITH(a, "foo")'), eql.ast.Not(like("a", "foo*")))
+        self.assertEqual(where('FROM x | WHERE STARTS_WITH(a, "foo")'), like("a", "foo*"))
+        self.assertEqual(where('FROM x | WHERE ends_with(a.b, "foo")'), like("a.b", "*foo"))
+        self.assertEqual(where('FROM x | WHERE NOT STARTS_WITH(a, "foo")'), eql.ast.Not(like("a", "foo*")))
 
     def test_starts_ends_with_literal_metachar_rejected(self):
         for query in (
@@ -206,7 +215,7 @@ class TestEsqlParser(unittest.TestCase):
             "STARTS_WITH(a)",
         ):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
-                esql.to_eql(f"FROM x | WHERE {query}")
+                where(f"FROM x | WHERE {query}")
 
     def test_cidr_match(self):
         self.validate('FROM x | WHERE CIDR_MATCH(source.ip, "10.0.0.0/8")', "cidrMatch(source.ip, '10.0.0.0/8')")
@@ -215,24 +224,24 @@ class TestEsqlParser(unittest.TestCase):
             "cidrMatch(source.ip, '10.0.0.0/8', '192.168.0.0/16')",
         )
         self.assertEqual(
-            esql.to_eql('FROM x | WHERE NOT CIDR_MATCH(source.ip, "10.0.0.0/8")'),
+            where('FROM x | WHERE NOT CIDR_MATCH(source.ip, "10.0.0.0/8")'),
             eql.ast.Not(eql.parse_expression("cidrMatch(source.ip, '10.0.0.0/8')")),
         )
         for query in ("CIDR_MATCH(source.ip)", "CIDR_MATCH(source.ip, 1)", 'CIDR_MATCH("10.0.0.1", "10.0.0.0/8")'):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
-                esql.to_eql(f"FROM x | WHERE {query}")
+                where(f"FROM x | WHERE {query}")
 
     def test_literal_strings_reject_wildcards(self):
         for query in ('a == "f*o"', 'a != "f?o"', 'a IN ("x", "f*")', 'a NOT IN ("?")'):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported string literal"):
-                esql.to_eql(f"FROM x | WHERE {query}")
+                where(f"FROM x | WHERE {query}")
         self.validate('FROM x | WHERE a == "foo"', "a == 'foo'")
         self.validate('FROM x | WHERE a IN ("x", "y")', "a in ('x', 'y')")
 
     def test_string_escapes(self):
         def check(source, value):
             self.assertEqual(
-                esql.to_eql(f"FROM x | WHERE a == {source}"),
+                where(f"FROM x | WHERE a == {source}"),
                 eql.ast.Comparison(field("a"), "==", eql.ast.String(value)),
             )
 
@@ -248,12 +257,12 @@ class TestEsqlParser(unittest.TestCase):
 
     def test_string_unknown_escape_rejected(self):
         with self.assertRaisesRegex(NotImplementedError, r"Unsupported escape sequence"):
-            esql.to_eql(r'FROM x | WHERE a == "x\qy"')
+            where(r'FROM x | WHERE a == "x\qy"')
 
     def test_null_literals_rejected(self):
         for query in ("a == NULL", "a != NULL", "NOT (a == NULL)", "a IN (1, NULL)", "a NOT IN (NULL)", "a < null"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported NULL literal"):
-                esql.to_eql(f"FROM x | WHERE {query}")
+                where(f"FROM x | WHERE {query}")
         self.validate("FROM x | WHERE a IS NULL", "a == null")
         self.validate("FROM x | WHERE a IS NOT NULL", "a != null")
 
@@ -269,7 +278,7 @@ class TestEsqlParser(unittest.TestCase):
             "NOT _score > 1",
         ):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported predicate on metadata field"):
-                esql.to_eql(f"FROM x METADATA _id, _index | WHERE {query}")
+                where(f"FROM x METADATA _id, _index | WHERE {query}")
         # the declaration itself is fine, and so are fields that merely start like a metadata one
         self.assertEqual(esql.parse("FROM x METADATA _id").metadata, ("_id",))
         self.validate('FROM x | WHERE _idx == "x"', "_idx == 'x'")
@@ -277,28 +286,28 @@ class TestEsqlParser(unittest.TestCase):
     def test_bare_boolean_fields(self):
         flag = eql.ast.Comparison(field("flag"), "==", eql.ast.Boolean(True))
         other = eql.parse_expression("a == 1")
-        self.assertEqual(esql.to_eql("FROM x | WHERE flag"), flag)
-        self.assertEqual(esql.to_eql("FROM x | WHERE NOT flag"), eql.ast.Not(flag))
-        self.assertEqual(esql.to_eql("FROM x | WHERE flag AND a == 1"), eql.ast.And([flag, other]))
-        self.assertEqual(esql.to_eql("FROM x | WHERE a == 1 OR NOT flag"), eql.ast.Or([other, eql.ast.Not(flag)]))
+        self.assertEqual(where("FROM x | WHERE flag"), flag)
+        self.assertEqual(where("FROM x | WHERE NOT flag"), eql.ast.Not(flag))
+        self.assertEqual(where("FROM x | WHERE flag AND a == 1"), eql.ast.And([flag, other]))
+        self.assertEqual(where("FROM x | WHERE a == 1 OR NOT flag"), eql.ast.Or([other, eql.ast.Not(flag)]))
         self.assertEqual(
-            esql.to_eql("FROM x | WHERE (flag) AND (a.b)"),
+            where("FROM x | WHERE (flag) AND (a.b)"),
             eql.ast.And([flag, eql.ast.Comparison(field("a.b"), "==", eql.ast.Boolean(True))]),
         )
-        self.assertEqual(esql.to_eql("FROM x | WHERE true"), eql.ast.Boolean(True))
-        self.assertEqual(esql.to_eql("FROM x | WHERE a == 1 AND NOT false"), eql.ast.And([other, eql.ast.Not(eql.ast.Boolean(False))]))
+        self.assertEqual(where("FROM x | WHERE true"), eql.ast.Boolean(True))
+        self.assertEqual(where("FROM x | WHERE a == 1 AND NOT false"), eql.ast.And([other, eql.ast.Not(eql.ast.Boolean(False))]))
 
     def test_non_boolean_expressions_rejected(self):
         for query in ("1", '"x"', "NULL", "a == 1 AND 2", "NOT 1.5", "_id", "NOT `_index`"):
             with self.subTest(query), self.assertRaisesRegex(
                 NotImplementedError, "Unsupported (non-boolean expression|predicate on metadata field)"
             ):
-                esql.to_eql(f"FROM x METADATA _id | WHERE {query}")
+                where(f"FROM x METADATA _id | WHERE {query}")
 
     def test_non_field_operands_rejected(self):
         for query in ("a == b", "1 == a", "LENGTH(a) > 3", "a == b + 1", "a + 1 == 2", "a == (1 + 2)", '"x" == a', "a IN (b, 1)"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
-                esql.to_eql(f"FROM x | WHERE {query}")
+                where(f"FROM x | WHERE {query}")
 
     def test_unsupported_functions_rejected(self):
         for query, name in (
@@ -309,7 +318,7 @@ class TestEsqlParser(unittest.TestCase):
             ("a == ABS(b)", "ABS"),
         ):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, f"Unsupported function: {name}"):
-                esql.to_eql(f"FROM x | WHERE {query}")
+                where(f"FROM x | WHERE {query}")
 
     def test_branch_conflicts_rejected(self):
         for query in (
@@ -326,9 +335,9 @@ class TestEsqlParser(unittest.TestCase):
             "pid == 1 AND pid == 2",
         ):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported conflicting constraints on"):
-                esql.to_eql(f"FROM x | WHERE {query}")
+                where(f"FROM x | WHERE {query}")
         with self.assertRaisesRegex(NotImplementedError, "Unsupported conflicting constraints"):
-            esql.to_eql('FROM x | WHERE tags == "a" | WHERE tags == "b"')
+            where('FROM x | WHERE tags == "a" | WHERE tags == "b"')
 
     def test_branch_validation_accepts(self):
         for query in (
@@ -345,7 +354,7 @@ class TestEsqlParser(unittest.TestCase):
             'NOT a == "x" AND NOT a == "y"',
         ):
             with self.subTest(query):
-                esql.to_eql(f"FROM x | WHERE {query}")
+                where(f"FROM x | WHERE {query}")
 
     def test_syntax_errors(self):
         for query in (
@@ -359,7 +368,7 @@ class TestEsqlParser(unittest.TestCase):
             "FROM x | WHERE a == 1 AND",
         ):
             with self.subTest(query), self.assertRaises(esql.EsqlParseError) as cm:
-                esql.to_eql(query)
+                where(query)
             self.assertIsInstance(cm.exception.line, int)
             self.assertIsInstance(cm.exception.column, int)
             self.assertIsInstance(cm.exception, eql.EqlParseError)
@@ -438,13 +447,111 @@ class TestEsqlRouting(unittest.TestCase):
             ast_from_rule(SimpleNamespace(type="query", language="lucene", query="a: b"))
 
 
+class TestEsqlProvenance(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
+    """The AST from to_eql() carries its ES|QL origin, so that no caller has to remember it."""
+
+    maxDiff = None
+    long_schema: ClassVar[dict] = {"n": {"type": "long"}, "m": {"type": "long"}}
+
+    def flags(self, ast):
+        """Return the flags of the constraints, as a list of {field: [flags, ...]} for each branch."""
+        return [
+            {field: [c[2] for c in constraints] for doc in branch for field, constraints in doc.items() if constraints}
+            for branch in collect_constraints(ast)
+        ]
+
+    def test_to_eql_wraps_the_plain_tree(self):
+        query = 'FROM x | WHERE a == 1 AND b LIKE "x*"'
+        self.assertEqual(eql.ast.FunctionCall("_esql", [where(query)]), esql.to_eql(query))
+        self.assertEqual(eql.ast.FunctionCall("_esql", [eql.ast.Boolean(True)]), esql.to_eql("FROM x"))
+        self.assertIsInstance(where(query), eql.ast.And)
+
+    def test_add_ast_checks_without_flags(self):
+        se = SourceEvents(self.long_schema)
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported fractional number"):
+            se.add_ast(esql.to_eql("FROM x | WHERE n == 1.5"))
+        se = SourceEvents({"source.ip": {"type": "ip"}})
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported network literal"):
+            se.add_ast(esql.to_eql('FROM x | WHERE source.ip == "10.0.0.0/8"'))
+
+    def test_add_ast_from_rule_checks_without_flags(self):
+        rule = SimpleNamespace(type="esql", language="esql", query="FROM x | WHERE n >= 1.5 AND n < 2")
+        se = SourceEvents(self.long_schema)
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported fractional number"):
+            se.add_ast(ast_from_rule(rule))
+        rule = SimpleNamespace(type="esql", language="esql", query="FROM x | WHERE n == 2")
+        se = SourceEvents(self.long_schema)
+        se.add_ast(ast_from_rule(rule))
+        self.assertEqual([{"n": 2}], [event.doc for event in se.emit(timestamp=False)])
+
+    def test_other_languages_are_not_checked(self):
+        for query in ("any where n >= 1.5", "n >= 1.5"):
+            with self.subTest(query):
+                se = SourceEvents(self.long_schema)
+                se.add_ast(guess_from_query(query).ast)
+                self.assertEqual(1, len(list(se.emit(timestamp=False))))
+        se = SourceEvents(self.long_schema)
+        se.add_ast(eql.parse_expression("n == 1.5"))
+        self.assertEqual([{"n": 1}], [event.doc for event in se.emit(timestamp=False)])
+
+    def test_case_sensitive_flag_survives(self):
+        flags = self.flags(esql.to_eql('FROM x | WHERE k LIKE "x*" AND m == 1'))
+        self.assertEqual([{"k": [{"case_sensitive": True, "esql": True}], "m": [{"esql": True}]}], flags)
+
+        se = SourceEvents(self.schema)
+        se.stack_version = self.stack_version
+        with self.assertRaises(ConflictError):
+            se.add_ast(esql.to_eql('FROM x | WHERE event.category LIKE "PRO*"'))
+        se = SourceEvents(self.schema)
+        se.add_ast(esql.to_eql('FROM x | WHERE process.name LIKE "FOO*"'))
+        self.assertTrue(all(event.doc["process"]["name"].startswith("FOO") for event in se.emit(timestamp=False, count=10)))
+
+    def test_only_esql_constraints_are_flagged_in_mixed_trees(self):
+        esql_node = esql.to_eql('FROM x | WHERE k LIKE "x*" AND m == 1')
+        eql_node = eql.parse_expression("n == 2")
+        for terms in ([esql_node, eql_node], [eql_node, esql_node]):
+            ast = eql.ast.And(terms)
+            self.assertEqual(
+                [{"k": [{"case_sensitive": True, "esql": True}], "m": [{"esql": True}], "n": [{}]}],
+                self.flags(ast),
+            )
+        # an EQL wildcard keeps its own meaning next to an ES|QL one
+        ast = eql.ast.And([esql.to_eql('FROM x | WHERE k LIKE "x*"'), eql.parse_expression('wildcard(j, "Y*")')])
+        self.assertEqual([{"k": [{"case_sensitive": True, "esql": True}], "j": [{}]}], self.flags(ast))
+
+        se = SourceEvents(self.long_schema)
+        se.add_ast(eql.ast.And([esql.to_eql("FROM x | WHERE m == 1"), eql.parse_expression("n == 1.5")]))
+        self.assertEqual([{"m": 1, "n": 1}], [event.doc for event in se.emit(timestamp=False)])
+        se = SourceEvents(self.long_schema)
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported fractional number"):
+            se.add_ast(eql.ast.And([esql.to_eql("FROM x | WHERE n == 1.5"), eql.parse_expression("m == 1")]))
+
+    def test_negated_trees_are_flagged_as_well(self):
+        # De Morgan splits the AND in two branches, one constraint each
+        ast = eql.ast.Not(esql.to_eql('FROM x | WHERE k LIKE "x*" AND m == 1'))
+        self.assertEqual([{"k": [{"esql": True}]}, {"m": [{"esql": True}]}], self.flags(ast))
+        ast = eql.ast.Not(eql.ast.And([esql.to_eql("FROM x | WHERE m == 1"), eql.parse_expression("n == 2")]))
+        self.assertEqual([{"m": [{"esql": True}]}, {"n": [{}]}], self.flags(ast))
+        ast = eql.ast.Not(eql.parse_expression("n == 2"))
+        self.assertEqual([{"n": [{}]}], self.flags(ast))
+
+        se = SourceEvents(self.long_schema)
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported fractional number"):
+            se.add_ast(eql.ast.Not(esql.to_eql("FROM x | WHERE n == 1.5")))
+
+    def test_no_where(self):
+        se = SourceEvents(self.long_schema)
+        se.add_ast(esql.to_eql("FROM x"))
+        self.assertEqual([{}], [event.doc for event in se.emit(timestamp=False)])
+
+
 class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
 
     def emit(self, query, *, schema=None, count=20):
         se = SourceEvents(schema if schema is not None else self.schema)
         se.stack_version = self.stack_version
-        se.add_ast(esql.to_eql(query))
+        se.add_query(query)
         return [event.doc for event in se.emit(timestamp=False, count=count)]
 
     def test_source_events_from_esql(self):
@@ -505,6 +612,100 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         self.assertEqual([{"process": {"code_signature": {"exists": False}}}] * 3, docs)
         docs = self.emit('FROM x | WHERE process.code_signature.exists AND process.name == "a.exe"', count=1)
         self.assertEqual([{"process": {"code_signature": {"exists": True}, "name": "a.exe"}}], docs)
+
+    def test_fractional_numbers_on_long_fields_rejected(self):
+        for query in (
+            "process.pid == 1.5",
+            "process.pid != 1.5",
+            "process.pid >= 1.5",
+            "process.pid > 1.5",
+            "process.pid <= 1.5",
+            "process.pid < 1.5",
+            "process.pid IN (1.5, 2)",
+            "process.pid >= 1.5 AND process.pid < 2",
+            "NOT process.pid == 1.5",
+            "process.pid > -1.5",
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported fractional number"):
+                self.emit(f"FROM x | WHERE {query}")
+
+    def test_integral_numbers_on_long_fields_accepted(self):
+        docs = self.emit("FROM x | WHERE process.pid == 2.0", count=3)
+        self.assertEqual([{"process": {"pid": 2}}] * 3, docs)
+        docs = self.emit("FROM x | WHERE process.pid >= 10.0 AND process.pid < 12.0", count=20)
+        self.assertTrue(all(10 <= doc["process"]["pid"] < 12 for doc in docs), docs)
+        docs = self.emit("FROM x | WHERE process.pid IN (1, 2) OR process.pid != 3", count=5)
+        self.assertEqual(5, len(docs))
+
+    def test_fractional_numbers_accepted_on_other_types(self):
+        # Geneve has no float solver yet, a stand-in shows that the check belongs to long fields only
+        @solver.type("test_float")
+        class TestFloatField(Field):
+            valid_constraints: ClassVar[list] = ["==", ">=", "<"]
+
+            def solve(self, left_attempts, environment):
+                return {"value": 1.5, "left_attempts": left_attempts}
+
+        self.addCleanup(solver.solvers.pop, "&test_float")
+        schema = {**self.schema, "test.ratio": {"type": "test_float"}}
+        docs = self.emit("FROM x | WHERE test.ratio >= 1.5 AND test.ratio < 2.5", schema=schema, count=2)
+        self.assertEqual([{"test": {"ratio": 1.5}}] * 2, docs)
+
+    def test_ip_networks_rejected(self):
+        for query in (
+            'source.ip == "10.0.0.0/8"',
+            'source.ip != "10.0.0.0/8"',
+            'source.ip IN ("10.0.0.1", "10.0.0.0/8")',
+            'NOT source.ip == "10.0.0.0/8"',
+            'source.ip == "2001:db8::/32"',
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported network literal"):
+                self.emit(f"FROM x | WHERE {query}")
+
+    def test_ip_addresses_and_cidr_match_accepted(self):
+        docs = self.emit('FROM x | WHERE source.ip == "10.0.0.1"', count=3)
+        self.assertEqual([{"source": {"ip": "10.0.0.1"}}] * 3, docs)
+        docs = self.emit('FROM x | WHERE source.ip IN ("10.0.0.1", "2001:db8::1")', count=2)
+        self.assertEqual(2, len(docs))
+        docs = self.emit('FROM x | WHERE source.ip != "10.0.0.1"', count=5)
+        self.assertTrue(all(doc["source"]["ip"] != "10.0.0.1" for doc in docs), docs)
+
+        net = ipaddress.ip_network("10.0.0.0/8")
+        docs = self.emit('FROM x | WHERE CIDR_MATCH(source.ip, "10.0.0.0/8")', count=20)
+        self.assertTrue(all(ipaddress.ip_address(doc["source"]["ip"]) in net for doc in docs), docs)
+        docs = self.emit('FROM x | WHERE NOT CIDR_MATCH(source.ip, "10.0.0.0/8")', count=20)
+        self.assertTrue(all(ipaddress.ip_address(doc["source"]["ip"]) not in net for doc in docs), docs)
+
+    def test_paths_and_keywords_with_slashes_accepted(self):
+        docs = self.emit('FROM x | WHERE file.path == "/etc/passwd"', count=2)
+        self.assertEqual([{"file": {"path": "/etc/passwd"}}] * 2, docs)
+        docs = self.emit('FROM x | WHERE file.path IN ("/etc/passwd", "C:/Windows/System32")', count=2)
+        self.assertEqual(2, len(docs))
+        docs = self.emit('FROM x | WHERE process.name == "10.0.0.0/8"', count=1)
+        self.assertEqual([{"process": {"name": "10.0.0.0/8"}}], docs)
+        docs = self.emit('FROM x | WHERE file.path != "/etc/passwd"', count=5)
+        self.assertTrue(all(doc["file"]["path"] != "/etc/passwd" for doc in docs), docs)
+
+    def test_eql_and_kql_are_unchanged(self):
+        # the checks are for ES|QL only, the other languages keep their behaviour
+        for query in ('any where source.ip == "10.0.0.0/8"', 'any where source.ip != "10.0.0.0/8"', 'source.ip: "10.0.0.0/8"'):
+            with self.subTest(query):
+                se = SourceEvents(self.schema)
+                se.stack_version = self.stack_version
+                se.add_query(query)
+                docs = [event.doc for event in se.emit(timestamp=False, count=10)]
+                self.assertEqual(10, len(docs))
+        net = ipaddress.ip_network("10.0.0.0/8")
+        se = SourceEvents(self.schema)
+        se.add_query('any where source.ip == "10.0.0.0/8"')
+        self.assertTrue(all(ipaddress.ip_address(event.doc["source"]["ip"]) in net for event in se.emit(timestamp=False, count=10)))
+
+        se = SourceEvents(self.schema)
+        se.add_query("any where process.pid >= 1.5")
+        self.assertTrue(all(event.doc["process"]["pid"] >= 1 for event in se.emit(timestamp=False, count=10)))
+        se = SourceEvents(self.schema)
+        se.add_query("process.pid >= 1.5")
+        self.assertEqual(10, len(list(se.emit(timestamp=False, count=10))))
 
     def test_keyword_solver_case_sensitive_flag(self):
         from geneve.solver.type_keyword import KeywordField

@@ -77,6 +77,12 @@ class Document:
     def items(self):
         return self.__constraints.items()
 
+    def flag_constraints(self, flags):
+        """Add flags to all the constraints, for the solvers to read."""
+        for _, constraints in self.__constraints.items():  # noqa: PERF102, hdict has no values()
+            if constraints:
+                constraints[:] = [(name, value, {**(rest[0] if rest else {}), **flags}) for name, value, *rest in constraints]
+
     def entities(self):
         return self.__entities.values()
 

@@ -43,6 +43,11 @@ class LongField(Field):
     def __init__(self, field, constraints, field_constraints, schema):
         super().__init__(field, constraints, field_constraints, schema)
 
+        for k, v, *flags in constraints:
+            # ES|QL compares long and double values as such, here they would be truncated
+            if flags and flags[0].get("esql") and isinstance(v, float) and not v.is_integer():
+                raise NotImplementedError(f"Unsupported fractional number on long field '{field}': {k} {v}")
+
         self.min_value = LongLimits.MIN
         self.max_value = LongLimits.MAX
         self.exclude_values = set()

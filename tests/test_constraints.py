@@ -1096,6 +1096,25 @@ class TestDocument(tu.SeededTestCase, unittest.TestCase):
         )
         self.assertEqual([], list(Document().items()))
 
+    def test_flag_constraints(self):
+        doc = Document("a.b", "==", 1)
+        doc.append_constraint("a.c", "wildcard", "x*", {"case_sensitive": True})
+        doc.append_constraint("d")
+        doc.append_constraint("e", "==", None)
+        other = doc.clone()
+        doc.flag_constraints({"esql": True})
+        self.assertEqual(
+            [
+                ("a.b", [("==", 1, {"esql": True})]),
+                ("a.c", [("wildcard", "x*", {"case_sensitive": True, "esql": True})]),
+                ("d", []),
+                ("e", None),
+            ],
+            list(doc.items()),
+        )
+        # a clone taken before is not affected
+        self.assertEqual([("==", 1, {})], dict(other.items())["a.b"])
+
 
 class TestBranches(tu.SeededTestCase, unittest.TestCase):
     maxDiff = None

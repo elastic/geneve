@@ -71,6 +71,8 @@ def ast_from_rule(rule):
 
 ES|QL queries are parsed by [geneve/esql](../geneve/esql), a small [lark](https://lark-parser.readthedocs.io) grammar that covers the part of the language that selects documents. The query is translated to the same AST as EQL, so the following steps need no changes.
 
+`esql.to_eql()` returns the AST to generate documents from: the translation is wrapped in a private `_esql` function, which the constraints collector uses to flag the constraints that come from ES|QL (and only them, even when the AST is mixed with EQL nodes). `esql.parse(query).where` is the plain translation, to inspect it.
+
 Supported:
 
 * `FROM` with any number of index patterns and an optional `METADATA` clause. The indices are returned by `esql.parse()` but do not drive the generation.
@@ -83,7 +85,10 @@ Everything else is rejected with an `Unsupported ...` error instead of generatin
 * functions other than the ones above, arithmetic and operands that are not a field on the left and a literal on the right of a comparison;
 * `NULL` literals (use `IS NULL` and `IS NOT NULL`) and predicates on metadata fields such as `_id`;
 * strings with `*` or `?` in `==`, `!=`, `IN` and `STARTS_WITH`/`ENDS_WITH` (the solvers would take them for patterns), `LIKE` patterns with backslash escapes or `[` and `RLIKE`;
-* more than one equality or pattern on the same field in a branch, for instance `tags == "a" AND tags == "b"`: on array fields each of them would become an independent value, but ES|QL returns null for multivalued fields in a comparison.
+* more than one equality or pattern on the same field in a branch, for instance `tags == "a" AND tags == "b"`: on array fields each of them would become an independent value, but ES|QL returns null for multivalued fields in a comparison;
+* what the solver of the field cannot do right: fractional numbers on `long` fields (they would be truncated) and network literals in `==`, `!=` and `IN` on `ip` fields (`CIDR_MATCH` is supported). These checks need the type of the field, therefore they are done when the query is added to `SourceEvents` and not when it is parsed.
+
+Queries that expand to more than 10,000 branches, for instance by chaining many `IN` and `OR`, are rejected as well.
 
 Unlike the other languages, `LIKE` is case sensitive: it matches `FOO*` against `FOObar`, not against `foobar`.
 
