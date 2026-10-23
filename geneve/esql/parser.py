@@ -49,7 +49,7 @@ METADATA_FIELDS = ("_id", "_index", "_version", "_ignored", "_index_mode", "_sou
 # same default as SourceEvents.max_branches
 MAX_BRANCHES = 10000
 
-POSITIVE_CONSTRAINTS = ("==", "wildcard")
+POSITIVE_CONSTRAINTS = ("==", "wildcard", "in")
 
 grammar_file = Path(__file__).parent / "esql.g"
 lark_parser = Lark(grammar_file.read_text(), start="query", parser="lalr", propagate_positions=True)
@@ -74,11 +74,16 @@ def lark_parse(text):
 
 
 def split_field(name):
+    # a quoted name with dots (`a.b`) is the path a -> b, as Elasticsearch resolves it, and
+    # the constraints collector knows nothing about quoted dots
     parts = []
     for part in field_part_re.findall(name):
         if part.startswith("`"):
             part = part[1:-1].replace("``", "`")
-        parts.append(part)
+        parts.extend(part.split("."))
+    # field names with wildcards are not plain fields
+    if not all(parts) or any("*" in part or "?" in part for part in parts):
+        raise NotImplementedError(f"Unsupported field name: {name}")
     return parts
 
 
@@ -138,30 +143,42 @@ class EsqlToEql(Interpreter):
     def where_cmd(self, tree):
         if self.blocking:
             self.reject(tree, f"pipe before WHERE: {self.blocking}")
-        self.wheres.append(self.visit(tree.children[1]))
+        self.wheres.append(self.boolean(tree.children[1]))
 
     def other_cmd(self, tree):
         name = str(tree.children[0]).upper()
         if name not in IGNORED_COMMANDS:
             self.reject(tree, f"command: {name}")
+        if name == "LIMIT" and re.fullmatch(r"\s*0+\s*", str(tree.children[1]) if len(tree.children) > 1 else ""):
+            self.reject(tree, "LIMIT 0, no document is returned")
         self.blocking = self.blocking or name
 
     # boolean expressions
 
+    def boolean(self, tree):
+        """Visit an expression that must be true, a bare boolean field means `field == true`."""
+        node = self.visit(tree)
+        if isinstance(node, eql.ast.Field):
+            self.check_field(tree, node)
+            return eql.ast.Comparison(node, "==", eql.ast.Boolean(True))
+        if isinstance(node, eql.ast.Literal) and not isinstance(node, eql.ast.Boolean):
+            self.reject(tree, "non-boolean expression")
+        return node
+
     def or_op(self, tree):
         left, _, right = tree.children
-        left, right = self.visit(left), self.visit(right)
+        left, right = self.boolean(left), self.boolean(right)
         terms = left.terms if isinstance(left, eql.ast.Or) else [left]
         return eql.ast.Or(terms + [right])
 
     def and_op(self, tree):
         left, _, right = tree.children
-        left, right = self.visit(left), self.visit(right)
+        left, right = self.boolean(left), self.boolean(right)
         terms = left.terms if isinstance(left, eql.ast.And) else [left]
         return eql.ast.And(terms + [right])
 
     def not_op(self, tree):
-        return eql.ast.Not(self.visit(tree.children[1]))
+        return eql.ast.Not(self.boolean(tree.children[1]))
 
     # predicates
 

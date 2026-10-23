@@ -61,8 +61,8 @@ def ast_from_kql_query(query):
     return kql.to_eql(query, optimize=False)  # shortcut?
 
 
-# ES|QL starts with a source command, a KQL query can hardly be mistaken for it (`from:foo` is not)
-esql_source_re = re.compile(r"\s*(from|row|show)\s", re.IGNORECASE)
+# ES|QL starts with a source command (possibly after comments), a KQL query can hardly be mistaken for it (`from:foo` is not)
+esql_source_re = re.compile(r"(?:\s|//[^\n]*|/\*[\s\S]*?\*/)*(?:from|row|show)\s+(?!\s*:)", re.IGNORECASE)
 
 
 def guess_from_query(query):

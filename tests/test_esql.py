@@ -90,10 +90,18 @@ class TestEsqlParser(unittest.TestCase):
             esql.to_eql('FROM x | WHERE `host name` == "x"'),
             eql.ast.Comparison(field("host name"), "==", eql.ast.String("x")),
         )
+        # a quoted name with dots is the same path Elasticsearch would resolve
         self.assertEqual(
             esql.to_eql('FROM x | WHERE a.`b.c`.d == "x"'),
-            eql.ast.Comparison(eql.ast.Field("a", ["b.c", "d"]), "==", eql.ast.String("x")),
+            eql.ast.Comparison(eql.ast.Field("a", ["b", "c", "d"]), "==", eql.ast.String("x")),
         )
+        self.assertEqual(
+            esql.to_eql('FROM x | WHERE `a.b` == "x"'),
+            eql.ast.Comparison(eql.ast.Field("a", ["b"]), "==", eql.ast.String("x")),
+        )
+        for query in ("`a..b`", "`.a`", "`a.`", "`a*`", "a.`b?`", "`*`"):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported field name"):
+                esql.to_eql(f'FROM x | WHERE {query} == "x"')
 
     def test_case_and_comments(self):
         expected = esql.to_eql("FROM x | WHERE a == 1")
@@ -131,6 +139,12 @@ class TestEsqlParser(unittest.TestCase):
         for query in ("FROM x | LIMIT 5 | WHERE a == 1", "FROM x | KEEP a | WHERE a == 1", "FROM x | SORT a | WHERE a == 1"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, r"Unsupported pipe before WHERE: [A-Z]+"):
                 esql.to_eql(query)
+
+    def test_limit_zero_rejected(self):
+        for query in ("FROM x | WHERE a == 1 | LIMIT 0", "FROM x | LIMIT 0"):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported LIMIT 0"):
+                esql.to_eql(query)
+        self.validate("FROM x | WHERE a == 1 | LIMIT 1", "a == 1")
 
     def test_unsupported_command(self):
         for command in (
@@ -260,6 +274,27 @@ class TestEsqlParser(unittest.TestCase):
         self.assertEqual(esql.parse("FROM x METADATA _id").metadata, ("_id",))
         self.validate('FROM x | WHERE _idx == "x"', "_idx == 'x'")
 
+    def test_bare_boolean_fields(self):
+        flag = eql.ast.Comparison(field("flag"), "==", eql.ast.Boolean(True))
+        other = eql.parse_expression("a == 1")
+        self.assertEqual(esql.to_eql("FROM x | WHERE flag"), flag)
+        self.assertEqual(esql.to_eql("FROM x | WHERE NOT flag"), eql.ast.Not(flag))
+        self.assertEqual(esql.to_eql("FROM x | WHERE flag AND a == 1"), eql.ast.And([flag, other]))
+        self.assertEqual(esql.to_eql("FROM x | WHERE a == 1 OR NOT flag"), eql.ast.Or([other, eql.ast.Not(flag)]))
+        self.assertEqual(
+            esql.to_eql("FROM x | WHERE (flag) AND (a.b)"),
+            eql.ast.And([flag, eql.ast.Comparison(field("a.b"), "==", eql.ast.Boolean(True))]),
+        )
+        self.assertEqual(esql.to_eql("FROM x | WHERE true"), eql.ast.Boolean(True))
+        self.assertEqual(esql.to_eql("FROM x | WHERE a == 1 AND NOT false"), eql.ast.And([other, eql.ast.Not(eql.ast.Boolean(False))]))
+
+    def test_non_boolean_expressions_rejected(self):
+        for query in ("1", '"x"', "NULL", "a == 1 AND 2", "NOT 1.5", "_id", "NOT `_index`"):
+            with self.subTest(query), self.assertRaisesRegex(
+                NotImplementedError, "Unsupported (non-boolean expression|predicate on metadata field)"
+            ):
+                esql.to_eql(f"FROM x METADATA _id | WHERE {query}")
+
     def test_non_field_operands_rejected(self):
         for query in ("a == b", "1 == a", "LENGTH(a) > 3", "a == b + 1", "a + 1 == 2", "a == (1 + 2)", '"x" == a', "a IN (b, 1)"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
@@ -283,6 +318,9 @@ class TestEsqlParser(unittest.TestCase):
             'tags LIKE "f*" AND tags LIKE "f*"',
             'tags == "a" AND (tags == "b" OR tags == "c")',
             'tags IN ("a", "b") AND tags IN ("c", "d")',
+            'CIDR_MATCH(ip, "10.0.0.0/8") AND CIDR_MATCH(ip, "192.168.0.0/16")',
+            'ip == "10.0.0.1" AND CIDR_MATCH(ip, "192.168.0.0/16")',
+            '`a.b` == "x" AND a.b == "y"',
             'NOT (tags != "a" OR tags != "b")',
             'a == "foo" AND a LIKE "FOO*"',
             "pid == 1 AND pid == 2",
@@ -302,6 +340,8 @@ class TestEsqlParser(unittest.TestCase):
             'a LIKE "FOO*"',
             'a LIKE "foo*" AND b LIKE "bar*"',
             'a == "x" AND a IS NOT NULL',
+            'CIDR_MATCH(ip, "10.0.0.0/8") AND NOT CIDR_MATCH(ip, "10.1.0.0/16")',
+            'CIDR_MATCH(ip, "10.0.0.0/8") OR CIDR_MATCH(ip, "192.168.0.0/16")',
             'NOT a == "x" AND NOT a == "y"',
         ):
             with self.subTest(query):
@@ -340,8 +380,24 @@ class TestEsqlRouting(unittest.TestCase):
                 self.assertEqual(query, guess.query)
                 self.assertEqual(esql.to_eql(query), guess.ast)
 
+    def test_guess_esql_after_comments(self):
+        for query in (
+            '/* comment */ FROM x | WHERE a == "foo"',
+            '// comment\nFROM x | WHERE a == "foo"',
+            '// one\n// two\n/* three */ // four\n  /* five\nsix */\n\tfrom x | where a == "foo"',
+            '/**/FROM x | WHERE a == "foo"',
+            '// comment\r\nFROM x | WHERE a == "foo"',
+        ):
+            with self.subTest(query):
+                guess = guess_from_query(query)
+                self.assertEqual("esql", guess.language)
+                self.assertEqual(esql.to_eql('FROM x | WHERE a == "foo"'), guess.ast)
+        for query in ("/* comment */ ROW a = 1", "// comment\nSHOW INFO"):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported source command"):
+                guess_from_query(query)
+
     def test_guess_kql_starting_with_from_still_kql(self):
-        for query in ("from:foo", 'from: "x"', "from:foo and bar:baz", "fromage:1"):
+        for query in ("from:foo", 'from: "x"', "from:foo and bar:baz", "fromage:1", "from : foo", "show :x", "row  : 1"):
             with self.subTest(query):
                 guess = guess_from_query(query)
                 self.assertEqual("query", guess.type)
@@ -386,7 +442,7 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
 
     def emit(self, query, *, schema=None, count=20):
-        se = SourceEvents(schema or self.schema)
+        se = SourceEvents(schema if schema is not None else self.schema)
         se.stack_version = self.stack_version
         se.add_ast(esql.to_eql(query))
         return [event.doc for event in se.emit(timestamp=False, count=count)]
@@ -424,6 +480,44 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         self.assertEqual([[{"process": {"name": "x"}}], [{"process": {"name": "y"}}]], docs[:2])
         self.assertEqual(1, len(docs[2]))
         self.assertIn("pid", docs[2][0]["process"])
+
+    def test_negations_emit_a_value(self):
+        # ES|QL returns null for a missing field, so `!=` and `NOT` must not be satisfied by omitting it
+        for query in ('process.name != "a.exe"', 'NOT process.name == "a.exe"', 'process.name != "a.exe" AND NOT process.name LIKE "b*"'):
+            with self.subTest(query):
+                docs = self.emit(f"FROM x | WHERE {query}", count=20)
+                for doc in docs:
+                    self.assertIsInstance(doc["process"]["name"], str)
+                    self.assertNotEqual("a.exe", doc["process"]["name"])
+        docs = self.emit("FROM x | WHERE process.pid != 1", count=5)
+        self.assertTrue(all(isinstance(doc["process"]["pid"], int) and doc["process"]["pid"] != 1 for doc in docs), docs)
+
+    def test_quoted_dotted_fields_emit_paths(self):
+        self.assertEqual([{"a": {"b": "x"}}] * 3, self.emit('FROM x | WHERE `a.b` == "x"', schema={}, count=3))
+        self.assertEqual([{"a": {"b": {"c": {"d": "x"}}}}], self.emit('FROM x | WHERE a.`b.c`.d == "x"', schema={}, count=1))
+        self.assertEqual([{"host name": "x"}], self.emit('FROM x | WHERE `host name` == "x"', schema={}, count=1))
+        self.assertEqual([{"a": {"b": "x"}}], self.emit('FROM x | WHERE a.b == "x"', schema={}, count=1))
+
+    def test_bare_boolean_fields_emit(self):
+        docs = self.emit("FROM x | WHERE process.code_signature.exists", count=3)
+        self.assertEqual([{"process": {"code_signature": {"exists": True}}}] * 3, docs)
+        docs = self.emit("FROM x | WHERE NOT process.code_signature.exists", count=3)
+        self.assertEqual([{"process": {"code_signature": {"exists": False}}}] * 3, docs)
+        docs = self.emit('FROM x | WHERE process.code_signature.exists AND process.name == "a.exe"', count=1)
+        self.assertEqual([{"process": {"code_signature": {"exists": True}, "name": "a.exe"}}], docs)
+
+    def test_keyword_solver_case_sensitive_flag(self):
+        from geneve.solver.type_keyword import KeywordField
+
+        allowed = [("wildcard", ["process", "network"])]  # shaped as the ECS constraints of a field
+        flagged = [("wildcard", "PRO*", {"case_sensitive": True})]
+        unflagged = [("wildcard", "PRO*", {})]
+        with self.assertRaises(ConflictError):
+            KeywordField("f", flagged, allowed, False)
+        solver = KeywordField("f", unflagged, allowed, False)  # case is ignored without the flag
+        self.assertEqual("process", solver.solve(10, {})["value"])
+        solver = KeywordField("f", [("wildcard", "pro*", {"case_sensitive": True})], allowed, False)
+        self.assertEqual("process", solver.solve(10, {})["value"])
 
     def test_like_case_sensitive_conflict(self):
         # the solver restricts event.category to lowercase ECS values, it must not turn "PRO*" into "process"
