@@ -25,7 +25,7 @@ from typing import ClassVar
 import eql
 
 import tests.utils as tu
-from geneve import esql
+from geneve import esql, kql
 from geneve.constraints import ConflictError
 from geneve.events_emitter import SourceEvents, ast_from_rule, guess_from_query
 from geneve.events_emitter_eql import collect_constraints
@@ -304,6 +304,74 @@ class TestEsqlParser(unittest.TestCase):
             ):
                 where(f"FROM x METADATA _id | WHERE {query}")
 
+    def test_mv_contains(self):
+        eq = eql.ast.Comparison(field("event.category"), "==", eql.ast.String("iam"))
+        self.assertEqual(eq, where('FROM x | WHERE MV_CONTAINS(event.category, "iam")'))
+        self.assertEqual(eq, where('FROM x | WHERE mv_contains(event.category, "iam")'))
+        self.assertEqual(eql.ast.Not(eq), where('FROM x | WHERE NOT mv_contains(event.category, "iam")'))
+        other = eql.parse_expression("a == 1")
+        self.assertEqual(eql.ast.And([eq, other]), where('FROM x | WHERE mv_contains(event.category, "iam") AND a == 1'))
+        self.assertEqual(
+            eql.ast.Comparison(field("n"), "==", eql.ast.Number(2)),
+            where("FROM x | WHERE mv_contains(n, 2)"),
+        )
+        self.assertEqual(
+            eql.ast.Comparison(field("b"), "==", eql.ast.Boolean(True)),
+            where("FROM x | WHERE mv_contains(b, true)"),
+        )
+
+    def test_mv_contains_rejected(self):
+        for query, message in (
+            ("mv_contains(a, b)", "Unsupported MV_CONTAINS arguments"),
+            ('mv_contains("a", "b")', "Unsupported MV_CONTAINS arguments"),
+            ("mv_contains(a)", "Unsupported MV_CONTAINS arguments"),
+            ('mv_contains(a, "b", "c")', "Unsupported MV_CONTAINS arguments"),
+            ('mv_contains(a, "b*")', "Unsupported string literal with wildcard"),
+            ("mv_contains(a, NULL)", "Unsupported MV_CONTAINS arguments"),
+            ('mv_contains(_id, "x")', "Unsupported predicate on metadata field"),
+            ('mv_contains(a, "x") AND mv_contains(a, "y")', "Unsupported conflicting constraints on a"),
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, message):
+                where(f"FROM x METADATA _id | WHERE {query}")
+
+    def test_kql(self):
+        def check(esql_query, kql_query):
+            self.assertEqual(
+                eql.ast.FunctionCall("_kql", [kql.to_eql(kql_query, optimize=False)]),
+                where(f"FROM x | WHERE {esql_query}"),
+            )
+
+        check('KQL("event.action: creation")', "event.action: creation")
+        check('kql("event.action: creation")', "event.action: creation")
+        check(
+            'KQL("""kibana.alert.rule.tags : "Rule Type: Higher-Order Rule" """)',
+            'kibana.alert.rule.tags : "Rule Type: Higher-Order Rule" ',
+        )
+        check('KQL(""" event.type : "start" and not event.action : "fork" """)', ' event.type : "start" and not event.action : "fork" ')
+        check('KQL("""event.action:"exec" and process.args:("-c" or "-cl")""")', 'event.action:"exec" and process.args:("-c" or "-cl")')
+        node = where('FROM x | WHERE NOT KQL("a: b") AND c == 1')
+        self.assertIsInstance(node, eql.ast.And)
+        self.assertEqual(eql.ast.Not, type(node.terms[0]))
+
+    def test_kql_rejected(self):
+        for query in ("KQL()", "KQL(1)", "KQL(a)", 'KQL("a: b", "c")', 'KQL("a: b", {"case_insensitive": true})', "KQL(NULL)"):
+            with self.subTest(query), self.assertRaisesRegex(
+                (NotImplementedError, esql.EsqlParseError), "Unsupported KQL arguments|Invalid syntax"
+            ):
+                where(f"FROM x | WHERE {query}")
+        with self.assertRaisesRegex(esql.EsqlParseError, "Invalid KQL query"):
+            where('FROM x | WHERE KQL("a: (")')
+        with self.assertRaisesRegex(esql.EsqlParseError, "Invalid KQL query"):
+            where('FROM x | WHERE KQL("")')
+
+    def test_kql_keeps_its_own_rules(self):
+        # KQL allows what ES|QL scalar comparisons do not: two values for the same (array) field
+        where('FROM x | WHERE KQL("process.args: a and process.args: b")')
+        # but the ES|QL part of the query is still checked
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported conflicting constraints on tags"):
+            where('FROM x | WHERE KQL("tags: a") AND tags == "b"')
+        where('FROM x | WHERE KQL("tags: a") AND tags2 == "b"')
+
     def test_non_field_operands_rejected(self):
         for query in ("a == b", "1 == a", "LENGTH(a) > 3", "a == b + 1", "a + 1 == 2", "a == (1 + 2)", '"x" == a', "a IN (b, 1)"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
@@ -510,6 +578,19 @@ class TestEsqlProvenance(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase)
         se.add_ast(esql.to_eql('FROM x | WHERE process.name LIKE "FOO*"'))
         self.assertTrue(all(event.doc["process"]["name"].startswith("FOO") for event in se.emit(timestamp=False, count=10)))
 
+    def test_kql_constraints_are_not_flagged_as_esql(self):
+        flags = self.flags(esql.to_eql('FROM x | WHERE KQL("a: b and c: x*") AND d == 1'))
+        self.assertEqual([{"a": [{"kql": True}], "c": [{"kql": True}], "d": [{"esql": True}]}], flags)
+        flags = self.flags(esql.to_eql('FROM x | WHERE NOT KQL("a: b")'))
+        self.assertEqual([{"a": [{"kql": True}]}], flags)
+        # the KQL string keeps the semantics of KQL, as for the rules of type query
+        se = SourceEvents(self.long_schema)
+        se.add_ast(esql.to_eql('FROM x | WHERE KQL("n >= 1.5")'))
+        self.assertEqual(1, len(list(se.emit(timestamp=False))))
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported fractional number"):
+            se = SourceEvents(self.long_schema)
+            se.add_ast(esql.to_eql('FROM x | WHERE KQL("m: 1") AND n >= 1.5'))
+
     def test_only_esql_constraints_are_flagged_in_mixed_trees(self):
         esql_node = esql.to_eql('FROM x | WHERE k LIKE "x*" AND m == 1')
         eql_node = eql.parse_expression("n == 2")
@@ -663,6 +744,35 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             se.add_query("any where n in (1, 2, 3, 4)")
         se.add_query("any where n in (1, 2, 3)")
         self.assertEqual(1, len(se))
+
+    def test_mv_contains_emit(self):
+        docs = self.emit('FROM x | WHERE mv_contains(event.category, "configuration")', count=3)
+        self.assertEqual([["configuration"]] * 3, [doc["event"]["category"] for doc in docs])
+        docs = self.emit('FROM x | WHERE mv_contains(event.category, "iam") AND mv_contains(event.type, "creation")', count=3)
+        self.assertEqual([{"category": ["iam"], "type": ["creation"]}] * 3, [doc["event"] for doc in docs])
+        docs = self.emit('FROM x | WHERE mv_contains(event.category, "file") AND process.name == "a.exe"', count=2)
+        self.assertEqual([{"event": {"category": ["file"]}, "process": {"name": "a.exe"}}] * 2, docs)
+        docs = self.emit('FROM x | WHERE NOT mv_contains(process.name, "a.exe")', count=10)
+        self.assertTrue(all(isinstance(doc["process"]["name"], str) and doc["process"]["name"] != "a.exe" for doc in docs), docs)
+
+    def test_kql_emit(self):
+        docs = self.emit('FROM x | WHERE KQL("event.action: creation")', count=2)
+        self.assertEqual([{"event": {"action": "creation"}}] * 2, docs)
+        docs = self.emit(
+            'FROM x | WHERE KQL("""event.category : "process" and event.type : "start" and host.os.type : "windows" """)', count=1
+        )
+        self.assertEqual([{"event": {"category": ["process"], "type": ["start"]}, "host": {"os": {"type": "windows"}}}], docs)
+        se = SourceEvents(self.schema)
+        se.add_query('FROM x | WHERE KQL("process.args: (a or b)") AND process.name == "x.exe"')
+        branches = [[event.doc for event in branch] for branch in se.emit(timestamp=False, complete=True)]
+        self.assertEqual(
+            [[{"process": {"args": ["a"], "name": "x.exe"}}], [{"process": {"args": ["b"], "name": "x.exe"}}]],
+            branches,
+        )
+        docs = self.emit('FROM x | WHERE KQL("process.args: a and process.args: b")', count=1)
+        self.assertEqual([{"process": {"args": ["a", "b"]}}], docs)
+        docs = self.emit('FROM x | WHERE NOT KQL("process.name: a.exe") AND event.action == "start"', count=5)
+        self.assertTrue(all(doc["process"]["name"] != "a.exe" for doc in docs), docs)
 
     def test_negations_emit_a_value(self):
         # ES|QL returns null for a missing field, so `!=` and `NOT` must not be satisfied by omitting it

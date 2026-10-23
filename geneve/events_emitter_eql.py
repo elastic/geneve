@@ -205,6 +205,8 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool, max_branches: int
     if fn_name == "_esql":
         # its argument is a whole expression, not a field
         return cc_esql(node, negate, max_branches)
+    if fn_name == "_kql":
+        return cc_kql(node, negate, max_branches)
     if type(node.arguments[0]) is not eql.ast.Field:
         raise NotImplementedError(f"Unsupported argument type: {type(node.arguments[0])}")
     args_types = (eql.ast.String, eql.ast.Number)
@@ -237,7 +239,18 @@ def cc_esql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root
         raise NotImplementedError(f"Unsupported number of arguments for {node.name}: {len(node.arguments)}")
     root = collect_constraints(node.arguments[0], negate, max_branches)
     for doc in root.constraints():
-        doc.flag_constraints({"esql": True})
+        doc.flag_constraints({"esql": True}, unless="kql")
+    return root
+
+
+def cc_kql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # the expression comes from a KQL string inside an ES|QL query, it keeps the meaning that KQL gives
+    # it (no scalar comparisons for instance), mark its constraints so that ES|QL doesn't claim them
+    if len(node.arguments) != 1:
+        raise NotImplementedError(f"Unsupported number of arguments for {node.name}: {len(node.arguments)}")
+    root = collect_constraints(node.arguments[0], negate, max_branches)
+    for doc in root.constraints():
+        doc.flag_constraints({"kql": True})
     return root
 
 

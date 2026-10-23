@@ -11,11 +11,10 @@ Rules version: 9.1.20
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: new_terms (183)](#unsupported-rule-type-new_terms-183)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported command: EVAL (45)](#unsupported-command-eval-45)
+      1. [Unsupported command: EVAL (48)](#unsupported-command-eval-48)
+      1. [Unsupported command: STATS (36)](#unsupported-command-stats-36)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported command: STATS (25)](#unsupported-command-stats-25)
       1. [Unsupported command: MV_EXPAND (18)](#unsupported-command-mv_expand-18)
-      1. [Unsupported function: KQL (14)](#unsupported-function-kql-14)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported function: now (4)](#unsupported-function-now-4)
       1. [Unsupported function: to_lower (4)](#unsupported-function-to_lower-4)
@@ -82,7 +81,6 @@ invalid-syntax
       1. [Unsupported conflicting constraints on email.subject: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-emailsubject-only-one-equality-or-pattern-per-field-is-supported-1)
       1. [Unsupported function: TO_INTEGER (1)](#unsupported-function-to_integer-1)
       1. [Unsupported function: TO_LOWER (1)](#unsupported-function-to_lower-1)
-      1. [Unsupported function: mv_contains (1)](#unsupported-function-mv_contains-1)
       1. [Unsupported pipe before WHERE: KEEP (1)](#unsupported-pipe-before-where-keep-1)
       1. [Unsupported right operand, it must be a literal (1)](#unsupported-right-operand-it-must-be-a-literal-1)
    1. [Generation errors](#generation-errors)
@@ -488,9 +486,9 @@ invalid-syntax
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported command: EVAL (45)
+### Unsupported command: EVAL (48)
 
-45 rules:
+48 rules:
 
 * AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
 * AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
@@ -500,6 +498,7 @@ invalid-syntax
 * Azure Key Vault Excessive Secret or Key Retrieved
 * Command Line Obfuscation via Whitespace Padding
 * Correlated Alerts on Similar User Identities
+* Detection Alert on a Process Exhibiting CPU Spike
 * Dynamic IEX Reconstruction via Method String Access
 * Elastic Defend and Email Alerts Correlation
 * Elastic Defend and Network Security Alerts Correlation
@@ -512,6 +511,7 @@ invalid-syntax
 * Kubernetes Potential Endpoint Permission Enumeration Attempt by Anonymous User Detected
 * M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
 * M365 OneDrive/SharePoint Excessive File Downloads
+* Multiple Alerts on a Host Exhibiting CPU Spike
 * Multiple Cloud Secrets Accessed by Source Address
 * Multiple Elastic Defend Alerts by Agent
 * Multiple Remote Management Tool Vendors on Same Host
@@ -533,10 +533,52 @@ invalid-syntax
 * Potential PowerShell Obfuscation via Special Character Overuse
 * Potential PowerShell Obfuscation via String Concatenation
 * Potential PowerShell Obfuscation via String Reordering
+* Suspected Lateral Movement from Compromised Host
 * Web Server Discovery or Fuzzing Activity
 * Web Server Potential Command Injection Request
 * Web Server Potential Spike in Error Response Codes
 * Web Server Suspicious User Agent Requests
+
+### Unsupported command: STATS (36)
+
+36 rules:
+
+* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
+* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
+* Agent Spoofing - Multiple Hosts Using Same Agent
+* Alerts From Multiple Integrations by Destination Address
+* Alerts From Multiple Integrations by Source Address
+* Alerts From Multiple Integrations by User Name
+* Alerts in Different ATT&CK Tactics by Host
+* Azure OpenAI Insecure Output Handling
+* Entra ID MFA TOTP Brute Force Attempted
+* First-Time FortiGate Administrator Login
+* FortiGate Administrator Login from Multiple IP Addresses
+* FortiGate FortiCloud SSO Login from Unusual Source
+* GitHub Exfiltration via High Number of Repository Clones by User
+* High Number of Closed Pull Requests by User
+* High Number of Protected Branch Force Pushes by User
+* Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
+* Kubernetes Secret or ConfigMap Access via Azure Arc Proxy
+* Lateral Movement Alerts from a Newly Observed Source Address
+* Multiple Alerts Involving a User
+* Multiple Alerts in Same ATT&CK Tactic by Host
+* Multiple Elastic Defend Alerts from a Single Process Tree
+* Multiple External EDR Alerts by Host
+* Multiple Machine Learning Alerts by Influencer Field
+* Multiple Okta User Authentication Events with Same Device Token Hash
+* Multiple Vulnerabilities by Asset via Wiz
+* Newly Observed Elastic Defend Behavior Alert
+* Newly Observed FortiGate Alert
+* Newly Observed High Severity Detection Alert
+* Newly Observed High Severity Suricata Alert
+* Newly Observed Process Exhibiting High CPU Usage
+* Okta User Sessions Started from Different Geolocations
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Azure OpenAI Model Theft
+* Potential Widespread Malware Infection Across Multiple Hosts
+* Several Failed Protected Branch Force Pushes by User
+* Suspicious AWS S3 Connection via Script Interpreter
 
 ### Unsupported rule type: threshold (29)
 
@@ -572,36 +614,6 @@ invalid-syntax
 * Potential macOS SSH Brute Force Detected
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported command: STATS (25)
-
-25 rules:
-
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* Agent Spoofing - Multiple Hosts Using Same Agent
-* Azure OpenAI Insecure Output Handling
-* Entra ID MFA TOTP Brute Force Attempted
-* First-Time FortiGate Administrator Login
-* FortiGate Administrator Login from Multiple IP Addresses
-* FortiGate FortiCloud SSO Login from Unusual Source
-* GitHub Exfiltration via High Number of Repository Clones by User
-* High Number of Closed Pull Requests by User
-* Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
-* Kubernetes Secret or ConfigMap Access via Azure Arc Proxy
-* Multiple Elastic Defend Alerts from a Single Process Tree
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Multiple Vulnerabilities by Asset via Wiz
-* Newly Observed Elastic Defend Behavior Alert
-* Newly Observed FortiGate Alert
-* Newly Observed High Severity Suricata Alert
-* Newly Observed Process Exhibiting High CPU Usage
-* Okta User Sessions Started from Different Geolocations
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
-* Potential Widespread Malware Infection Across Multiple Hosts
-* Several Failed Protected Branch Force Pushes by User
-* Suspicious AWS S3 Connection via Script Interpreter
-
 ### Unsupported command: MV_EXPAND (18)
 
 18 rules:
@@ -624,25 +636,6 @@ invalid-syntax
 * Unusual High Denied Topic Blocks Detected
 * Unusual High Word Policy Blocks Detected
 * Unusual Process Spawned from Web Server Parent
-
-### Unsupported function: KQL (14)
-
-14 rules:
-
-* Alerts From Multiple Integrations by Destination Address
-* Alerts From Multiple Integrations by Source Address
-* Alerts From Multiple Integrations by User Name
-* Alerts in Different ATT&CK Tactics by Host
-* Detection Alert on a Process Exhibiting CPU Spike
-* Kubernetes Creation or Modification of Sensitive Role
-* Lateral Movement Alerts from a Newly Observed Source Address
-* Multiple Alerts Involving a User
-* Multiple Alerts in Same ATT&CK Tactic by Host
-* Multiple Alerts on a Host Exhibiting CPU Spike
-* Multiple External EDR Alerts by Host
-* Multiple Machine Learning Alerts by Influencer Field
-* Newly Observed High Severity Detection Alert
-* Suspected Lateral Movement from Compromised Host
 
 ### Unsupported rule type: threat_match (6)
 
@@ -797,12 +790,6 @@ Invalid syntax
 1 rules:
 
 * Suspicious Python Shell Command Execution
-
-### Unsupported function: mv_contains (1)
-
-1 rules:
-
-* High Number of Protected Branch Force Pushes by User
 
 ### Unsupported pipe before WHERE: KEEP (1)
 

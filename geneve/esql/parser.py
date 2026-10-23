@@ -32,6 +32,7 @@ from lark import Lark, Token, Tree
 from lark.exceptions import UnexpectedInput
 from lark.visitors import Interpreter
 
+from .. import kql
 from ..events_emitter_eql import collect_constraints
 from ..utils import has_wildcards
 from .errors import EsqlParseError
@@ -198,6 +199,9 @@ class EsqlToEql(Interpreter):
         operand = self.visit(operand)
         if not isinstance(operand, eql.ast.Literal):
             self.reject(tree, "right operand, it must be a literal")
+        return self.check_literal(tree, operand)
+
+    def check_literal(self, tree, operand):
         if isinstance(operand, eql.ast.Null):
             self.reject(tree, "NULL literal, use IS NULL or IS NOT NULL")
         if isinstance(operand, eql.ast.String) and has_wildcards(operand.value):
@@ -266,6 +270,10 @@ class EsqlToEql(Interpreter):
     def func_call(self, tree):
         name, *args = tree.children
         name = str(name)
+        # these don't take a field and string literals only, see the others below
+        special = {"kql": self.function_kql, "mv_contains": self.function_mv_contains}
+        if name.lower() in special:
+            return special[name.lower()](tree, name.upper(), [self.visit(arg) for arg in args])
         # not getattr(): lark's Interpreter answers to any unknown attribute
         functions = {
             "starts_with": self.function_starts_with,
@@ -282,6 +290,27 @@ class EsqlToEql(Interpreter):
         if any(not isinstance(arg, eql.ast.String) for arg in args[1:]):
             self.reject(tree, f"{name.upper()} arguments, the others must be string literals")
         return function(tree, name.upper(), args[0], [arg.value for arg in args[1:]])
+
+    def function_kql(self, tree, name, args):
+        if len(args) != 1 or not isinstance(args[0], eql.ast.String):
+            self.reject(tree, f"{name} arguments, expected a query string")
+        try:
+            ast = kql.to_eql(args[0].value, optimize=False)
+        except eql.EqlError as e:
+            raise EsqlParseError(f"Invalid KQL query: {e}", 0, 0, args[0].value) from e
+        return eql.ast.FunctionCall("_kql", [ast])
+
+    def function_mv_contains(self, tree, name, args):
+        if (
+            len(args) != 2
+            or not isinstance(args[0], eql.ast.Field)
+            or not isinstance(args[1], eql.ast.Literal)
+            or isinstance(args[1], eql.ast.Null)
+        ):
+            self.reject(tree, f"{name} arguments, expected a field and a literal")
+        self.check_field(tree, args[0])
+        # a single value is emitted, an array field gets an array of one: it contains the literal as an equal does
+        return eql.ast.Comparison(args[0], "==", self.check_literal(tree, args[1]))
 
     def function_starts_with(self, tree, name, field, values):
         return self.affix_call(tree, name, field, values, "{}*")
@@ -335,7 +364,11 @@ def validate_branches(ast):
     for branch in collect_constraints(ast, max_branches=MAX_BRANCHES):
         for doc in branch:
             for field, constraints in doc.items():
-                if constraints and sum(1 for name, *_ in constraints if name in POSITIVE_CONSTRAINTS) > 1:
+                positives = [c for c in constraints or [] if c[0] in POSITIVE_CONSTRAINTS]
+                from_kql = sum(1 for c in positives if c[2:] and c[2].get("kql"))
+                # what comes from a KQL string follows the rules of KQL, it can have many values for the
+                # same field, but not together with a scalar comparison of ES|QL
+                if len(positives) > from_kql and len(positives) > 1:
                     raise NotImplementedError(
                         f"Unsupported conflicting constraints on {field}: only one equality or pattern per field is supported"
                     )

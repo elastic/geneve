@@ -11,10 +11,9 @@ Rules version: 9.2.19
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: new_terms (214)](#unsupported-rule-type-new_terms-214)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported command: EVAL (64)](#unsupported-command-eval-64)
+      1. [Unsupported command: EVAL (69)](#unsupported-command-eval-69)
+      1. [Unsupported command: STATS (38)](#unsupported-command-stats-38)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
-      1. [Unsupported command: STATS (27)](#unsupported-command-stats-27)
-      1. [Unsupported function: KQL (18)](#unsupported-function-kql-18)
       1. [Unsupported command: MV_EXPAND (17)](#unsupported-command-mv_expand-17)
       1. [Unsupported command: GROK (10)](#unsupported-command-grok-10)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -24,6 +23,7 @@ Rules version: 9.2.19
       1. [Unsupported command: DISSECT (3)](#unsupported-command-dissect-3)
       1. [Unsupported function: to_string (3)](#unsupported-function-to_string-3)
       1. [Unsupported function: TO_IP (2)](#unsupported-function-to_ip-2)
+      1. [Unsupported function: TO_LOWER (2)](#unsupported-function-to_lower-2)
       1. [Error at line:3,column:38
 Invalid syntax
 | where event.category == "process" and event.type == "start" and
@@ -99,8 +99,6 @@ invalid-syntax
       1. [Unsupported conflicting constraints on email.subject: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-emailsubject-only-one-equality-or-pattern-per-field-is-supported-1)
       1. [Unsupported function: NOW (1)](#unsupported-function-now-1)
       1. [Unsupported function: TO_INTEGER (1)](#unsupported-function-to_integer-1)
-      1. [Unsupported function: TO_LOWER (1)](#unsupported-function-to_lower-1)
-      1. [Unsupported function: mv_contains (1)](#unsupported-function-mv_contains-1)
       1. [Unsupported function: now (1)](#unsupported-function-now-1)
       1. [Unsupported function: to_ip (1)](#unsupported-function-to_ip-1)
       1. [Unsupported pipe before WHERE: KEEP (1)](#unsupported-pipe-before-where-keep-1)
@@ -532,23 +530,26 @@ invalid-syntax
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported command: EVAL (64)
+### Unsupported command: EVAL (69)
 
-64 rules:
+69 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
 * AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
 * AWS Discovery API Calls via CLI from a Single Resource
 * AWS EC2 Multi-Region DescribeInstances API Calls
+* AWS IAM Long-Term Access Key Correlated with Elevated Detection Alerts
 * AWS Rare Source AS Organization Activity
 * AWS S3 Rapid Bucket Posture API Calls from a Single Principal
 * AWS Service Quotas Multi-Region GetServiceQuota Requests
 * Azure AD Graph Access with Suspicious User-Agent
 * Azure AD Graph High 4xx Error Ratio from User
 * Azure Key Vault Excessive Secret or Key Retrieved
+* Azure Run Command Correlated with Process Execution
 * Command Line Obfuscation via Whitespace Padding
 * Correlated Alerts on Similar User Identities
+* Detection Alert on a Process Exhibiting CPU Spike
 * Dynamic IEX Reconstruction via Method String Access
 * Elastic Defend and Email Alerts Correlation
 * Elastic Defend and Network Security Alerts Correlation
@@ -569,6 +570,7 @@ invalid-syntax
 * M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
 * M365 OneDrive/SharePoint Excessive File Downloads
 * Microsoft Graph Multi-Category Reconnaissance Burst
+* Multiple Alerts on a Host Exhibiting CPU Spike
 * Multiple Cloud Secrets Accessed by Source Address
 * Multiple DHCP Servers Responding to the Same Transaction
 * Multiple Elastic Defend Alerts by Agent
@@ -594,12 +596,56 @@ invalid-syntax
 * Potential PowerShell Obfuscation via String Reordering
 * Potential SQL Injection Against Microsoft SQL Server
 * Splunk Enterprise PostgreSQL Backup-to-Restore Potential RCE Sequence
+* Suspected Lateral Movement from Compromised Host
 * Web Server Discovery or Fuzzing Activity
 * Web Server Local File Inclusion Activity
 * Web Server Potential Command Injection Request
 * Web Server Potential Remote File Inclusion Activity
 * Web Server Potential Spike in Error Response Codes
 * Web Server Suspicious User Agent Requests
+
+### Unsupported command: STATS (38)
+
+38 rules:
+
+* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
+* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
+* AWS IAM User Console Login from Multiple Geolocations
+* AWS Lambda Function High-Frequency Invocation by a Single Principal
+* Agent Spoofing - Multiple Hosts Using Same Agent
+* Alerts From Multiple Integrations by Destination Address
+* Alerts From Multiple Integrations by Source Address
+* Alerts From Multiple Integrations by User Name
+* Alerts in Different ATT&CK Tactics by Host
+* Azure OpenAI Insecure Output Handling
+* Entra ID MFA TOTP Brute Force Attempted
+* First-Time FortiGate Administrator Login
+* FortiGate Administrator Login from Multiple IP Addresses
+* FortiGate FortiCloud SSO Login from Unusual Source
+* GitHub Exfiltration via High Number of Repository Clones by User
+* High Number of Closed Pull Requests by User
+* High Number of Protected Branch Force Pushes by User
+* Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
+* Kubernetes Secret or ConfigMap Access via Azure Arc Proxy
+* Lateral Movement Alerts from a Newly Observed Source Address
+* Multiple Alerts Involving a User
+* Multiple Alerts in Same ATT&CK Tactic by Host
+* Multiple Elastic Defend Alerts from a Single Process Tree
+* Multiple External EDR Alerts by Host
+* Multiple Machine Learning Alerts by Influencer Field
+* Multiple Okta User Authentication Events with Same Device Token Hash
+* Multiple Vulnerabilities by Asset via Wiz
+* Newly Observed Elastic Defend Behavior Alert
+* Newly Observed FortiGate Alert
+* Newly Observed High Severity Detection Alert
+* Newly Observed High Severity Suricata Alert
+* Newly Observed Process Exhibiting High CPU Usage
+* Okta User Sessions Started from Different Geolocations
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Azure OpenAI Model Theft
+* Potential Widespread Malware Infection Across Multiple Hosts
+* Several Failed Protected Branch Force Pushes by User
+* Suspicious AWS S3 Connection via Script Interpreter
 
 ### Unsupported rule type: threshold (28)
 
@@ -633,61 +679,6 @@ invalid-syntax
 * Potential SYN-Based Port Scan Detected
 * Potential macOS SSH Brute Force Detected
 * Suspicious Proc Pseudo File System Enumeration
-
-### Unsupported command: STATS (27)
-
-27 rules:
-
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* AWS IAM User Console Login from Multiple Geolocations
-* AWS Lambda Function High-Frequency Invocation by a Single Principal
-* Agent Spoofing - Multiple Hosts Using Same Agent
-* Azure OpenAI Insecure Output Handling
-* Entra ID MFA TOTP Brute Force Attempted
-* First-Time FortiGate Administrator Login
-* FortiGate Administrator Login from Multiple IP Addresses
-* FortiGate FortiCloud SSO Login from Unusual Source
-* GitHub Exfiltration via High Number of Repository Clones by User
-* High Number of Closed Pull Requests by User
-* Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
-* Kubernetes Secret or ConfigMap Access via Azure Arc Proxy
-* Multiple Elastic Defend Alerts from a Single Process Tree
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Multiple Vulnerabilities by Asset via Wiz
-* Newly Observed Elastic Defend Behavior Alert
-* Newly Observed FortiGate Alert
-* Newly Observed High Severity Suricata Alert
-* Newly Observed Process Exhibiting High CPU Usage
-* Okta User Sessions Started from Different Geolocations
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
-* Potential Widespread Malware Infection Across Multiple Hosts
-* Several Failed Protected Branch Force Pushes by User
-* Suspicious AWS S3 Connection via Script Interpreter
-
-### Unsupported function: KQL (18)
-
-18 rules:
-
-* AWS IAM Long-Term Access Key Correlated with Elevated Detection Alerts
-* Alerts From Multiple Integrations by Destination Address
-* Alerts From Multiple Integrations by Source Address
-* Alerts From Multiple Integrations by User Name
-* Alerts in Different ATT&CK Tactics by Host
-* Azure Run Command Correlated with Process Execution
-* Detection Alert on a Process Exhibiting CPU Spike
-* Kubernetes Creation or Modification of Sensitive Role
-* Kubernetes RBAC Wildcard Elevation on Existing Role
-* Lateral Movement Alerts from a Newly Observed Source Address
-* Multi-Cloud CLI Token and Credential Access Commands
-* Multiple Alerts Involving a User
-* Multiple Alerts in Same ATT&CK Tactic by Host
-* Multiple Alerts on a Host Exhibiting CPU Spike
-* Multiple External EDR Alerts by Host
-* Multiple Machine Learning Alerts by Influencer Field
-* Newly Observed High Severity Detection Alert
-* Suspected Lateral Movement from Compromised Host
 
 ### Unsupported command: MV_EXPAND (17)
 
@@ -790,6 +781,13 @@ invalid-syntax
 * Multiple Logon Failure from the same Source Address
 * Privileged Accounts Brute Force
 
+### Unsupported function: TO_LOWER (2)
+
+2 rules:
+
+* Multi-Cloud CLI Token and Credential Access Commands
+* Suspicious Python Shell Command Execution
+
 ### Error at line:3,column:38
 Invalid syntax
 | where event.category == "process" and event.type == "start" and
@@ -887,18 +885,6 @@ Invalid syntax
 1 rules:
 
 * Newly Observed Palo Alto Network Alert
-
-### Unsupported function: TO_LOWER (1)
-
-1 rules:
-
-* Suspicious Python Shell Command Execution
-
-### Unsupported function: mv_contains (1)
-
-1 rules:
-
-* High Number of Protected Branch Force Pushes by User
 
 ### Unsupported function: now (1)
 

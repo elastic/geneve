@@ -76,7 +76,7 @@ ES|QL queries are parsed by [geneve/esql](../geneve/esql), a small [lark](https:
 Supported:
 
 * `FROM` with any number of index patterns and an optional `METADATA` clause. The indices are returned by `esql.parse()` but do not drive the generation.
-* `WHERE`, any number of times, with `AND`, `OR`, `NOT`, `==`, `!=`, `<`, `<=`, `>`, `>=`, `IN`, `IS [NOT] NULL`, `LIKE` (`*` and `?` only), `STARTS_WITH`, `ENDS_WITH` and `CIDR_MATCH`.
+* `WHERE`, any number of times, with `AND`, `OR`, `NOT`, `==`, `!=`, `<`, `<=`, `>`, `>=`, `IN`, `IS [NOT] NULL`, `LIKE` (`*` and `?` only), `STARTS_WITH`, `ENDS_WITH`, `CIDR_MATCH`, `MV_CONTAINS(field, literal)` (treated as an equality: a single value is emitted, as an array of one on array fields) and `KQL("query")`. The string of `KQL()` is translated by the KQL front end and keeps the semantics of KQL, for instance it can ask for two values for an array field, which a comparison of ES|QL cannot.
 * `KEEP`, `DROP`, `SORT` and `LIMIT` after the last `WHERE`: they don't change which documents match and are ignored.
 
 Everything else is rejected with an `Unsupported ...` error instead of generating documents that would not match the query. In particular:
