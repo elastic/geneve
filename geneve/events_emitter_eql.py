@@ -128,6 +128,8 @@ def cc_in_set(node: eql.ast.InSet, negate: bool, max_branches: int) -> Root:
             doc.append_constraint(field, "!=", term.value)
         branches.append(Branch([doc]))
     else:
+        if max_branches and len(node.container) > max_branches:
+            raise ValueError(f"Root with too many branches (limit: {max_branches})")
         for term in node.container:
             branches.extend(cc_field(node.expression, term.value, negate, max_branches))
     return Root(branches)

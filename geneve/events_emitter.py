@@ -62,7 +62,8 @@ def ast_from_kql_query(query):
 
 
 # ES|QL starts with a source command (possibly after comments), a KQL query can hardly be mistaken for it (`from:foo` is not)
-esql_source_re = re.compile(r"(?:\s|//[^\n]*|/\*[\s\S]*?\*/)*(?:from|row|show)\s+(?!\s*:)", re.IGNORECASE)
+_sep = r"(?:\s|//[^\n]*(?:\n|$)|/\*[\s\S]*?\*/)"  # white space or comment
+esql_source_re = re.compile(rf"{_sep}*(?:from|row|show){_sep}+(?!{_sep}*:)", re.IGNORECASE)
 
 
 def guess_from_query(query):

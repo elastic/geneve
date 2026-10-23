@@ -396,12 +396,16 @@ class TestEsqlRouting(unittest.TestCase):
             '// one\n// two\n/* three */ // four\n  /* five\nsix */\n\tfrom x | where a == "foo"',
             '/**/FROM x | WHERE a == "foo"',
             '// comment\r\nFROM x | WHERE a == "foo"',
+            'FROM/* comment */ x | WHERE a == "foo"',
+            'from//comment\nx | where a == "foo"',
+            'FROM/**/x | WHERE a == "foo"',
+            '/* a */FROM/* b */ // c\n /* d */x | WHERE a == "foo"',
         ):
             with self.subTest(query):
                 guess = guess_from_query(query)
                 self.assertEqual("esql", guess.language)
                 self.assertEqual(esql.to_eql('FROM x | WHERE a == "foo"'), guess.ast)
-        for query in ("/* comment */ ROW a = 1", "// comment\nSHOW INFO"):
+        for query in ("/* comment */ ROW a = 1", "// comment\nSHOW INFO", "show/* comment */INFO", "ROW//c\na = 1"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported source command"):
                 guess_from_query(query)
 
@@ -587,6 +591,78 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         self.assertEqual([[{"process": {"name": "x"}}], [{"process": {"name": "y"}}]], docs[:2])
         self.assertEqual(1, len(docs[2]))
         self.assertIn("pid", docs[2][0]["process"])
+
+    def test_booleans_from_strings(self):
+        schema = {"flag": {"type": "boolean"}}
+        for query, expected in (
+            ('flag == "false"', False),
+            ('flag == "FALSE"', False),
+            ('flag == "true"', True),
+            ('flag == "True"', True),
+            ('flag != "false"', True),
+            ('flag != "true"', False),
+            ('NOT flag == "false"', True),
+            ('NOT flag != "false"', False),
+            ("flag == true", True),
+            ("flag == false", False),
+            ("flag != true", False),
+            ("flag", True),
+            ("NOT flag", False),
+        ):
+            with self.subTest(query):
+                self.assertEqual([{"flag": expected}] * 2, self.emit(f"FROM x | WHERE {query}", schema=schema, count=2))
+        docs = self.emit('FROM x | WHERE flag IN ("true", "false")', schema=schema, count=2)
+        se = SourceEvents(schema)
+        se.add_query('FROM x | WHERE flag IN ("true", "false")')
+        branches = [[event.doc for event in branch] for branch in se.emit(timestamp=False, complete=True)]
+        self.assertEqual([[{"flag": True}], [{"flag": False}]], branches)
+        self.assertEqual(2, len(docs))
+
+    def test_booleans_from_other_values_rejected(self):
+        schema = {"flag": {"type": "boolean"}}
+        for query in (
+            'flag == "maybe"',
+            'flag == ""',
+            "flag == 1",
+            "flag != 0",
+            'flag IN ("true", "maybe")',
+            "flag == 1.5",
+            'NOT flag == "no"',
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported value for boolean field"):
+                self.emit(f"FROM x | WHERE {query}", schema=schema)
+
+    def test_eql_booleans_are_unchanged(self):
+        se = SourceEvents({"flag": {"type": "boolean"}})
+        se.add_query('any where flag == "false"')
+        self.assertTrue(all(isinstance(event.doc["flag"], bool) for event in se.emit(timestamp=False, count=3)))
+
+    def test_in_respects_the_branches_limit(self):
+        def values(n):
+            return ", ".join(str(i) for i in range(n))
+
+        # the default limit of SourceEvents, applied while translating
+        with self.assertRaisesRegex(ValueError, r"Root with too many branches \(limit: 10000\)"):
+            esql.to_eql(f"FROM x | WHERE n IN ({values(10001)})")
+        self.assertEqual(10000, len(collect_constraints(esql.to_eql(f"FROM x | WHERE n IN ({values(10000)})"))))
+
+        # the limit of the caller
+        se = SourceEvents({"n": {"type": "long"}})
+        se.max_branches = 3
+        with self.assertRaisesRegex(ValueError, r"Root with too many branches \(limit: 3\)"):
+            se.add_query("FROM x | WHERE n IN (1, 2, 3, 4)")
+        se.add_query("FROM x | WHERE n IN (1, 2, 3)")
+        # NOT IN is just one branch, however long
+        se.add_query("FROM x | WHERE n NOT IN (1, 2, 3, 4, 5, 6)")
+        self.assertEqual(2, len(se))
+
+    def test_eql_in_respects_the_branches_limit(self):
+        se = SourceEvents({"n": {"type": "long"}})
+        se.max_branches = 3
+        with self.assertRaisesRegex(ValueError, r"Root with too many branches \(limit: 3\)"):
+            se.add_query("any where n in (1, 2, 3, 4)")
+        se.add_query("any where n in (1, 2, 3)")
+        self.assertEqual(1, len(se))
 
     def test_negations_emit_a_value(self):
         # ES|QL returns null for a missing field, so `!=` and `NOT` must not be satisfied by omitting it
