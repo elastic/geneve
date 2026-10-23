@@ -18,13 +18,14 @@
 """Test the ES|QL parser and its translation to the EQL AST."""
 
 import unittest
+from types import SimpleNamespace
 
 import eql
 
 import tests.utils as tu
 from geneve import esql
 from geneve.constraints import ConflictError
-from geneve.events_emitter import SourceEvents
+from geneve.events_emitter import SourceEvents, ast_from_rule, guess_from_query
 
 
 def field(name):
@@ -324,6 +325,63 @@ class TestEsqlParser(unittest.TestCase):
             self.assertIsInstance(cm.exception, eql.EqlParseError)
 
 
+class TestEsqlRouting(unittest.TestCase):
+    def test_guess_esql(self):
+        for query in (
+            "FROM idx | WHERE a == 1",
+            "from idx | where a == 1",
+            "  \n\tFrom idx | Where a == 1",
+            "FROM idx",
+        ):
+            with self.subTest(query):
+                guess = guess_from_query(query)
+                self.assertEqual("esql", guess.type)
+                self.assertEqual("esql", guess.language)
+                self.assertEqual(query, guess.query)
+                self.assertEqual(esql.to_eql(query), guess.ast)
+
+    def test_guess_kql_starting_with_from_still_kql(self):
+        for query in ("from:foo", 'from: "x"', "from:foo and bar:baz", "fromage:1"):
+            with self.subTest(query):
+                guess = guess_from_query(query)
+                self.assertEqual("query", guess.type)
+                self.assertEqual("kuery", guess.language)
+
+    def test_guess_others_unchanged(self):
+        self.assertEqual("eql", guess_from_query('process where process.name == "a"').language)
+        self.assertEqual("kuery", guess_from_query("process.name: a").language)
+
+    def test_guess_esql_error_propagates(self):
+        # no fallback to EQL or KQL: they would accept some of these as plain text
+        for query in ("FROM x | STATS c = COUNT(*) BY a", "FROM x | LIMIT 1 | WHERE a == 1", "ROW a = 1", "SHOW INFO"):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
+                guess_from_query(query)
+        for query in ("FROM x | WHERE", "FROM x |", "from  x | where a =="):
+            with self.subTest(query), self.assertRaisesRegex(ValueError, r"ES\|QL query error"):
+                guess_from_query(query)
+
+    def test_rule_esql(self):
+        rule = SimpleNamespace(type="esql", language="esql", query='FROM idx | WHERE a == "x"')
+        self.assertEqual(esql.to_eql(rule.query), ast_from_rule(rule))
+
+        for rule_type, language in (("esql", "kuery"), ("esql", "eql"), ("query", "esql"), ("eql", "esql")):
+            rule = SimpleNamespace(type=rule_type, language=language, query="FROM idx | WHERE a == 1")
+            with self.subTest(rule_type, language=language), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
+                ast_from_rule(rule)
+
+        rule = SimpleNamespace(type="esql", language="esql", query="FROM idx | STATS c = COUNT(*)")
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: STATS"):
+            ast_from_rule(rule)
+
+    def test_rule_types_unchanged(self):
+        rule = SimpleNamespace(type="query", language="kuery", query="a: b")
+        self.assertEqual(guess_from_query("a: b").ast, ast_from_rule(rule))
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported rule type: threshold"):
+            ast_from_rule(SimpleNamespace(type="threshold", language="kuery", query="a: b"))
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported query language: lucene"):
+            ast_from_rule(SimpleNamespace(type="query", language="lucene", query="a: b"))
+
+
 class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
 
@@ -332,6 +390,40 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         se.stack_version = self.stack_version
         se.add_ast(esql.to_eql(query))
         return [event.doc for event in se.emit(timestamp=False, count=count)]
+
+    def test_source_events_from_esql(self):
+        se = SourceEvents(self.schema)
+        se.stack_version = self.stack_version
+        root = se.add_query('FROM x | WHERE process.name == "a.exe" AND process.pid > 1000', meta="m")
+        self.assertEqual("m", root.meta)
+        self.assertEqual(1, len(se))
+        for event in se.emit(timestamp=False, count=20):
+            self.assertEqual("a.exe", event.doc["process"]["name"])
+            self.assertGreater(event.doc["process"]["pid"], 1000)
+            self.assertEqual("m", event.meta)
+
+        # the default schema is empty, every field is a keyword
+        se = SourceEvents.from_query('FROM x | WHERE process.name == "a.exe"')
+        self.assertEqual(1, len(se))
+
+    def test_source_events_from_esql_rule(self):
+        se = SourceEvents(self.schema)
+        se.stack_version = self.stack_version
+        rule = SimpleNamespace(type="esql", language="esql", query='FROM x | WHERE process.name == "a.exe"')
+        se.add_rule(rule, meta="r")
+        events = list(se.emit(timestamp=False, count=3))
+        self.assertEqual(["a.exe"] * 3, [event.doc["process"]["name"] for event in events])
+
+    def test_emit_matches_where(self):
+        se = SourceEvents(self.schema)
+        se.stack_version = self.stack_version
+        se.add_query('FROM x | WHERE process.name IN ("x", "y") OR process.pid IS NOT NULL')
+        branches = list(se.emit(timestamp=False, complete=True, count=1))
+        self.assertEqual(3, len(branches))
+        docs = [[event.doc for event in branch] for branch in branches]
+        self.assertEqual([[{"process": {"name": "x"}}], [{"process": {"name": "y"}}]], docs[:2])
+        self.assertEqual(1, len(docs[2]))
+        self.assertIn("pid", docs[2][0]["process"])
 
     def test_like_case_sensitive_conflict(self):
         # the solver restricts event.category to lowercase ECS values, it must not turn "PRO*" into "process"

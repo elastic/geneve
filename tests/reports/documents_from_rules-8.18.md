@@ -11,10 +11,46 @@ Rules version: 8.18.15
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: new_terms (142)](#unsupported-rule-type-new_terms-142)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported rule type: esql (74)](#unsupported-rule-type-esql-74)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
+      1. [Unsupported command: EVAL (27)](#unsupported-command-eval-27)
+      1. [Unsupported command: STATS (11)](#unsupported-command-stats-11)
+      1. [Unsupported command: DISSECT (8)](#unsupported-command-dissect-8)
+      1. [Unsupported function: now (8)](#unsupported-function-now-8)
+      1. [Unsupported command: MV_EXPAND (6)](#unsupported-command-mv_expand-6)
+      1. [Unsupported pipe before WHERE: KEEP (6)](#unsupported-pipe-before-where-keep-6)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
+      1. [Unsupported operator: RLIKE (2)](#unsupported-operator-rlike-2)
+      1. [Error at line:47,column:47
+Invalid syntax
+| where not powershell.file.script_block_text like "*[System.IO.File]::Open('C:\\\\ProgramData\\\\Microsoft\\\\Windows Defender Advanced Threat Protection\\\\DataCollection*"
+| where not powershell.file.script_block_text : "26a24ae4-039d-4ca4-87b4-2f64180311f0"
+                                              ^ (1)](#error-at-line47column47
+invalid-syntax
+-where-not-powershellfilescript_block_text-like-systemiofileopencprogramdatamicrosoftwindows-defender-advanced-threat-protectiondatacollection
+-where-not-powershellfilescript_block_text--26a24ae4-039d-4ca4-87b4-2f64180311f0
+-----------------------------------------------1)
+      1. [Error at line:5,column:43
+Invalid syntax
+// Filter for scripts that contain the "char" keyword using MATCH, boosts the query performance
+| where powershell.file.script_block_text : "char"
+                                          ^ (1)](#error-at-line5column43
+invalid-syntax
+-filter-for-scripts-that-contain-the-char-keyword-using-match-boosts-the-query-performance
+-where-powershellfilescript_block_text--char
+-------------------------------------------1)
+      1. [Error at line:6,column:43
+Invalid syntax
+// match will ignore the | and look for the individual words
+| where powershell.file.script_block_text : "rahc|metsys|stekcos|tcejboimw|ecalper|ecnerferpe|noitcennoc|nioj|eman|vne|gnirts|tcejbo-wen|_23niw|noisserpxe|ekovni|daolnwod"
+                                          ^ (1)](#error-at-line6column43
+invalid-syntax
+-match-will-ignore-the--and-look-for-the-individual-words
+-where-powershellfilescript_block_text--rahcmetsysstekcostcejboimwecalperecnerferpenoitcennocniojemanvnegnirtstcejbo-wen_23niwnoisserpxeekovnidaolnwod
+-------------------------------------------1)
+      1. [Unsupported command: GROK (1)](#unsupported-command-grok-1)
+      1. [Unsupported function: to_lower (1)](#unsupported-function-to_lower-1)
+      1. [Unsupported right operand, it must be a literal (1)](#unsupported-right-operand-it-must-be-a-literal-1)
    1. [Generation errors](#generation-errors)
       1. [Unsupported function: match (21)](#unsupported-function-match-21)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
@@ -359,85 +395,6 @@ Rules version: 8.18.15
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported rule type: esql (74)
-
-74 rules:
-
-* AWS Access Token Used from Multiple Addresses
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
-* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
-* AWS Discovery API Calls via CLI from a Single Resource
-* AWS EC2 EBS Snapshot Access Removed
-* AWS EC2 EBS Snapshot Shared or Made Public
-* AWS EC2 Multi-Region DescribeInstances API Calls
-* AWS IAM AdministratorAccess Policy Attached to Group
-* AWS IAM AdministratorAccess Policy Attached to Role
-* AWS IAM AdministratorAccess Policy Attached to User
-* AWS IAM Login Profile Added for Root
-* AWS IAM User Created Access Keys For Another User
-* AWS S3 Object Encryption Using External KMS Key
-* AWS S3 Static Site JavaScript File Uploaded
-* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* AWS Signin Single Factor Console Login with Federated User
-* Azure OpenAI Insecure Output Handling
-* Command Line Obfuscation via Whitespace Padding
-* Dynamic IEX Reconstruction via Method String Access
-* Entra ID Actor Token User Impersonation Abuse
-* Excessive Secret or Key Retrieval from Azure Key Vault
-* High Number of Egress Network Connections from Unusual Executable
-* High Number of Okta Device Token Cookies Generated for Authentication
-* M365 OneDrive Excessive File Downloads with OAuth Token
-* Microsoft 365 Brute Force via Entra ID Sign-Ins
-* Microsoft 365 or Entra ID Sign-in from a Suspicious Source
-* Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
-* Microsoft Entra ID Exccessive Account Lockouts Detected
-* Microsoft Entra ID MFA TOTP Brute Force Attempts
-* Microsoft Entra ID Sign-In Brute Force Activity
-* Microsoft Entra ID Suspicious Session Reuse to Graph Access
-* Multiple Device Token Hashes for Single Okta Session
-* Multiple Microsoft 365 User Account Lockouts in Short Time Window
-* Multiple Okta User Authentication Events with Client Address
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* OIDC Discovery URL Changed in Entra ID
-* Okta User Sessions Started from Different Geolocations
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
-* Potential Denial of Azure OpenAI ML Service
-* Potential Dynamic IEX Reconstruction via Environment Variables
-* Potential Malicious PowerShell Based on Alert Correlation
-* Potential Malware-Driven SSH Brute Force Attempt
-* Potential Microsoft 365 User Account Brute Force
-* Potential Port Scanning Activity from Compromised Host
-* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
-* Potential PowerShell Obfuscation via Character Array Reconstruction
-* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
-* Potential PowerShell Obfuscation via High Numeric Character Proportion
-* Potential PowerShell Obfuscation via High Special Character Proportion
-* Potential PowerShell Obfuscation via Invalid Escape Sequences
-* Potential PowerShell Obfuscation via Reverse Keywords
-* Potential PowerShell Obfuscation via Special Character Overuse
-* Potential PowerShell Obfuscation via String Concatenation
-* Potential PowerShell Obfuscation via String Reordering
-* Potential Ransomware Behavior - Note Files by System
-* Potential Subnet Scanning Activity from Compromised Host
-* Potential Widespread Malware Infection Across Multiple Hosts
-* PowerShell Obfuscation via Negative Index String Reversal
-* Rare Connection to WebDAV Target
-* Suspicious Microsoft 365 UserLoggedIn via OAuth Code
-* Suspicious Microsoft OAuth Flow via Auth Broker to DRS
-* Unusual Base64 Encoding/Decoding Activity
-* Unusual Command Execution from Web Server Parent
-* Unusual File Creation by Web Server
-* Unusual File Transfer Utility Launched
-* Unusual High Confidence Content Filter Blocks Detected
-* Unusual High Denied Sensitive Information Policy Blocks Detected
-* Unusual High Denied Topic Blocks Detected
-* Unusual High Word Policy Blocks Detected
-* Unusual Process Spawned from Web Server Parent
-
 ### Unsupported rule type: threshold (29)
 
 29 rules:
@@ -472,6 +429,102 @@ Rules version: 8.18.15
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
+### Unsupported command: EVAL (27)
+
+27 rules:
+
+* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
+* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
+* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
+* AWS Discovery API Calls via CLI from a Single Resource
+* AWS EC2 Multi-Region DescribeInstances API Calls
+* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
+* Command Line Obfuscation via Whitespace Padding
+* Dynamic IEX Reconstruction via Method String Access
+* Excessive Secret or Key Retrieval from Azure Key Vault
+* Microsoft 365 Brute Force via Entra ID Sign-Ins
+* Microsoft Entra ID Exccessive Account Lockouts Detected
+* Microsoft Entra ID Sign-In Brute Force Activity
+* Microsoft Entra ID Suspicious Session Reuse to Graph Access
+* OIDC Discovery URL Changed in Entra ID
+* Potential Denial of Azure OpenAI ML Service
+* Potential Dynamic IEX Reconstruction via Environment Variables
+* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
+* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
+* Potential PowerShell Obfuscation via High Special Character Proportion
+* Potential PowerShell Obfuscation via Invalid Escape Sequences
+* Potential PowerShell Obfuscation via Special Character Overuse
+* Potential PowerShell Obfuscation via String Concatenation
+* Potential PowerShell Obfuscation via String Reordering
+* Potential Ransomware Behavior - Note Files by System
+* PowerShell Obfuscation via Negative Index String Reversal
+* Suspicious Microsoft 365 UserLoggedIn via OAuth Code
+* Suspicious Microsoft OAuth Flow via Auth Broker to DRS
+
+### Unsupported command: STATS (11)
+
+11 rules:
+
+* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
+* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
+* Azure OpenAI Insecure Output Handling
+* High Number of Okta Device Token Cookies Generated for Authentication
+* Microsoft Entra ID MFA TOTP Brute Force Attempts
+* Multiple Okta User Authentication Events with Client Address
+* Multiple Okta User Authentication Events with Same Device Token Hash
+* Okta User Sessions Started from Different Geolocations
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Azure OpenAI Model Theft
+* Potential Widespread Malware Infection Across Multiple Hosts
+
+### Unsupported command: DISSECT (8)
+
+8 rules:
+
+* AWS EC2 EBS Snapshot Access Removed
+* AWS EC2 EBS Snapshot Shared or Made Public
+* AWS IAM AdministratorAccess Policy Attached to Group
+* AWS IAM AdministratorAccess Policy Attached to Role
+* AWS IAM AdministratorAccess Policy Attached to User
+* AWS S3 Object Encryption Using External KMS Key
+* AWS S3 Static Site JavaScript File Uploaded
+* AWS Signin Single Factor Console Login with Federated User
+
+### Unsupported function: now (8)
+
+8 rules:
+
+* AWS Access Token Used from Multiple Addresses
+* High Number of Egress Network Connections from Unusual Executable
+* M365 OneDrive Excessive File Downloads with OAuth Token
+* Microsoft 365 or Entra ID Sign-in from a Suspicious Source
+* Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
+* Potential Port Scanning Activity from Compromised Host
+* Rare Connection to WebDAV Target
+* Unusual Base64 Encoding/Decoding Activity
+
+### Unsupported command: MV_EXPAND (6)
+
+6 rules:
+
+* Multiple Microsoft 365 User Account Lockouts in Short Time Window
+* Potential Microsoft 365 User Account Brute Force
+* Unusual High Confidence Content Filter Blocks Detected
+* Unusual High Denied Sensitive Information Policy Blocks Detected
+* Unusual High Denied Topic Blocks Detected
+* Unusual High Word Policy Blocks Detected
+
+### Unsupported pipe before WHERE: KEEP (6)
+
+6 rules:
+
+* Potential Malware-Driven SSH Brute Force Attempt
+* Potential Subnet Scanning Activity from Compromised Host
+* Unusual Command Execution from Web Server Parent
+* Unusual File Creation by Web Server
+* Unusual File Transfer Utility Launched
+* Unusual Process Spawned from Web Server Parent
+
 ### Unsupported rule type: threat_match (6)
 
 6 rules:
@@ -491,6 +544,61 @@ Rules version: 8.18.15
 * Halfbaked Command and Control Beacon
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
+
+### Unsupported operator: RLIKE (2)
+
+2 rules:
+
+* Entra ID Actor Token User Impersonation Abuse
+* Multiple Device Token Hashes for Single Okta Session
+
+### Error at line:47,column:47
+Invalid syntax
+| where not powershell.file.script_block_text like "*[System.IO.File]::Open('C:\\\\ProgramData\\\\Microsoft\\\\Windows Defender Advanced Threat Protection\\\\DataCollection*"
+| where not powershell.file.script_block_text : "26a24ae4-039d-4ca4-87b4-2f64180311f0"
+                                              ^ (1)
+
+1 rules:
+
+* Potential PowerShell Obfuscation via High Numeric Character Proportion
+
+### Error at line:5,column:43
+Invalid syntax
+// Filter for scripts that contain the "char" keyword using MATCH, boosts the query performance
+| where powershell.file.script_block_text : "char"
+                                          ^ (1)
+
+1 rules:
+
+* Potential PowerShell Obfuscation via Character Array Reconstruction
+
+### Error at line:6,column:43
+Invalid syntax
+// match will ignore the | and look for the individual words
+| where powershell.file.script_block_text : "rahc|metsys|stekcos|tcejboimw|ecalper|ecnerferpe|noitcennoc|nioj|eman|vne|gnirts|tcejbo-wen|_23niw|noisserpxe|ekovni|daolnwod"
+                                          ^ (1)
+
+1 rules:
+
+* Potential PowerShell Obfuscation via Reverse Keywords
+
+### Unsupported command: GROK (1)
+
+1 rules:
+
+* Potential Malicious PowerShell Based on Alert Correlation
+
+### Unsupported function: to_lower (1)
+
+1 rules:
+
+* AWS IAM Login Profile Added for Root
+
+### Unsupported right operand, it must be a literal (1)
+
+1 rules:
+
+* AWS IAM User Created Access Keys For Another User
 
 ## Generation errors
 
