@@ -90,6 +90,8 @@ Everything else is rejected with an `Unsupported ...` error instead of generatin
 
 Queries that expand to more than 10,000 branches, for instance by chaining many `IN` and `OR`, are rejected as well.
 
+Fields of type `constant_keyword` (such as `data_stream.dataset`) are solved as plain keywords for ES|QL only, the other languages still reject them, and they are mapped as `keyword` so that the documents of different branches can share an index.
+
 Unlike the other languages, `LIKE` is case sensitive: it matches `FOO*` against `FOObar`, not against `foobar`.
 
 ### Collecting the constraints

@@ -774,6 +774,58 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         docs = self.emit('FROM x | WHERE NOT KQL("process.name: a.exe") AND event.action == "start"', count=5)
         self.assertTrue(all(doc["process"]["name"] != "a.exe" for doc in docs), docs)
 
+    def test_constant_keyword_fields(self):
+        docs = self.emit('FROM x | WHERE data_stream.dataset == "aws.cloudtrail"', count=2)
+        self.assertEqual([{"data_stream": {"dataset": "aws.cloudtrail"}}] * 2, docs)
+        docs = self.emit('FROM x | WHERE data_stream.dataset LIKE "aws.*" AND data_stream.type == "logs"', count=5)
+        self.assertTrue(all(doc["data_stream"]["dataset"].startswith("aws.") for doc in docs), docs)
+        self.assertEqual({"logs"}, {doc["data_stream"]["type"] for doc in docs})
+        docs = self.emit('FROM x | WHERE data_stream.dataset != "a" AND data_stream.namespace == "default"', count=5)
+        self.assertTrue(all(doc["data_stream"]["dataset"] != "a" for doc in docs), docs)
+        docs = self.emit('FROM x | WHERE mv_contains(data_stream.type, "logs") AND process.name == "a.exe"', count=1)
+        self.assertEqual([{"data_stream": {"type": "logs"}, "process": {"name": "a.exe"}}], docs)
+        docs = self.emit('FROM x | WHERE KQL("data_stream.dataset: aws.cloudtrail") AND process.name == "a.exe"', count=1)
+        self.assertEqual([{"data_stream": {"dataset": "aws.cloudtrail"}, "process": {"name": "a.exe"}}], docs)
+
+        se = SourceEvents(self.schema)
+        se.add_query('FROM x | WHERE data_stream.dataset IN ("a", "b")')
+        branches = [[event.doc for event in branch] for branch in se.emit(timestamp=False, complete=True)]
+        self.assertEqual([[{"data_stream": {"dataset": "a"}}], [{"data_stream": {"dataset": "b"}}]], branches)
+
+    def test_constant_keyword_conflicts(self):
+        for query in (
+            'data_stream.dataset == "a" AND data_stream.dataset == "b"',
+            'data_stream.dataset LIKE "A*" AND data_stream.dataset == "a"',
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported conflicting constraints"):
+                self.emit(f"FROM x | WHERE {query}")
+
+    def test_constant_keyword_mappings(self):
+        # the value of a constant_keyword field is set in the mapping, the documents generated from different
+        # branches have different values: let the index take them all
+        se = SourceEvents(self.schema)
+        se.add_query('FROM x | WHERE data_stream.dataset IN ("a", "b") AND process.name == "x"')
+        self.assertEqual(
+            {
+                "@timestamp": {"type": "date"},
+                "data_stream": {"properties": {"dataset": {"type": "keyword"}}},
+                "process": {"properties": {"name": {"type": "keyword"}}},
+            },
+            se.mappings()["properties"],
+        )
+
+    def test_constant_keyword_is_unsupported_for_the_other_languages(self):
+        for query in ('any where data_stream.dataset == "x"', "data_stream.dataset: x", 'any where wildcard(data_stream.dataset, "x*")'):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "^Field type solver: constant_keyword$"):
+                SourceEvents(self.schema).add_query(query)
+        for rule_type, language, query in (
+            ("query", "kuery", "data_stream.dataset: x"),
+            ("eql", "eql", 'any where data_stream.dataset == "x"'),
+        ):
+            rule = SimpleNamespace(type=rule_type, language=language, query=query)
+            with self.subTest(rule_type), self.assertRaisesRegex(NotImplementedError, "^Field type solver: constant_keyword$"):
+                SourceEvents(self.schema).add_rule(rule)
+
     def test_negations_emit_a_value(self):
         # ES|QL returns null for a missing field, so `!=` and `NOT` must not be satisfied by omitting it
         for query in ('process.name != "a.exe"', 'NOT process.name == "a.exe"', 'process.name != "a.exe" AND NOT process.name LIKE "b*"'):

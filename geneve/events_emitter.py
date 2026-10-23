@@ -117,6 +117,9 @@ def emit_mappings(fields, schema):
             field_type = schema[field]["type"]
         except KeyError:
             field_type = "keyword"
+        if field_type == "constant_keyword":
+            # the value is set in the mapping, documents with different values need a plain keyword
+            field_type = "keyword"
         value = {"type": field_type}
         if has_wildcards(field):
             value = {

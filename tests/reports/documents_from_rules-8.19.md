@@ -132,7 +132,7 @@ invalid-syntax
       1. [Unsupported function: to_ip (1)](#unsupported-function-to_ip-1)
       1. [Unsupported pipe before WHERE: KEEP (1)](#unsupported-pipe-before-where-keep-1)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (404)](#field-type-solver-constant_keyword-404)
+      1. [Field type solver: constant_keyword (389)](#field-type-solver-constant_keyword-389)
       1. [Unsupported function: match (36)](#unsupported-function-match-36)
       1. [Root with too many branches (limit: 10000) (25)](#root-with-too-many-branches-limit-10000-25)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
@@ -1053,9 +1053,9 @@ Invalid syntax
 
 ## Generation errors
 
-### Field type solver: constant_keyword (404)
+### Field type solver: constant_keyword (389)
 
-404 rules:
+389 rules:
 * AWS Account Closed
 * AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
 * AWS Attempt to Leave Organization
@@ -1147,21 +1147,6 @@ Invalid syntax
 * Abnormally Large DNS Response
 * Accepted Default Telnet Port Connection
 * Administrator Privileges Assigned to an Okta Group
-* Anthropic Admin API Key Created
-* Anthropic Admin API Key Deleted
-* Anthropic Admin Role Assigned to User
-* Anthropic Compliance API Key Created
-* Anthropic Compliance API Logging Disabled
-* Anthropic Compliance Audit Log Export Accessed
-* Anthropic Extra Usage Spend Limit Deleted
-* Anthropic Magic Link Second Factor Disabled
-* Anthropic Organization Data Export Accessed
-* Anthropic Organization Deletion
-* Anthropic Organization Domain Boundary Changed
-* Anthropic Organization IP Restriction Deleted
-* Anthropic Organization User Invite Sent
-* Anthropic Primary Owner Transferred
-* Anthropic SSO Disabled or Connection Removed
 * Application Added to Google Workspace Domain
 * Application Removed from Blocklist in Google Workspace
 * Attempt to Create Okta API Token
