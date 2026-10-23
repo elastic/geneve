@@ -47,21 +47,45 @@ Details about the single steps follow.
 
 ### Generating the AST
 
-AST generation is currently based on the [EQL parser](https://eql.readthedocs.io/en/latest/api/parser.html), therefore only EQL and Kuery rules (which AST can be translated to EQL) are currently supported.
+AST generation is currently based on the [EQL parser](https://eql.readthedocs.io/en/latest/api/parser.html), therefore only EQL, Kuery and ES|QL rules (which AST can be translated to EQL) are currently supported.
 
 The relevant code (from [geneve/events\_emitter.py](../geneve/events_emitter.py)) is:
 
 ```python
 def ast_from_rule(rule):
-    if rule.type not in ("query", "eql"):
+    if rule.type not in ("query", "eql", "esql"):
         raise NotImplementedError(f"Unsupported rule type: {rule.type}")
+    elif (rule.type == "esql") != (rule.language == "esql"):
+        raise NotImplementedError(f"Unsupported rule type and query language: {rule.type}, {rule.language}")
     elif rule.language == "eql":
         return ast_from_eql_query(rule.query)
     elif rule.language == "kuery":
         return ast_from_kql_query(rule.query)
+    elif rule.language == "esql":
+        return ast_from_esql_query(rule.query)
     else:
         raise NotImplementedError(f"Unsupported query language: {rule.language}")
 ```
+
+#### ES|QL
+
+ES|QL queries are parsed by [geneve/esql](../geneve/esql), a small [lark](https://lark-parser.readthedocs.io) grammar that covers the part of the language that selects documents. The query is translated to the same AST as EQL, so the following steps need no changes.
+
+Supported:
+
+* `FROM` with any number of index patterns and an optional `METADATA` clause. The indices are returned by `esql.parse()` but do not drive the generation.
+* `WHERE`, any number of times, with `AND`, `OR`, `NOT`, `==`, `!=`, `<`, `<=`, `>`, `>=`, `IN`, `IS [NOT] NULL`, `LIKE` (`*` and `?` only), `STARTS_WITH`, `ENDS_WITH` and `CIDR_MATCH`.
+* `KEEP`, `DROP`, `SORT` and `LIMIT` after the last `WHERE`: they don't change which documents match and are ignored.
+
+Everything else is rejected with an `Unsupported ...` error instead of generating documents that would not match the query. In particular:
+
+* other commands (`EVAL`, `STATS`, `GROK`, `DISSECT`, `MV_EXPAND`, ...) and source commands (`ROW`, `SHOW`, ...), as well as `KEEP`, `DROP`, `SORT` and `LIMIT` before a `WHERE`;
+* functions other than the ones above, arithmetic and operands that are not a field on the left and a literal on the right of a comparison;
+* `NULL` literals (use `IS NULL` and `IS NOT NULL`) and predicates on metadata fields such as `_id`;
+* strings with `*` or `?` in `==`, `!=`, `IN` and `STARTS_WITH`/`ENDS_WITH` (the solvers would take them for patterns), `LIKE` patterns with backslash escapes or `[` and `RLIKE`;
+* more than one equality or pattern on the same field in a branch, for instance `tags == "a" AND tags == "b"`: on array fields each of them would become an independent value, but ES|QL returns null for multivalued fields in a comparison.
+
+Unlike the other languages, `LIKE` is case sensitive: it matches `FOO*` against `FOObar`, not against `foobar`.
 
 ### Collecting the constraints
 
