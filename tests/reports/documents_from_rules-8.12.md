@@ -14,7 +14,8 @@ Rules version: 8.12.26
       1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
-      1. [Unsupported rule type: esql (3)](#unsupported-rule-type-esql-3)
+      1. [Unsupported command: EVAL (2)](#unsupported-command-eval-2)
+      1. [Unsupported command: MV_EXPAND (1)](#unsupported-command-mv_expand-1)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
@@ -309,12 +310,17 @@ Rules version: 8.12.26
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
-### Unsupported rule type: esql (3)
+### Unsupported command: EVAL (2)
 
-3 rules:
+2 rules:
 
 * AWS EC2 Multi-Region DescribeInstances API Calls
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
+
+### Unsupported command: MV_EXPAND (1)
+
+1 rules:
+
 * Attempts to Brute Force a Microsoft 365 User Account
 
 ## Generation errors

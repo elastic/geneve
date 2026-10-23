@@ -30,6 +30,11 @@ class Strings:
     min_star_len = 0
     max_star_len = 32
 
+    # Patterns match regardless of the case by default. When set, `&` and `in` are case
+    # sensitive instead. `-` and `|` keep ignoring the case: for exclusions that only
+    # ever removes more values than needed, which is safe.
+    case_sensitive = False
+
     def __init__(self, iterable=None, *, exclude=None):
         self.__set = everything()
         self.__exclude = None
@@ -74,14 +79,23 @@ class Strings:
     def __bool__(self):
         return bool(self.__set)
 
+    def __match(self, item, pattern):
+        if self.case_sensitive:
+            return fnmatchcase(item, pattern)
+        return fnmatchcase(item.lower(), pattern.lower())
+
     def __contains__(self, item):
         if self.__exclude and item in self.__exclude:
             return False
         if self.__set == everything():
             return True
-        item = str(item).lower()
+        item = str(item)
+        if not self.case_sensitive:
+            item = item.lower()
         for value, wc in self.__set:
-            value = str(value).lower()
+            value = str(value)
+            if not self.case_sensitive:
+                value = value.lower()
             if item == value:
                 return True
             if wc and fnmatchcase(item, value):
@@ -124,9 +138,9 @@ class Strings:
         new_set = set()
         for s in self.__set:
             for o in other.__set:
-                if s == o or o[1] and fnmatchcase(s[0].lower(), o[0].lower()):
+                if s == o or o[1] and self.__match(s[0], o[0]):
                     new_set.add(s)
-                elif s[1] and fnmatchcase(o[0].lower(), s[0].lower()):  # s has wildcards
+                elif s[1] and self.__match(o[0], s[0]):  # s has wildcards
                     new_set.add(o)
         self.__set = new_set
         return self

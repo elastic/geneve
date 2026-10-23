@@ -17,6 +17,7 @@
 
 """Functions for generating event documents that would trigger a given rule."""
 
+import re
 from collections import namedtuple
 from datetime import datetime, timedelta, timezone
 from itertools import chain
@@ -48,13 +49,33 @@ def ast_from_eql_query(query):
         return eql.parse_query(query)
 
 
+def ast_from_esql_query(query):
+    from . import esql
+
+    return esql.to_eql(query)
+
+
 def ast_from_kql_query(query):
     from . import kql
 
     return kql.to_eql(query, optimize=False)  # shortcut?
 
 
+# ES|QL starts with a source command (possibly after comments), a KQL query can hardly be mistaken for it (`from:foo` is not)
+_sep = r"(?:\s|//[^\n]*(?:\n|$)|/\*[\s\S]*?\*/)"  # white space or comment
+esql_source_re = re.compile(rf"{_sep}*(?:from|row|show){_sep}+(?!{_sep}*:)", re.IGNORECASE)
+
+
 def guess_from_query(query):
+    if esql_source_re.match(query):
+        # EQL and KQL would take most of these for plain text, the ES|QL error is the right one to report
+        from . import esql
+
+        try:
+            return QueryGuess(query, "esql", "esql", ast_from_esql_query(query))
+        except esql.EsqlParseError as e:
+            raise ValueError(f"ES|QL query error: {e}") from e
+
     exceptions = []
     try:
         return QueryGuess(query, "eql", "eql", ast_from_eql_query(query))
@@ -75,12 +96,16 @@ def guess_from_query(query):
 
 
 def ast_from_rule(rule):
-    if rule.type not in ("query", "eql"):
+    if rule.type not in ("query", "eql", "esql"):
         raise NotImplementedError(f"Unsupported rule type: {rule.type}")
+    elif (rule.type == "esql") != (rule.language == "esql"):
+        raise NotImplementedError(f"Unsupported rule type and query language: {rule.type}, {rule.language}")
     elif rule.language == "eql":
         return ast_from_eql_query(rule.query)
     elif rule.language == "kuery":
         return ast_from_kql_query(rule.query)
+    elif rule.language == "esql":
+        return ast_from_esql_query(rule.query)
     else:
         raise NotImplementedError(f"Unsupported query language: {rule.language}")
 

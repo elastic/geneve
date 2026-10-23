@@ -74,6 +74,19 @@ class Document:
     def fields(self):
         return set(self.__constraints)
 
+    def items(self):
+        return self.__constraints.items()
+
+    def flag_constraints(self, flags, *, unless=None):
+        """Add flags to all the constraints, for the solvers to read, but to those flagged `unless`."""
+        for _, constraints in self.__constraints.items():  # noqa: PERF102, hdict has no values()
+            if constraints:
+                constraints[:] = [
+                    (name, value, {**flags_, **flags} if unless is None or not flags_.get(unless) else flags_)
+                    for name, value, *rest in constraints
+                    for flags_ in [rest[0] if rest else {}]
+                ]
+
     def entities(self):
         return self.__entities.values()
 

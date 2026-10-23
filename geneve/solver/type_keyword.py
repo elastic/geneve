@@ -19,6 +19,7 @@
 
 import string
 from copy import copy
+from itertools import chain
 from typing import ClassVar
 
 from ..constraints import ConflictError
@@ -64,12 +65,20 @@ class KeywordField(Field):
         self.templ = get_templ(field, field_constraints)
         self.value = []
 
+        # a constraint flagged as case sensitive (ES|QL's LIKE) makes all the patterns of the field so
+        self.case_sensitive = any(flags[0].get("case_sensitive") for _, _, *flags in chain(constraints, field_constraints) if flags)
+        self.templ.case_sensitive = self.case_sensitive
+
         for k, v, *_ in constraints:
             if k in ("==", "wildcard"):
                 if not isinstance(v, (list, tuple)):
                     v = [v]
                 if self.is_array or not self.value:
-                    self.value.append(self.templ & v)
+                    new_value = self.templ & v
+                    if self.case_sensitive and not new_value:
+                        v = "', '".join(sorted(v))
+                        raise ConflictError(f"not in {self.templ} (case sensitive): ('{v}')", field)
+                    self.value.append(new_value)
                 else:
                     new_value = self.value[0] & v
                     if not new_value:

@@ -128,6 +128,8 @@ def cc_in_set(node: eql.ast.InSet, negate: bool, max_branches: int) -> Root:
             doc.append_constraint(field, "!=", term.value)
         branches.append(Branch([doc]))
     else:
+        if max_branches and len(node.container) > max_branches:
+            raise ValueError(f"Root with too many branches (limit: {max_branches})")
         for term in node.container:
             branches.extend(cc_field(node.expression, term.value, negate, max_branches))
     return Root(branches)
@@ -199,19 +201,26 @@ def cc_sequence(node: eql.ast.Sequence, negate: bool, max_branches: int) -> Root
 
 @traverser(eql.ast.FunctionCall)
 def cc_function_call(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    fn_name = node.name.lower()
+    if fn_name == "_esql":
+        # its argument is a whole expression, not a field
+        return cc_esql(node, negate, max_branches)
+    if fn_name == "_kql":
+        return cc_kql(node, negate, max_branches)
     if type(node.arguments[0]) is not eql.ast.Field:
         raise NotImplementedError(f"Unsupported argument type: {type(node.arguments[0])}")
     args_types = (eql.ast.String, eql.ast.Number)
     if any(type(arg) not in args_types for arg in node.arguments[1:]):
         wrong_types = sorted({str(type(arg)) for arg in node.arguments[1:] if type(arg) not in args_types})
         raise NotImplementedError(f"Unsupported argument type(s): {', '.join(wrong_types)}")
-    fn_name = node.name.lower()
     if fn_name == "wildcard":
         return cc_wildcard(node, negate, max_branches)
     elif fn_name == "cidrmatch":
         return cc_function(node, negate, max_branches, "in")
     elif fn_name == "_cardinality":
         return cc_function(node, negate, max_branches, "cardinality")
+    elif fn_name == "_like":
+        return cc_like(node, negate, max_branches)
     else:
         raise NotImplementedError(f"Unsupported function: {node.name}")
 
@@ -220,6 +229,41 @@ def cc_function(node: eql.ast.FunctionCall, negate: bool, max_branches: int, con
     field = node.arguments[0].render()
     constraint_name = constraint_name if not negate else f"not {constraint_name}"
     doc = Document(field, constraint_name, tuple(arg.value for arg in node.arguments[1:]))
+    return Root([Branch([doc])])
+
+
+def cc_esql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # the expression comes from an ES|QL query, which is stricter than EQL: flag its constraints (and
+    # only them, wherever the node sits in the tree) for the solvers that know the field types to check
+    if len(node.arguments) != 1:
+        raise NotImplementedError(f"Unsupported number of arguments for {node.name}: {len(node.arguments)}")
+    root = collect_constraints(node.arguments[0], negate, max_branches)
+    for doc in root.constraints():
+        doc.flag_constraints({"esql": True}, unless="kql")
+    return root
+
+
+def cc_kql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # the expression comes from a KQL string inside an ES|QL query, it keeps the meaning that KQL gives
+    # it (no scalar comparisons for instance), mark its constraints so that ES|QL doesn't claim them
+    if len(node.arguments) != 1:
+        raise NotImplementedError(f"Unsupported number of arguments for {node.name}: {len(node.arguments)}")
+    root = collect_constraints(node.arguments[0], negate, max_branches)
+    for doc in root.constraints():
+        doc.flag_constraints({"kql": True})
+    return root
+
+
+def cc_like(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # case sensitive wildcard (ES|QL's LIKE), the keyword solver honours the flag
+    field = node.arguments[0].render()
+    pattern = node.arguments[1].value
+    doc = Document()
+    if negate:
+        # excluding the pattern regardless of the case removes more values than needed, which is safe
+        doc.append_constraint(field, "not wildcard", pattern)
+    else:
+        doc.append_constraint(field, "wildcard", pattern, {"case_sensitive": True})
     return Root([Branch([doc])])
 
 

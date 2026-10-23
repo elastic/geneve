@@ -22,6 +22,7 @@ import sys
 import time
 import traceback
 import unittest
+from types import SimpleNamespace
 
 import tests.utils as tu
 from geneve.events_emitter import SourceEvents, ast_from_rule
@@ -135,6 +136,34 @@ class TestRules(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         rules, asts = self.parse_from_collection(collection)
         self.generate_docs(rules, asts)
 
+    def test_signals_rules_skip_esql(self):
+        # ES|QL rules search the indices named in their own FROM, not the ones the documents are indexed into
+        def rule(n, rule_type, language, query):
+            return SimpleNamespace(
+                rule_id=f"rule-{n}",
+                risk_score=1,
+                description="",
+                name=f"rule {n}",
+                severity="low",
+                type=rule_type,
+                query=query,
+                language=language,
+                tags=[],
+                version=1,
+            )
+
+        collection = [
+            rule(0, "eql", "eql", 'any where a == "x"'),
+            rule(1, "esql", "esql", 'FROM x | WHERE a == "x"'),
+            rule(2, "query", "kuery", "a: x"),
+        ]
+        fake_self = SimpleNamespace(index_template=TestSignalsRules.index_template, test_tags=TestSignalsRules.test_tags)
+        rules, asts = TestSignalsRules.parse_from_collection(fake_self, collection)
+        self.assertEqual(["rule-0", "rule-2"], [r["rule_id"] for r in rules])
+        self.assertEqual(2, len(asts))
+        # skipping a rule doesn't shift the index of the others
+        self.assertEqual([["geneve-ut-0000"], ["geneve-ut-0002"]], [r["index"] for r in rules])
+
     def test_unchanged(self):
         stack_version = self.stack_version
         if str(stack_version) == "serverless":
@@ -162,6 +191,9 @@ class TestSignalsRules(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCase,
         asts = []
         for i, rule in enumerate(collection):
             try:
+                if rule.type == "esql":
+                    # ES|QL rules search the indices named in their own FROM, not the ones the documents are indexed into
+                    continue
                 asts.append(ast_from_rule(rule))
             except Exception:  # noqa: BLE001, S112
                 continue

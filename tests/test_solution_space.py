@@ -19,6 +19,7 @@
 
 import string
 import unittest
+from copy import copy
 
 import tests.utils as tu
 from geneve.utils.solution_space import Strings, product, transpose
@@ -63,6 +64,30 @@ class TestStrings(tu.SeededTestCase, unittest.TestCase):
         self.assertTrue("b" not in Strings({"a"}))
         self.assertTrue("a" not in Strings({}))
         self.assertTrue("a" not in Strings(exclude={"a"}))
+
+    def test_case_sensitive(self):
+        ss = Strings(["process", "network"])
+        # by default patterns match regardless of the case
+        self.assertEqual(ss & ["PRO*"], Strings(["process"]))
+        self.assertIn("PROCESS", ss)
+
+        ss.case_sensitive = True
+        self.assertFalse(ss & ["PRO*"])
+        self.assertEqual(ss & ["pro*"], Strings(["process"]))
+        self.assertEqual(ss & ["process"], Strings(["process"]))
+        self.assertFalse(ss & ["PROCESS"])
+        self.assertIn("process", ss)
+        self.assertNotIn("PROCESS", ss)
+
+        # the flag travels with copies and with the results of the operations
+        self.assertFalse(copy(ss) & ["PRO*"])
+        self.assertFalse((ss & ["pro*", "net*"]) & ["PRO*"])
+
+        # wildcards on both sides
+        ss = Strings(["fo*"])
+        ss.case_sensitive = True
+        self.assertFalse(ss & ["FOO*"])
+        self.assertEqual(ss & ["foo*"], Strings(["foo*"]))
 
     def test_everything(self):
         ss = Strings()
