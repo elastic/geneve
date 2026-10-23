@@ -212,6 +212,8 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool, max_branches: int
         return cc_function(node, negate, max_branches, "in")
     elif fn_name == "_cardinality":
         return cc_function(node, negate, max_branches, "cardinality")
+    elif fn_name == "_like":
+        return cc_like(node, negate, max_branches)
     else:
         raise NotImplementedError(f"Unsupported function: {node.name}")
 
@@ -220,6 +222,19 @@ def cc_function(node: eql.ast.FunctionCall, negate: bool, max_branches: int, con
     field = node.arguments[0].render()
     constraint_name = constraint_name if not negate else f"not {constraint_name}"
     doc = Document(field, constraint_name, tuple(arg.value for arg in node.arguments[1:]))
+    return Root([Branch([doc])])
+
+
+def cc_like(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # case sensitive wildcard (ES|QL's LIKE), the keyword solver honours the flag
+    field = node.arguments[0].render()
+    pattern = node.arguments[1].value
+    doc = Document()
+    if negate:
+        # excluding the pattern regardless of the case removes more values than needed, which is safe
+        doc.append_constraint(field, "not wildcard", pattern)
+    else:
+        doc.append_constraint(field, "wildcard", pattern, {"case_sensitive": True})
     return Root([Branch([doc])])
 
 

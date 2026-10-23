@@ -21,7 +21,10 @@ import unittest
 
 import eql
 
+import tests.utils as tu
 from geneve import esql
+from geneve.constraints import ConflictError
+from geneve.events_emitter import SourceEvents
 
 
 def field(name):
@@ -248,6 +251,45 @@ class TestEsqlParser(unittest.TestCase):
             self.assertIsInstance(cm.exception.line, int)
             self.assertIsInstance(cm.exception.column, int)
             self.assertIsInstance(cm.exception, eql.EqlParseError)
+
+
+class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
+    maxDiff = None
+
+    def emit(self, query, *, schema=None, count=20):
+        se = SourceEvents(schema or self.schema)
+        se.stack_version = self.stack_version
+        se.add_ast(esql.to_eql(query))
+        return [event.doc for event in se.emit(timestamp=False, count=count)]
+
+    def test_like_case_sensitive_conflict(self):
+        # the solver restricts event.category to lowercase ECS values, it must not turn "PRO*" into "process"
+        with self.assertRaises(ConflictError):
+            self.emit('FROM x | WHERE event.category LIKE "PRO*"')
+
+    def test_like_case_sensitive_match(self):
+        docs = self.emit('FROM x | WHERE event.category LIKE "pro*"')
+        # event.category is an array field in ECS, a single LIKE still yields a single value
+        self.assertEqual([["process"]] * 20, [doc["event"]["category"] for doc in docs])
+
+        docs = self.emit('FROM x | WHERE process.name LIKE "FOO*"')
+        self.assertEqual(20, len(docs))
+        self.assertTrue(all(doc["process"]["name"].startswith("FOO") for doc in docs), docs)
+
+        docs = self.emit('FROM x | WHERE process.name LIKE "f?o*"')
+        self.assertTrue(all(doc["process"]["name"][0] == "f" and doc["process"]["name"][2] == "o" for doc in docs), docs)
+
+    def test_not_like(self):
+        docs = self.emit('FROM x | WHERE process.name NOT LIKE "FOO*"')
+        self.assertFalse(any(doc["process"]["name"].startswith("FOO") for doc in docs), docs)
+
+    def test_like_array_field_single_value(self):
+        schema = {**self.schema, "tags": {"type": "keyword", "normalize": ["array"]}}
+        docs = self.emit('FROM x | WHERE tags LIKE "f*"', schema=schema)
+        for doc in docs:
+            self.assertIsInstance(doc["tags"], list)
+            self.assertEqual(1, len(doc["tags"]), doc)
+            self.assertTrue(doc["tags"][0].startswith("f"), doc)
 
 
 if __name__ == "__main__":
