@@ -32,6 +32,7 @@ from lark import Lark, Token, Tree
 from lark.exceptions import UnexpectedInput
 from lark.visitors import Interpreter
 
+from ..events_emitter_eql import collect_constraints
 from ..utils import has_wildcards
 from .errors import EsqlParseError
 
@@ -41,6 +42,14 @@ EsqlQuery = namedtuple("EsqlQuery", ["sources", "metadata", "where"])
 
 # commands that do not change which documents match a preceding WHERE
 IGNORED_COMMANDS = ("KEEP", "DROP", "SORT", "LIMIT")
+
+# fields that describe the indexed document and are not part of its content
+METADATA_FIELDS = ("_id", "_index", "_version", "_ignored", "_index_mode", "_source", "_score")
+
+# same default as SourceEvents.max_branches
+MAX_BRANCHES = 10000
+
+POSITIVE_CONSTRAINTS = ("==", "wildcard")
 
 grammar_file = Path(__file__).parent / "esql.g"
 lark_parser = Lark(grammar_file.read_text(), start="query", parser="lalr", propagate_positions=True)
@@ -156,16 +165,24 @@ class EsqlToEql(Interpreter):
 
     # predicates
 
+    def check_field(self, tree, field):
+        name = field.render()
+        if name in METADATA_FIELDS:
+            self.reject(tree, f"predicate on metadata field: {name}")
+        return field
+
     def field_operand(self, tree, operand):
         operand = self.visit(operand)
         if not isinstance(operand, eql.ast.Field):
             self.reject(tree, "left operand, it must be a field")
-        return operand
+        return self.check_field(tree, operand)
 
     def literal_operand(self, tree, operand):
         operand = self.visit(operand)
         if not isinstance(operand, eql.ast.Literal):
             self.reject(tree, "right operand, it must be a literal")
+        if isinstance(operand, eql.ast.Null):
+            self.reject(tree, "NULL literal, use IS NULL or IS NOT NULL")
         if isinstance(operand, eql.ast.String) and has_wildcards(operand.value):
             self.reject(tree, f"string literal with wildcard characters: {operand.value!r}")
         return operand
@@ -232,12 +249,19 @@ class EsqlToEql(Interpreter):
     def func_call(self, tree):
         name, *args = tree.children
         name = str(name)
-        function = getattr(self, f"function_{name.lower()}", None)
+        # not getattr(): lark's Interpreter answers to any unknown attribute
+        functions = {
+            "starts_with": self.function_starts_with,
+            "ends_with": self.function_ends_with,
+            "cidr_match": self.function_cidr_match,
+        }
+        function = functions.get(name.lower())
         if function is None:
             self.reject(tree, f"function: {name}")
         args = [self.visit(arg) for arg in args]
         if not args or not isinstance(args[0], eql.ast.Field):
             self.reject(tree, f"{name.upper()} arguments, the first must be a field")
+        self.check_field(tree, args[0])
         if any(not isinstance(arg, eql.ast.String) for arg in args[1:]):
             self.reject(tree, f"{name.upper()} arguments, the others must be string literals")
         return function(tree, name.upper(), args[0], [arg.value for arg in args[1:]])
@@ -283,8 +307,27 @@ class EsqlToEql(Interpreter):
         return eql.ast.Null()
 
 
+def validate_branches(ast):
+    """Reject what the solvers would turn into documents that the query does not match.
+
+    ES|QL compares scalars exactly and returns null for multivalued fields, while the solvers
+    emit one independently generated value per positive constraint on an array field. More than
+    one positive constraint on a field is therefore not supported, whatever its schema is: this
+    covers repeated and nested `==`, `IN` and `LIKE`, their negations, and mixes of them.
+    """
+    for branch in collect_constraints(ast, max_branches=MAX_BRANCHES):
+        for doc in branch:
+            for field, constraints in doc.items():
+                if constraints and sum(1 for name, *_ in constraints if name in POSITIVE_CONSTRAINTS) > 1:
+                    raise NotImplementedError(
+                        f"Unsupported conflicting constraints on {field}: only one equality or pattern per field is supported"
+                    )
+
+
 def parse(text):
-    return EsqlToEql(text).visit(lark_parse(text))
+    query = EsqlToEql(text).visit(lark_parse(text))
+    validate_branches(query.where)
+    return query
 
 
 def to_eql(text):

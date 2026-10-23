@@ -74,6 +74,9 @@ class Document:
     def fields(self):
         return set(self.__constraints)
 
+    def items(self):
+        return self.__constraints.items()
+
     def entities(self):
         return self.__entities.values()
 

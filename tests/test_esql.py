@@ -235,6 +235,77 @@ class TestEsqlParser(unittest.TestCase):
         with self.assertRaisesRegex(NotImplementedError, r"Unsupported escape sequence"):
             esql.to_eql(r'FROM x | WHERE a == "x\qy"')
 
+    def test_null_literals_rejected(self):
+        for query in ("a == NULL", "a != NULL", "NOT (a == NULL)", "a IN (1, NULL)", "a NOT IN (NULL)", "a < null"):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported NULL literal"):
+                esql.to_eql(f"FROM x | WHERE {query}")
+        self.validate("FROM x | WHERE a IS NULL", "a == null")
+        self.validate("FROM x | WHERE a IS NOT NULL", "a != null")
+
+    def test_metadata_predicates_rejected(self):
+        for query in (
+            '_id == "x"',
+            '_index LIKE "a*"',
+            "_version > 1",
+            "_ignored IS NULL",
+            '`_id` IN ("a", "b")',
+            'STARTS_WITH(_index, "a")',
+            'CIDR_MATCH(_source, "10.0.0.0/8")',
+            "NOT _score > 1",
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported predicate on metadata field"):
+                esql.to_eql(f"FROM x METADATA _id, _index | WHERE {query}")
+        # the declaration itself is fine, and so are fields that merely start like a metadata one
+        self.assertEqual(esql.parse("FROM x METADATA _id").metadata, ("_id",))
+        self.validate('FROM x | WHERE _idx == "x"', "_idx == 'x'")
+
+    def test_non_field_operands_rejected(self):
+        for query in ("a == b", "1 == a", "LENGTH(a) > 3", "a == b + 1", "a + 1 == 2", "a == (1 + 2)", '"x" == a', "a IN (b, 1)"):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
+                esql.to_eql(f"FROM x | WHERE {query}")
+
+    def test_unsupported_functions_rejected(self):
+        for query, name in (
+            ("NOW()", "NOW"),
+            ("@timestamp > NOW() - 1d", "NOW"),
+            ('TO_UPPER(a) == "X"', "TO_UPPER"),
+            ("MV_COUNT(a) > 1", "MV_COUNT"),
+            ("a == ABS(b)", "ABS"),
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, f"Unsupported function: {name}"):
+                esql.to_eql(f"FROM x | WHERE {query}")
+
+    def test_branch_conflicts_rejected(self):
+        for query in (
+            'tags == "a" AND tags == "b"',
+            'tags == "a" AND tags == "a"',
+            'tags LIKE "f*" AND tags LIKE "f*"',
+            'tags == "a" AND (tags == "b" OR tags == "c")',
+            'tags IN ("a", "b") AND tags IN ("c", "d")',
+            'NOT (tags != "a" OR tags != "b")',
+            'a == "foo" AND a LIKE "FOO*"',
+            "pid == 1 AND pid == 2",
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported conflicting constraints on"):
+                esql.to_eql(f"FROM x | WHERE {query}")
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported conflicting constraints"):
+            esql.to_eql('FROM x | WHERE tags == "a" | WHERE tags == "b"')
+
+    def test_branch_validation_accepts(self):
+        for query in (
+            'tags == "a" OR tags == "b"',
+            'a LIKE "foo*" OR a LIKE "bar*"',
+            'a == "x" AND a != "y"',
+            "pid >= 1 AND pid < 10",
+            'a IN ("x", "y")',
+            'a LIKE "FOO*"',
+            'a LIKE "foo*" AND b LIKE "bar*"',
+            'a == "x" AND a IS NOT NULL',
+            'NOT a == "x" AND NOT a == "y"',
+        ):
+            with self.subTest(query):
+                esql.to_eql(f"FROM x | WHERE {query}")
+
     def test_syntax_errors(self):
         for query in (
             "",

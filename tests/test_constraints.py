@@ -1076,6 +1076,27 @@ class TestConstraints(tu.SeededTestCase, unittest.TestCase):
         )
 
 
+class TestDocument(tu.SeededTestCase, unittest.TestCase):
+    maxDiff = None
+
+    def test_items(self):
+        doc = Document("a.b", "==", 1)
+        doc.append_constraint("a.c", "!=", 2)
+        doc.append_constraint("a.c", "wildcard", "x*", {"case_sensitive": True})
+        doc.append_constraint("d")
+        doc.append_constraint("e", "==", None)
+        self.assertEqual(
+            [
+                ("a.b", [("==", 1, {})]),
+                ("a.c", [("!=", 2, {}), ("wildcard", "x*", {"case_sensitive": True})]),
+                ("d", []),
+                ("e", None),
+            ],
+            list(doc.items()),
+        )
+        self.assertEqual([], list(Document().items()))
+
+
 class TestBranches(tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
 
