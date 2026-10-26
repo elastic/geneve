@@ -77,11 +77,13 @@ Supported:
 
 * `FROM` with any number of index patterns and an optional `METADATA` clause. The indices are returned by `esql.parse()` but do not drive the generation.
 * `WHERE`, any number of times, with `AND`, `OR`, `NOT`, `==`, `!=`, `<`, `<=`, `>`, `>=`, `IN`, `IS [NOT] NULL`, `LIKE` (`*` and `?` only), `STARTS_WITH`, `ENDS_WITH`, `CIDR_MATCH`, `MV_CONTAINS(field, literal)` (treated as an equality: a single value is emitted, as an array of one on array fields) and `KQL("query")`. The string of `KQL()` is translated by the KQL front end and keeps the semantics of KQL, for instance it can ask for two values for an array field, which a comparison of ES|QL cannot, and a quoted value is a literal (`field:"*"` is an asterisk, not "any value", and `?` is never a wildcard) as Elasticsearch has it.
-* `KEEP`, `DROP`, `SORT` and `LIMIT` after the last `WHERE`: they don't change which documents match and are ignored.
+* `KEEP`, `DROP` and `SORT`, anywhere: they hide columns or sort the rows, the documents that match are the same, and they are ignored. `LIMIT` is ignored too, but only after the last `WHERE` and `STATS`.
+* `STATS` once, with `COUNT(*)`, `COUNT(field)`, `COUNT_DISTINCT(field)` and `VALUES(field)`, named (`alias = ...`), and `BY` with plain fields. The `WHERE` that follows may compare the aliases of the counts with numbers (`>=`, `>`, `<=`, `<`, `==`, `!=`, `AND`, `OR`, `NOT`) and may ask what it likes for the `BY` fields. A group of documents is generated: as many as the conditions need (up to 1,000), all with the `BY` fields equal, with a different value of the field for each when `COUNT_DISTINCT` has to be more than one, and the same when it has to be one. An `OR` makes a branch for each side. `EVAL` after `STATS` is ignored as long as no `WHERE` asks for what it makes.
 
 Everything else is rejected with an `Unsupported ...` error instead of generating documents that would not match the query. In particular:
 
-* other commands (`EVAL`, `STATS`, `GROK`, `DISSECT`, `MV_EXPAND`, ...) and source commands (`ROW`, `SHOW`, ...), as well as `KEEP`, `DROP`, `SORT` and `LIMIT` before a `WHERE`;
+* other commands (`EVAL` before `STATS`, `GROK`, `DISSECT`, `MV_EXPAND`, a second `STATS`, ...) and source commands (`ROW`, `SHOW`, ...), as well as `LIMIT` before a `WHERE` or `STATS`;
+* aggregate functions other than the ones above (`MIN`, `MAX`, `SUM`, ...), arguments that are not a field (`COUNT_DISTINCT(TO_LOWER(f))`), `BY` with an expression or a name, and conditions after `STATS` on anything but the counts and the `BY` fields;
 * functions other than the ones above, arithmetic and operands that are not a field on the left and a literal on the right of a comparison;
 * `NULL` literals (use `IS NULL` and `IS NOT NULL`) and predicates on metadata fields such as `_id`;
 * strings with `*` or `?` in `STARTS_WITH`/`ENDS_WITH`, `LIKE` patterns with backslash escapes or `[`, and `RLIKE`; in `==`, `!=`, `IN` and `MV_CONTAINS` instead they are what they are, not wildcards, and the documents have them as they are;
@@ -90,11 +92,13 @@ Everything else is rejected with an `Unsupported ...` error instead of generatin
 
 Queries that expand to more than 10,000 branches, for instance by chaining many `IN` and `OR`, are rejected as well.
 
+What the schema does not know of a field (the fields of the integrations) is what the literals of the query say, as ES|QL has typed literals: `flag != true` is a boolean, `n > 5` a long, `s == "a"` a keyword. It is the type of the solver and of the mapping that is generated. The other languages keep taking such a field for a keyword.
+
 Fields of type `constant_keyword` (such as `data_stream.dataset`) are solved as plain keywords for ES|QL only, the other languages still reject them, and they are mapped as `keyword` so that the documents of different branches can share an index.
 
 ### Validating the documents against Elasticsearch
 
-For ES|QL the query itself tells whether the documents are right. `tests/test_esql_validation.py` generates the documents of each branch of the supported queries and rules, indexes them in an Elasticsearch (Kibana is not needed) and runs the query, which must return each document once. It is opt-in:
+For ES|QL the query itself tells whether the documents are right. `tests/test_esql_validation.py` generates the documents of each branch of the supported queries and rules, indexes them in an Elasticsearch (Kibana is not needed) and runs the query, which must return each document once (for the queries that aggregate, a group of documents is a row, and the branches are checked one by one). It is opt-in:
 
 ```
 TEST_ESQL_VALIDATION=1 TEST_ESQL_ES_URL=http://127.0.0.1:29650 TEST_STACK_VERSION=9.5.0 python -m pytest tests/test_esql_validation.py

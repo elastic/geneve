@@ -12,14 +12,15 @@ Rules version: 9.2.19
       1. [Unsupported rule type: new_terms (214)](#unsupported-rule-type-new_terms-214)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported command: EVAL (69)](#unsupported-command-eval-69)
-      1. [Unsupported command: STATS (38)](#unsupported-command-stats-38)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
-      1. [Unsupported command: MV_EXPAND (17)](#unsupported-command-mv_expand-17)
+      1. [Unsupported command: MV_EXPAND (16)](#unsupported-command-mv_expand-16)
+      1. [Unsupported aggregate function: MIN (10)](#unsupported-aggregate-function-min-10)
       1. [Unsupported command: GROK (10)](#unsupported-command-grok-10)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported function: to_lower (5)](#unsupported-function-to_lower-5)
       1. [Unsupported operator: RLIKE (5)](#unsupported-operator-rlike-5)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
+      1. [Unsupported aggregate function: MAX (3)](#unsupported-aggregate-function-max-3)
       1. [Unsupported command: DISSECT (3)](#unsupported-command-dissect-3)
       1. [Unsupported function: to_string (3)](#unsupported-function-to_string-3)
       1. [Unsupported function: TO_IP (2)](#unsupported-function-to_ip-2)
@@ -96,13 +97,24 @@ invalid-syntax
 ----githubreasonscode--workflow_updates-and
 ----matchgithubreasonsmessagestring-refusing-to-allow-a-github-app-to-create-or-update-workflow
 ---------------------------------1)
+      1. [Error at line:9,column:76
+Invalid syntax
+    Esql.count_distinct_destination_ports = COUNT_DISTINCT(destination.port),
+    Esql.count_distinct_sensitive_ports = COUNT_DISTINCT(destination.port) where sensitive_port == true,
+                                                                           ^ (1)](#error-at-line9column76
+invalid-syntax
+----esqlcount_distinct_destination_ports--count_distinctdestinationport
+----esqlcount_distinct_sensitive_ports--count_distinctdestinationport-where-sensitive_port--true
+----------------------------------------------------------------------------1)
+      1. [Unsupported aggregate function: SUM (1)](#unsupported-aggregate-function-sum-1)
       1. [Unsupported conflicting constraints on email.subject: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-emailsubject-only-one-equality-or-pattern-per-field-is-supported-1)
       1. [Unsupported function: NOW (1)](#unsupported-function-now-1)
       1. [Unsupported function: TO_INTEGER (1)](#unsupported-function-to_integer-1)
+      1. [Unsupported function: length (1)](#unsupported-function-length-1)
       1. [Unsupported function: now (1)](#unsupported-function-now-1)
       1. [Unsupported function: to_ip (1)](#unsupported-function-to_ip-1)
-      1. [Unsupported pipe before WHERE: KEEP (1)](#unsupported-pipe-before-where-keep-1)
       1. [Unsupported right operand, it must be a literal (1)](#unsupported-right-operand-it-must-be-a-literal-1)
+      1. [Unsupported second STATS (1)](#unsupported-second-stats-1)
    1. [Generation errors](#generation-errors)
       1. [Field type solver: constant_keyword (341)](#field-type-solver-constant_keyword-341)
       1. [Unsupported function: match (33)](#unsupported-function-match-33)
@@ -118,6 +130,7 @@ invalid-syntax
       1. [Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (3)](#unsolvable-constraints-processname-excluded-by-stringspowershellexe-powershellexe-3)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
+      1. [Unsupported condition on the values of Esql.rule_severity_values (3)](#unsupported-condition-on-the-values-of-esqlrule_severity_values-3)
       1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (2)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'python*'}): ('python*')) (2)](#unsolvable-constraints-processname-excluded-by-stringspython-python-2)
@@ -208,6 +221,9 @@ invalid-syntax
       1. [Unsupported &keyword 'powershell.file.script_block_length' constraint: > (1)](#unsupported-keyword-powershellfilescript_block_length-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: <= (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: > (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
+      1. [Unsupported condition on the values of Esql.kibana_alert_risk_score_values (1)](#unsupported-condition-on-the-values-of-esqlkibana_alert_risk_score_values-1)
+      1. [Unsupported field in WHERE after STATS: concat_vuln_severity_values (1)](#unsupported-field-in-where-after-stats-concat_vuln_severity_values-1)
+      1. [Unsupported number of different values of kubernetes.audit.annotations.`authorization_k8s_io/decision`: between 2 and 2 in 6 documents (1)](#unsupported-number-of-different-values-of-kubernetesauditannotationsauthorization_k8s_iodecision-between-2-and-2-in-6-documents-1)
 
 ## Skipped rules
 
@@ -604,49 +620,6 @@ invalid-syntax
 * Web Server Potential Spike in Error Response Codes
 * Web Server Suspicious User Agent Requests
 
-### Unsupported command: STATS (38)
-
-38 rules:
-
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* AWS IAM User Console Login from Multiple Geolocations
-* AWS Lambda Function High-Frequency Invocation by a Single Principal
-* Agent Spoofing - Multiple Hosts Using Same Agent
-* Alerts From Multiple Integrations by Destination Address
-* Alerts From Multiple Integrations by Source Address
-* Alerts From Multiple Integrations by User Name
-* Alerts in Different ATT&CK Tactics by Host
-* Azure OpenAI Insecure Output Handling
-* Entra ID MFA TOTP Brute Force Attempted
-* First-Time FortiGate Administrator Login
-* FortiGate Administrator Login from Multiple IP Addresses
-* FortiGate FortiCloud SSO Login from Unusual Source
-* GitHub Exfiltration via High Number of Repository Clones by User
-* High Number of Closed Pull Requests by User
-* High Number of Protected Branch Force Pushes by User
-* Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
-* Kubernetes Secret or ConfigMap Access via Azure Arc Proxy
-* Lateral Movement Alerts from a Newly Observed Source Address
-* Multiple Alerts Involving a User
-* Multiple Alerts in Same ATT&CK Tactic by Host
-* Multiple Elastic Defend Alerts from a Single Process Tree
-* Multiple External EDR Alerts by Host
-* Multiple Machine Learning Alerts by Influencer Field
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Multiple Vulnerabilities by Asset via Wiz
-* Newly Observed Elastic Defend Behavior Alert
-* Newly Observed FortiGate Alert
-* Newly Observed High Severity Detection Alert
-* Newly Observed High Severity Suricata Alert
-* Newly Observed Process Exhibiting High CPU Usage
-* Okta User Sessions Started from Different Geolocations
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
-* Potential Widespread Malware Infection Across Multiple Hosts
-* Several Failed Protected Branch Force Pushes by User
-* Suspicious AWS S3 Connection via Script Interpreter
-
 ### Unsupported rule type: threshold (28)
 
 28 rules:
@@ -680,9 +653,9 @@ invalid-syntax
 * Potential macOS SSH Brute Force Detected
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported command: MV_EXPAND (17)
+### Unsupported command: MV_EXPAND (16)
 
-17 rules:
+16 rules:
 
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
 * Entra ID Illicit Consent Grant via Registered Application
@@ -692,7 +665,6 @@ invalid-syntax
 * M365 Identity User Account Lockouts
 * M365 Identity User Brute Force Attempted
 * Potential Malware-Driven SSH Brute Force Attempt
-* Potential Network Scan Detected
 * Potential Port Scanning Activity from Compromised Host
 * Potential Subnet Scanning Activity from Compromised Host
 * Unusual Base64 Encoding/Decoding Activity
@@ -701,6 +673,21 @@ invalid-syntax
 * Unusual High Denied Sensitive Information Policy Blocks Detected
 * Unusual High Denied Topic Blocks Detected
 * Unusual High Word Policy Blocks Detected
+
+### Unsupported aggregate function: MIN (10)
+
+10 rules:
+
+* AWS IAM User Console Login from Multiple Geolocations
+* First-Time FortiGate Administrator Login
+* FortiGate FortiCloud SSO Login from Unusual Source
+* Kubernetes Secret or ConfigMap Access via Azure Arc Proxy
+* Lateral Movement Alerts from a Newly Observed Source Address
+* Newly Observed Elastic Defend Behavior Alert
+* Newly Observed FortiGate Alert
+* Newly Observed High Severity Detection Alert
+* Newly Observed High Severity Suricata Alert
+* Newly Observed Process Exhibiting High CPU Usage
 
 ### Unsupported command: GROK (10)
 
@@ -757,6 +744,14 @@ invalid-syntax
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 * Potential cPanel WHM CRLF Authentication Bypass (CVE-2026-41940)
+
+### Unsupported aggregate function: MAX (3)
+
+3 rules:
+
+* FortiGate Administrator Login from Multiple IP Addresses
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Azure OpenAI Model Theft
 
 ### Unsupported command: DISSECT (3)
 
@@ -868,6 +863,22 @@ Invalid syntax
 
 * GitHub Actions Workflow Modification Blocked
 
+### Error at line:9,column:76
+Invalid syntax
+    Esql.count_distinct_destination_ports = COUNT_DISTINCT(destination.port),
+    Esql.count_distinct_sensitive_ports = COUNT_DISTINCT(destination.port) where sensitive_port == true,
+                                                                           ^ (1)
+
+1 rules:
+
+* Potential Network Scan Detected
+
+### Unsupported aggregate function: SUM (1)
+
+1 rules:
+
+* Alerts in Different ATT&CK Tactics by Host
+
 ### Unsupported conflicting constraints on email.subject: only one equality or pattern per field is supported (1)
 
 1 rules:
@@ -886,6 +897,12 @@ Invalid syntax
 
 * Newly Observed Palo Alto Network Alert
 
+### Unsupported function: length (1)
+
+1 rules:
+
+* Multiple Alerts Involving a User
+
 ### Unsupported function: now (1)
 
 1 rules:
@@ -898,17 +915,17 @@ Invalid syntax
 
 * M365 or Entra ID Identity Sign-in from a Suspicious Source
 
-### Unsupported pipe before WHERE: KEEP (1)
-
-1 rules:
-
-* Potential Spike in Web Server Error Logs
-
 ### Unsupported right operand, it must be a literal (1)
 
 1 rules:
 
 * AWS IAM User Created Access Keys For Another User
+
+### Unsupported second STATS (1)
+
+1 rules:
+
+* Multiple Elastic Defend Alerts from a Single Process Tree
 
 ## Generation errors
 
@@ -1444,6 +1461,13 @@ Invalid syntax
 * Unsigned DLL Loaded by a Trusted Process
 * Unsigned DLL Side-Loading from a Suspicious Folder
 
+### Unsupported condition on the values of Esql.rule_severity_values (3)
+
+3 rules:
+* Alerts From Multiple Integrations by Destination Address
+* Alerts From Multiple Integrations by Source Address
+* Alerts From Multiple Integrations by User Name
+
 ### Unsupported function: endswith (3)
 
 3 rules:
@@ -1902,3 +1926,18 @@ Invalid syntax
 
 1 rules:
 * Machine Learning Detected a Suspicious Windows Event with a High Malicious Probability Score
+
+### Unsupported condition on the values of Esql.kibana_alert_risk_score_values (1)
+
+1 rules:
+* Multiple External EDR Alerts by Host
+
+### Unsupported field in WHERE after STATS: concat_vuln_severity_values (1)
+
+1 rules:
+* Multiple Vulnerabilities by Asset via Wiz
+
+### Unsupported number of different values of kubernetes.audit.annotations.`authorization_k8s_io/decision`: between 2 and 2 in 6 documents (1)
+
+1 rules:
+* Kubernetes Potential Endpoint Permission Enumeration Attempt Detected

@@ -23,6 +23,7 @@ raises `NotImplementedError`, so that unsupported queries are reported instead
 of silently generating events that do not match.
 """
 
+import json
 import re
 from collections import namedtuple
 from pathlib import Path
@@ -37,12 +38,18 @@ from ..events_emitter_eql import collect_constraints
 from ..utils import has_wildcards
 from .errors import EsqlParseError
 
-__all__ = ("EsqlQuery", "parse", "to_eql")
+__all__ = ("Aggregate", "EsqlQuery", "EsqlStats", "parse", "to_eql")
 
-EsqlQuery = namedtuple("EsqlQuery", ["sources", "metadata", "where"])
+# `where` is the plain translation of the WHERE clauses before STATS, `stats` is None when there is no STATS
+EsqlQuery = namedtuple("EsqlQuery", ["sources", "metadata", "where", "stats"], defaults=(None,))
+# `where` is the translation of the WHERE clauses after STATS, about the aliases of the aggregates and the BY fields
+EsqlStats = namedtuple("EsqlStats", ["aggregates", "by", "where"])
+Aggregate = namedtuple("Aggregate", ["alias", "function", "argument"])
 
-# commands that do not change which documents match a preceding WHERE
+# commands that do not change which documents match a preceding WHERE, LIMIT does
 IGNORED_COMMANDS = ("KEEP", "DROP", "SORT", "LIMIT")
+# aggregate functions that tell how many documents there are, VALUES just collects what they have
+AGGREGATE_FUNCTIONS = ("count", "count_distinct", "values")
 
 # fields that describe the indexed document and are not part of its content
 METADATA_FIELDS = ("_id", "_index", "_version", "_ignored", "_index_mode", "_source", "_score")
@@ -108,7 +115,9 @@ class EsqlToEql(Interpreter):
         self.sources = []
         self.metadata_fields = []
         self.wheres = []
-        self.blocking = None  # first ignorable pipe seen, no WHERE is allowed after it
+        self.blocking = None  # LIMIT was seen, neither a WHERE nor a STATS is allowed after it
+        self.stats = None
+        self.post_wheres = []
 
     @staticmethod
     def reject(tree, message):
@@ -122,7 +131,12 @@ class EsqlToEql(Interpreter):
             where = self.wheres[0]
         else:
             where = eql.ast.And(self.wheres)
-        return EsqlQuery(tuple(self.sources), tuple(self.metadata_fields), where)
+        stats = None
+        if self.stats is not None:
+            aggregates, by = self.stats
+            post_where = eql.ast.And(self.post_wheres) if len(self.post_wheres) > 1 else (self.post_wheres or [eql.ast.Boolean(True)])[0]
+            stats = EsqlStats(tuple(aggregates), tuple(by), post_where)
+        return EsqlQuery(tuple(self.sources), tuple(self.metadata_fields), where, stats)
 
     # commands
 
@@ -144,15 +158,63 @@ class EsqlToEql(Interpreter):
     def where_cmd(self, tree):
         if self.blocking:
             self.reject(tree, f"pipe before WHERE: {self.blocking}")
-        self.wheres.append(self.boolean(tree.children[1]))
+        (self.post_wheres if self.stats is not None else self.wheres).append(self.boolean(tree.children[1]))
 
     def other_cmd(self, tree):
         name = str(tree.children[0]).upper()
-        if name not in IGNORED_COMMANDS:
+        # after STATS an EVAL makes fields, that no WHERE can then ask for (it would not be about an aggregate)
+        if name not in IGNORED_COMMANDS and not (name == "EVAL" and self.stats is not None):
             self.reject(tree, f"command: {name}")
         if name == "LIMIT" and re.fullmatch(r"\s*0+\s*", str(tree.children[1]) if len(tree.children) > 1 else ""):
             self.reject(tree, "LIMIT 0, no document is returned")
-        self.blocking = self.blocking or name
+        if name == "LIMIT":
+            self.blocking = self.blocking or name
+
+    def stats_cmd(self, tree):
+        if self.stats is not None:
+            self.reject(tree, "second STATS")
+        if self.blocking:
+            self.reject(tree, f"pipe before STATS: {self.blocking}")
+        aggregates, by = [], []
+        for child in tree.children:
+            if not isinstance(child, Tree):
+                continue
+            if child.data == "by_clause":
+                by = [self.by_key(item) for item in child.children if isinstance(item, Tree)]
+            else:
+                aggregates.append(self.aggregate(child))
+        self.stats = (aggregates, by)
+
+    @staticmethod
+    def field_name(token):
+        base, *path = split_field(str(token))
+        return eql.ast.Field(base, path).render()
+
+    def aggregate(self, tree):
+        if tree.data == "unnamed_item":
+            self.reject(tree, "aggregate without a name")
+        alias, call = tree.children
+        alias = self.field_name(alias)
+        if call.data not in ("func_call", "func_star"):
+            self.reject(tree, f"aggregate {alias}, it must be a function")
+        name = str(call.children[0]).lower()
+        if name not in AGGREGATE_FUNCTIONS:
+            self.reject(tree, f"aggregate function: {name.upper()}")
+        args = [] if call.data == "func_star" else [arg for arg in call.children[1:] if isinstance(arg, Tree)]
+        if name == "count" and not args:
+            return Aggregate(alias, name, None)
+        if len(args) != 1 or args[0].data != "field":
+            self.reject(tree, f"aggregate argument of {name.upper()}, it must be one field")
+        argument = self.visit(args[0])
+        self.check_field(tree, argument)
+        return Aggregate(alias, name, argument.render())
+
+    def by_key(self, tree):
+        if tree.data != "by_expr" or tree.children[0].data != "field":
+            self.reject(tree, "BY, only the fields are supported as they are")
+        field = self.visit(tree.children[0])
+        self.check_field(tree, field)
+        return field.render()
 
     # boolean expressions
 
@@ -283,6 +345,9 @@ class EsqlToEql(Interpreter):
     def time_literal(self, tree):
         self.reject(tree, "time literal")
 
+    def func_star(self, tree):
+        self.reject(tree, f"function: {tree.children[0]}")
+
     def func_call(self, tree):
         name, *args = tree.children
         name = str(name)
@@ -403,4 +468,9 @@ def to_eql(text):
     It is the plain translation wrapped in the private function `_esql`, so that the constraints
     collector knows where it comes from: ES|QL is stricter than EQL and the solvers check more.
     """
-    return eql.ast.FunctionCall("_esql", [parse(text).where])
+    query = parse(text)
+    node = query.where
+    if query.stats is not None:
+        spec = {"aggregates": [list(a) for a in query.stats.aggregates], "by": list(query.stats.by)}
+        node = eql.ast.FunctionCall("_stats", [query.where, query.stats.where, eql.ast.String(json.dumps(spec))])
+    return eql.ast.FunctionCall("_esql", [node])

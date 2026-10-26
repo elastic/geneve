@@ -148,10 +148,13 @@ class TestEsqlParser(unittest.TestCase):
         self.validate("FROM x | WHERE a == 1 | KEEP a | SORT a DESC | LIMIT 5 | DROP b", "a == 1")
         self.validate('FROM x | WHERE a == 1 | KEEP a, "b|c", `d|e` | LIMIT 5', "a == 1")
 
-    def test_ignored_pipe_before_where_rejected(self):
-        for query in ("FROM x | LIMIT 5 | WHERE a == 1", "FROM x | KEEP a | WHERE a == 1", "FROM x | SORT a | WHERE a == 1"):
-            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, r"Unsupported pipe before WHERE: [A-Z]+"):
+    def test_limit_before_where_rejected(self):
+        for query in ("FROM x | LIMIT 5 | WHERE a == 1", "FROM x | WHERE a == 1 | LIMIT 5 | WHERE b == 2"):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, r"Unsupported pipe before WHERE: LIMIT"):
                 where(query)
+        # these only hide columns or sort the rows, the documents that match are the same
+        self.validate("FROM x | KEEP a, b | WHERE a == 1", "a == 1")
+        self.validate("FROM x | DROP c | SORT a | WHERE a == 1 | KEEP a | WHERE b == 2", "a == 1 and b == 2")
 
     def test_limit_zero_rejected(self):
         for query in ("FROM x | WHERE a == 1 | LIMIT 0", "FROM x | LIMIT 0"):
@@ -161,7 +164,6 @@ class TestEsqlParser(unittest.TestCase):
 
     def test_unsupported_command(self):
         for command in (
-            "STATS c = COUNT(*) BY a",
             "EVAL b = a",
             'DISSECT a "%{x}"',
             'GROK a "%{WORD:x}"',
@@ -172,8 +174,8 @@ class TestEsqlParser(unittest.TestCase):
             name = command.split()[0]
             with self.subTest(command), self.assertRaisesRegex(NotImplementedError, rf"Unsupported command: {name}"):
                 where(f"FROM x | WHERE a == 1 | {command}")
-        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: STATS"):
-            where("from x | stats c = count(*) by a")
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: GROK"):
+            where('from x | grok a "%{WORD:x}"')
 
     def test_unsupported_source_command(self):
         for query in ("ROW a = 1", "SHOW INFO", "TS metrics"):
@@ -484,6 +486,89 @@ class TestEsqlParser(unittest.TestCase):
             self.assertIsInstance(cm.exception, eql.EqlParseError)
 
 
+def stats_summary(query):
+    stats = esql.parse(query).stats
+    return [(a.alias, a.function, a.argument) for a in stats.aggregates], list(stats.by)
+
+
+class TestEsqlStats(unittest.TestCase):
+    def test_no_stats(self):
+        self.assertIsNone(esql.parse("FROM x | WHERE a == 1").stats)
+
+    def test_stats(self):
+        query = esql.parse(
+            "FROM x | WHERE a == 1 | STATS c = COUNT(*), d = COUNT_DISTINCT(u), v = VALUES(f), e = COUNT(g) BY h"
+            " | WHERE c >= 10 AND d >= 2 | KEEP h, c | SORT c DESC | LIMIT 5"
+        )
+        self.assertEqual(eql.parse_expression("a == 1"), query.where)
+        self.assertEqual(
+            (("c", "count", None), ("d", "count_distinct", "u"), ("v", "values", "f"), ("e", "count", "g")),
+            tuple((a.alias, a.function, a.argument) for a in query.stats.aggregates),
+        )
+        self.assertEqual(("h",), query.stats.by)
+        self.assertEqual(eql.parse_expression("c >= 10 and d >= 2"), query.stats.where)
+
+    def test_stats_variants(self):
+        self.assertEqual(
+            ([("c", "count", None)], ["host.id", "user.name"]), stats_summary("FROM x | STATS c = COUNT() BY host.id, user.name")
+        )
+        self.assertEqual(([("c", "count", None)], []), stats_summary("FROM x | STATS c = count(*)"))
+        self.assertEqual(
+            ([("Esql.event_count", "count", None), ("`my alias`", "count_distinct", "a.b")], ["h"]),
+            stats_summary("FROM x | STATS Esql.event_count = COUNT(*), `my alias` = COUNT_DISTINCT(a.b) BY h"),
+        )
+        query = esql.parse("FROM x | STATS Esql.event_count = COUNT(*) BY h | WHERE Esql.event_count >= 5 OR Esql.event_count == 1")
+        self.assertEqual(
+            eql.ast.Or([eql.parse_expression("Esql.event_count >= 5"), eql.parse_expression("Esql.event_count == 1")]),
+            query.stats.where,
+        )
+        self.assertEqual(eql.ast.Boolean(True), esql.parse("FROM x | STATS c = COUNT(*) BY h").stats.where)
+        # what comes after is not about what documents match
+        query = esql.parse("FROM x | STATS c = COUNT(*) BY h | KEEP h, c | WHERE c > 1 | EVAL r = c / 2 | SORT r | LIMIT 10")
+        self.assertEqual(eql.parse_expression("c > 1"), query.stats.where)
+        # keep, drop and sort before it are fine
+        self.assertIsNotNone(esql.parse("FROM x | WHERE a == 1 | KEEP a, h | SORT a | STATS c = COUNT(*) BY h").stats)
+
+    def test_to_eql_carries_the_stats(self):
+        import json
+
+        text = "FROM x | WHERE a == 1 | STATS c = COUNT(*), d = COUNT_DISTINCT(u) BY h | WHERE c >= 3"
+        node = esql.to_eql(text)
+        self.assertEqual("_esql", node.name)
+        stats = node.arguments[0]
+        self.assertEqual("_stats", stats.name)
+        pre, post, spec = stats.arguments
+        self.assertEqual(eql.parse_expression("a == 1"), pre)
+        self.assertEqual(eql.parse_expression("c >= 3"), post)
+        self.assertEqual({"aggregates": [["c", "count", None], ["d", "count_distinct", "u"]], "by": ["h"]}, json.loads(spec.value))
+        # the plain translation is the one of the documents before the aggregation
+        self.assertEqual(eql.parse_expression("a == 1"), where(text))
+
+    def test_stats_rejected(self):
+        for query, message in (
+            ("STATS m = MAX(f) BY h", "Unsupported aggregate function: MAX"),
+            ("STATS m = SUM(f) BY h", "Unsupported aggregate function: SUM"),
+            ("STATS c = COUNT(CASE(a == 1, f, NULL)) BY h", "Unsupported aggregate argument"),
+            ("STATS c = COUNT_DISTINCT(TO_LOWER(f)) BY h", "Unsupported aggregate argument"),
+            ("STATS c = COUNT_DISTINCT(f, 100) BY h", "Unsupported aggregate argument"),
+            ("STATS COUNT(*) BY h", "Unsupported aggregate without a name"),
+            ("STATS c = COUNT(*) BY k = TO_LOWER(h)", "Unsupported BY"),
+            ("STATS c = COUNT(*) BY DATE_TRUNC(1 hour, @timestamp)", "Unsupported BY"),
+            ("STATS c = COUNT(*) BY k = h", "Unsupported BY"),
+            ("STATS c = COUNT(*) BY h | STATS d = COUNT(*)", "Unsupported second STATS"),
+            ("EVAL k = TO_LOWER(h) | STATS c = COUNT(*) BY k", "Unsupported command: EVAL"),
+            ("LIMIT 5 | STATS c = COUNT(*) BY h", "Unsupported pipe before STATS: LIMIT"),
+            ("STATS c = COUNT(*) BY h | LIMIT 5 | WHERE c > 1", "Unsupported pipe before WHERE: LIMIT"),
+            ("MV_EXPAND f | STATS c = COUNT(*) BY h", "Unsupported command: MV_EXPAND"),
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, message):
+                esql.parse(f"FROM x | {query}")
+        with self.assertRaises(esql.EsqlParseError):
+            esql.parse("FROM x | STATS")
+        with self.assertRaises(esql.EsqlParseError):
+            esql.parse("FROM x | STATS c = COUNT(*) BY")
+
+
 class TestEsqlRouting(unittest.TestCase):
     def test_guess_esql(self):
         for query in (
@@ -532,7 +617,7 @@ class TestEsqlRouting(unittest.TestCase):
 
     def test_guess_esql_error_propagates(self):
         # no fallback to EQL or KQL: they would accept some of these as plain text
-        for query in ("FROM x | STATS c = COUNT(*) BY a", "FROM x | LIMIT 1 | WHERE a == 1", "ROW a = 1", "SHOW INFO"):
+        for query in ("FROM x | EVAL b = a", "FROM x | LIMIT 1 | WHERE a == 1", "ROW a = 1", "SHOW INFO"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
                 guess_from_query(query)
         for query in ("FROM x | WHERE", "FROM x |", "from  x | where a =="):
@@ -548,8 +633,8 @@ class TestEsqlRouting(unittest.TestCase):
             with self.subTest(rule_type, language=language), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
                 ast_from_rule(rule)
 
-        rule = SimpleNamespace(type="esql", language="esql", query="FROM idx | STATS c = COUNT(*)")
-        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: STATS"):
+        rule = SimpleNamespace(type="esql", language="esql", query="FROM idx | EVAL b = a")
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: EVAL"):
             ast_from_rule(rule)
 
     def test_rule_types_unchanged(self):
@@ -676,6 +761,165 @@ class TestEsqlProvenance(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase)
         se = SourceEvents(self.long_schema)
         se.add_ast(esql.to_eql("FROM x"))
         self.assertEqual([{}], [event.doc for event in se.emit(timestamp=False)])
+
+
+class TestEsqlStatsEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
+    """The documents that a threshold on an aggregate asks for: a group of them, the same for the fields of BY."""
+
+    maxDiff = None
+    pre = 'FROM x | WHERE process.name == "a.exe" | STATS c = COUNT(*)'
+
+    def branches(self, query, **kwargs):
+        se = SourceEvents(self.schema)
+        se.stack_version = self.stack_version
+        for key, value in kwargs.items():
+            setattr(se, key, value)
+        se.add_query(query)
+        return [[event.doc for event in branch] for branch in se.emit(timestamp=False, complete=True, count=1)]
+
+    def assertShared(self, docs, field, shared=True):
+        values = []
+        for doc in docs:
+            value = doc
+            for part in field.split("."):
+                value = value[part]
+            values.append(value)
+        self.assertEqual(1 if shared else len(docs), len(set(values)), values)
+
+    def test_count_thresholds(self):
+        for condition, size in (
+            (">= 5", 5),
+            ("> 5", 6),
+            ("== 4", 4),
+            ("<= 3", 1),
+            ("< 3", 1),
+            (">= 3 AND c <= 10", 3),
+            ("> 2 AND c < 9", 3),
+            ("!= 1", 2),
+            (">= 3 AND c != 3", 4),
+            (">= 2.5", 3),
+            ("> 2.5", 3),
+        ):
+            with self.subTest(condition):
+                branches = self.branches(f"{self.pre} BY host.id | WHERE c {condition}")
+                self.assertEqual(1, len(branches))
+                docs = branches[0]
+                self.assertEqual(size, len(docs))
+                self.assertTrue(all(doc["process"]["name"] == "a.exe" for doc in docs), docs)
+                self.assertShared(docs, "host.id")
+
+    def test_negated_conditions(self):
+        self.assertEqual(1, len(self.branches(f"{self.pre} BY host.id | WHERE NOT c >= 3")[0]))
+        self.assertEqual(4, len(self.branches(f"{self.pre} BY host.id | WHERE NOT (c <= 3)")[0]))
+
+    def test_no_condition_and_no_by(self):
+        branches = self.branches(f"{self.pre} BY host.id")
+        self.assertEqual(1, len(branches[0]))
+        branches = self.branches(f"{self.pre} | WHERE c >= 3")
+        self.assertEqual([[{"process": {"name": "a.exe"}}] * 3], branches)
+
+    def test_several_by_fields(self):
+        docs = self.branches(f"{self.pre} BY host.id, user.name, source.ip | WHERE c >= 4")[0]
+        self.assertEqual(4, len(docs))
+        for field in ("host.id", "user.name", "source.ip"):
+            self.assertShared(docs, field)
+
+    def test_alias_with_dots(self):
+        docs = self.branches("FROM x | STATS Esql.event_count = COUNT(*) BY host.id | WHERE Esql.event_count >= 3")[0]
+        self.assertEqual(3, len(docs))
+        docs = self.branches("FROM x | STATS `my count` = COUNT(*) BY host.id | WHERE `my count` >= 2")[0]
+        self.assertEqual(2, len(docs))
+
+    def test_unsatisfiable_thresholds(self):
+        for condition in (">= 5 AND c < 3", "== 0", "< 1", "> 4 AND c <= 4"):
+            with self.subTest(condition), self.assertRaisesRegex(ValueError, "Unsolvable constraints"):
+                self.branches(f"{self.pre} BY host.id | WHERE c {condition}")
+
+    def test_too_many_documents(self):
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported threshold"):
+            self.branches(f"{self.pre} BY host.id | WHERE c >= 100000")
+
+    def test_disjunctions_are_branches(self):
+        branches = self.branches(f"{self.pre} BY host.id | WHERE c >= 5 OR c == 2")
+        self.assertEqual([5, 2], [len(docs) for docs in branches])
+        se_branches = self.branches('FROM x | WHERE process.name IN ("a.exe", "b.exe") | STATS c = COUNT(*) BY host.id | WHERE c >= 3')
+        self.assertEqual([3, 3], [len(docs) for docs in se_branches])
+        self.assertEqual(["a.exe", "b.exe"], [docs[0]["process"]["name"] for docs in se_branches])
+
+    def test_count_distinct(self):
+        base = "FROM x | STATS c = COUNT(*), d = COUNT_DISTINCT(user.name) BY host.id"
+        docs = self.branches(f"{base} | WHERE d >= 3")[0]
+        self.assertEqual(3, len(docs))
+        self.assertShared(docs, "user.name", shared=False)
+        self.assertShared(docs, "host.id")
+
+        docs = self.branches(f"{base} | WHERE d >= 2 AND c >= 6")[0]
+        self.assertEqual(6, len(docs))
+        self.assertGreaterEqual(len({doc["user"]["name"] for doc in docs}), 2)
+
+        docs = self.branches(f"{base} | WHERE d == 1 AND c >= 4")[0]
+        self.assertEqual(4, len(docs))
+        self.assertShared(docs, "user.name")
+
+        docs = self.branches(f"{base} | WHERE d <= 1")[0]
+        self.assertEqual(1, len(docs))
+
+        docs = self.branches(f"{base} | WHERE d > 3 AND c >= 2")[0]
+        self.assertEqual(4, len(docs))
+        self.assertShared(docs, "user.name", shared=False)
+
+    def test_count_distinct_cannot_exceed_the_documents(self):
+        base = "FROM x | STATS c = COUNT(*), d = COUNT_DISTINCT(user.name) BY host.id"
+        with self.assertRaisesRegex(ValueError, "Unsolvable constraints"):
+            self.branches(f"{base} | WHERE d >= 5 AND c <= 3")
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported"):
+            self.branches(f"{base} | WHERE d >= 2 AND d <= 3 AND c >= 6")
+
+    def test_distinct_values_are_distinct(self):
+        docs = self.branches('FROM x | WHERE process.name == "a.exe" | STATS d = COUNT_DISTINCT(process.pid) BY host.id | WHERE d >= 6')[0]
+        self.assertEqual(6, len(docs))
+        self.assertShared(docs, "process.pid", shared=False)
+        # when the query leaves no room for that many values it is said
+        with self.assertRaises((ValueError, IndexError)):
+            self.branches('FROM x | WHERE process.name == "a.exe" | STATS d = COUNT_DISTINCT(process.name) BY host.id | WHERE d >= 2')
+
+    def test_count_of_a_field(self):
+        docs = self.branches("FROM x | STATS c = COUNT(user.name) BY host.id | WHERE c >= 3")[0]
+        self.assertEqual(3, len(docs))
+        self.assertTrue(all("name" in doc["user"] for doc in docs), docs)
+
+    def test_values_just_collect(self):
+        docs = self.branches("FROM x | STATS c = COUNT(*), v = VALUES(user.name) BY host.id | WHERE c >= 3")[0]
+        self.assertEqual(3, len(docs))
+
+    def test_conditions_on_the_by_fields(self):
+        docs = self.branches(f'{self.pre} BY host.id | WHERE c >= 2 AND host.id LIKE "a*"')[0]
+        self.assertTrue(all(doc["host"]["id"].startswith("a") for doc in docs), docs)
+        self.assertShared(docs, "host.id")
+        docs = self.branches(f'{self.pre} BY host.name | WHERE c >= 2 AND host.name == "x"')[0]
+        self.assertEqual([{"process": {"name": "a.exe"}, "host": {"name": "x"}}] * 2, docs)
+        docs = self.branches(f"{self.pre} BY host.name | WHERE c >= 2 AND host.name IS NOT NULL")[0]
+        self.assertShared(docs, "host.name")
+
+    def test_conditions_that_are_not_about_the_aggregates(self):
+        for query, message in (
+            (f"{self.pre} BY host.id | WHERE other >= 1", "Unsupported field in WHERE after STATS: other"),
+            (f"{self.pre} BY host.id | EVAL r = c / 2 | WHERE r >= 1", "Unsupported field in WHERE after STATS: r"),
+            (f'{self.pre}, v = VALUES(user.name) BY host.id | WHERE v == "x"', "Unsupported condition on the values of v"),
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, message):
+                self.branches(query)
+
+    def test_the_branches_limit_is_the_one_of_the_documents(self):
+        with self.assertRaisesRegex(ValueError, "Root with too many branches"):
+            self.branches(
+                'FROM x | WHERE process.name IN ("a", "b", "c") | STATS c = COUNT(*) BY host.id | WHERE c >= 2 OR c == 1', max_branches=5
+            )
+
+    def test_the_documents_are_not_shared_with_other_languages(self):
+        # an aggregate says nothing to the other languages, and the documents do not change for the plain ones
+        docs = self.branches('FROM x | WHERE process.name == "a.exe"')
+        self.assertEqual([[{"process": {"name": "a.exe"}}]], docs)
 
 
 class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
@@ -911,6 +1155,38 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             rule = SimpleNamespace(type=rule_type, language=language, query=query)
             with self.subTest(rule_type), self.assertRaisesRegex(NotImplementedError, "^Field type solver: constant_keyword$"):
                 SourceEvents(self.schema).add_rule(rule)
+
+    def test_unknown_fields_take_the_type_of_the_literals(self):
+        # ES|QL has typed literals, what the schema does not know is what they say
+        schema = {}
+        docs = self.emit("FROM x | WHERE flag != true", schema=schema, count=3)
+        self.assertEqual([{"flag": False}] * 3, docs)
+        docs = self.emit("FROM x | WHERE flag", schema=schema, count=1)
+        self.assertEqual([{"flag": True}], docs)
+        docs = self.emit("FROM x | WHERE n > 5 AND n < 8", schema=schema, count=20)
+        self.assertTrue(all(isinstance(doc["n"], int) and 5 < doc["n"] < 8 for doc in docs), docs)
+        docs = self.emit("FROM x | WHERE n == 2.0", schema=schema, count=1)
+        self.assertEqual([{"n": 2}], docs)
+        docs = self.emit('FROM x | WHERE s == "a" AND t != "b"', schema=schema, count=2)
+        self.assertEqual({"s": "a"}, {k: v for k, v in docs[0].items() if k == "s"})
+        self.assertIsInstance(docs[0]["t"], str)
+        # mixed values say nothing, and what the schema knows is not overridden
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported"):
+            self.emit('FROM x | WHERE (m == 1 OR m == "a") AND m > 0', schema=schema)
+        docs = self.emit("FROM x | WHERE process.pid > 5", schema={"process.pid": {"type": "long"}}, count=1)
+        self.assertGreater(docs[0]["process"]["pid"], 5)
+
+        se = SourceEvents(schema)
+        se.add_query('FROM x | WHERE flag != true AND n > 5 AND s == "a"')
+        self.assertEqual(
+            {"flag": {"type": "boolean"}, "n": {"type": "long"}, "s": {"type": "keyword"}},
+            {k: v for k, v in se.mappings()["properties"].items() if k != "@timestamp"},
+        )
+
+    def test_unknown_fields_of_the_other_languages_are_as_they_were(self):
+        se = SourceEvents({})
+        se.add_query("any where flag == true")
+        self.assertEqual({"type": "keyword"}, se.mappings()["properties"]["flag"])
 
     def test_negations_emit_a_value(self):
         # ES|QL returns null for a missing field, so `!=` and `NOT` must not be satisfied by omitting it

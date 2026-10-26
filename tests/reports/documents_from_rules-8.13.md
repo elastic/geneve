@@ -15,10 +15,10 @@ Rules version: 8.13.23
       1. [Unsupported command: DISSECT (7)](#unsupported-command-dissect-7)
       1. [Unsupported command: EVAL (7)](#unsupported-command-eval-7)
       1. [Unsupported operator: RLIKE (6)](#unsupported-operator-rlike-6)
-      1. [Unsupported command: STATS (5)](#unsupported-command-stats-5)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
       1. [Unsupported right operand, it must be a literal (2)](#unsupported-right-operand-it-must-be-a-literal-2)
+      1. [Unsupported aggregate function: MAX (1)](#unsupported-aggregate-function-max-1)
       1. [Unsupported command: MV_EXPAND (1)](#unsupported-command-mv_expand-1)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
@@ -343,16 +343,6 @@ Rules version: 8.13.23
 * Multiple Okta User Authentication Events with Same Device Token Hash
 * Okta User Sessions Started from Different Geolocations
 
-### Unsupported command: STATS (5)
-
-5 rules:
-
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* AWS S3 Bucket Enumeration or Brute Force
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Widespread Malware Infection Across Multiple Hosts
-
 ### Unsupported rule type: threat_match (5)
 
 5 rules:
@@ -378,6 +368,12 @@ Rules version: 8.13.23
 
 * AWS IAM User Created Access Keys For Another User
 * AWS STS Role Chaining
+
+### Unsupported aggregate function: MAX (1)
+
+1 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
 
 ### Unsupported command: MV_EXPAND (1)
 

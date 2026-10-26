@@ -26,6 +26,29 @@ from typing import List
 from .utils.hdict import hdict
 
 
+def infer_type(constraints):
+    """Return the type that the literals of ES|QL say a field has, None if they don't or it is not ES|QL.
+
+    The schema may not know the field (those of the integrations), and a typed literal is the type of the field in ES|QL.
+    """
+    types = set()
+    for name, value, *flags in constraints or ():
+        if not (flags and flags[0].get("esql")):
+            return None
+        if name in ("wildcard", "not wildcard"):
+            types.add("keyword")
+        elif name in ("==", "!=", "<", "<=", ">", ">="):
+            if isinstance(value, bool):
+                types.add("boolean")
+            elif isinstance(value, str):
+                types.add("keyword")
+            elif isinstance(value, int) or (isinstance(value, float) and value.is_integer()):
+                types.add("long")
+            else:
+                return None
+    return types.pop() if len(types) == 1 else None
+
+
 class ConflictError(ValueError):
     def __init__(self, msg, field, name=None):
         name = f" {name}" if name else ""

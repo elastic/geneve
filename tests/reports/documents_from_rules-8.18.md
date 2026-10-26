@@ -13,13 +13,12 @@ Rules version: 8.18.15
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported command: EVAL (27)](#unsupported-command-eval-27)
-      1. [Unsupported command: STATS (11)](#unsupported-command-stats-11)
+      1. [Unsupported function: now (14)](#unsupported-function-now-14)
       1. [Unsupported command: DISSECT (8)](#unsupported-command-dissect-8)
-      1. [Unsupported function: now (8)](#unsupported-function-now-8)
       1. [Unsupported command: MV_EXPAND (6)](#unsupported-command-mv_expand-6)
-      1. [Unsupported pipe before WHERE: KEEP (6)](#unsupported-pipe-before-where-keep-6)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
+      1. [Unsupported aggregate function: MAX (2)](#unsupported-aggregate-function-max-2)
       1. [Unsupported operator: RLIKE (2)](#unsupported-operator-rlike-2)
       1. [Error at line:47,column:47
 Invalid syntax
@@ -461,21 +460,24 @@ invalid-syntax
 * Suspicious Microsoft 365 UserLoggedIn via OAuth Code
 * Suspicious Microsoft OAuth Flow via Auth Broker to DRS
 
-### Unsupported command: STATS (11)
+### Unsupported function: now (14)
 
-11 rules:
+14 rules:
 
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* Azure OpenAI Insecure Output Handling
-* High Number of Okta Device Token Cookies Generated for Authentication
-* Microsoft Entra ID MFA TOTP Brute Force Attempts
-* Multiple Okta User Authentication Events with Client Address
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Okta User Sessions Started from Different Geolocations
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
-* Potential Widespread Malware Infection Across Multiple Hosts
+* AWS Access Token Used from Multiple Addresses
+* High Number of Egress Network Connections from Unusual Executable
+* M365 OneDrive Excessive File Downloads with OAuth Token
+* Microsoft 365 or Entra ID Sign-in from a Suspicious Source
+* Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
+* Potential Malware-Driven SSH Brute Force Attempt
+* Potential Port Scanning Activity from Compromised Host
+* Potential Subnet Scanning Activity from Compromised Host
+* Rare Connection to WebDAV Target
+* Unusual Base64 Encoding/Decoding Activity
+* Unusual Command Execution from Web Server Parent
+* Unusual File Creation by Web Server
+* Unusual File Transfer Utility Launched
+* Unusual Process Spawned from Web Server Parent
 
 ### Unsupported command: DISSECT (8)
 
@@ -490,19 +492,6 @@ invalid-syntax
 * AWS S3 Static Site JavaScript File Uploaded
 * AWS Signin Single Factor Console Login with Federated User
 
-### Unsupported function: now (8)
-
-8 rules:
-
-* AWS Access Token Used from Multiple Addresses
-* High Number of Egress Network Connections from Unusual Executable
-* M365 OneDrive Excessive File Downloads with OAuth Token
-* Microsoft 365 or Entra ID Sign-in from a Suspicious Source
-* Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
-* Potential Port Scanning Activity from Compromised Host
-* Rare Connection to WebDAV Target
-* Unusual Base64 Encoding/Decoding Activity
-
 ### Unsupported command: MV_EXPAND (6)
 
 6 rules:
@@ -513,17 +502,6 @@ invalid-syntax
 * Unusual High Denied Sensitive Information Policy Blocks Detected
 * Unusual High Denied Topic Blocks Detected
 * Unusual High Word Policy Blocks Detected
-
-### Unsupported pipe before WHERE: KEEP (6)
-
-6 rules:
-
-* Potential Malware-Driven SSH Brute Force Attempt
-* Potential Subnet Scanning Activity from Compromised Host
-* Unusual Command Execution from Web Server Parent
-* Unusual File Creation by Web Server
-* Unusual File Transfer Utility Launched
-* Unusual Process Spawned from Web Server Parent
 
 ### Unsupported rule type: threat_match (6)
 
@@ -544,6 +522,13 @@ invalid-syntax
 * Halfbaked Command and Control Beacon
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
+
+### Unsupported aggregate function: MAX (2)
+
+2 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Azure OpenAI Model Theft
 
 ### Unsupported operator: RLIKE (2)
 

@@ -19,14 +19,15 @@
 
 from __future__ import annotations
 
+import json
 import math
 from itertools import chain, product
 from typing import Any, NoReturn
 
 import eql
 
-from .constraints import Branch, Document, Root
-from .utils import TreeTraverser
+from .constraints import Branch, ConflictError, Document, Root
+from .utils import TreeTraverser, split_path
 
 __all__ = ()
 
@@ -207,6 +208,8 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool, max_branches: int
         return cc_esql(node, negate, max_branches)
     if fn_name == "_kql":
         return cc_kql(node, negate, max_branches)
+    if fn_name == "_stats":
+        return cc_stats(node, negate, max_branches)
     if type(node.arguments[0]) is not eql.ast.Field:
         raise NotImplementedError(f"Unsupported argument type: {type(node.arguments[0])}")
     args_types = (eql.ast.String, eql.ast.Number)
@@ -243,6 +246,123 @@ def cc_esql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root
     for doc in root.constraints():
         doc.flag_constraints({"esql": True}, unless="kql")
     return root
+
+
+# a cardinality that is never reached, all the values of the field are different
+DISTINCT = 2**31
+# the documents that a threshold may ask for
+MAX_DOCUMENTS = 1000
+
+
+def normalize_name(name: str) -> str:
+    return ".".join(split_path(name))
+
+
+def count_interval(field: str, constraints: Any) -> tuple[int, float]:
+    """Return the least and the most that the conditions on a count allow, at least there is one document."""
+    if constraints is None:
+        raise ConflictError("cannot be null", field)
+    lo, hi, excluded = 1, math.inf, set()
+    for name, value, *_ in constraints:
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            raise NotImplementedError(f"Unsupported value in the condition on {field}: {value!r}")
+        if name == ">=":
+            lo = max(lo, math.ceil(value))
+        elif name == ">":
+            lo = max(lo, math.floor(value) + 1)
+        elif name == "<=":
+            hi = min(hi, math.floor(value))
+        elif name == "<":
+            hi = min(hi, math.ceil(value) - 1)
+        elif name == "==":
+            lo, hi = max(lo, math.ceil(value)), min(hi, math.floor(value))
+        elif name == "!=":
+            excluded.add(value)
+        else:
+            raise NotImplementedError(f"Unsupported condition on {field}: {name}")
+    while lo in excluded:
+        lo += 1
+    while hi in excluded:
+        hi -= 1
+    if lo > hi:
+        raise ConflictError(f"empty solution space, {lo} <= x <= {hi}", field)
+    return lo, hi
+
+
+def cc_stats(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # the documents before an aggregation, in the number that its conditions ask for and related as BY asks
+    if negate:
+        raise NotImplementedError("Unsupported negation of STATS")
+    pre, post, spec = node.arguments
+    spec = json.loads(spec.value)
+    aggregates = {normalize_name(alias): (function, argument) for alias, function, argument in spec["aggregates"]}
+    by = [normalize_name(field) for field in spec["by"]]
+    pre_root = collect_constraints(pre, False, max_branches)
+    post_root = collect_constraints(post, False, max_branches)
+    if max_branches and len(pre_root) * len(post_root) > max_branches:
+        raise ValueError(f"Root with too many branches (limit: {max_branches})")
+    return Root([stats_branch(pre_branch, post_branch, aggregates, by) for pre_branch in pre_root for post_branch in post_root])
+
+
+def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: list) -> Branch:
+    if len(pre_branch) != 1:
+        raise NotImplementedError("Unsupported STATS of documents that are related")
+    counts, distinct, by_conditions = [], {}, []
+    for doc in post_branch:
+        for field, constraints in doc.items():
+            if field in aggregates:
+                function, argument = aggregates[field]
+                if function == "values":
+                    raise NotImplementedError(f"Unsupported condition on the values of {field}")
+                lo, hi = count_interval(field, constraints)
+                if function == "count":
+                    counts.append((field, argument, lo, hi))
+                else:
+                    old_lo, old_hi = distinct.get(argument, (1, math.inf))
+                    distinct[argument] = (max(lo, old_lo), min(hi, old_hi))
+            elif field in by:
+                if constraints is None:
+                    raise NotImplementedError(f"Unsupported condition on the BY field {field}: it is null")
+                by_conditions.append((field, constraints))
+            else:
+                raise NotImplementedError(f"Unsupported field in WHERE after STATS: {field}")
+
+    # how many documents there are, a COUNT of a field counts those that have it and all of them have it
+    size, size_hi = max([lo for _, _, lo, _ in counts] + [lo for lo, _ in distinct.values()] + [1]), min(
+        [hi for *_, hi in counts] + [math.inf]
+    )
+    if size > size_hi:
+        raise ConflictError(f"empty solution space, {size} <= x <= {size_hi}", counts[0][0] if counts else "count")
+    if size > MAX_DOCUMENTS:
+        raise NotImplementedError(f"Unsupported threshold, {size} documents are needed (limit: {MAX_DOCUMENTS})")
+
+    # how many different values: one for all of them, or a different one for each, in between is not supported
+    shared, different = [], []
+    for field, (lo, hi) in distinct.items():
+        if lo > hi:
+            raise ConflictError(f"empty solution space, {lo} <= x <= {hi}", field)
+        if hi == 1:
+            shared.append(field)
+        elif lo > 1 and hi < size:
+            raise NotImplementedError(f"Unsupported number of different values of {field}: between {lo} and {hi} in {size} documents")
+        elif lo > 1:
+            different.append(field)
+    present = {argument for _, argument, _, _ in counts if argument} | set(distinct)
+
+    join_fields = by + [field for field in shared if field not in by]
+    join_doc = Document()
+    docs = []
+    for _ in range(size):
+        doc = pre_branch[0].clone()
+        for field, constraints in by_conditions:
+            for name, value, *flags in constraints:
+                doc.append_constraint(field, name, value, flags[0] if flags else None)
+        for field in different:
+            doc.append_constraint(field, "cardinality", DISTINCT)
+        for field in sorted(present):
+            doc.append_constraint(field)
+        docs.append(join_doc.join_fields(doc, join_fields) if join_fields else doc)
+    return Branch(docs)
 
 
 def cc_kql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:

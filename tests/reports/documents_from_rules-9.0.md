@@ -13,13 +13,12 @@ Rules version: 9.0.19
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported command: EVAL (35)](#unsupported-command-eval-35)
       1. [Unsupported rule type: threshold (33)](#unsupported-rule-type-threshold-33)
-      1. [Unsupported command: STATS (13)](#unsupported-command-stats-13)
+      1. [Unsupported function: now (13)](#unsupported-function-now-13)
       1. [Unsupported command: MV_EXPAND (7)](#unsupported-command-mv_expand-7)
-      1. [Unsupported function: now (7)](#unsupported-function-now-7)
-      1. [Unsupported pipe before WHERE: KEEP (7)](#unsupported-pipe-before-where-keep-7)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
       1. [Unsupported command: DISSECT (3)](#unsupported-command-dissect-3)
+      1. [Unsupported aggregate function: MAX (2)](#unsupported-aggregate-function-max-2)
       1. [Unsupported operator: RLIKE (2)](#unsupported-operator-rlike-2)
       1. [Error at line:46,column:47
 Invalid syntax
@@ -48,6 +47,7 @@ invalid-syntax
 -match-will-ignore-the--and-look-for-the-individual-words
 -where-powershellfilescript_block_text--rahcmetsysstekcostcejboimwecalperecnerferpenoitcennocniojemanvnegnirtstcejbo-wen_23niwnoisserpxeekovnidaolnwod
 -------------------------------------------1)
+      1. [Unsupported aggregate function: SUM (1)](#unsupported-aggregate-function-sum-1)
       1. [Unsupported command: GROK (1)](#unsupported-command-grok-1)
       1. [Unsupported right operand, it must be a literal (1)](#unsupported-right-operand-it-must-be-a-literal-1)
    1. [Generation errors](#generation-errors)
@@ -486,23 +486,23 @@ invalid-syntax
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported command: STATS (13)
+### Unsupported function: now (13)
 
 13 rules:
 
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* Agent Spoofing - Multiple Hosts Using Same Agent
-* Alerts in Different ATT&CK Tactics by Host
-* Azure OpenAI Insecure Output Handling
-* High Number of Okta Device Token Cookies Generated for Authentication
-* Microsoft Entra ID MFA TOTP Brute Force Attempts
-* Multiple Okta User Authentication Events with Client Address
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Okta User Sessions Started from Different Geolocations
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
-* Potential Widespread Malware Infection Across Multiple Hosts
+* AWS Access Token Used from Multiple Addresses
+* High Number of Egress Network Connections from Unusual Executable
+* Microsoft 365 or Entra ID Sign-in from a Suspicious Source
+* Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
+* Potential Malware-Driven SSH Brute Force Attempt
+* Potential Port Scanning Activity from Compromised Host
+* Potential Subnet Scanning Activity from Compromised Host
+* Rare Connection to WebDAV Target
+* Unusual Base64 Encoding/Decoding Activity
+* Unusual Command Execution from Web Server Parent
+* Unusual File Creation by Web Server
+* Unusual File Transfer Utility Launched
+* Unusual Process Spawned from Web Server Parent
 
 ### Unsupported command: MV_EXPAND (7)
 
@@ -515,30 +515,6 @@ invalid-syntax
 * Unusual High Denied Sensitive Information Policy Blocks Detected
 * Unusual High Denied Topic Blocks Detected
 * Unusual High Word Policy Blocks Detected
-
-### Unsupported function: now (7)
-
-7 rules:
-
-* AWS Access Token Used from Multiple Addresses
-* High Number of Egress Network Connections from Unusual Executable
-* Microsoft 365 or Entra ID Sign-in from a Suspicious Source
-* Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
-* Potential Port Scanning Activity from Compromised Host
-* Rare Connection to WebDAV Target
-* Unusual Base64 Encoding/Decoding Activity
-
-### Unsupported pipe before WHERE: KEEP (7)
-
-7 rules:
-
-* Potential Malware-Driven SSH Brute Force Attempt
-* Potential Spike in Web Server Error Logs
-* Potential Subnet Scanning Activity from Compromised Host
-* Unusual Command Execution from Web Server Parent
-* Unusual File Creation by Web Server
-* Unusual File Transfer Utility Launched
-* Unusual Process Spawned from Web Server Parent
 
 ### Unsupported rule type: threat_match (6)
 
@@ -567,6 +543,13 @@ invalid-syntax
 * AWS EC2 LOLBin Execution via SSM SendCommand
 * AWS S3 Object Encryption Using External KMS Key
 * AWS S3 Static Site JavaScript File Uploaded
+
+### Unsupported aggregate function: MAX (2)
+
+2 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Azure OpenAI Model Theft
 
 ### Unsupported operator: RLIKE (2)
 
@@ -604,6 +587,12 @@ Invalid syntax
 1 rules:
 
 * Potential PowerShell Obfuscation via Reverse Keywords
+
+### Unsupported aggregate function: SUM (1)
+
+1 rules:
+
+* Alerts in Different ATT&CK Tactics by Host
 
 ### Unsupported command: GROK (1)
 

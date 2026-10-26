@@ -24,7 +24,7 @@ from typing import ClassVar
 
 import faker
 
-from ..constraints import ConflictError
+from ..constraints import ConflictError, infer_type
 from ..utils import (
     deep_merge,
     expand_wildcards,
@@ -144,7 +144,7 @@ class Entity:
             if self.group:
                 field = f"{self.group}.{field}"
             field_schema = self.schema.get(field, {})
-            field_type = field_schema.get("type", "keyword")
+            field_type = field_schema.get("type") or infer_type(constraints) or "keyword"
             field_is_array = "array" in field_schema.get("normalize", [])
             field_solver = solver.get_type_solver(field_type)
             field_constraints = get_ecs_constraints(self, field) + get_ecs_constraints(field_solver, field)

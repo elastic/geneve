@@ -34,6 +34,7 @@ UNKNOWN_COLUMN = re.compile(r"Unknown column \[([^\]]+)\]")
 NO_MATCH = re.compile(r"No matches found for pattern \[([^\]]+)\]")
 MAX_ATTEMPTS = 8
 CHUNK = 500  # documents indexed and checked at once
+MAX_GROUPS = 40  # branches of a query that aggregates that are checked, one by one
 MAX_ROWS = 10000  # ES|QL does not return more
 
 # status is one of "validated", "failed" (the query did not return the documents), "error" (the query was
@@ -122,7 +123,8 @@ def run_documents(es, index, mappings, docs, query):
 def validate_query(es, name, query, schema, stack_version=None, rule=None):
     """Generate documents for a query and check the query against them."""
     try:
-        index = pick_index(esql.parse(query).sources)
+        parsed = esql.parse(query)
+        index = pick_index(parsed.sources)
         se = SourceEvents(schema)
         se.stack_version = stack_version
         root = se.add_rule(rule) if rule is not None else se.add_query(query)
@@ -132,6 +134,17 @@ def validate_query(es, name, query, schema, stack_version=None, rule=None):
         return Result(name, "skipped", 0, f"{type(e).__name__}: {e}".splitlines()[0][:160])
 
     try:
+        if parsed.stats is not None:
+            # a group of documents is one row of the result: the groups of a branch are checked by themselves,
+            # the other branches could add to them (the BY of the query may be the same for all)
+            step = max(1, len(branches) // MAX_GROUPS)
+            for i in range(0, len(branches), step):
+                rows, error = run_documents(es, index, mappings, branches[i], query)
+                if error:
+                    return Result(name, "error", len(branches), f"branch {i}: {error[:300]}")
+                if not rows:
+                    return Result(name, "failed", len(branches), f"branch {i}: no rows for {branches[i]}")
+            return Result(name, "validated", len(branches), "")
         # each document is expected to be returned once: all together, only one by one to say which one is not
         documents = [(i, doc) for i, docs in enumerate(branches) for doc in docs]
         for start in range(0, len(documents), CHUNK):

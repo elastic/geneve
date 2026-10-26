@@ -22,6 +22,7 @@ from collections import namedtuple
 from datetime import datetime, timedelta, timezone
 from itertools import chain
 
+from .constraints import infer_type
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
 from .events_emitter_eql import get_ast_stats  # noqa: F401
 from .solver import emit_field
@@ -215,7 +216,15 @@ class SourceEvents:
         if extra_fields is None:
             extra_fields = []
         fields = self.fields() if root is None else root.fields()
-        return emit_mappings(fields | set(extra_fields), self.schema)
+        # what the schema does not know, the literals of ES|QL may tell
+        inferred = {}
+        for r in self.__roots if root is None else [root]:
+            for doc in r.constraints():
+                for field, constraints in doc.items():
+                    field_type = infer_type(constraints)
+                    if field_type and not self.schema.get(field, {}).get("type"):
+                        inferred.setdefault(field, {"type": field_type})
+        return emit_mappings(fields | set(extra_fields), {**inferred, **self.schema})
 
     def roots(self):
         return iter(self.__roots)

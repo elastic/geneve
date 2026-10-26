@@ -13,16 +13,15 @@ Rules version: 8.15.18
       1. [Unsupported rule type: machine_learning (74)](#unsupported-rule-type-machine_learning-74)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported command: EVAL (10)](#unsupported-command-eval-10)
-      1. [Unsupported pipe before WHERE: KEEP (9)](#unsupported-pipe-before-where-keep-9)
-      1. [Unsupported command: STATS (8)](#unsupported-command-stats-8)
+      1. [Unsupported function: now (10)](#unsupported-function-now-10)
       1. [Unsupported command: DISSECT (7)](#unsupported-command-dissect-7)
       1. [Unsupported operator: RLIKE (6)](#unsupported-operator-rlike-6)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported command: MV_EXPAND (4)](#unsupported-command-mv_expand-4)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
+      1. [Unsupported aggregate function: MAX (2)](#unsupported-aggregate-function-max-2)
       1. [Unsupported right operand, it must be a literal (2)](#unsupported-right-operand-it-must-be-a-literal-2)
       1. [Unsupported function: TO_LOWER (1)](#unsupported-function-to_lower-1)
-      1. [Unsupported function: now (1)](#unsupported-function-now-1)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
       1. [Unsupported function: match (13)](#unsupported-function-match-13)
@@ -348,11 +347,12 @@ Rules version: 8.15.18
 * Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
 * Potential Denial of Azure OpenAI ML Service
 
-### Unsupported pipe before WHERE: KEEP (9)
+### Unsupported function: now (10)
 
-9 rules:
+10 rules:
 
 * High Number of Egress Network Connections from Unusual Executable
+* M365 OneDrive Excessive File Downloads with OAuth Token
 * Potential Malware-Driven SSH Brute Force Attempt
 * Potential Port Scanning Activity from Compromised Host
 * Potential Subnet Scanning Activity from Compromised Host
@@ -361,19 +361,6 @@ Rules version: 8.15.18
 * Unusual File Creation by Web Server
 * Unusual File Transfer Utility Launched
 * Unusual Process Spawned from Web Server Parent
-
-### Unsupported command: STATS (8)
-
-8 rules:
-
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* AWS S3 Bucket Enumeration or Brute Force
-* Azure Entra MFA TOTP Brute Force Attempts
-* Azure OpenAI Insecure Output Handling
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
-* Potential Widespread Malware Infection Across Multiple Hosts
 
 ### Unsupported command: DISSECT (7)
 
@@ -426,6 +413,13 @@ Rules version: 8.15.18
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
+### Unsupported aggregate function: MAX (2)
+
+2 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* Potential Azure OpenAI Model Theft
+
 ### Unsupported right operand, it must be a literal (2)
 
 2 rules:
@@ -438,12 +432,6 @@ Rules version: 8.15.18
 1 rules:
 
 * AWS IAM Login Profile Added for Root
-
-### Unsupported function: now (1)
-
-1 rules:
-
-* M365 OneDrive Excessive File Downloads with OAuth Token
 
 ## Generation errors
 
