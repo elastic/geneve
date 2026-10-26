@@ -607,8 +607,7 @@ class TestEsqlStats(unittest.TestCase):
 
     def test_comments_in_the_commands(self):
         # they are everywhere in the rules, and they must not hide a name or make one up
-        query = esql.parse(
-            """FROM x
+        query = esql.parse("""FROM x
             | EVAL
                 // hosts with a lot of load, k is not a field of the documents
                 k = CASE(a == "x // not a comment" AND b >= 1, host.id, NULL), /* another one */
@@ -618,8 +617,7 @@ class TestEsqlStats(unittest.TestCase):
                 // how many
                 d = COUNT_DISTINCT(k), /* and the key */
                 e = COUNT(*) BY z // by the alias
-            | WHERE d >= 2"""
-        )
+            | WHERE d >= 2""")
         self.assertEqual(("z",), query.stats.by)
         self.assertEqual(("c",), query.stats.join)
         self.assertEqual([("d", "count_distinct", None, False), ("e", "count", None, True)], [tuple(a) for a in query.stats.aggregates])
