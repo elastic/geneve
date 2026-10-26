@@ -12,12 +12,13 @@ Rules version: 8.13.23
       1. [Unsupported rule type: new_terms (82)](#unsupported-rule-type-new_terms-82)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported command: DISSECT (8)](#unsupported-command-dissect-8)
-      1. [Unsupported operator: RLIKE (7)](#unsupported-operator-rlike-7)
+      1. [Unsupported operator: RLIKE (9)](#unsupported-operator-rlike-9)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
-      1. [Unsupported command: MV_EXPAND (2)](#unsupported-command-mv_expand-2)
-      1. [Unsupported right operand, it must be a literal (2)](#unsupported-right-operand-it-must-be-a-literal-2)
+      1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
+      1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
+      1. [Unsupported WHERE on a field made by DISSECT: mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-mfa_used-1)
+      1. [Unsupported WHERE on a field made by DISSECT: service_code (1)](#unsupported-where-on-a-field-made-by-dissect-service_code-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-risk_factor-1)
       1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
@@ -309,23 +310,11 @@ Rules version: 8.13.23
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported command: DISSECT (8)
+### Unsupported operator: RLIKE (9)
 
-8 rules:
+9 rules:
 
-* AWS EC2 EBS Snapshot Shared with Another Account
-* AWS IAM AdministratorAccess Policy Attached to Group
-* AWS IAM AdministratorAccess Policy Attached to Role
-* AWS IAM AdministratorAccess Policy Attached to User
-* AWS S3 Object Encryption Using External KMS Key
-* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* AWS Signin Single Factor Console Login with Federated User
-* Potential AWS S3 Bucket Ransomware Note Uploaded
-
-### Unsupported operator: RLIKE (7)
-
-7 rules:
-
+* Attempts to Brute Force a Microsoft 365 User Account
 * Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
 * Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
 * High Number of Okta Device Token Cookies Generated for Authentication
@@ -333,6 +322,7 @@ Rules version: 8.13.23
 * Multiple Okta User Authentication Events with Client Address
 * Multiple Okta User Authentication Events with Same Device Token Hash
 * Okta User Sessions Started from Different Geolocations
+* Potential AWS S3 Bucket Ransomware Note Uploaded
 
 ### Unsupported rule type: threat_match (5)
 
@@ -353,19 +343,34 @@ Rules version: 8.13.23
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
-### Unsupported command: MV_EXPAND (2)
+### Unsupported right operand, it must be a literal (4)
 
-2 rules:
+4 rules:
 
-* Attempts to Brute Force a Microsoft 365 User Account
-* Unusual High Confidence Misconduct Blocks Detected
-
-### Unsupported right operand, it must be a literal (2)
-
-2 rules:
-
+* AWS EC2 EBS Snapshot Shared with Another Account
 * AWS IAM User Created Access Keys For Another User
+* AWS S3 Object Encryption Using External KMS Key
 * AWS STS Role Chaining
+
+### Unsupported WHERE on a field made by DISSECT: policyName (3)
+
+3 rules:
+
+* AWS IAM AdministratorAccess Policy Attached to Group
+* AWS IAM AdministratorAccess Policy Attached to Role
+* AWS IAM AdministratorAccess Policy Attached to User
+
+### Unsupported WHERE on a field made by DISSECT: mfa_used (1)
+
+1 rules:
+
+* AWS Signin Single Factor Console Login with Federated User
+
+### Unsupported WHERE on a field made by DISSECT: service_code (1)
+
+1 rules:
+
+* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 
 ### Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)
 

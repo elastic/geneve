@@ -164,17 +164,15 @@ class TestEsqlParser(unittest.TestCase):
 
     def test_unsupported_command(self):
         for command in (
-            'DISSECT a "%{x}"',
-            'GROK a "%{WORD:x}"',
             "ENRICH p ON a",
-            "MV_EXPAND a",
             "LOOKUP JOIN idx ON a",
+            "COMPLETION c = a WITH inference",
         ):
             name = command.split()[0]
             with self.subTest(command), self.assertRaisesRegex(NotImplementedError, rf"Unsupported command: {name}"):
                 where(f"FROM x | WHERE a == 1 | {command}")
-        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: GROK"):
-            where('from x | grok a "%{WORD:x}"')
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: ENRICH"):
+            where("from x | enrich p on a")
 
     def test_unsupported_source_command(self):
         for query in ("ROW a = 1", "SHOW INFO", "TS metrics"):
@@ -542,7 +540,7 @@ class TestEsqlStats(unittest.TestCase):
         self.assertEqual(eql.parse_expression("a == 1"), pre)
         self.assertEqual(eql.parse_expression("c >= 3"), post)
         self.assertEqual(
-            {"aggregates": [["c", "count", None, True], ["d", "count_distinct", "u", True]], "by": ["h"], "join": ["h"]},
+            {"aggregates": [["c", "count", None, True], ["d", "count_distinct", "u", True]], "by": ["h"], "join": ["h"], "expanded": []},
             json.loads(spec.value),
         )
         # the plain translation is the one of the documents before the aggregation
@@ -574,8 +572,8 @@ class TestEsqlStats(unittest.TestCase):
             ("STATS c = COUNT(*) BY h | STATS d = COUNT(*)", "Unsupported second STATS"),
             ("LIMIT 5 | STATS c = COUNT(*) BY h", "Unsupported pipe before STATS: LIMIT"),
             ("STATS c = COUNT(*) BY h | LIMIT 5 | WHERE c > 1", "Unsupported pipe before WHERE: LIMIT"),
-            ("MV_EXPAND f | STATS c = COUNT(*) BY h", "Unsupported command: MV_EXPAND"),
-            ('GROK f "%{WORD:w}" | STATS c = COUNT(*) BY h', "Unsupported command: GROK"),
+            ("ENRICH p ON f | STATS c = COUNT(*) BY h", "Unsupported command: ENRICH"),
+            ("MV_EXPAND f + 1 | STATS c = COUNT(*) BY h", "Unsupported MV_EXPAND of an expression"),
             ("STATS c = COUNT(*) BY _id", "Unsupported predicate on metadata field"),
         ):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, message):
@@ -629,6 +627,95 @@ class TestEsqlStats(unittest.TestCase):
         self.assertEqual((), esql.parse("FROM x | WHERE a == 1").aliases)
         # a field that an EVAL makes out of itself is still one of the documents
         self.assertEqual(("k",), esql.parse("FROM x | EVAL a = TO_LOWER(a), k = a").aliases)
+
+    def test_grok_and_dissect_make_fields_like_eval_does(self):
+        def keys(text):
+            stats = esql.parse(text).stats
+            return list(stats.by), list(stats.join)
+
+        base = "STATS c = COUNT(*) BY"
+        # the fields that a pattern extracts are made out of the one that it reads
+        self.assertEqual((["k"], ["a"]), keys('FROM x | GROK a """id=(?<k>[^,}\\]]+)""" | ' + base + " k"))
+        self.assertEqual((["w"], ["a.b"]), keys('FROM x | GROK a.b "%{WORD:w} %{NUMBER:n:int} %{GREEDYDATA}" | ' + base + " w"))
+        self.assertEqual((["n"], ["a.b"]), keys('FROM x | GROK a.b "%{WORD:w} %{NUMBER:n:int}" | ' + base + " n"))
+        self.assertEqual((["k"], ["a"]), keys('FROM x | DISSECT a "%{}id=%{k} %{+k} %{?skip}" | ' + base + " k"))
+        self.assertEqual((["k"], ["z"]), keys('FROM x | EVAL u = z | GROK u "%{WORD:w}" | DISSECT w "%{k}" | ' + base + " k"))
+        self.assertEqual((["k"], ["my field"]), keys('FROM x | GROK `my field` "%{WORD:k}" | ' + base + " k"))
+        self.assertEqual(("k", "r"), esql.parse('FROM x | GROK a """(?<k>.)""" | EVAL r = 1 | KEEP r').aliases)
+        # not used, it just goes through
+        self.assertEqual(eql.parse_expression("b == 1"), esql.parse('FROM x | GROK a "%{WORD:w}" | WHERE b == 1').where)
+        for command, name in (('GROK a "%{WORD:w}"', "GROK"), ('DISSECT a "%{w}"', "DISSECT"), ("EVAL w = TO_LOWER(a)", "EVAL")):
+            with self.subTest(command), self.assertRaisesRegex(NotImplementedError, f"Unsupported WHERE on a field made by {name}: w"):
+                esql.parse(f'FROM x | {command} | WHERE w == "x"')
+        # after STATS they are not what STATS said
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL after STATS: c"):
+            esql.parse('FROM x | STATS c = COUNT(*) | GROK a """(?<c>.)""" | WHERE c == "x"')
+
+    def test_grok_and_dissect_depend_on_all_that_they_read(self):
+        def join(text):
+            return list(esql.parse(text).stats.join)
+
+        base = " | STATS c = COUNT(*) BY k"
+        self.assertEqual(["user.name", "host.name"], join('FROM x | GROK CONCAT(user.name, host.name) "%{GREEDYDATA:k}"' + base))
+        self.assertEqual(["a"], join('FROM x | GROK CONCAT(a, "-x") "%{WORD:k}"' + base))
+        self.assertEqual(["a", "b"], join('FROM x | DISSECT TO_LOWER(CONCAT(a, " ", b)) "%{k} %{j}"' + base))
+        self.assertEqual(["a", "b"], join('FROM x | EVAL u = CONCAT(a, b) | GROK u "(?<k>.)"' + base))
+        # the strings of what is read are not the pattern
+        self.assertEqual(("k",), esql.parse('FROM x | GROK CONCAT(a, "%{WORD:bad}") "%{WORD:k}"').aliases)
+        self.assertEqual(("k",), esql.parse('FROM x | DISSECT CONCAT(a, "%{bad}") "%{k}" APPEND_SEPARATOR=","').aliases)
+        self.assertEqual(("k", "j"), esql.parse('FROM x | DISSECT a "%{k}:%{j}" APPEND_SEPARATOR="%{notaname}"').aliases)
+
+    def test_dissect_names_are_the_complete_ones(self):
+        for name in ("first-name", "a.b", "first name", "x@y", "a-b.c-d", "Esql.x_1"):
+            for pattern in (f"%{{{name}}}", f"%{{{name}->}}", f"%{{+{name}}}", f"%{{+{name}/2}}", f"x=%{{{name}}} y"):
+                with self.subTest(pattern):
+                    self.assertEqual((name,), esql.parse(f'FROM x | DISSECT a "{pattern}"').aliases)
+        self.assertEqual((), esql.parse('FROM x | DISSECT a "%{} %{?skip} %{?} %{+} %{->}"').aliases)
+        for name in ("first-name", "a b"):
+            with self.subTest(name), self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by DISSECT"):
+                esql.parse(f'FROM x | DISSECT a "%{{{name}}}" | WHERE `{name}` == "x"')
+        # the names of the other fields are not known, so no WHERE can be told from them
+        for pattern in ("%{*key}=%{&key}", "%{&key}"):
+            with self.subTest(pattern), self.assertRaisesRegex(NotImplementedError, "Unsupported DISSECT pattern with reference keys"):
+                esql.parse(f'FROM x | DISSECT a "{pattern}"')
+
+    def test_grok_names_are_the_complete_ones(self):
+        for pattern in ('"%{WORD:first-name}"', '"%{WORD:first-name:int}"', '"""(?<first-name>.+)"""'):
+            with self.subTest(pattern):
+                self.assertEqual(("first-name",), esql.parse(f"FROM x | GROK a {pattern}").aliases)
+                with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by GROK"):
+                    esql.parse(f'FROM x | GROK a {pattern} | WHERE `first-name` == "x"')
+
+    def test_mv_expand_of_what_an_eval_makes(self):
+        # the number of values of what a function makes is not known, the rows that STATS counts depend on it
+        for query in (
+            'EVAL k = SPLIT("a,b", ",") | MV_EXPAND k | STATS c = COUNT(*)',
+            'EVAL k = SPLIT(f, ",") | MV_EXPAND k | STATS c = COUNT(*) BY g',
+            "EVAL u = f, k = MV_CONCAT(u, g) | MV_EXPAND k | STATS c = COUNT(*)",
+        ):
+            with self.subTest(query), self.assertRaisesRegex(
+                NotImplementedError, "Unsupported STATS after MV_EXPAND of a field made by EVAL"
+            ):
+                esql.parse(f"FROM x | {query}")
+        # a rename is the field that it renames, and what GROK and DISSECT extract is one text
+        self.assertEqual(("f",), esql.parse("FROM x | EVAL k = f | MV_EXPAND k | STATS c = COUNT(*)").stats.expanded)
+        self.assertEqual(("f",), esql.parse("FROM x | EVAL u = f, k = u | MV_EXPAND k | STATS c = COUNT(*)").stats.expanded)
+        self.assertEqual((), esql.parse('FROM x | GROK f "%{WORD:k}" | MV_EXPAND k | STATS c = COUNT(*)').stats.expanded)
+        # without STATS nothing is counted
+        esql.parse('FROM x | EVAL k = SPLIT("a,b", ",") | MV_EXPAND k')
+        # after STATS it is about what STATS made
+        esql.parse('FROM x | STATS c = COUNT(*) | EVAL k = SPLIT("a,b", ",") | MV_EXPAND k')
+
+    def test_mv_expand_goes_through(self):
+        # the documents have one value, which is one row each: it does not change which documents match
+        self.assertEqual(eql.parse_expression('a == "x"'), esql.parse('FROM x | MV_EXPAND a | WHERE a == "x"').where)
+        self.assertEqual(
+            eql.parse_expression('b == 1 and a == "x"'), esql.parse('FROM x | WHERE b == 1 | MV_EXPAND `a` | WHERE a == "x"').where
+        )
+        stats = esql.parse("FROM x | MV_EXPAND a | MV_EXPAND b.c | EVAL k = a | MV_EXPAND k | STATS c = COUNT(*) BY h").stats
+        self.assertEqual(("a", "b.c"), stats.expanded)  # k is not a field of the documents
+        stats = esql.parse("FROM x | STATS c = COUNT(*) BY h | MV_EXPAND h").stats
+        self.assertEqual((), stats.expanded)
 
     def test_names_that_an_eval_after_stats_overwrites(self):
         for query in (
@@ -719,7 +806,7 @@ class TestEsqlRouting(unittest.TestCase):
 
     def test_guess_esql_error_propagates(self):
         # no fallback to EQL or KQL: they would accept some of these as plain text
-        for query in ("FROM x | MV_EXPAND b", "FROM x | LIMIT 1 | WHERE a == 1", "ROW a = 1", "SHOW INFO"):
+        for query in ("FROM x | ENRICH p ON b", "FROM x | LIMIT 1 | WHERE a == 1", "ROW a = 1", "SHOW INFO"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
                 guess_from_query(query)
         for query in ("FROM x | WHERE", "FROM x |", "from  x | where a =="):
@@ -735,8 +822,8 @@ class TestEsqlRouting(unittest.TestCase):
             with self.subTest(rule_type, language=language), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
                 ast_from_rule(rule)
 
-        rule = SimpleNamespace(type="esql", language="esql", query="FROM idx | MV_EXPAND b")
-        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: MV_EXPAND"):
+        rule = SimpleNamespace(type="esql", language="esql", query="FROM idx | ENRICH p ON b")
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: ENRICH"):
             ast_from_rule(rule)
 
     def test_rule_types_unchanged(self):
@@ -1130,6 +1217,33 @@ class TestEsqlStatsEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCa
         self.assertTrue(all("k" not in doc for doc in docs), docs)
         with self.assertRaisesRegex(NotImplementedError, "Unsupported condition on the aggregate d"):
             self.branches(query.replace("c >= 2", "c >= 2 AND d >= 1"))
+
+    def test_mv_expand_before_stats(self):
+        base = 'FROM x | MV_EXPAND process.args | WHERE process.args == "a" | STATS c = COUNT(*) BY host.id | WHERE c >= 3'
+        docs = self.branches(base)[0]
+        self.assertEqual(3, len(docs))
+        self.assertTrue(all(doc["process"]["args"] == ["a"] for doc in docs), docs)
+        self.assertShared(docs, "host.id")
+        # each document would be as many rows as it has values
+        with self.assertRaisesRegex(
+            NotImplementedError, "Unsupported STATS over a field that MV_EXPAND expands with many values: process.args"
+        ):
+            self.branches(
+                'FROM x | WHERE KQL("process.args: a AND process.args: b") | MV_EXPAND process.args | STATS c = COUNT(*) | WHERE c >= 2'
+            )
+        # when STATS is not there it does not matter
+        docs = self.branches('FROM x | WHERE KQL("process.args: a AND process.args: b") | MV_EXPAND process.args')[0]
+        self.assertEqual([{"process": {"args": ["a", "b"]}}], docs)
+
+    def test_grok_before_stats(self):
+        docs = self.branches('FROM x | GROK user.name """id=(?<k>[^,]+)""" | STATS c = COUNT(*) BY k | WHERE c >= 3')[0]
+        self.assertEqual(3, len(docs))
+        self.assertShared(docs, "user.name")
+        self.assertTrue(all("k" not in doc for doc in docs), docs)
+        docs = self.branches('FROM x | WHERE process.name == "a.exe" | DISSECT user.name "%{k} %{j}" | STATS c = COUNT(*) | WHERE c >= 2')[
+            0
+        ]
+        self.assertEqual([{"process": {"name": "a.exe"}}] * 2, docs)
 
     def test_values_just_collect(self):
         docs = self.branches("FROM x | STATS c = COUNT(*), v = VALUES(user.name) BY host.id | WHERE c >= 3")[0]

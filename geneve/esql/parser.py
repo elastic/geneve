@@ -38,11 +38,13 @@ from ..events_emitter_eql import collect_constraints
 from ..utils import has_wildcards
 from .errors import EsqlParseError
 from .lexical import (
+    STRING_RE,
     assignment,
     call,
     identifiers,
     is_name,
     split_keyword,
+    split_pattern,
     split_top,
     strip_comments,
 )
@@ -56,7 +58,8 @@ EsqlQuery = namedtuple("EsqlQuery", ["sources", "metadata", "where", "stats", "a
 # `by` are the names of the keys, `fields` those that are fields of the documents and `join` the fields of the documents that the
 # keys depend on, which are the same for the documents of a group. `simple` is for the aggregates that a condition can be about:
 # a count of the documents, or of the values of a field
-EsqlStats = namedtuple("EsqlStats", ["aggregates", "by", "fields", "join", "where"])
+# `expanded` are the fields of the documents that MV_EXPAND expands before STATS
+EsqlStats = namedtuple("EsqlStats", ["aggregates", "by", "fields", "join", "where", "expanded"], defaults=((),))
 Aggregate = namedtuple("Aggregate", ["alias", "function", "argument", "simple"])
 
 # commands that do not change which documents match a preceding WHERE, LIMIT does
@@ -65,6 +68,9 @@ IGNORED_COMMANDS = ("KEEP", "DROP", "SORT", "LIMIT")
 COUNTING_FUNCTIONS = ("count", "count_distinct")
 # the time is not a field that the documents can be made to share
 NOT_JOINED = ("@timestamp",)
+# the names of the fields that GROK takes out of a text, in its patterns (the names are all that is not a separator)
+GROK_NAMES = re.compile(r"%\{\w+:([^}:]+)(?::\w+)?\}|\(\?<([^>]+)>")
+DISSECT_KEYS = re.compile(r"%\{([^}]*)\}")
 
 # fields that describe the indexed document and are not part of its content
 METADATA_FIELDS = ("_id", "_index", "_version", "_ignored", "_index_mode", "_source", "_score")
@@ -134,6 +140,10 @@ class EsqlToEql(Interpreter):
         self.stats = None
         self.post_wheres = []
         self.evals = {}  # what the EVALs before STATS make, and the fields of the documents that they depend on
+        self.made_by = {}  # the command that made each of them: EVAL, GROK or DISSECT
+        self.renames = {}  # what an EVAL makes by naming a field of the documents again: the field that it is
+        self.unknown_expansions = []  # what an EVAL makes that MV_EXPAND expands, of which the number of values is not known
+        self.expanded = []  # the fields of the documents that MV_EXPAND expands before STATS
         self.overwritten = set()  # the names that an EVAL after STATS makes: they are no longer what STATS said
 
     @staticmethod
@@ -152,7 +162,7 @@ class EsqlToEql(Interpreter):
         if self.stats is not None:
             aggregates, by, fields, join = self.stats
             post_where = eql.ast.And(self.post_wheres) if len(self.post_wheres) > 1 else (self.post_wheres or [eql.ast.Boolean(True)])[0]
-            stats = EsqlStats(tuple(aggregates), tuple(by), tuple(fields), tuple(join), post_where)
+            stats = EsqlStats(tuple(aggregates), tuple(by), tuple(fields), tuple(join), post_where, tuple(self.expanded))
         aliases = tuple(alias for alias, depends in self.evals.items() if alias not in depends)
         return EsqlQuery(tuple(self.sources), tuple(self.metadata_fields), where, stats, aliases)
 
@@ -185,7 +195,8 @@ class EsqlToEql(Interpreter):
             return
         for node in expression:
             if isinstance(node, eql.ast.Field) and self.field_key(node.render()) in self.evals:
-                self.reject(tree, f"WHERE on a field made by EVAL: {node.render()}")
+                made_by = self.made_by.get(self.field_key(node.render()), "EVAL")
+                self.reject(tree, f"WHERE on a field made by {made_by}: {node.render()}")
         self.wheres.append(expression)
 
     def other_cmd(self, tree):
@@ -195,6 +206,10 @@ class EsqlToEql(Interpreter):
             return self.stats_command(tree, strip_comments(body))
         if name == "EVAL":
             return self.eval_command(tree, strip_comments(body))
+        if name in ("GROK", "DISSECT"):
+            return self.extraction_command(tree, name, strip_comments(body))
+        if name == "MV_EXPAND":
+            return self.expand_command(tree, strip_comments(body))
         if name not in IGNORED_COMMANDS:
             self.reject(tree, f"command: {name}")
         if name == "LIMIT" and re.fullmatch(r"\s*0+\s*", strip_comments(body)):
@@ -230,13 +245,69 @@ class EsqlToEql(Interpreter):
             if made and self.stats is not None:
                 self.overwritten.add(self.field_key(made[0]))
             elif made:
-                self.evals[self.field_key(made[0])] = self.dependencies(made[1])
+                key = self.field_key(made[0])
+                self.evals[key] = self.dependencies(made[1])
+                self.made_by[key] = "EVAL"
+                self.renames.pop(key, None)
+                if is_name(made[1]) and len(self.evals[key]) == 1:
+                    self.renames[key] = self.evals[key][0]
+
+    def extraction_command(self, tree, name, body):
+        # GROK and DISSECT make fields out of what they read, as an EVAL does, if the text does not match they are null
+        read, patterns = split_pattern(body)
+        depends = self.dependencies(read)
+        texts = STRING_RE.findall(patterns)
+        if name == "DISSECT":
+            texts = texts[:1]  # what follows the pattern are options, which have strings of their own
+        for key in (self.field_key(made) for made in self.extracted(tree, name, texts)):
+            if self.stats is not None:
+                self.overwritten.add(key)
+            else:
+                self.evals[key] = depends
+                self.made_by[key] = name
+                self.renames.pop(key, None)
+
+    def extracted(self, tree, name, texts):
+        """Return the names of the fields that the patterns take out of a text."""
+        for text in texts:
+            if name == "GROK":
+                for match in GROK_NAMES.finditer(text):
+                    yield next(group for group in match.groups() if group)
+                continue
+            for key in DISSECT_KEYS.findall(text):
+                key = re.sub(r"/\d+$", "", re.sub(r"->$", "", key))  # the order of what is appended, and the modifier to skip empties
+                if key[:1] in ("*", "&"):
+                    self.reject(tree, "DISSECT pattern with reference keys, the names of the fields are not those of the pattern")
+                key = key[1:] if key[:1] == "+" else key
+                if key and key[:1] != "?":
+                    yield key
+
+    def expand_command(self, tree, body):
+        # the documents have one value of the field, which is one row, so it is as if nothing was expanded
+        if not is_name(body):
+            self.reject(tree, "MV_EXPAND of an expression")
+        key = self.field_key(body.strip())
+        if self.stats is not None:
+            return
+        if key in self.evals:
+            # what GROK and DISSECT take out is one text; a rename is the field that it renames; and what the
+            # functions make may be many values, how many is what STATS counts and it is not known
+            if self.made_by.get(key) == "EVAL":
+                if key in self.renames:
+                    if self.renames[key] not in self.expanded:
+                        self.expanded.append(self.renames[key])
+                else:
+                    self.unknown_expansions.append(key)
+        elif key not in self.expanded:
+            self.expanded.append(key)
 
     def stats_command(self, tree, body):
         if self.stats is not None:
             self.reject(tree, "second STATS")
         if self.blocking:
             self.reject(tree, f"pipe before STATS: {self.blocking}")
+        if self.unknown_expansions:
+            self.reject(tree, f"STATS after MV_EXPAND of a field made by EVAL: {self.unknown_expansions[0]}")
         aggregations, by = split_keyword(body, "by")
         aggregates = [self.aggregate(tree, item) for item in self.items(aggregations, body, "STATS without aggregates")]
         keys = self.items(by, body, "BY without keys") if by is not None else []
@@ -541,6 +612,11 @@ def to_eql(text):
     query = parse(text)
     node = query.where
     if query.stats is not None:
-        spec = {"aggregates": [list(a) for a in query.stats.aggregates], "by": list(query.stats.fields), "join": list(query.stats.join)}
+        spec = {
+            "aggregates": [list(a) for a in query.stats.aggregates],
+            "by": list(query.stats.fields),
+            "join": list(query.stats.join),
+            "expanded": list(query.stats.expanded),
+        }
         node = eql.ast.FunctionCall("_stats", [query.where, query.stats.where, eql.ast.String(json.dumps(spec))])
     return eql.ast.FunctionCall("_esql", [node])

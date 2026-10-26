@@ -12,21 +12,25 @@ Rules version: 8.16.16
       1. [Unsupported rule type: new_terms (126)](#unsupported-rule-type-new_terms-126)
       1. [Unsupported rule type: machine_learning (74)](#unsupported-rule-type-machine_learning-74)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported command: DISSECT (10)](#unsupported-command-dissect-10)
       1. [Unsupported function: now (10)](#unsupported-function-now-10)
       1. [Unsupported WHERE on a field made by EVAL: script_len (9)](#unsupported-where-on-a-field-made-by-eval-script_len-9)
-      1. [Unsupported operator: RLIKE (7)](#unsupported-operator-rlike-7)
+      1. [Unsupported operator: RLIKE (8)](#unsupported-operator-rlike-8)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
-      1. [Unsupported command: MV_EXPAND (4)](#unsupported-command-mv_expand-4)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
+      1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
+      1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
       1. [Unsupported WHERE on a field made by EVAL: count (2)](#unsupported-where-on-a-field-made-by-eval-count-2)
-      1. [Unsupported right operand, it must be a literal (2)](#unsupported-right-operand-it-must-be-a-literal-2)
+      1. [Unsupported WHERE on a field made by DISSECT: mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-mfa_used-1)
+      1. [Unsupported WHERE on a field made by DISSECT: operationType (1)](#unsupported-where-on-a-field-made-by-dissect-operationtype-1)
+      1. [Unsupported WHERE on a field made by DISSECT: service_code (1)](#unsupported-where-on-a-field-made-by-dissect-service_code-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-risk_factor-1)
       1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
-      1. [Unsupported command: GROK (1)](#unsupported-command-grok-1)
+      1. [Unsupported WHERE on a field made by GROK: powershell.file.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-powershellfilescript_block_id-1)
+      1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
       1. [Unsupported function: NOW (1)](#unsupported-function-now-1)
       1. [Unsupported function: TO_LOWER (1)](#unsupported-function-to_lower-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
+      1. [Unsupported second STATS (1)](#unsupported-second-stats-1)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
       1. [Unsupported function: match (14)](#unsupported-function-match-14)
@@ -366,21 +370,6 @@ Rules version: 8.16.16
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported command: DISSECT (10)
-
-10 rules:
-
-* AWS EC2 EBS Snapshot Access Removed
-* AWS EC2 EBS Snapshot Shared or Made Public
-* AWS IAM AdministratorAccess Policy Attached to Group
-* AWS IAM AdministratorAccess Policy Attached to Role
-* AWS IAM AdministratorAccess Policy Attached to User
-* AWS S3 Object Encryption Using External KMS Key
-* AWS S3 Static Site JavaScript File Uploaded
-* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* AWS Signin Single Factor Console Login with Federated User
-* Potential AWS S3 Bucket Ransomware Note Uploaded
-
 ### Unsupported function: now (10)
 
 10 rules:
@@ -410,9 +399,9 @@ Rules version: 8.16.16
 * Potential PowerShell Obfuscation via String Reordering
 * PowerShell Obfuscation via Negative Index String Reversal
 
-### Unsupported operator: RLIKE (7)
+### Unsupported operator: RLIKE (8)
 
-7 rules:
+8 rules:
 
 * Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
 * Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
@@ -421,6 +410,7 @@ Rules version: 8.16.16
 * Multiple Okta User Authentication Events with Client Address
 * Multiple Okta User Authentication Events with Same Device Token Hash
 * Okta User Sessions Started from Different Geolocations
+* Potential AWS S3 Bucket Ransomware Note Uploaded
 
 ### Unsupported rule type: threat_match (6)
 
@@ -433,15 +423,6 @@ Rules version: 8.16.16
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
 
-### Unsupported command: MV_EXPAND (4)
-
-4 rules:
-
-* Unusual High Confidence Content Filter Blocks Detected
-* Unusual High Denied Sensitive Information Policy Blocks Detected
-* Unusual High Denied Topic Blocks Detected
-* Unusual High Word Policy Blocks Detected
-
 ### Unsupported query language: lucene (4)
 
 4 rules:
@@ -451,6 +432,23 @@ Rules version: 8.16.16
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
+### Unsupported right operand, it must be a literal (4)
+
+4 rules:
+
+* AWS EC2 EBS Snapshot Shared or Made Public
+* AWS IAM User Created Access Keys For Another User
+* AWS S3 Object Encryption Using External KMS Key
+* AWS STS Role Chaining
+
+### Unsupported WHERE on a field made by DISSECT: policyName (3)
+
+3 rules:
+
+* AWS IAM AdministratorAccess Policy Attached to Group
+* AWS IAM AdministratorAccess Policy Attached to Role
+* AWS IAM AdministratorAccess Policy Attached to User
+
 ### Unsupported WHERE on a field made by EVAL: count (2)
 
 2 rules:
@@ -458,12 +456,23 @@ Rules version: 8.16.16
 * Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
 * Potential PowerShell Obfuscation via Invalid Escape Sequences
 
-### Unsupported right operand, it must be a literal (2)
+### Unsupported WHERE on a field made by DISSECT: mfa_used (1)
 
-2 rules:
+1 rules:
 
-* AWS IAM User Created Access Keys For Another User
-* AWS STS Role Chaining
+* AWS Signin Single Factor Console Login with Federated User
+
+### Unsupported WHERE on a field made by DISSECT: operationType (1)
+
+1 rules:
+
+* AWS EC2 EBS Snapshot Access Removed
+
+### Unsupported WHERE on a field made by DISSECT: service_code (1)
+
+1 rules:
+
+* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 
 ### Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)
 
@@ -477,11 +486,17 @@ Rules version: 8.16.16
 
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
 
-### Unsupported command: GROK (1)
+### Unsupported WHERE on a field made by GROK: powershell.file.script_block_id (1)
 
 1 rules:
 
 * Potential Malicious PowerShell Based on Alert Correlation
+
+### Unsupported field name: {?bucket.name.key (1)
+
+1 rules:
+
+* AWS S3 Static Site JavaScript File Uploaded
 
 ### Unsupported function: NOW (1)
 
@@ -500,6 +515,12 @@ Rules version: 8.16.16
 1 rules:
 
 * AWS Discovery API Calls via CLI from a Single Resource
+
+### Unsupported second STATS (1)
+
+1 rules:
+
+* Unusual High Confidence Content Filter Blocks Detected
 
 ## Generation errors
 

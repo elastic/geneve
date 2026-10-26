@@ -112,6 +112,35 @@ def top_level(text):
     return mask
 
 
+def split_pattern(text):
+    """Split what GROK and DISSECT read from what they match it with: the first string that is not within brackets."""
+    i, depth, n = 0, 0, len(text)
+    while i < n:
+        c = text[i]
+        if text.startswith('"""', i) or c == '"':
+            if depth == 0:
+                return text[:i], text[i:]
+            if text.startswith('"""', i):
+                end = text.find('"""', i + 3)
+                i = n if end < 0 else end + 3
+            else:
+                i += 1
+                while i < n and text[i] != '"':
+                    i += 2 if text[i] == "\\" else 1
+                i += 1
+            continue
+        if c == "`":
+            end = text.find("`", i + 1)
+            i = n if end < 0 else end + 1
+            continue
+        if c in "([{":
+            depth += 1
+        elif c in ")]}":
+            depth -= 1
+        i += 1
+    return text, ""
+
+
 def split_top(text, separator=","):
     """Split a text at the separators that are not in a string, a name, a comment or brackets."""
     mask = top_level(text)

@@ -306,18 +306,21 @@ def cc_stats(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Roo
     aggregates = {normalize_name(alias): (function, argument, simple) for alias, function, argument, simple in spec["aggregates"]}
     by = [normalize_name(field) for field in spec["by"]]
     join = [normalize_name(field) for field in spec["join"]]
+    expanded = [normalize_name(field) for field in spec.get("expanded", [])]
     pre_root = collect_constraints(pre, False, max_branches)
     post_root = collect_constraints(post, False, max_branches)
     if max_branches and len(pre_root) * len(post_root) > max_branches:
         raise ValueError(f"Root with too many branches (limit: {max_branches})")
-    return Root([stats_branch(pre_branch, post_branch, aggregates, by, join) for pre_branch in pre_root for post_branch in post_root])
+    return Root(
+        [stats_branch(pre_branch, post_branch, aggregates, by, join, expanded) for pre_branch in pre_root for post_branch in post_root]
+    )
 
 
 def positive_constraints(constraints: Any) -> list:
     return [c for c in constraints or [] if c[0] in ("==", "wildcard", "in")]
 
 
-def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: list, join: list) -> Branch:
+def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: list, join: list, expanded: list) -> Branch:
     if len(pre_branch) != 1:
         raise NotImplementedError("Unsupported STATS of documents that are related")
     base = pre_branch[0]
@@ -345,6 +348,10 @@ def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: 
 
     # what is counted of a field are its values, those of a document that has many are not a document
     base_constraints = dict(base.items())
+    for field in expanded:
+        # and MV_EXPAND makes a row of each of them
+        if len(positive_constraints(base_constraints.get(field))) > 1:
+            raise NotImplementedError(f"Unsupported STATS over a field that MV_EXPAND expands with many values: {field}")
     for field in {argument for _, argument, *_ in counts if argument} | set(distinct):
         if len(positive_constraints(base_constraints.get(field))) > 1:
             raise NotImplementedError(f"Unsupported aggregate of a field with many values: {field}")

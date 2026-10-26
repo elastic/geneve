@@ -13,12 +13,12 @@ Rules version: 8.18.15
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported function: now (14)](#unsupported-function-now-14)
-      1. [Unsupported command: DISSECT (10)](#unsupported-command-dissect-10)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (8)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-8)
-      1. [Unsupported command: MV_EXPAND (6)](#unsupported-command-mv_expand-6)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
+      1. [Unsupported operator: RLIKE (5)](#unsupported-operator-rlike-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
-      1. [Unsupported operator: RLIKE (3)](#unsupported-operator-rlike-3)
+      1. [Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_policy_name (3)](#unsupported-where-on-a-field-made-by-dissect-esqlaws_cloudtrail_request_parameters_policy_name-3)
+      1. [Unsupported right operand, it must be a literal (3)](#unsupported-right-operand-it-must-be-a-literal-3)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_pattern_count-2)
       1. [Error at line:47,column:47
 Invalid syntax
@@ -47,15 +47,20 @@ invalid-syntax
 -match-will-ignore-the--and-look-for-the-individual-words
 -where-powershellfilescript_block_text--rahcmetsysstekcostcejboimwecalperecnerferpenoitcennocniojemanvnegnirtstcejbo-wen_23niwnoisserpxeekovnidaolnwod
 -------------------------------------------1)
+      1. [Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_additional_eventdata_auth_mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-esqlaws_cloudtrail_additional_eventdata_auth_mfa_used-1)
+      1. [Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_operation_type (1)](#unsupported-where-on-a-field-made-by-dissect-esqlaws_cloudtrail_request_parameters_operation_type-1)
+      1. [Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)](#unsupported-where-on-a-field-made-by-dissect-esqlaws_cloudtrail_request_parameters_service_code-1)
+      1. [Unsupported WHERE on a field made by DISSECT: Esql.azure_auditlogs_properties_auth_oidc_discovery_url_new (1)](#unsupported-where-on-a-field-made-by-dissect-esqlazure_auditlogs_properties_auth_oidc_discovery_url_new-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)](#unsupported-where-on-a-field-made-by-eval-esqlml_policy_violations_mv_count-1)
       1. [Unsupported WHERE on a field made by EVAL: multi_spaces (1)](#unsupported-where-on-a-field-made-by-eval-multi_spaces-1)
-      1. [Unsupported command: GROK (1)](#unsupported-command-grok-1)
+      1. [Unsupported WHERE on a field made by GROK: Esql.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-esqlscript_block_id-1)
+      1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
       1. [Unsupported function: to_lower (1)](#unsupported-function-to_lower-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
-      1. [Unsupported right operand, it must be a literal (1)](#unsupported-right-operand-it-must-be-a-literal-1)
+      1. [Unsupported second STATS (1)](#unsupported-second-stats-1)
    1. [Generation errors](#generation-errors)
       1. [Unsupported function: match (21)](#unsupported-function-match-21)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
@@ -459,21 +464,6 @@ invalid-syntax
 * Unusual File Transfer Utility Launched
 * Unusual Process Spawned from Web Server Parent
 
-### Unsupported command: DISSECT (10)
-
-10 rules:
-
-* AWS EC2 EBS Snapshot Access Removed
-* AWS EC2 EBS Snapshot Shared or Made Public
-* AWS IAM AdministratorAccess Policy Attached to Group
-* AWS IAM AdministratorAccess Policy Attached to Role
-* AWS IAM AdministratorAccess Policy Attached to User
-* AWS S3 Object Encryption Using External KMS Key
-* AWS S3 Static Site JavaScript File Uploaded
-* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* AWS Signin Single Factor Console Login with Federated User
-* OIDC Discovery URL Changed in Entra ID
-
 ### Unsupported WHERE on a field made by EVAL: Esql.script_block_length (8)
 
 8 rules:
@@ -487,17 +477,6 @@ invalid-syntax
 * Potential PowerShell Obfuscation via String Reordering
 * PowerShell Obfuscation via Negative Index String Reversal
 
-### Unsupported command: MV_EXPAND (6)
-
-6 rules:
-
-* Multiple Microsoft 365 User Account Lockouts in Short Time Window
-* Potential Microsoft 365 User Account Brute Force
-* Unusual High Confidence Content Filter Blocks Detected
-* Unusual High Denied Sensitive Information Policy Blocks Detected
-* Unusual High Denied Topic Blocks Detected
-* Unusual High Word Policy Blocks Detected
-
 ### Unsupported rule type: threat_match (6)
 
 6 rules:
@@ -509,6 +488,16 @@ invalid-syntax
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
 
+### Unsupported operator: RLIKE (5)
+
+5 rules:
+
+* Entra ID Actor Token User Impersonation Abuse
+* Microsoft 365 Brute Force via Entra ID Sign-Ins
+* Multiple Device Token Hashes for Single Okta Session
+* Multiple Microsoft 365 User Account Lockouts in Short Time Window
+* Potential Microsoft 365 User Account Brute Force
+
 ### Unsupported query language: lucene (4)
 
 4 rules:
@@ -518,13 +507,21 @@ invalid-syntax
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
-### Unsupported operator: RLIKE (3)
+### Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_policy_name (3)
 
 3 rules:
 
-* Entra ID Actor Token User Impersonation Abuse
-* Microsoft 365 Brute Force via Entra ID Sign-Ins
-* Multiple Device Token Hashes for Single Okta Session
+* AWS IAM AdministratorAccess Policy Attached to Group
+* AWS IAM AdministratorAccess Policy Attached to Role
+* AWS IAM AdministratorAccess Policy Attached to User
+
+### Unsupported right operand, it must be a literal (3)
+
+3 rules:
+
+* AWS EC2 EBS Snapshot Shared or Made Public
+* AWS IAM User Created Access Keys For Another User
+* AWS S3 Object Encryption Using External KMS Key
 
 ### Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)
 
@@ -563,6 +560,30 @@ Invalid syntax
 
 * Potential PowerShell Obfuscation via Reverse Keywords
 
+### Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_additional_eventdata_auth_mfa_used (1)
+
+1 rules:
+
+* AWS Signin Single Factor Console Login with Federated User
+
+### Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_operation_type (1)
+
+1 rules:
+
+* AWS EC2 EBS Snapshot Access Removed
+
+### Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)
+
+1 rules:
+
+* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
+
+### Unsupported WHERE on a field made by DISSECT: Esql.azure_auditlogs_properties_auth_oidc_discovery_url_new (1)
+
+1 rules:
+
+* OIDC Discovery URL Changed in Entra ID
+
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)
 
 1 rules:
@@ -593,11 +614,17 @@ Invalid syntax
 
 * Command Line Obfuscation via Whitespace Padding
 
-### Unsupported command: GROK (1)
+### Unsupported WHERE on a field made by GROK: Esql.script_block_id (1)
 
 1 rules:
 
 * Potential Malicious PowerShell Based on Alert Correlation
+
+### Unsupported field name: {?bucket.name.key (1)
+
+1 rules:
+
+* AWS S3 Static Site JavaScript File Uploaded
 
 ### Unsupported function: to_lower (1)
 
@@ -611,11 +638,11 @@ Invalid syntax
 
 * AWS Discovery API Calls via CLI from a Single Resource
 
-### Unsupported right operand, it must be a literal (1)
+### Unsupported second STATS (1)
 
 1 rules:
 
-* AWS IAM User Created Access Keys For Another User
+* Unusual High Confidence Content Filter Blocks Detected
 
 ## Generation errors
 
