@@ -35,7 +35,7 @@ emitter_rules:
     # renovate: datasource=epr package=security_detection_engine-8.18
     "8.18": "8.18.15"
     # renovate: datasource=epr package=security_detection_engine-8.19
-    "8.19": "8.19.35"
+    "8.19": "8.19.36"
     # renovate: datasource=epr package=security_detection_engine-9.0
     "9.0": "9.0.19"
     # renovate: datasource=epr package=security_detection_engine-9.1
@@ -43,15 +43,15 @@ emitter_rules:
     # renovate: datasource=epr package=security_detection_engine-9.2
     "9.2": "9.2.19"
     # renovate: datasource=epr package=security_detection_engine-9.3
-    "9.3": "9.3.23"
+    "9.3": "9.3.24"
     # renovate: datasource=epr package=security_detection_engine-9.4
-    "9.4": "9.4.15"
+    "9.4": "9.4.16"
     # renovate: datasource=epr package=security_detection_engine-9.5
-    "9.5": "9.5.8"
+    "9.5": "9.5.9"
     # renovate: datasource=epr package=security_detection_engine-9.6
-    "9.6": "9.5.8"
+    "9.6": "9.5.9"
     # renovate: datasource=epr package=security_detection_engine
-    "serverless": "9.5.8"
+    "serverless": "9.5.9"
 
   stack_signals:
     "8.2":
@@ -128,10 +128,10 @@ emitter_rules:
       ack_no_signals: 7
       ack_too_few_signals: 15
     "8.19":
-      ack_failed: 19
-      ack_unsuccessful_with_signals: 19
+      ack_failed: 21
+      ack_unsuccessful_with_signals: 21
       ack_no_signals: 4
-      ack_too_few_signals: 23
+      ack_too_few_signals: 25
     "9.0":
       ack_failed: 17
       ack_unsuccessful_with_signals: 16
@@ -148,27 +148,27 @@ emitter_rules:
       ack_no_signals: 5
       ack_too_few_signals: 21
     "9.3":
-      ack_failed: 25
-      ack_unsuccessful_with_signals: 25
+      ack_failed: 28
+      ack_unsuccessful_with_signals: 28
       ack_no_signals: 4
-      ack_too_few_signals: 29
+      ack_too_few_signals: 32
     "9.4":
-      ack_failed: 25
-      ack_unsuccessful_with_signals: 25
+      ack_failed: 28
+      ack_unsuccessful_with_signals: 28
       ack_no_signals: 4
-      ack_too_few_signals: 29
+      ack_too_few_signals: 32
     "9.5":
-      ack_failed: 25
-      ack_unsuccessful_with_signals: 25
+      ack_failed: 28
+      ack_unsuccessful_with_signals: 28
       ack_no_signals: 4
-      ack_too_few_signals: 29
+      ack_too_few_signals: 32
     "9.6":
-      ack_failed: 25
-      ack_unsuccessful_with_signals: 25
+      ack_failed: 28
+      ack_unsuccessful_with_signals: 28
       ack_no_signals: 4
-      ack_too_few_signals: 29
+      ack_too_few_signals: 32
     "serverless":
-      ack_failed: 25
-      ack_unsuccessful_with_signals: 25
+      ack_failed: 28
+      ack_unsuccessful_with_signals: 28
       ack_no_signals: 4
-      ack_too_few_signals: 29
+      ack_too_few_signals: 32
