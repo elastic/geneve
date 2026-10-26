@@ -82,6 +82,23 @@ class TestStrings(tu.SeededTestCase, unittest.TestCase):
         ss = Strings(["x", "*"], literal=True) - Strings(["*"], literal=True)
         self.assertEqual({"x"}, {ss.generate(max_attempts=10)[0] for _ in range(30)})
 
+    def test_literal_exclusions_stay_literal(self):
+        # a wildcard minus a literal that looks like it is still a wildcard, without that one value
+        ss = Strings(["f*"]) - Strings(["f*"], literal=True)
+        values = {ss.generate(max_attempts=200, alphabet="ab")[0] for _ in range(80)}
+        self.assertNotIn("f*", values)
+        self.assertTrue(all(v.startswith("f") for v in values), values)
+        self.assertGreater(len(values), 1)
+        self.assertIn("fab", ss)
+        self.assertNotIn("f*", ss)
+        # also when the exclusion is the one that is combined with others
+        ss = (Strings(["f*"]) - Strings(["f*", "fa?"], literal=True)) - ["fb"]
+        self.assertNotIn("fa?", ss)
+        self.assertNotIn("fb", ss)
+        self.assertIn("fc", ss)
+        ss = (Strings(["f*"]) - Strings(["f*"], literal=True)) | ["g"]
+        self.assertIn("g", ss)
+
     def test_case_sensitive(self):
         ss = Strings(["process", "network"])
         # by default patterns match regardless of the case

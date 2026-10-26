@@ -142,8 +142,14 @@ def emit_mappings(fields, schema):
 
 def events_from_branch(branch, environment, timestamp, meta, corpus):
     events = []
+    # the documents of a group (of STATS) are written at the same time, any bucket of time that a query makes of it is then one
+    shared = timestamp and getattr(branch, "shared_timestamp", False)
+    stamp = timestamp[0] if shared else None
     for doc in branch.solve(environment):
-        if timestamp:
+        if shared:
+            emit_field(doc, "@timestamp", stamp.isoformat(timespec="milliseconds"))
+            emit_field(doc, "event.ingested", (stamp + timedelta(milliseconds=1)).isoformat(timespec="milliseconds"))
+        elif timestamp:
             emit_field(doc, "@timestamp", timestamp[0].isoformat(timespec="milliseconds"))
             timestamp[0] += timedelta(milliseconds=1)
             emit_field(doc, "event.ingested", timestamp[0].isoformat(timespec="milliseconds"))
@@ -151,6 +157,8 @@ def events_from_branch(branch, environment, timestamp, meta, corpus):
             doc = deep_merge(next(corpus), doc, overwrite=True)
         remove_none_fields(doc)
         events.append(Event(meta, doc))
+    if shared:
+        timestamp[0] = stamp + timedelta(milliseconds=2)
     return events
 
 

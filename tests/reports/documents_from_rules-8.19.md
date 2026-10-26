@@ -15,6 +15,7 @@ Rules version: 8.19.35
       1. [Unsupported command: GROK (20)](#unsupported-command-grok-20)
       1. [Unsupported command: MV_EXPAND (19)](#unsupported-command-mv_expand-19)
       1. [Unsupported operator: RLIKE (15)](#unsupported-operator-rlike-15)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (10)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrecent-10)
       1. [Unsupported function: to_lower (9)](#unsupported-function-to_lower-9)
       1. [Unsupported function: to_string (8)](#unsupported-function-to_string-8)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (7)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-7)
@@ -128,7 +129,17 @@ invalid-syntax
 ----githubreasonscode--workflow_updates-and
 ----matchgithubreasonsmessagestring-refusing-to-allow-a-github-app-to-create-or-update-workflow
 ---------------------------------1)
-      1. [Unsolvable constraints: data_stream.dataset (cannot be null) (1)](#unsolvable-constraints-data_streamdataset-cannot-be-null-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.attempts_per_user (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlattempts_per_user-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldate_diff-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldt_per_attempt-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.duration_minutes (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlduration_minutes-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.error_rate (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlerror_rate-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.recent_minutes (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrecent_minutes-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-concat_vuln_severity_values-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: delta_sec (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-delta_sec-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: process.executable (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-processexecutable-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.client_ip (1)](#unsupported-where-on-a-field-made-by-eval-esqlclient_ip-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.cloud_vendor (1)](#unsupported-where-on-a-field-made-by-eval-esqlcloud_vendor-1)
@@ -160,7 +171,6 @@ invalid-syntax
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Root without branches (9)](#root-without-branches-9)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (9)](#unsupported-argument-types-class-eqlastfield-9)
-      1. [Unsupported field in WHERE after STATS: Esql.recent (9)](#unsupported-field-in-where-after-stats-esqlrecent-9)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (8)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-8)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
@@ -267,25 +277,14 @@ invalid-syntax
       1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_request_length_avg (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_request_length_avg-1)
       1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_response_length_max (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_response_length_max-1)
       1. [Unsupported condition on the aggregate Esql.azure_signinlogs_properties_user_principal_name_lower_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlazure_signinlogs_properties_user_principal_name_lower_count_distinct-1)
-      1. [Unsupported condition on the aggregate Esql.backup_count (1)](#unsupported-condition-on-the-aggregate-esqlbackup_count-1)
       1. [Unsupported condition on the aggregate Esql.device_code_auth_count (1)](#unsupported-condition-on-the-aggregate-esqldevice_code_auth_count-1)
-      1. [Unsupported condition on the aggregate Esql.errors (1)](#unsupported-condition-on-the-aggregate-esqlerrors-1)
       1. [Unsupported condition on the aggregate Esql.failure_count (1)](#unsupported-condition-on-the-aggregate-esqlfailure_count-1)
       1. [Unsupported condition on the aggregate Esql.is_browser_case_max (1)](#unsupported-condition-on-the-aggregate-esqlis_browser_case_max-1)
       1. [Unsupported condition on the aggregate Esql.miner_register_sum (1)](#unsupported-condition-on-the-aggregate-esqlminer_register_sum-1)
-      1. [Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)](#unsupported-condition-on-the-aggregate-esqlml_usage_prompt_tokens_max-1)
       1. [Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqloauth_token_count_distinct-1)
       1. [Unsupported condition on the aggregate Esql.url_original_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlurl_original_count_distinct-1)
       1. [Unsupported condition on the aggregate host_with_cpu_spike (1)](#unsupported-condition-on-the-aggregate-host_with_cpu_spike-1)
-      1. [Unsupported condition on the aggregate pid_with_cpu_spike (1)](#unsupported-condition-on-the-aggregate-pid_with_cpu_spike-1)
-      1. [Unsupported condition on the aggregate runcommand_count (1)](#unsupported-condition-on-the-aggregate-runcommand_count-1)
       1. [Unsupported condition on the values of Esql.kibana_alert_risk_score_values (1)](#unsupported-condition-on-the-values-of-esqlkibana_alert_risk_score_values-1)
-      1. [Unsupported field in WHERE after STATS: Esql.attempts_per_user (1)](#unsupported-field-in-where-after-stats-esqlattempts_per_user-1)
-      1. [Unsupported field in WHERE after STATS: Esql.brute_force_type (1)](#unsupported-field-in-where-after-stats-esqlbrute_force_type-1)
-      1. [Unsupported field in WHERE after STATS: Esql.date_diff (1)](#unsupported-field-in-where-after-stats-esqldate_diff-1)
-      1. [Unsupported field in WHERE after STATS: Esql.dt_per_attempt (1)](#unsupported-field-in-where-after-stats-esqldt_per_attempt-1)
-      1. [Unsupported field in WHERE after STATS: Esql.recent_minutes (1)](#unsupported-field-in-where-after-stats-esqlrecent_minutes-1)
-      1. [Unsupported field in WHERE after STATS: concat_vuln_severity_values (1)](#unsupported-field-in-where-after-stats-concat_vuln_severity_values-1)
       1. [Unsupported number of different values of kubernetes.audit.annotations.`authorization_k8s_io/decision`: between 2 and 2 in 6 documents (1)](#unsupported-number-of-different-values-of-kubernetesauditannotationsauthorization_k8s_iodecision-between-2-and-2-in-6-documents-1)
 
 ## Skipped rules
@@ -748,6 +747,21 @@ invalid-syntax
 * Potential SQL Injection Against Microsoft SQL Server
 * Suspicious TCC Access Granted for User Folders
 
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (10)
+
+10 rules:
+
+* First Seen Network Flow Exporter
+* First-Time FortiGate Administrator Login
+* FortiGate Administrator Login from Multiple IP Addresses
+* FortiGate FortiCloud SSO Login from Unusual Source
+* Newly Observed Elastic Defend Behavior Alert
+* Newly Observed FortiGate Alert
+* Newly Observed High Severity Detection Alert
+* Newly Observed High Severity Suricata Alert
+* Newly Observed IPSEC NAT Traversal Peer
+* Newly Observed Process Exhibiting High CPU Usage
+
 ### Unsupported function: to_lower (9)
 
 9 rules:
@@ -986,11 +1000,71 @@ Invalid syntax
 
 * GitHub Actions Workflow Modification Blocked
 
-### Unsolvable constraints: data_stream.dataset (cannot be null) (1)
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.attempts_per_user (1)
 
 1 rules:
 
-* Newly Observed IPSEC NAT Traversal Peer
+* Potential Okta Password Spray (Multi-Source)
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)
+
+1 rules:
+
+* Entra ID User Sign-in Brute Force Attempted
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (1)
+
+1 rules:
+
+* Lateral Movement Alerts from a Newly Observed Source Address
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt (1)
+
+1 rules:
+
+* Potential Okta Brute Force (Device Token Rotation)
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.duration_minutes (1)
+
+1 rules:
+
+* Splunk Enterprise PostgreSQL Backup-to-Restore Potential RCE Sequence
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.error_rate (1)
+
+1 rules:
+
+* Azure AD Graph High 4xx Error Ratio from User
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
+
+1 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.recent_minutes (1)
+
+1 rules:
+
+* Unusual Azure VM Extension Detected
+
+### Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values (1)
+
+1 rules:
+
+* Multiple Vulnerabilities by Asset via Wiz
+
+### Unsupported WHERE on a field made by EVAL after STATS: delta_sec (1)
+
+1 rules:
+
+* Azure Run Command Correlated with Process Execution
+
+### Unsupported WHERE on a field made by EVAL after STATS: process.executable (1)
+
+1 rules:
+
+* Detection Alert on a Process Exhibiting CPU Spike
 
 ### Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)
 
@@ -1665,19 +1739,6 @@ Invalid syntax
 * Unusual Parent-Child Relationship
 * Windows Service Installed via an Unusual Client
 
-### Unsupported field in WHERE after STATS: Esql.recent (9)
-
-9 rules:
-* First Seen Network Flow Exporter
-* First-Time FortiGate Administrator Login
-* FortiGate Administrator Login from Multiple IP Addresses
-* FortiGate FortiCloud SSO Login from Unusual Source
-* Newly Observed Elastic Defend Behavior Alert
-* Newly Observed FortiGate Alert
-* Newly Observed High Severity Detection Alert
-* Newly Observed High Severity Suricata Alert
-* Newly Observed Process Exhibiting High CPU Usage
-
 ### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (8)
 
 8 rules:
@@ -2242,20 +2303,10 @@ Invalid syntax
 1 rules:
 * Microsoft Entra ID Exccessive Account Lockouts Detected
 
-### Unsupported condition on the aggregate Esql.backup_count (1)
-
-1 rules:
-* Splunk Enterprise PostgreSQL Backup-to-Restore Potential RCE Sequence
-
 ### Unsupported condition on the aggregate Esql.device_code_auth_count (1)
 
 1 rules:
 * Entra ID OAuth Device Code Flow with Concurrent Sign-ins
-
-### Unsupported condition on the aggregate Esql.errors (1)
-
-1 rules:
-* Azure AD Graph High 4xx Error Ratio from User
 
 ### Unsupported condition on the aggregate Esql.failure_count (1)
 
@@ -2272,11 +2323,6 @@ Invalid syntax
 1 rules:
 * AWS Potential Cryptomining via ECS Task Definition Deployment
 
-### Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)
-
-1 rules:
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-
 ### Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)
 
 1 rules:
@@ -2292,50 +2338,10 @@ Invalid syntax
 1 rules:
 * Multiple Alerts on a Host Exhibiting CPU Spike
 
-### Unsupported condition on the aggregate pid_with_cpu_spike (1)
-
-1 rules:
-* Detection Alert on a Process Exhibiting CPU Spike
-
-### Unsupported condition on the aggregate runcommand_count (1)
-
-1 rules:
-* Azure Run Command Correlated with Process Execution
-
 ### Unsupported condition on the values of Esql.kibana_alert_risk_score_values (1)
 
 1 rules:
 * Multiple External EDR Alerts by Host
-
-### Unsupported field in WHERE after STATS: Esql.attempts_per_user (1)
-
-1 rules:
-* Potential Okta Password Spray (Multi-Source)
-
-### Unsupported field in WHERE after STATS: Esql.brute_force_type (1)
-
-1 rules:
-* Entra ID User Sign-in Brute Force Attempted
-
-### Unsupported field in WHERE after STATS: Esql.date_diff (1)
-
-1 rules:
-* Lateral Movement Alerts from a Newly Observed Source Address
-
-### Unsupported field in WHERE after STATS: Esql.dt_per_attempt (1)
-
-1 rules:
-* Potential Okta Brute Force (Device Token Rotation)
-
-### Unsupported field in WHERE after STATS: Esql.recent_minutes (1)
-
-1 rules:
-* Unusual Azure VM Extension Detected
-
-### Unsupported field in WHERE after STATS: concat_vuln_severity_values (1)
-
-1 rules:
-* Multiple Vulnerabilities by Asset via Wiz
 
 ### Unsupported number of different values of kubernetes.audit.annotations.`authorization_k8s_io/decision`: between 2 and 2 in 6 documents (1)
 

@@ -83,7 +83,7 @@ class Document:
             if name is not None and not (name == "!=" and value is None):
                 self.__constraints[field].append((name, value, flags or {}))
 
-    def extend_constraints(self, field, constraints):
+    def extend_constraints(self, field, constraints, *, unique=False):
         if field not in self.__constraints:
             self.__constraints[field] = copy(constraints)
         elif self.__constraints[field] is None:
@@ -92,7 +92,9 @@ class Document:
         else:
             if constraints is None:
                 raise ConflictError("cannot be null", field)
-            self.__constraints[field].extend(constraints)
+            current = self.__constraints[field]
+            # the same constraint of each of the documents that share the field says it once, not many times (many values for an array)
+            current.extend([c for c in constraints if not (unique and c in current)])
 
     def fields(self):
         return set(self.__constraints)
@@ -136,7 +138,7 @@ class Document:
             doc.extend_constraints(field, constraints)
         return doc
 
-    def join_fields(self, doc, fields):
+    def join_fields(self, doc, fields, *, unique=False):
         doc = doc.clone()
         for i, field in enumerate(fields):
             # remembed the field names referring to the same join field
@@ -146,7 +148,7 @@ class Document:
             alias = self.__aliases[i][0]
             # concatenate all the constraints that refer to the same join field
             if field in doc.__constraints:
-                self.extend_constraints(alias, doc.__constraints[field])
+                self.extend_constraints(alias, doc.__constraints[field], unique=unique)
             else:
                 self.append_constraint(alias)
             # each of the depending fields need access to the join field

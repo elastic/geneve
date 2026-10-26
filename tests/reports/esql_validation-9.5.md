@@ -73,7 +73,7 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.8)
 * 24 x NotImplementedError: Unsupported command: GROK
 * 19 x NotImplementedError: Unsupported command: MV_EXPAND
 * 17 x NotImplementedError: Unsupported operator: RLIKE
-* 9 x NotImplementedError: Unsupported field in WHERE after STATS: Esql.recent
+* 10 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.recent
 * 9 x NotImplementedError: Unsupported function: to_lower
 * 8 x NotImplementedError: Unsupported function: to_string
 * 7 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.script_block_length
@@ -93,7 +93,6 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.8)
 * 2 x NotImplementedError: Unsupported command: INLINE
 * 2 x NotImplementedError: Unsupported command: IP_LOCATION
 * 2 x NotImplementedError: Unsupported function: TO_IP
-* 1 x ConflictError: Unsolvable constraints: data_stream.dataset (cannot be null)
 * 1 x EsqlParseError: Error at line:14,column:53
 * 1 x EsqlParseError: Error at line:3,column:38
 * 1 x EsqlParseError: Error at line:43,column:41
@@ -103,6 +102,18 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.8)
 * 1 x EsqlParseError: Error at line:7,column:33
 * 1 x NotImplementedError: Field type solver: constant_keyword
 * 1 x NotImplementedError: Unsupported LIKE pattern, backslash escapes and character classes are not supported: '*..\\\\..\\\\..\\\\..*'
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.activity_fidelity_score
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.attempts_per_user
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.duration_minutes
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.error_rate
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.recent_minutes
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: delta_sec
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: process.executable
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.audience_types
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.client_ip
@@ -132,27 +143,15 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.8)
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.authz_forbid_count
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.azure_open_ai_properties_request_length_avg
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.azure_open_ai_properties_response_length_max
-* 1 x NotImplementedError: Unsupported condition on the aggregate Esql.backup_count
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.device_code_auth_count
-* 1 x NotImplementedError: Unsupported condition on the aggregate Esql.errors
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.failure_count
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.is_browser_case_max
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.miner_register_sum
-* 1 x NotImplementedError: Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.oauth_token_count_distinct
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.url_original_count_distinct
 * 1 x NotImplementedError: Unsupported condition on the aggregate host_with_cpu_spike
-* 1 x NotImplementedError: Unsupported condition on the aggregate pid_with_cpu_spike
-* 1 x NotImplementedError: Unsupported condition on the aggregate runcommand_count
 * 1 x NotImplementedError: Unsupported condition on the values of Esql.kibana_alert_risk_score_values
 * 1 x NotImplementedError: Unsupported conflicting constraints on email.subject: only one equality or pattern per field is supported
-* 1 x NotImplementedError: Unsupported field in WHERE after STATS: Esql.activity_fidelity_score
-* 1 x NotImplementedError: Unsupported field in WHERE after STATS: Esql.attempts_per_user
-* 1 x NotImplementedError: Unsupported field in WHERE after STATS: Esql.brute_force_type
-* 1 x NotImplementedError: Unsupported field in WHERE after STATS: Esql.date_diff
-* 1 x NotImplementedError: Unsupported field in WHERE after STATS: Esql.dt_per_attempt
-* 1 x NotImplementedError: Unsupported field in WHERE after STATS: Esql.recent_minutes
-* 1 x NotImplementedError: Unsupported field in WHERE after STATS: concat_vuln_severity_values
 * 1 x NotImplementedError: Unsupported function: CONTAINS
 * 1 x NotImplementedError: Unsupported function: MV_COUNT
 * 1 x NotImplementedError: Unsupported function: TO_INTEGER

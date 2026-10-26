@@ -632,6 +632,30 @@ class TestEsqlStats(unittest.TestCase):
         # a field that an EVAL makes out of itself is still one of the documents
         self.assertEqual(("k",), esql.parse("FROM x | EVAL a = TO_LOWER(a), k = a").aliases)
 
+    def test_names_that_an_eval_after_stats_overwrites(self):
+        for query in (
+            "FROM x | STATS c = COUNT(*) | EVAL c = 0 | WHERE c >= 2",
+            'FROM x | STATS c = COUNT(*) BY h | EVAL h = TO_LOWER(h) | WHERE h == "x"',
+            "FROM x | STATS c = COUNT(*) BY h | EVAL r = 1, c = r | KEEP c | WHERE c > 1",
+            "FROM x | STATS c = COUNT(*) | EVAL /* c */ `c` = 0 | WHERE NOT c < 2",
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL after STATS"):
+                esql.parse(query)
+        # before the EVAL it is what STATS made, and what the EVAL makes of another name does not matter
+        esql.parse("FROM x | STATS c = COUNT(*) BY h | WHERE c >= 2 | EVAL c = 0")
+        esql.parse("FROM x | STATS c = COUNT(*) BY h | EVAL r = c * 2 | WHERE c >= 2")
+
+    def test_limit_zero_with_comments(self):
+        for query in (
+            "FROM x | LIMIT 0 // nothing",
+            "FROM x | LIMIT /* nothing */ 0",
+            "FROM x | LIMIT 0 /* nothing */ | KEEP a",
+            "FROM x | LIMIT // nothing\n 0",
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported LIMIT 0"):
+                esql.parse(query)
+        esql.parse("FROM x | LIMIT 10 // not 0")
+
     def test_eval_aliases_are_not_fields_of_the_documents(self):
         with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL: k"):
             esql.parse('FROM x | EVAL k = TO_LOWER(a) | WHERE k == "x"')
@@ -849,8 +873,8 @@ class TestEsqlStatsEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCa
     maxDiff = None
     pre = 'FROM x | WHERE process.name == "a.exe" | STATS c = COUNT(*)'
 
-    def branches(self, query, **kwargs):
-        se = SourceEvents(self.schema)
+    def branches(self, query, schema=None, **kwargs):
+        se = SourceEvents(self.schema if schema is None else schema)
         se.stack_version = self.stack_version
         for key, value in kwargs.items():
             setattr(se, key, value)
@@ -963,6 +987,99 @@ class TestEsqlStatsEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCa
         with self.assertRaises((ValueError, IndexError)):
             self.branches('FROM x | WHERE process.name == "a.exe" | STATS d = COUNT_DISTINCT(process.name) BY host.id | WHERE d >= 2')
 
+    def test_the_join_document_is_flagged_too(self):
+        # the document that holds what the group shares is not one of the emitted, it follows the same rules
+        schema = {"b": {"type": "boolean"}, "n": {"type": "long"}}
+        for value, expected in (("false", False), ("true", True)):
+            docs = self.branches(f'FROM x | WHERE b == "{value}" | STATS c = COUNT(*) BY b | WHERE c >= 2', schema=schema)[0]
+            self.assertEqual([{"b": expected}] * 2, docs)
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported value for boolean field"):
+            self.branches('FROM x | WHERE b == "maybe" | STATS c = COUNT(*) BY b | WHERE c >= 2', schema=schema)
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported fractional number"):
+            self.branches("FROM x | WHERE n >= 1.5 | STATS c = COUNT(*) BY n | WHERE c >= 2", schema=schema)
+
+    def test_count_distinct_upper_bounds(self):
+        base = "FROM x | STATS c = COUNT(*), d = COUNT_DISTINCT(user.name)"
+        for condition, size, most in (
+            ("c >= 5 AND d <= 2", 5, 2),
+            ("c >= 6 AND d < 4", 6, 3),
+            ("c >= 4 AND d <= 3", 4, 3),
+            ("c >= 4 AND d <= 10", 4, 4),
+        ):
+            for seed in range(25):
+                with self.subTest(f"{condition} {seed}"):
+                    docs = self.branches(f"{base} | WHERE {condition}")[0]
+                    self.assertEqual(size, len(docs))
+                    self.assertLessEqual(len({doc["user"]["name"] for doc in docs}), most, docs)
+        # no way to have at least some and at most some, in between, of the documents
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported number of different values"):
+            self.branches(f"{base} | WHERE c >= 6 AND d >= 2 AND d <= 3")
+
+    def test_excluded_counts(self):
+        base = "FROM x | STATS c = COUNT(*), d = COUNT_DISTINCT(user.name)"
+        for condition, size in (
+            ("c != 2 AND d >= 2", 3),
+            ("c != 2 AND c != 3 AND d >= 2", 4),
+            ("c >= 2 AND c != 2", 3),
+            ("c != 1", 2),
+            ("d >= 3 AND c != 3 AND c != 4", 5),
+        ):
+            with self.subTest(condition):
+                self.assertEqual(size, len(self.branches(f"{base} | WHERE {condition}")[0]))
+        with self.assertRaisesRegex(ValueError, "Unsolvable constraints"):
+            self.branches(f"{base} | WHERE c != 2 AND d >= 2 AND c <= 2")
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported exclusion"):
+            self.branches(f"{base} | WHERE d != 2 AND c >= 3")
+
+    def test_count_of_multivalued_fields(self):
+        # the count is of the values, each document has two of them
+        for aggregate in ("COUNT(process.args)", "COUNT_DISTINCT(process.args)"):
+            with self.subTest(aggregate), self.assertRaisesRegex(NotImplementedError, "Unsupported .* of a field with many values"):
+                self.branches(f'FROM x | WHERE KQL("process.args: a AND process.args: b") | STATS c = {aggregate} | WHERE c >= 2')
+        # one value is just a document
+        docs = self.branches('FROM x | WHERE KQL("process.args: a") | STATS c = COUNT(process.args) | WHERE c >= 2')[0]
+        self.assertEqual([{"process": {"args": ["a"]}}] * 2, docs)
+
+    def test_count_distinct_of_a_by_field(self):
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported COUNT_DISTINCT of a BY field"):
+            self.branches("FROM x | STATS d = COUNT_DISTINCT(user.name) BY user.name | WHERE d >= 2")
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported COUNT_DISTINCT of a BY field"):
+            self.branches("FROM x | EVAL k = user.name | STATS d = COUNT_DISTINCT(user.name) BY k | WHERE d >= 2")
+        # one value is what a BY field has
+        docs = self.branches("FROM x | STATS d = COUNT_DISTINCT(user.name), c = COUNT(*) BY user.name | WHERE d == 1 AND c >= 3")[0]
+        self.assertEqual(3, len(docs))
+        self.assertShared(docs, "user.name")
+
+    def test_conditions_on_the_by_fields_follow_the_rules_of_the_query(self):
+        # tags is an array in the schema: both values would be there, and the first comparison would be null
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported conflicting constraints on tags"):
+            self.branches('FROM x | WHERE tags == "a" | STATS c = COUNT(*) BY tags | WHERE tags == "b" AND c >= 2')
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported conflicting constraints on tags"):
+            self.branches('FROM x | WHERE tags LIKE "a*" | STATS c = COUNT(*) BY tags | WHERE tags == "b" AND c >= 2')
+        docs = self.branches('FROM x | WHERE tags == "a" | STATS c = COUNT(*) BY tags | WHERE tags != "b" AND c >= 2')[0]
+        self.assertEqual([{"tags": ["a"]}] * 2, docs)
+
+    def test_time_keys_share_the_timestamp(self):
+        def timestamps(query):
+            se = SourceEvents(self.schema)
+            se.add_query(query)
+            return [[event.doc["@timestamp"] for event in branch] for branch in se.emit(timestamp=True, complete=True, count=1)]
+
+        for bucket in ("1 millisecond", "30 seconds", "1 hour"):
+            with self.subTest(bucket):
+                groups = timestamps(f"FROM x | STATS c = COUNT(*) BY DATE_TRUNC({bucket}, @timestamp), host.id | WHERE c >= 3 OR c == 2")
+                self.assertEqual([3, 2], [len(group) for group in groups])
+                for group in groups:
+                    self.assertEqual(1, len(set(group)), group)
+                self.assertNotEqual(groups[0][0], groups[1][0])
+
+    def test_other_branches_keep_increasing_timestamps(self):
+        se = SourceEvents(self.schema)
+        se.add_query('sequence by user.name [process where process.name == "a"] [process where process.name == "b"]')
+        (branch,) = [[event.doc["@timestamp"] for event in branch] for branch in se.emit(timestamp=True, complete=True, count=1)]
+        self.assertEqual(2, len(set(branch)))
+        self.assertEqual(sorted(branch), branch)
+
     def test_count_of_a_field(self):
         docs = self.branches("FROM x | STATS c = COUNT(user.name) BY host.id | WHERE c >= 3")[0]
         self.assertEqual(3, len(docs))
@@ -1043,7 +1160,7 @@ class TestEsqlStatsEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCa
                 'FROM x | EVAL w = TO_LOWER(host.name) | STATS c = COUNT(*) BY w | WHERE w == "x"',
                 "Unsupported field in WHERE after STATS: w",
             ),
-            (f"{self.pre} BY host.id | EVAL r = c / 2 | WHERE r >= 1", "Unsupported field in WHERE after STATS: r"),
+            (f"{self.pre} BY host.id | EVAL r = c / 2 | WHERE r >= 1", "Unsupported WHERE on a field made by EVAL after STATS: r"),
             (f'{self.pre}, v = VALUES(user.name) BY host.id | WHERE v == "x"', "Unsupported condition on the values of v"),
         ):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, message):

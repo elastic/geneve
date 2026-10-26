@@ -47,6 +47,8 @@ invalid-syntax
 -match-will-ignore-the--and-look-for-the-individual-words
 -where-powershellfilescript_block_text--rahcmetsysstekcostcejboimwecalperecnerferpenoitcennocniojemanvnegnirtstcejbo-wen_23niwnoisserpxeekovnidaolnwod
 -------------------------------------------1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)](#unsupported-where-on-a-field-made-by-eval-esqlml_policy_violations_mv_count-1)
       1. [Unsupported WHERE on a field made by EVAL: multi_spaces (1)](#unsupported-where-on-a-field-made-by-eval-multi_spaces-1)
@@ -152,9 +154,7 @@ invalid-syntax
       1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_response_length_max (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_response_length_max-1)
       1. [Unsupported condition on the aggregate Esql.azure_signinlogs_properties_user_principal_name_lower_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlazure_signinlogs_properties_user_principal_name_lower_count_distinct-1)
       1. [Unsupported condition on the aggregate Esql.is_browser_case_max (1)](#unsupported-condition-on-the-aggregate-esqlis_browser_case_max-1)
-      1. [Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)](#unsupported-condition-on-the-aggregate-esqlml_usage_prompt_tokens_max-1)
       1. [Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqloauth_token_count_distinct-1)
-      1. [Unsupported field in WHERE after STATS: Esql.brute_force_type (1)](#unsupported-field-in-where-after-stats-esqlbrute_force_type-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -562,6 +562,18 @@ Invalid syntax
 1 rules:
 
 * Potential PowerShell Obfuscation via Reverse Keywords
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)
+
+1 rules:
+
+* Microsoft Entra ID Sign-In Brute Force Activity
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
+
+1 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
 
 ### Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)
 
@@ -1190,20 +1202,10 @@ Invalid syntax
 1 rules:
 * Suspicious Microsoft OAuth Flow via Auth Broker to DRS
 
-### Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)
-
-1 rules:
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-
 ### Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)
 
 1 rules:
 * Suspicious Microsoft 365 UserLoggedIn via OAuth Code
-
-### Unsupported field in WHERE after STATS: Esql.brute_force_type (1)
-
-1 rules:
-* Microsoft Entra ID Sign-In Brute Force Activity
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 

@@ -18,6 +18,7 @@ Rules version: 8.13.23
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
       1. [Unsupported command: MV_EXPAND (2)](#unsupported-command-mv_expand-2)
       1. [Unsupported right operand, it must be a literal (2)](#unsupported-right-operand-it-must-be-a-literal-2)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-risk_factor-1)
       1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
    1. [Generation errors](#generation-errors)
@@ -106,7 +107,6 @@ Rules version: 8.13.23
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
-      1. [Unsupported condition on the aggregate max_tokens (1)](#unsupported-condition-on-the-aggregate-max_tokens-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -366,6 +366,12 @@ Rules version: 8.13.23
 
 * AWS IAM User Created Access Keys For Another User
 * AWS STS Role Chaining
+
+### Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)
+
+1 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
 
 ### Unsupported WHERE on a field made by EVAL: policy_violations (1)
 
@@ -881,11 +887,6 @@ Rules version: 8.13.23
 
 1 rules:
 * Remote Computer Account DnsHostName Update
-
-### Unsupported condition on the aggregate max_tokens (1)
-
-1 rules:
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 

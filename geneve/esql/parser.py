@@ -134,6 +134,7 @@ class EsqlToEql(Interpreter):
         self.stats = None
         self.post_wheres = []
         self.evals = {}  # what the EVALs before STATS make, and the fields of the documents that they depend on
+        self.overwritten = set()  # the names that an EVAL after STATS makes: they are no longer what STATS said
 
     @staticmethod
     def reject(tree, message):
@@ -177,6 +178,9 @@ class EsqlToEql(Interpreter):
             self.reject(tree, f"pipe before WHERE: {self.blocking}")
         expression = self.boolean(tree.children[1])
         if self.stats is not None:
+            for node in expression:
+                if isinstance(node, eql.ast.Field) and self.field_key(node.render()) in self.overwritten:
+                    self.reject(tree, f"WHERE on a field made by EVAL after STATS: {node.render()}")
             self.post_wheres.append(expression)
             return
         for node in expression:
@@ -193,7 +197,7 @@ class EsqlToEql(Interpreter):
             return self.eval_command(tree, strip_comments(body))
         if name not in IGNORED_COMMANDS:
             self.reject(tree, f"command: {name}")
-        if name == "LIMIT" and re.fullmatch(r"\s*0+\s*", body):
+        if name == "LIMIT" and re.fullmatch(r"\s*0+\s*", strip_comments(body)):
             self.reject(tree, "LIMIT 0, no document is returned")
         if name == "LIMIT":
             self.blocking = self.blocking or name
@@ -221,11 +225,11 @@ class EsqlToEql(Interpreter):
     def eval_command(self, tree, body):
         # what an EVAL makes is not a field of the documents, no WHERE can ask for it, and it is not
         # of interest after STATS (nothing asks for it, a WHERE after it is checked later)
-        if self.stats is not None:
-            return
         for item in split_top(body):
             made = assignment(item)
-            if made:
+            if made and self.stats is not None:
+                self.overwritten.add(self.field_key(made[0]))
+            elif made:
                 self.evals[self.field_key(made[0])] = self.dependencies(made[1])
 
     def stats_command(self, tree, body):

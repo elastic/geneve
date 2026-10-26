@@ -14,6 +14,7 @@ Rules version: 9.1.20
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported command: MV_EXPAND (20)](#unsupported-command-mv_expand-20)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (7)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-7)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (6)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrecent-6)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported command: DISSECT (5)](#unsupported-command-dissect-5)
       1. [Unsupported function: now (4)](#unsupported-function-now-4)
@@ -81,6 +82,14 @@ invalid-syntax
 ----githubreasonscode--workflow_updates-and
 ----matchgithubreasonsmessagestring-refusing-to-allow-a-github-app-to-create-or-update-workflow
 ---------------------------------1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.attempts_per_user (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlattempts_per_user-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldate_diff-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldt_per_attempt-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrisk_alerts_count_ratio-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-concat_vuln_severity_values-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: process.executable (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-processexecutable-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.cloud_vendor (1)](#unsupported-where-on-a-field-made-by-eval-esqlcloud_vendor-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.rmm_vendor (1)](#unsupported-where-on-a-field-made-by-eval-esqlrmm_vendor-1)
@@ -106,7 +115,6 @@ invalid-syntax
       1. [Root without branches (8)](#root-without-branches-8)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (8)](#unsupported-argument-types-class-eqlastfield-8)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (6)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-6)
-      1. [Unsupported field in WHERE after STATS: Esql.recent (6)](#unsupported-field-in-where-after-stats-esqlrecent-6)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Cannot choose from an empty set (3)](#cannot-choose-from-an-empty-set-3)
@@ -216,18 +224,10 @@ invalid-syntax
       1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_response_length_max (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_response_length_max-1)
       1. [Unsupported condition on the aggregate Esql.device_code_auth_count (1)](#unsupported-condition-on-the-aggregate-esqldevice_code_auth_count-1)
       1. [Unsupported condition on the aggregate Esql.is_browser_case_max (1)](#unsupported-condition-on-the-aggregate-esqlis_browser_case_max-1)
-      1. [Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)](#unsupported-condition-on-the-aggregate-esqlml_usage_prompt_tokens_max-1)
       1. [Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqloauth_token_count_distinct-1)
       1. [Unsupported condition on the aggregate Esql.url_original_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlurl_original_count_distinct-1)
       1. [Unsupported condition on the aggregate host_with_cpu_spike (1)](#unsupported-condition-on-the-aggregate-host_with_cpu_spike-1)
-      1. [Unsupported condition on the aggregate pid_with_cpu_spike (1)](#unsupported-condition-on-the-aggregate-pid_with_cpu_spike-1)
       1. [Unsupported condition on the values of Esql.rule_risk_score_values (1)](#unsupported-condition-on-the-values-of-esqlrule_risk_score_values-1)
-      1. [Unsupported field in WHERE after STATS: Esql.attempts_per_user (1)](#unsupported-field-in-where-after-stats-esqlattempts_per_user-1)
-      1. [Unsupported field in WHERE after STATS: Esql.brute_force_type (1)](#unsupported-field-in-where-after-stats-esqlbrute_force_type-1)
-      1. [Unsupported field in WHERE after STATS: Esql.date_diff (1)](#unsupported-field-in-where-after-stats-esqldate_diff-1)
-      1. [Unsupported field in WHERE after STATS: Esql.dt_per_attempt (1)](#unsupported-field-in-where-after-stats-esqldt_per_attempt-1)
-      1. [Unsupported field in WHERE after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-field-in-where-after-stats-esqlrisk_alerts_count_ratio-1)
-      1. [Unsupported field in WHERE after STATS: concat_vuln_severity_values (1)](#unsupported-field-in-where-after-stats-concat_vuln_severity_values-1)
       1. [Unsupported number of different values of kubernetes.audit.annotations.`authorization_k8s_io/decision`: between 2 and 2 in 6 documents (1)](#unsupported-number-of-different-values-of-kubernetesauditannotationsauthorization_k8s_iodecision-between-2-and-2-in-6-documents-1)
 
 ## Skipped rules
@@ -591,6 +591,17 @@ invalid-syntax
 * Potential PowerShell Obfuscation via String Concatenation
 * Potential PowerShell Obfuscation via String Reordering
 
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (6)
+
+6 rules:
+
+* First-Time FortiGate Administrator Login
+* FortiGate Administrator Login from Multiple IP Addresses
+* FortiGate FortiCloud SSO Login from Unusual Source
+* Newly Observed FortiGate Alert
+* Newly Observed High Severity Suricata Alert
+* Newly Observed Process Exhibiting High CPU Usage
+
 ### Unsupported rule type: threat_match (6)
 
 6 rules:
@@ -760,6 +771,54 @@ Invalid syntax
 1 rules:
 
 * GitHub Actions Workflow Modification Blocked
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.attempts_per_user (1)
+
+1 rules:
+
+* Potential Okta Password Spray (Multi-Source)
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)
+
+1 rules:
+
+* Entra ID User Sign-in Brute Force Attempted
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (1)
+
+1 rules:
+
+* Lateral Movement Alerts from a Newly Observed Source Address
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt (1)
+
+1 rules:
+
+* Potential Okta Brute Force (Device Token Rotation)
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
+
+1 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.risk_alerts_count_ratio (1)
+
+1 rules:
+
+* Alerts in Different ATT&CK Tactics by Host
+
+### Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values (1)
+
+1 rules:
+
+* Multiple Vulnerabilities by Asset via Wiz
+
+### Unsupported WHERE on a field made by EVAL after STATS: process.executable (1)
+
+1 rules:
+
+* Detection Alert on a Process Exhibiting CPU Spike
 
 ### Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)
 
@@ -1014,16 +1073,6 @@ Invalid syntax
 * Suspicious JetBrains TeamCity Child Process
 * Suspicious Shell Execution via Velociraptor
 * Suspicious Windows Command Shell Arguments
-
-### Unsupported field in WHERE after STATS: Esql.recent (6)
-
-6 rules:
-* First-Time FortiGate Administrator Login
-* FortiGate Administrator Login from Multiple IP Addresses
-* FortiGate FortiCloud SSO Login from Unusual Source
-* Newly Observed FortiGate Alert
-* Newly Observed High Severity Suricata Alert
-* Newly Observed Process Exhibiting High CPU Usage
 
 ### Unsupported function: startsWith (4)
 
@@ -1591,11 +1640,6 @@ Invalid syntax
 1 rules:
 * Entra ID OAuth Flow by Microsoft Authentication Broker to Device Registration Service (DRS)
 
-### Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)
-
-1 rules:
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-
 ### Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)
 
 1 rules:
@@ -1611,45 +1655,10 @@ Invalid syntax
 1 rules:
 * Multiple Alerts on a Host Exhibiting CPU Spike
 
-### Unsupported condition on the aggregate pid_with_cpu_spike (1)
-
-1 rules:
-* Detection Alert on a Process Exhibiting CPU Spike
-
 ### Unsupported condition on the values of Esql.rule_risk_score_values (1)
 
 1 rules:
 * Multiple External EDR Alerts by Host
-
-### Unsupported field in WHERE after STATS: Esql.attempts_per_user (1)
-
-1 rules:
-* Potential Okta Password Spray (Multi-Source)
-
-### Unsupported field in WHERE after STATS: Esql.brute_force_type (1)
-
-1 rules:
-* Entra ID User Sign-in Brute Force Attempted
-
-### Unsupported field in WHERE after STATS: Esql.date_diff (1)
-
-1 rules:
-* Lateral Movement Alerts from a Newly Observed Source Address
-
-### Unsupported field in WHERE after STATS: Esql.dt_per_attempt (1)
-
-1 rules:
-* Potential Okta Brute Force (Device Token Rotation)
-
-### Unsupported field in WHERE after STATS: Esql.risk_alerts_count_ratio (1)
-
-1 rules:
-* Alerts in Different ATT&CK Tactics by Host
-
-### Unsupported field in WHERE after STATS: concat_vuln_severity_values (1)
-
-1 rules:
-* Multiple Vulnerabilities by Asset via Wiz
 
 ### Unsupported number of different values of kubernetes.audit.annotations.`authorization_k8s_io/decision`: between 2 and 2 in 6 documents (1)
 

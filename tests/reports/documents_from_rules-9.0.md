@@ -47,6 +47,9 @@ invalid-syntax
 -match-will-ignore-the--and-look-for-the-individual-words
 -where-powershellfilescript_block_text--rahcmetsysstekcostcejboimwecalperecnerferpenoitcennocniojemanvnegnirtstcejbo-wen_23niwnoisserpxeekovnidaolnwod
 -------------------------------------------1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrisk_alerts_count_ratio-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.source_ip (1)](#unsupported-where-on-a-field-made-by-eval-esqlsource_ip-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.target_user_name (1)](#unsupported-where-on-a-field-made-by-eval-esqltarget_user_name-1)
@@ -158,12 +161,9 @@ invalid-syntax
       1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_response_length_max (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_response_length_max-1)
       1. [Unsupported condition on the aggregate Esql.is_browser_case_max (1)](#unsupported-condition-on-the-aggregate-esqlis_browser_case_max-1)
       1. [Unsupported condition on the aggregate Esql.is_interactive (1)](#unsupported-condition-on-the-aggregate-esqlis_interactive-1)
-      1. [Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)](#unsupported-condition-on-the-aggregate-esqlml_usage_prompt_tokens_max-1)
       1. [Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqloauth_token_count_distinct-1)
       1. [Unsupported condition on the aggregate Esql.url_original_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlurl_original_count_distinct-1)
       1. [Unsupported condition on the aggregate Esql.vendor_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlvendor_count_distinct-1)
-      1. [Unsupported field in WHERE after STATS: Esql.brute_force_type (1)](#unsupported-field-in-where-after-stats-esqlbrute_force_type-1)
-      1. [Unsupported field in WHERE after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-field-in-where-after-stats-esqlrisk_alerts_count_ratio-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -581,6 +581,24 @@ Invalid syntax
 1 rules:
 
 * Potential PowerShell Obfuscation via Reverse Keywords
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)
+
+1 rules:
+
+* Microsoft Entra ID Sign-In Brute Force Activity
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
+
+1 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.risk_alerts_count_ratio (1)
+
+1 rules:
+
+* Alerts in Different ATT&CK Tactics by Host
 
 ### Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)
 
@@ -1264,11 +1282,6 @@ Invalid syntax
 1 rules:
 * Suspicious Microsoft Entra ID Concurrent Sign-Ins via DeviceCode
 
-### Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)
-
-1 rules:
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-
 ### Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)
 
 1 rules:
@@ -1283,16 +1296,6 @@ Invalid syntax
 
 1 rules:
 * Multiple Cloud Secrets Accessed by Source Address
-
-### Unsupported field in WHERE after STATS: Esql.brute_force_type (1)
-
-1 rules:
-* Microsoft Entra ID Sign-In Brute Force Activity
-
-### Unsupported field in WHERE after STATS: Esql.risk_alerts_count_ratio (1)
-
-1 rules:
-* Alerts in Different ATT&CK Tactics by Host
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 

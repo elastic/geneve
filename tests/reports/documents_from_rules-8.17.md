@@ -40,6 +40,8 @@ invalid-syntax
 -filter-for-scripts-that-contains-these-keywords-using-match-boosts-the-query-performance-match-will-ignore-the--and-look-for-the-individual-words
 -where-powershellfilescript_block_text--rahcmetsysstekcostcejboimwecalperecnerferpenoitcennocniojemanvnegnirtstcejbo-wen_23niwnoisserpxeekovnidaolnwod
 -------------------------------------------1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: duration_minutes (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-duration_minutes-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-risk_factor-1)
       1. [Unsupported WHERE on a field made by EVAL: error_code (1)](#unsupported-where-on-a-field-made-by-eval-error_code-1)
       1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
       1. [Unsupported command: GROK (1)](#unsupported-command-grok-1)
@@ -135,10 +137,8 @@ invalid-syntax
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
       1. [Unsupported condition on the aggregate avg_request_size (1)](#unsupported-condition-on-the-aggregate-avg_request_size-1)
-      1. [Unsupported condition on the aggregate event_type_count (1)](#unsupported-condition-on-the-aggregate-event_type_count-1)
       1. [Unsupported condition on the aggregate is_oauth_authorize (1)](#unsupported-condition-on-the-aggregate-is_oauth_authorize-1)
       1. [Unsupported condition on the aggregate max_data_transferred (1)](#unsupported-condition-on-the-aggregate-max_data_transferred-1)
-      1. [Unsupported condition on the aggregate max_tokens (1)](#unsupported-condition-on-the-aggregate-max_tokens-1)
       1. [Unsupported condition on the aggregate session_id_count (1)](#unsupported-condition-on-the-aggregate-session_id_count-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
@@ -517,6 +517,18 @@ Invalid syntax
 1 rules:
 
 * Potential PowerShell Obfuscation via Reverse Keywords
+
+### Unsupported WHERE on a field made by EVAL after STATS: duration_minutes (1)
+
+1 rules:
+
+* Microsoft Entra ID Session Reuse with Suspicious Graph Access
+
+### Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)
+
+1 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
 
 ### Unsupported WHERE on a field made by EVAL: error_code (1)
 
@@ -1077,11 +1089,6 @@ Invalid syntax
 1 rules:
 * Potential Denial of Azure OpenAI ML Service
 
-### Unsupported condition on the aggregate event_type_count (1)
-
-1 rules:
-* Microsoft Entra ID Session Reuse with Suspicious Graph Access
-
 ### Unsupported condition on the aggregate is_oauth_authorize (1)
 
 1 rules:
@@ -1091,11 +1098,6 @@ Invalid syntax
 
 1 rules:
 * Potential Azure OpenAI Model Theft
-
-### Unsupported condition on the aggregate max_tokens (1)
-
-1 rules:
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
 
 ### Unsupported condition on the aggregate session_id_count (1)
 

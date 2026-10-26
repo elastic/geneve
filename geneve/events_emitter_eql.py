@@ -243,8 +243,16 @@ def cc_esql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root
     if len(node.arguments) != 1:
         raise NotImplementedError(f"Unsupported number of arguments for {node.name}: {len(node.arguments)}")
     root = collect_constraints(node.arguments[0], negate, max_branches)
+    joined = {}
     for doc in root.constraints():
         doc.flag_constraints({"esql": True}, unless="kql")
+        # the document of what the documents of a group share is not one of them, and it solves their fields
+        for _, constraints in doc.items():  # noqa: PERF102, a Document has no values()
+            for name, value, *_ in constraints or ():
+                if name == "join_value":
+                    joined[id(value[0])] = value[0]
+    for join_doc in joined.values():
+        join_doc.flag_constraints({"esql": True}, unless="kql")
     return root
 
 
@@ -258,8 +266,8 @@ def normalize_name(name: str) -> str:
     return ".".join(split_path(name))
 
 
-def count_interval(field: str, constraints: Any) -> tuple[int, float]:
-    """Return the least and the most that the conditions on a count allow, at least there is one document."""
+def count_interval(field: str, constraints: Any) -> tuple[int, float, set]:
+    """Return the least, the most and what is not allowed in between that the conditions on a count allow, at least one document."""
     if constraints is None:
         raise ConflictError("cannot be null", field)
     lo, hi, excluded = 1, math.inf, set()
@@ -286,7 +294,7 @@ def count_interval(field: str, constraints: Any) -> tuple[int, float]:
         hi -= 1
     if lo > hi:
         raise ConflictError(f"empty solution space, {lo} <= x <= {hi}", field)
-    return lo, hi
+    return lo, hi, {value for value in excluded if lo < value < hi}
 
 
 def cc_stats(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
@@ -305,9 +313,14 @@ def cc_stats(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Roo
     return Root([stats_branch(pre_branch, post_branch, aggregates, by, join) for pre_branch in pre_root for post_branch in post_root])
 
 
+def positive_constraints(constraints: Any) -> list:
+    return [c for c in constraints or [] if c[0] in ("==", "wildcard", "in")]
+
+
 def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: list, join: list) -> Branch:
     if len(pre_branch) != 1:
         raise NotImplementedError("Unsupported STATS of documents that are related")
+    base = pre_branch[0]
     counts, distinct, by_conditions = [], {}, []
     for doc in post_branch:
         for field, constraints in doc.items():
@@ -317,12 +330,12 @@ def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: 
                     raise NotImplementedError(f"Unsupported condition on the values of {field}")
                 if not simple or function not in ("count", "count_distinct"):
                     raise NotImplementedError(f"Unsupported condition on the aggregate {field}")
-                lo, hi = count_interval(field, constraints)
+                lo, hi, excluded = count_interval(field, constraints)
                 if function == "count":
-                    counts.append((field, argument, lo, hi))
+                    counts.append((field, argument, lo, hi, excluded))
                 else:
-                    old_lo, old_hi = distinct.get(argument, (1, math.inf))
-                    distinct[argument] = (max(lo, old_lo), min(hi, old_hi))
+                    old_lo, old_hi, old_excluded = distinct.get(argument, (1, math.inf, set()))
+                    distinct[argument] = (max(lo, old_lo), min(hi, old_hi), excluded | old_excluded)
             elif field in by:
                 if constraints is None:
                     raise NotImplementedError(f"Unsupported condition on the BY field {field}: it is null")
@@ -330,42 +343,72 @@ def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: 
             else:
                 raise NotImplementedError(f"Unsupported field in WHERE after STATS: {field}")
 
+    # what is counted of a field are its values, those of a document that has many are not a document
+    base_constraints = dict(base.items())
+    for field in {argument for _, argument, *_ in counts if argument} | set(distinct):
+        if len(positive_constraints(base_constraints.get(field))) > 1:
+            raise NotImplementedError(f"Unsupported aggregate of a field with many values: {field}")
+
     # how many documents there are, a COUNT of a field counts those that have it and all of them have it
-    size, size_hi = max([lo for _, _, lo, _ in counts] + [lo for lo, _ in distinct.values()] + [1]), min(
-        [hi for *_, hi in counts] + [math.inf]
-    )
+    size = max([lo for _, _, lo, *_ in counts] + [lo for lo, *_ in distinct.values()] + [1])
+    size_hi = min([hi for _, _, _, hi, _ in counts] + [math.inf])
+    excluded = set().union(*(e for *_, e in counts))
+    while size in excluded:
+        size += 1
     if size > size_hi:
         raise ConflictError(f"empty solution space, {size} <= x <= {size_hi}", counts[0][0] if counts else "count")
     if size > MAX_DOCUMENTS:
         raise NotImplementedError(f"Unsupported threshold, {size} documents are needed (limit: {MAX_DOCUMENTS})")
 
-    # how many different values: one for all of them, or a different one for each, in between is not supported
-    shared, different = [], []
-    for field, (lo, hi) in distinct.items():
+    # how many different values: one for all of them, a different one for each, or not more than a number
+    shared, different, capped = [], [], {}
+    for field, (lo, hi, not_allowed) in distinct.items():
         if lo > hi:
             raise ConflictError(f"empty solution space, {lo} <= x <= {hi}", field)
+        if not_allowed:
+            raise NotImplementedError(f"Unsupported exclusion of the number of different values of {field}: {sorted(not_allowed)}")
         if hi == 1:
             shared.append(field)
         elif lo > 1 and hi < size:
             raise NotImplementedError(f"Unsupported number of different values of {field}: between {lo} and {hi} in {size} documents")
         elif lo > 1:
             different.append(field)
-    present = {argument for _, argument, _, _ in counts if argument} | set(distinct)
-
+        elif hi < size:
+            capped[field] = int(hi)
     join_fields = join + [field for field in shared if field not in join]
+    for field in different:
+        if field in join_fields:
+            raise NotImplementedError(f"Unsupported COUNT_DISTINCT of a BY field: {field}")
+    present = {argument for _, argument, *_ in counts if argument} | set(distinct)
+
     join_doc = Document()
     docs = []
     for _ in range(size):
-        doc = pre_branch[0].clone()
+        doc = base.clone()
         for field, constraints in by_conditions:
             for name, value, *flags in constraints:
                 doc.append_constraint(field, name, value, flags[0] if flags else None)
         for field in different:
             doc.append_constraint(field, "cardinality", DISTINCT)
+        for field, most in capped.items():
+            doc.append_constraint(field, "cardinality", most)
         for field in sorted(present):
             doc.append_constraint(field)
-        docs.append(join_doc.join_fields(doc, join_fields) if join_fields else doc)
-    return Branch(docs)
+        docs.append(doc)
+
+    # what the conditions on the BY fields add is subject to the rules of the query as the rest is
+    for field, _ in by_conditions:
+        positives = positive_constraints(dict(docs[0].items()).get(field))
+        from_kql = sum(1 for c in positives if c[2:] and c[2].get("kql"))
+        if len(positives) > from_kql and len(positives) > 1:
+            raise NotImplementedError(
+                f"Unsupported conflicting constraints on {field}: only one equality or pattern per field is supported"
+            )
+
+    branch = Branch([join_doc.join_fields(doc, join_fields, unique=True) if join_fields else doc for doc in docs])
+    # the time is not a field that the documents can be made to share, a bucket of it is what BY may ask for
+    branch.shared_timestamp = True
+    return branch
 
 
 def cc_kql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:

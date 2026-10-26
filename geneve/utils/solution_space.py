@@ -175,7 +175,7 @@ class Strings:
                     new.add(s)
                     new.add(o)
         self.__set = new
-        self.__exclude -= {x[0] for x in new}
+        self.__exclude -= self.__from_pairs(new)
         return self
 
     def __isub__(self, other):
@@ -201,10 +201,17 @@ class Strings:
                 if s == o or o[1] and fnmatchcase(s[0].lower(), o[0].lower()):
                     sub.add(s)
                 elif (s[1] and fnmatchcase(o[0].lower(), s[0].lower())) or (s[1] and o[1]):  # s has wildcards
-                    excl.add(o[0])
+                    excl.add(o)
         self.__set -= sub
-        self.__exclude |= excl
+        self.__exclude |= self.__from_pairs(excl)
         return self
+
+    @classmethod
+    def __from_pairs(cls, pairs):
+        # the strings with the information of which are wildcards, which what is made of them from the text could not tell
+        ss = cls()
+        ss.__set = set(pairs)
+        return ss
 
     def __mul__(self, other):
         return Strings(product(self, other))
