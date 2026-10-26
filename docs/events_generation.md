@@ -76,7 +76,7 @@ ES|QL queries are parsed by [geneve/esql](../geneve/esql), a small [lark](https:
 Supported:
 
 * `FROM` with any number of index patterns and an optional `METADATA` clause. The indices are returned by `esql.parse()` but do not drive the generation.
-* `WHERE`, any number of times, with `AND`, `OR`, `NOT`, `==`, `!=`, `<`, `<=`, `>`, `>=`, `IN`, `IS [NOT] NULL`, `LIKE` (`*` and `?` only), `STARTS_WITH`, `ENDS_WITH`, `CIDR_MATCH`, `MV_CONTAINS(field, literal)` (treated as an equality: a single value is emitted, as an array of one on array fields) and `KQL("query")`. The string of `KQL()` is translated by the KQL front end and keeps the semantics of KQL, for instance it can ask for two values for an array field, which a comparison of ES|QL cannot.
+* `WHERE`, any number of times, with `AND`, `OR`, `NOT`, `==`, `!=`, `<`, `<=`, `>`, `>=`, `IN`, `IS [NOT] NULL`, `LIKE` (`*` and `?` only), `STARTS_WITH`, `ENDS_WITH`, `CIDR_MATCH`, `MV_CONTAINS(field, literal)` (treated as an equality: a single value is emitted, as an array of one on array fields) and `KQL("query")`. The string of `KQL()` is translated by the KQL front end and keeps the semantics of KQL, for instance it can ask for two values for an array field, which a comparison of ES|QL cannot, and a quoted value is a literal (`field:"*"` is an asterisk, not "any value", and `?` is never a wildcard) as Elasticsearch has it.
 * `KEEP`, `DROP`, `SORT` and `LIMIT` after the last `WHERE`: they don't change which documents match and are ignored.
 
 Everything else is rejected with an `Unsupported ...` error instead of generating documents that would not match the query. In particular:
@@ -84,13 +84,23 @@ Everything else is rejected with an `Unsupported ...` error instead of generatin
 * other commands (`EVAL`, `STATS`, `GROK`, `DISSECT`, `MV_EXPAND`, ...) and source commands (`ROW`, `SHOW`, ...), as well as `KEEP`, `DROP`, `SORT` and `LIMIT` before a `WHERE`;
 * functions other than the ones above, arithmetic and operands that are not a field on the left and a literal on the right of a comparison;
 * `NULL` literals (use `IS NULL` and `IS NOT NULL`) and predicates on metadata fields such as `_id`;
-* strings with `*` or `?` in `==`, `!=`, `IN` and `STARTS_WITH`/`ENDS_WITH` (the solvers would take them for patterns), `LIKE` patterns with backslash escapes or `[` and `RLIKE`;
+* strings with `*` or `?` in `STARTS_WITH`/`ENDS_WITH`, `LIKE` patterns with backslash escapes or `[`, and `RLIKE`; in `==`, `!=`, `IN` and `MV_CONTAINS` instead they are what they are, not wildcards, and the documents have them as they are;
 * more than one equality or pattern on the same field in a branch, for instance `tags == "a" AND tags == "b"`: on array fields each of them would become an independent value, but ES|QL returns null for multivalued fields in a comparison;
 * what the solver of the field cannot do right: fractional numbers on `long` fields (they would be truncated) and network literals in `==`, `!=` and `IN` on `ip` fields (`CIDR_MATCH` is supported). These checks need the type of the field, therefore they are done when the query is added to `SourceEvents` and not when it is parsed.
 
 Queries that expand to more than 10,000 branches, for instance by chaining many `IN` and `OR`, are rejected as well.
 
 Fields of type `constant_keyword` (such as `data_stream.dataset`) are solved as plain keywords for ES|QL only, the other languages still reject them, and they are mapped as `keyword` so that the documents of different branches can share an index.
+
+### Validating the documents against Elasticsearch
+
+For ES|QL the query itself tells whether the documents are right. `tests/test_esql_validation.py` generates the documents of each branch of the supported queries and rules, indexes them in an Elasticsearch (Kibana is not needed) and runs the query, which must return each document once. It is opt-in:
+
+```
+TEST_ESQL_VALIDATION=1 TEST_ESQL_ES_URL=http://127.0.0.1:29650 TEST_STACK_VERSION=9.5.0 python -m pytest tests/test_esql_validation.py
+```
+
+`TEST_ESQL_ES_URL` defaults to the Elasticsearch of the docker compose file, put the credentials in the URL if it has any. The result for the rules is written to `tests/reports/esql_validation-<version>.md`.
 
 Unlike the other languages, `LIKE` is case sensitive: it matches `FOO*` against `FOObar`, not against `foobar`.
 

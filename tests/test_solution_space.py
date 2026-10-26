@@ -65,6 +65,23 @@ class TestStrings(tu.SeededTestCase, unittest.TestCase):
         self.assertTrue("a" not in Strings({}))
         self.assertTrue("a" not in Strings(exclude={"a"}))
 
+    def test_literal(self):
+        # a literal is not a pattern, whatever it looks like
+        ss = Strings(["a*", "b?"], literal=True)
+        self.assertEqual({"a*", "b?"}, {ss.generate(max_attempts=10)[0] for _ in range(40)})
+        self.assertIn("a*", ss)
+        self.assertNotIn("abc", ss)
+        self.assertEqual(Strings(["*"], literal=True).generate(), ["*"])
+        # what has wildcards matches them
+        self.assertEqual(Strings(["a*"], literal=True), Strings(["a*"], literal=True) & ["a*"])
+        self.assertEqual(Strings(["a*"], literal=True) & Strings(["a*b"]), Strings(["a*b"]) & Strings(["a*"], literal=True))
+        self.assertFalse(Strings(["*"], literal=True) & ["a*"])  # "*" does not start with "a"
+        self.assertTrue(Strings(["a*"], literal=True) & ["*"])  # "a*" matches "*"
+        self.assertFalse(Strings(["a*"], literal=True) & Strings(["a?"], literal=True))
+        # and it can be excluded as it is
+        ss = Strings(["x", "*"], literal=True) - Strings(["*"], literal=True)
+        self.assertEqual({"x"}, {ss.generate(max_attempts=10)[0] for _ in range(30)})
+
     def test_case_sensitive(self):
         ss = Strings(["process", "network"])
         # by default patterns match regardless of the case

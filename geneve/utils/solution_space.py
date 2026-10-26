@@ -35,11 +35,12 @@ class Strings:
     # ever removes more values than needed, which is safe.
     case_sensitive = False
 
-    def __init__(self, iterable=None, *, exclude=None):
+    def __init__(self, iterable=None, *, exclude=None, literal=False):
         self.__set = everything()
         self.__exclude = None
         if iterable not in (None, everything()):
-            self.__set &= {(s, has_wildcards(s)) for s in iterable}
+            # a literal is what it is, `*` and `?` in it are not wildcards
+            self.__set &= {(s, False if literal else has_wildcards(s)) for s in iterable}
         if self.__set and exclude:
             if not isinstance(exclude, Strings):
                 exclude = Strings(exclude)

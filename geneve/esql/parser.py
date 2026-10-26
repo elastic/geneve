@@ -195,16 +195,23 @@ class EsqlToEql(Interpreter):
             self.reject(tree, "left operand, it must be a field")
         return self.check_field(tree, operand)
 
-    def literal_operand(self, tree, operand):
+    def literal_operand(self, tree, operand, equality=False):
         operand = self.visit(operand)
         if not isinstance(operand, eql.ast.Literal):
             self.reject(tree, "right operand, it must be a literal")
-        return self.check_literal(tree, operand)
+        return self.check_literal(tree, operand, equality)
 
-    def check_literal(self, tree, operand):
+    @staticmethod
+    def equal(field, literal):
+        """An equality, where `*` and `?` of a string are what they are and not wildcards."""
+        if isinstance(literal, eql.ast.String) and has_wildcards(literal.value):
+            return eql.ast.FunctionCall("_literal", [field, literal])
+        return eql.ast.Comparison(field, "==", literal)
+
+    def check_literal(self, tree, operand, equality=False):
         if isinstance(operand, eql.ast.Null):
             self.reject(tree, "NULL literal, use IS NULL or IS NOT NULL")
-        if isinstance(operand, eql.ast.String) and has_wildcards(operand.value):
+        if not equality and isinstance(operand, eql.ast.String) and has_wildcards(operand.value):
             self.reject(tree, f"string literal with wildcard characters: {operand.value!r}")
         return operand
 
@@ -220,15 +227,24 @@ class EsqlToEql(Interpreter):
     def comparison(self, tree):
         left, op, right = tree.children
         left = self.field_operand(tree, left)
-        right = self.literal_operand(tree, right)
+        right = self.literal_operand(tree, right, equality=str(op) in ("==", "!="))
+        if str(op) == "==":
+            return self.equal(left, right)
+        if str(op) == "!=":
+            equal = self.equal(left, right)
+            return eql.ast.Comparison(left, "!=", right) if isinstance(equal, eql.ast.Comparison) else eql.ast.Not(equal)
         return eql.ast.Comparison(left, str(op), right)
 
     def in_expr(self, tree):
         negate = any(isinstance(child, Token) and child.type == "NOT" for child in tree.children)
         operands = [child for child in tree.children if isinstance(child, Tree)]
         left = self.field_operand(tree, operands[0])
-        container = [self.literal_operand(tree, operand) for operand in operands[1:]]
-        expr = eql.ast.InSet(left, container)
+        container = [self.literal_operand(tree, operand, equality=True) for operand in operands[1:]]
+        if any(isinstance(item, eql.ast.String) and has_wildcards(item.value) for item in container):
+            terms = [self.equal(left, item) for item in container]
+            expr = terms[0] if len(terms) == 1 else eql.ast.Or(terms)
+        else:
+            expr = eql.ast.InSet(left, container)
         return eql.ast.Not(expr) if negate else expr
 
     def is_null(self, tree):
@@ -295,7 +311,7 @@ class EsqlToEql(Interpreter):
         if len(args) != 1 or not isinstance(args[0], eql.ast.String):
             self.reject(tree, f"{name} arguments, expected a query string")
         try:
-            ast = kql.to_eql(args[0].value, optimize=False)
+            ast = kql.to_eql(args[0].value, optimize=False, strict_literals=True)
         except eql.EqlError as e:
             raise EsqlParseError(f"Invalid KQL query: {e}", 0, 0, args[0].value) from e
         return eql.ast.FunctionCall("_kql", [ast])
@@ -310,7 +326,7 @@ class EsqlToEql(Interpreter):
             self.reject(tree, f"{name} arguments, expected a field and a literal")
         self.check_field(tree, args[0])
         # a single value is emitted, an array field gets an array of one: it contains the literal as an equal does
-        return eql.ast.Comparison(args[0], "==", self.check_literal(tree, args[1]))
+        return self.equal(args[0], self.check_literal(tree, args[1], equality=True))
 
     def function_starts_with(self, tree, name, field, values):
         return self.affix_call(tree, name, field, values, "{}*")

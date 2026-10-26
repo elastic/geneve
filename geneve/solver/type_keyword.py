@@ -27,16 +27,23 @@ from ..utils.solution_space import Strings
 from . import Field, solver
 
 
+def as_strings(v, flags):
+    """The values of a constraint, as literals (no wildcards in them) when the constraint is flagged so."""
+    if flags and flags[0].get("literal"):
+        return Strings(v, literal=True)
+    return v
+
+
 def get_templ(field, constraints):
     templ = Strings()
     templ.min_star_len = 1
     templ.max_star_len = 12
 
-    for k, v, *_ in constraints:
+    for k, v, *flags in constraints:
         if k in ("==", "wildcard"):
             if not isinstance(v, (list, tuple)):
                 v = [v]
-            new_value = templ & v
+            new_value = templ & as_strings(v, flags)
             if not new_value:
                 v = "', '".join(sorted(v))
                 raise ConflictError(f"not in {templ}: ('{v}')", field)
@@ -44,7 +51,7 @@ def get_templ(field, constraints):
         elif k in ("!=", "not wildcard"):
             if not isinstance(v, (list, tuple)):
                 v = [v]
-            new_value = templ - v
+            new_value = templ - as_strings(v, flags)
             if not new_value:
                 v = "', '".join(sorted(v))
                 raise ConflictError(f"excluded by {templ}: ('{v}')", field)
@@ -69,18 +76,18 @@ class KeywordField(Field):
         self.case_sensitive = any(flags[0].get("case_sensitive") for _, _, *flags in chain(constraints, field_constraints) if flags)
         self.templ.case_sensitive = self.case_sensitive
 
-        for k, v, *_ in constraints:
+        for k, v, *flags in constraints:
             if k in ("==", "wildcard"):
                 if not isinstance(v, (list, tuple)):
                     v = [v]
                 if self.is_array or not self.value:
-                    new_value = self.templ & v
+                    new_value = self.templ & as_strings(v, flags)
                     if self.case_sensitive and not new_value:
                         v = "', '".join(sorted(v))
                         raise ConflictError(f"not in {self.templ} (case sensitive): ('{v}')", field)
                     self.value.append(new_value)
                 else:
-                    new_value = self.value[0] & v
+                    new_value = self.value[0] & as_strings(v, flags)
                     if not new_value:
                         v = "', '".join(sorted(v))
                         raise ConflictError(f"not in {self.value[0]}: ('{v}')", field)
@@ -90,12 +97,13 @@ class KeywordField(Field):
                     v = [v]
                 if not self.value:
                     self.value.append(copy(self.templ))
+                excluded = as_strings(v, flags)
                 for i, value in enumerate(self.value):
-                    new_value = value - v
+                    new_value = value - excluded
                     if not new_value:
                         v = "', '".join(sorted(v))
                         raise ConflictError(f"excluded by {value}: ('{v}')", field)
-                    value -= v
+                    value -= excluded
         if not self.value:
             self.value.append(copy(self.templ))
 

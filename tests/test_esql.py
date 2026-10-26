@@ -41,6 +41,10 @@ def like(name, pattern):
     return eql.ast.FunctionCall("_like", [field(name), eql.ast.String(pattern)])
 
 
+def literal(name, value):
+    return eql.ast.FunctionCall("_literal", [field(name), eql.ast.String(value)])
+
+
 def where(query):
     """Return the plain translation of the WHERE clauses, to inspect it."""
     return esql.parse(query).where
@@ -231,10 +235,23 @@ class TestEsqlParser(unittest.TestCase):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
                 where(f"FROM x | WHERE {query}")
 
-    def test_literal_strings_reject_wildcards(self):
-        for query in ('a == "f*o"', 'a != "f?o"', 'a IN ("x", "f*")', 'a NOT IN ("?")'):
+    def test_literal_strings_with_wildcard_characters(self):
+        # in an equality `*` and `?` are what they are, not wildcards
+        self.assertEqual(literal("a", "f*o"), where('FROM x | WHERE a == "f*o"'))
+        self.assertEqual(literal("a", "f?o"), where('FROM x | WHERE a == "f?o"'))
+        self.assertEqual(eql.ast.Not(literal("a", "f?o")), where('FROM x | WHERE a != "f?o"'))
+        self.assertEqual(eql.ast.Not(literal("a", "*")), where('FROM x | WHERE NOT a == "*"'))
+        self.assertEqual(
+            eql.ast.Or([eql.ast.Comparison(field("a"), "==", eql.ast.String("x")), literal("a", "f*")]),
+            where('FROM x | WHERE a IN ("x", "f*")'),
+        )
+        self.assertEqual(eql.ast.Not(literal("a", "?")), where('FROM x | WHERE a NOT IN ("?")'))
+        self.assertEqual(literal("a", "b*"), where('FROM x | WHERE mv_contains(a, "b*")'))
+        # no other comparison makes sense
+        for query in ('a < "f*"', 'a >= "?"'):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported string literal"):
                 where(f"FROM x | WHERE {query}")
+        # what has no wildcard characters is as it was
         self.validate('FROM x | WHERE a == "foo"', "a == 'foo'")
         self.validate('FROM x | WHERE a IN ("x", "y")', "a in ('x', 'y')")
 
@@ -326,7 +343,6 @@ class TestEsqlParser(unittest.TestCase):
             ('mv_contains("a", "b")', "Unsupported MV_CONTAINS arguments"),
             ("mv_contains(a)", "Unsupported MV_CONTAINS arguments"),
             ('mv_contains(a, "b", "c")', "Unsupported MV_CONTAINS arguments"),
-            ('mv_contains(a, "b*")', "Unsupported string literal with wildcard"),
             ("mv_contains(a, NULL)", "Unsupported MV_CONTAINS arguments"),
             ('mv_contains(_id, "x")', "Unsupported predicate on metadata field"),
             ('mv_contains(a, "x") AND mv_contains(a, "y")', "Unsupported conflicting constraints on a"),
@@ -352,6 +368,32 @@ class TestEsqlParser(unittest.TestCase):
         node = where('FROM x | WHERE NOT KQL("a: b") AND c == 1')
         self.assertIsInstance(node, eql.ast.And)
         self.assertEqual(eql.ast.Not, type(node.terms[0]))
+
+    def test_kql_literals(self):
+        def check(kql_query, expected):
+            self.assertEqual(
+                eql.ast.FunctionCall("_kql", [expected]),
+                where('FROM x | WHERE KQL("""' + kql_query + ' """)'),
+            )
+
+        # quoted values are literals, `?` is never a wildcard in KQL, an unquoted `*` is
+        check('f:"*"', literal("f", "*"))
+        check('f:"a*"', literal("f", "a*"))
+        check('f:"a?"', literal("f", "a?"))
+        check("f:a?", literal("f", "a?"))
+        check('not f:"*"', eql.ast.Not(literal("f", "*")))
+        check("f:a*", eql.ast.FunctionCall("wildcard", [field("f"), eql.ast.String("a*")]))
+        check("f:*", eql.ast.IsNotNull(field("f")))
+        check('f:"abc"', eql.ast.Comparison(field("f"), "==", eql.ast.String("abc")))
+        check('f:("*" or "a")', eql.ast.Or([literal("f", "*"), eql.ast.Comparison(field("f"), "==", eql.ast.String("a"))]))
+        with self.assertRaisesRegex(esql.EsqlParseError, "Invalid KQL query"):
+            where('FROM x | WHERE KQL("f:a*b?")')
+
+    def test_kql_strict_literals_are_opt_in(self):
+        # the KQL of the rules of type query is as it was
+        self.assertEqual(eql.ast.IsNotNull(field("f")), kql.to_eql('f:"*"', optimize=False))
+        self.assertEqual(eql.ast.FunctionCall("wildcard", [field("f"), eql.ast.String("a*")]), kql.to_eql('f:"a*"', optimize=False))
+        self.assertEqual(literal("f", "*"), kql.to_eql('f:"*"', optimize=False, strict_literals=True))
 
     def test_kql_rejected(self):
         for query in ("KQL()", "KQL(1)", "KQL(a)", 'KQL("a: b", "c")', 'KQL("a: b", {"case_insensitive": true})', "KQL(NULL)"):
@@ -591,6 +633,12 @@ class TestEsqlProvenance(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase)
             se = SourceEvents(self.long_schema)
             se.add_ast(esql.to_eql('FROM x | WHERE KQL("m: 1") AND n >= 1.5'))
 
+    def test_literal_constraints_are_flagged(self):
+        flags = self.flags(esql.to_eql('FROM x | WHERE a == "f*o" AND b == "x"'))
+        self.assertEqual([{"a": [{"literal": True, "esql": True}], "b": [{"esql": True}]}], flags)
+        flags = self.flags(esql.to_eql('FROM x | WHERE KQL("f:\\"*\\"")'))
+        self.assertEqual([{"f": [{"literal": True, "kql": True}]}], flags)
+
     def test_only_esql_constraints_are_flagged_in_mixed_trees(self):
         esql_node = esql.to_eql('FROM x | WHERE k LIKE "x*" AND m == 1')
         eql_node = eql.parse_expression("n == 2")
@@ -773,6 +821,44 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         self.assertEqual([{"process": {"args": ["a", "b"]}}], docs)
         docs = self.emit('FROM x | WHERE NOT KQL("process.name: a.exe") AND event.action == "start"', count=5)
         self.assertTrue(all(doc["process"]["name"] != "a.exe" for doc in docs), docs)
+
+    def test_literal_strings_emit(self):
+        docs = self.emit('FROM x | WHERE process.name == "f*o"', count=3)
+        self.assertEqual([{"process": {"name": "f*o"}}] * 3, docs)
+        docs = self.emit('FROM x | WHERE process.name == "a?"', count=1)
+        self.assertEqual([{"process": {"name": "a?"}}], docs)
+        docs = self.emit('FROM x | WHERE process.name != "*"', count=20)
+        self.assertTrue(all(doc["process"]["name"] != "*" for doc in docs), docs)
+        se = SourceEvents(self.schema)
+        se.add_query('FROM x | WHERE process.name IN ("a*", "b", "c?")')
+        branches = [[event.doc for event in branch] for branch in se.emit(timestamp=False, complete=True)]
+        self.assertEqual([[{"process": {"name": "a*"}}], [{"process": {"name": "b"}}], [{"process": {"name": "c?"}}]], branches)
+        docs = self.emit('FROM x | WHERE mv_contains(process.args, "*")', count=1)
+        self.assertEqual([{"process": {"args": ["*"]}}], docs)
+        # a literal and a wildcard on the same field are still a conflict, as they were
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported conflicting constraints"):
+            self.emit('FROM x | WHERE process.name == "a*" AND process.name LIKE "a*"')
+
+    def test_kql_literals_emit(self):
+        for query, expected in (
+            ('f:"*"', "*"),
+            ('f:"a*"', "a*"),
+            ('f:"a?"', "a?"),
+            ("f:a?", "a?"),
+        ):
+            with self.subTest(query):
+                docs = self.emit(f'FROM x | WHERE KQL("""{query} """)'.replace("f:", "process.name:"), count=2)
+                self.assertEqual([{"process": {"name": expected}}] * 2, docs)
+        docs = self.emit('FROM x | WHERE KQL("process.name:a*")', count=10)
+        self.assertTrue(all(doc["process"]["name"].startswith("a") for doc in docs), docs)
+        docs = self.emit('FROM x | WHERE KQL("""NOT process.name:"*" """)', count=10)
+        self.assertTrue(all(doc["process"]["name"] != "*" for doc in docs), docs)
+        docs = self.emit('FROM x | WHERE KQL("""process.args:"*" and process.args:"a" """)', count=1)
+        self.assertEqual([{"process": {"args": ["*", "a"]}}], docs)
+        se = SourceEvents(self.schema)
+        se.add_query('FROM x | WHERE KQL("""process.args:("*" or "escalate")""")')
+        branches = [[event.doc for event in branch] for branch in se.emit(timestamp=False, complete=True)]
+        self.assertEqual([[{"process": {"args": ["*"]}}], [{"process": {"args": ["escalate"]}}]], branches)
 
     def test_constant_keyword_fields(self):
         docs = self.emit('FROM x | WHERE data_stream.dataset == "aws.cloudtrail"', count=2)

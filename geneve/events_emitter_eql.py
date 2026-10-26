@@ -221,6 +221,8 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool, max_branches: int
         return cc_function(node, negate, max_branches, "cardinality")
     elif fn_name == "_like":
         return cc_like(node, negate, max_branches)
+    elif fn_name == "_literal":
+        return cc_literal(node, negate, max_branches)
     else:
         raise NotImplementedError(f"Unsupported function: {node.name}")
 
@@ -252,6 +254,14 @@ def cc_kql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
     for doc in root.constraints():
         doc.flag_constraints({"kql": True})
     return root
+
+
+def cc_literal(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # an equality where `*` and `?` are what they are, not wildcards (a quoted value in KQL, any value in ES|QL)
+    field = node.arguments[0].render()
+    doc = Document()
+    doc.append_constraint(field, "==" if not negate else "!=", node.arguments[1].value, {"literal": True})
+    return Root([Branch([doc])])
 
 
 def cc_like(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
