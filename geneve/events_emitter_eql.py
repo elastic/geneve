@@ -295,25 +295,28 @@ def cc_stats(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Roo
         raise NotImplementedError("Unsupported negation of STATS")
     pre, post, spec = node.arguments
     spec = json.loads(spec.value)
-    aggregates = {normalize_name(alias): (function, argument) for alias, function, argument in spec["aggregates"]}
+    aggregates = {normalize_name(alias): (function, argument, simple) for alias, function, argument, simple in spec["aggregates"]}
     by = [normalize_name(field) for field in spec["by"]]
+    join = [normalize_name(field) for field in spec["join"]]
     pre_root = collect_constraints(pre, False, max_branches)
     post_root = collect_constraints(post, False, max_branches)
     if max_branches and len(pre_root) * len(post_root) > max_branches:
         raise ValueError(f"Root with too many branches (limit: {max_branches})")
-    return Root([stats_branch(pre_branch, post_branch, aggregates, by) for pre_branch in pre_root for post_branch in post_root])
+    return Root([stats_branch(pre_branch, post_branch, aggregates, by, join) for pre_branch in pre_root for post_branch in post_root])
 
 
-def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: list) -> Branch:
+def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: list, join: list) -> Branch:
     if len(pre_branch) != 1:
         raise NotImplementedError("Unsupported STATS of documents that are related")
     counts, distinct, by_conditions = [], {}, []
     for doc in post_branch:
         for field, constraints in doc.items():
             if field in aggregates:
-                function, argument = aggregates[field]
+                function, argument, simple = aggregates[field]
                 if function == "values":
                     raise NotImplementedError(f"Unsupported condition on the values of {field}")
+                if not simple or function not in ("count", "count_distinct"):
+                    raise NotImplementedError(f"Unsupported condition on the aggregate {field}")
                 lo, hi = count_interval(field, constraints)
                 if function == "count":
                     counts.append((field, argument, lo, hi))
@@ -349,7 +352,7 @@ def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: 
             different.append(field)
     present = {argument for _, argument, _, _ in counts if argument} | set(distinct)
 
-    join_fields = by + [field for field in shared if field not in by]
+    join_fields = join + [field for field in shared if field not in join]
     join_doc = Document()
     docs = []
     for _ in range(size):

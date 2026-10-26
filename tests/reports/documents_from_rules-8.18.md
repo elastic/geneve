@@ -12,14 +12,14 @@ Rules version: 8.18.15
       1. [Unsupported rule type: new_terms (142)](#unsupported-rule-type-new_terms-142)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported command: EVAL (27)](#unsupported-command-eval-27)
       1. [Unsupported function: now (14)](#unsupported-function-now-14)
-      1. [Unsupported command: DISSECT (8)](#unsupported-command-dissect-8)
+      1. [Unsupported command: DISSECT (10)](#unsupported-command-dissect-10)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (8)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-8)
       1. [Unsupported command: MV_EXPAND (6)](#unsupported-command-mv_expand-6)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
-      1. [Unsupported aggregate function: MAX (2)](#unsupported-aggregate-function-max-2)
-      1. [Unsupported operator: RLIKE (2)](#unsupported-operator-rlike-2)
+      1. [Unsupported operator: RLIKE (3)](#unsupported-operator-rlike-3)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_pattern_count-2)
       1. [Error at line:47,column:47
 Invalid syntax
 | where not powershell.file.script_block_text like "*[System.IO.File]::Open('C:\\\\ProgramData\\\\Microsoft\\\\Windows Defender Advanced Threat Protection\\\\DataCollection*"
@@ -47,8 +47,12 @@ invalid-syntax
 -match-will-ignore-the--and-look-for-the-individual-words
 -where-powershellfilescript_block_text--rahcmetsysstekcostcejboimwecalperecnerferpenoitcennocniojemanvnegnirtstcejbo-wen_23niwnoisserpxeekovnidaolnwod
 -------------------------------------------1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)](#unsupported-where-on-a-field-made-by-eval-esqlml_policy_violations_mv_count-1)
+      1. [Unsupported WHERE on a field made by EVAL: multi_spaces (1)](#unsupported-where-on-a-field-made-by-eval-multi_spaces-1)
       1. [Unsupported command: GROK (1)](#unsupported-command-grok-1)
       1. [Unsupported function: to_lower (1)](#unsupported-function-to_lower-1)
+      1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
       1. [Unsupported right operand, it must be a literal (1)](#unsupported-right-operand-it-must-be-a-literal-1)
    1. [Generation errors](#generation-errors)
       1. [Unsupported function: match (21)](#unsupported-function-match-21)
@@ -71,6 +75,7 @@ invalid-syntax
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
+      1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
       1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
@@ -143,6 +148,13 @@ invalid-syntax
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
+      1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_request_length_avg (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_request_length_avg-1)
+      1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_response_length_max (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_response_length_max-1)
+      1. [Unsupported condition on the aggregate Esql.azure_signinlogs_properties_user_principal_name_lower_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlazure_signinlogs_properties_user_principal_name_lower_count_distinct-1)
+      1. [Unsupported condition on the aggregate Esql.is_browser_case_max (1)](#unsupported-condition-on-the-aggregate-esqlis_browser_case_max-1)
+      1. [Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)](#unsupported-condition-on-the-aggregate-esqlml_usage_prompt_tokens_max-1)
+      1. [Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqloauth_token_count_distinct-1)
+      1. [Unsupported field in WHERE after STATS: Esql.brute_force_type (1)](#unsupported-field-in-where-after-stats-esqlbrute_force_type-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -428,38 +440,6 @@ invalid-syntax
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported command: EVAL (27)
-
-27 rules:
-
-* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
-* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
-* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
-* AWS Discovery API Calls via CLI from a Single Resource
-* AWS EC2 Multi-Region DescribeInstances API Calls
-* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* Command Line Obfuscation via Whitespace Padding
-* Dynamic IEX Reconstruction via Method String Access
-* Excessive Secret or Key Retrieval from Azure Key Vault
-* Microsoft 365 Brute Force via Entra ID Sign-Ins
-* Microsoft Entra ID Exccessive Account Lockouts Detected
-* Microsoft Entra ID Sign-In Brute Force Activity
-* Microsoft Entra ID Suspicious Session Reuse to Graph Access
-* OIDC Discovery URL Changed in Entra ID
-* Potential Denial of Azure OpenAI ML Service
-* Potential Dynamic IEX Reconstruction via Environment Variables
-* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
-* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
-* Potential PowerShell Obfuscation via High Special Character Proportion
-* Potential PowerShell Obfuscation via Invalid Escape Sequences
-* Potential PowerShell Obfuscation via Special Character Overuse
-* Potential PowerShell Obfuscation via String Concatenation
-* Potential PowerShell Obfuscation via String Reordering
-* Potential Ransomware Behavior - Note Files by System
-* PowerShell Obfuscation via Negative Index String Reversal
-* Suspicious Microsoft 365 UserLoggedIn via OAuth Code
-* Suspicious Microsoft OAuth Flow via Auth Broker to DRS
-
 ### Unsupported function: now (14)
 
 14 rules:
@@ -479,9 +459,9 @@ invalid-syntax
 * Unusual File Transfer Utility Launched
 * Unusual Process Spawned from Web Server Parent
 
-### Unsupported command: DISSECT (8)
+### Unsupported command: DISSECT (10)
 
-8 rules:
+10 rules:
 
 * AWS EC2 EBS Snapshot Access Removed
 * AWS EC2 EBS Snapshot Shared or Made Public
@@ -490,7 +470,22 @@ invalid-syntax
 * AWS IAM AdministratorAccess Policy Attached to User
 * AWS S3 Object Encryption Using External KMS Key
 * AWS S3 Static Site JavaScript File Uploaded
+* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 * AWS Signin Single Factor Console Login with Federated User
+* OIDC Discovery URL Changed in Entra ID
+
+### Unsupported WHERE on a field made by EVAL: Esql.script_block_length (8)
+
+8 rules:
+
+* Dynamic IEX Reconstruction via Method String Access
+* Potential Dynamic IEX Reconstruction via Environment Variables
+* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
+* Potential PowerShell Obfuscation via High Special Character Proportion
+* Potential PowerShell Obfuscation via Special Character Overuse
+* Potential PowerShell Obfuscation via String Concatenation
+* Potential PowerShell Obfuscation via String Reordering
+* PowerShell Obfuscation via Negative Index String Reversal
 
 ### Unsupported command: MV_EXPAND (6)
 
@@ -523,19 +518,20 @@ invalid-syntax
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
-### Unsupported aggregate function: MAX (2)
+### Unsupported operator: RLIKE (3)
 
-2 rules:
-
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
-
-### Unsupported operator: RLIKE (2)
-
-2 rules:
+3 rules:
 
 * Entra ID Actor Token User Impersonation Abuse
+* Microsoft 365 Brute Force via Entra ID Sign-Ins
 * Multiple Device Token Hashes for Single Okta Session
+
+### Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)
+
+2 rules:
+
+* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
+* Potential PowerShell Obfuscation via Invalid Escape Sequences
 
 ### Error at line:47,column:47
 Invalid syntax
@@ -567,6 +563,24 @@ Invalid syntax
 
 * Potential PowerShell Obfuscation via Reverse Keywords
 
+### Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)
+
+1 rules:
+
+* Microsoft Entra ID Suspicious Session Reuse to Graph Access
+
+### Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)
+
+1 rules:
+
+* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
+
+### Unsupported WHERE on a field made by EVAL: multi_spaces (1)
+
+1 rules:
+
+* Command Line Obfuscation via Whitespace Padding
+
 ### Unsupported command: GROK (1)
 
 1 rules:
@@ -578,6 +592,12 @@ Invalid syntax
 1 rules:
 
 * AWS IAM Login Profile Added for Root
+
+### Unsupported left operand, it must be a field (1)
+
+1 rules:
+
+* AWS Discovery API Calls via CLI from a Single Resource
 
 ### Unsupported right operand, it must be a literal (1)
 
@@ -784,6 +804,11 @@ Invalid syntax
 
 1 rules:
 * Potential Okta MFA Bombing via Push Notifications
+
+### Cannot choose from an empty set (1)
+
+1 rules:
+* Excessive Secret or Key Retrieval from Azure Key Vault
 
 ### Field type solver: flattened (1)
 
@@ -1144,6 +1169,41 @@ Invalid syntax
 
 1 rules:
 * Remote Computer Account DnsHostName Update
+
+### Unsupported condition on the aggregate Esql.azure_open_ai_properties_request_length_avg (1)
+
+1 rules:
+* Potential Denial of Azure OpenAI ML Service
+
+### Unsupported condition on the aggregate Esql.azure_open_ai_properties_response_length_max (1)
+
+1 rules:
+* Potential Azure OpenAI Model Theft
+
+### Unsupported condition on the aggregate Esql.azure_signinlogs_properties_user_principal_name_lower_count_distinct (1)
+
+1 rules:
+* Microsoft Entra ID Exccessive Account Lockouts Detected
+
+### Unsupported condition on the aggregate Esql.is_browser_case_max (1)
+
+1 rules:
+* Suspicious Microsoft OAuth Flow via Auth Broker to DRS
+
+### Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)
+
+1 rules:
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+
+### Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)
+
+1 rules:
+* Suspicious Microsoft 365 UserLoggedIn via OAuth Code
+
+### Unsupported field in WHERE after STATS: Esql.brute_force_type (1)
+
+1 rules:
+* Microsoft Entra ID Sign-In Brute Force Activity
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 

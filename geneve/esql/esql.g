@@ -1,6 +1,7 @@
 // Subset of the ES|QL grammar: a source command followed by pipes, of which
-// only WHERE and STATS are interpreted. Any other command is captured as a name
-// and an opaque body so that the translator can report it as unsupported.
+// only WHERE is parsed. Any other command is captured as a name and an opaque
+// body, that the translator reads when it can (STATS and EVAL, see lexical.py)
+// and reports as unsupported when it cannot.
 
 query: source_cmd pipe*
 
@@ -10,16 +11,9 @@ other_source: COMMAND_WORD BODY?
 metadata: METADATA FIELD ("," FIELD)*
 source: SOURCE | STRING
 
-pipe: "|" (where_cmd | stats_cmd | other_cmd)
+pipe: "|" (where_cmd | other_cmd)
 where_cmd: WHERE expr
 other_cmd: COMMAND_WORD BODY?
-
-stats_cmd: STATS stats_item ("," stats_item)* by_clause?
-stats_item: FIELD "=" expr -> named_item
-          | expr -> unnamed_item
-by_clause: BY by_item ("," by_item)*
-by_item: FIELD "=" expr -> by_named
-       | expr -> by_expr
 
 ?expr: or_expr
 ?or_expr: and_expr
@@ -67,8 +61,6 @@ func_star: FIELD "(" "*" ")"
 FROM.2: /from(?![\w.@])/i
 METADATA.2: /metadata(?![\w.@])/i
 WHERE.2: /where(?![\w.@])/i
-STATS.2: /stats(?![\w.@])/i
-BY.2: /by(?![\w.@])/i
 AND.2: /and(?![\w.@])/i
 OR.2: /or(?![\w.@])/i
 NOT.2: /not(?![\w.@])/i

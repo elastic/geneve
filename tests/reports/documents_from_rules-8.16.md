@@ -12,18 +12,20 @@ Rules version: 8.16.16
       1. [Unsupported rule type: new_terms (126)](#unsupported-rule-type-new_terms-126)
       1. [Unsupported rule type: machine_learning (74)](#unsupported-rule-type-machine_learning-74)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported command: EVAL (21)](#unsupported-command-eval-21)
+      1. [Unsupported command: DISSECT (10)](#unsupported-command-dissect-10)
       1. [Unsupported function: now (10)](#unsupported-function-now-10)
-      1. [Unsupported command: DISSECT (9)](#unsupported-command-dissect-9)
-      1. [Unsupported operator: RLIKE (6)](#unsupported-operator-rlike-6)
+      1. [Unsupported WHERE on a field made by EVAL: script_len (9)](#unsupported-where-on-a-field-made-by-eval-script_len-9)
+      1. [Unsupported operator: RLIKE (7)](#unsupported-operator-rlike-7)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported command: MV_EXPAND (4)](#unsupported-command-mv_expand-4)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
-      1. [Unsupported aggregate function: MAX (2)](#unsupported-aggregate-function-max-2)
+      1. [Unsupported WHERE on a field made by EVAL: count (2)](#unsupported-where-on-a-field-made-by-eval-count-2)
       1. [Unsupported right operand, it must be a literal (2)](#unsupported-right-operand-it-must-be-a-literal-2)
+      1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
       1. [Unsupported command: GROK (1)](#unsupported-command-grok-1)
       1. [Unsupported function: NOW (1)](#unsupported-function-now-1)
       1. [Unsupported function: TO_LOWER (1)](#unsupported-function-to_lower-1)
+      1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
       1. [Unsupported function: match (14)](#unsupported-function-match-14)
@@ -113,6 +115,9 @@ Rules version: 8.16.16
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
+      1. [Unsupported condition on the aggregate avg_request_size (1)](#unsupported-condition-on-the-aggregate-avg_request_size-1)
+      1. [Unsupported condition on the aggregate max_data_transferred (1)](#unsupported-condition-on-the-aggregate-max_data_transferred-1)
+      1. [Unsupported condition on the aggregate max_tokens (1)](#unsupported-condition-on-the-aggregate-max_tokens-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -361,31 +366,20 @@ Rules version: 8.16.16
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported command: EVAL (21)
+### Unsupported command: DISSECT (10)
 
-21 rules:
+10 rules:
 
-* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
-* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
-* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
-* AWS Discovery API Calls via CLI from a Single Resource
-* AWS EC2 Multi-Region DescribeInstances API Calls
-* AWS STS Temporary IAM Session Token Used from Multiple Addresses
+* AWS EC2 EBS Snapshot Access Removed
+* AWS EC2 EBS Snapshot Shared or Made Public
+* AWS IAM AdministratorAccess Policy Attached to Group
+* AWS IAM AdministratorAccess Policy Attached to Role
+* AWS IAM AdministratorAccess Policy Attached to User
+* AWS S3 Object Encryption Using External KMS Key
+* AWS S3 Static Site JavaScript File Uploaded
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* Azure Entra ID Password Spraying (Non-Interactive SFA)
-* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
-* Dynamic IEX Reconstruction via Method String Access
-* Potential Denial of Azure OpenAI ML Service
-* Potential Dynamic IEX Reconstruction via Environment Variables
-* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
-* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
-* Potential PowerShell Obfuscation via High Numeric Character Proportion
-* Potential PowerShell Obfuscation via High Special Character Proportion
-* Potential PowerShell Obfuscation via Invalid Escape Sequences
-* Potential PowerShell Obfuscation via Special Character Overuse
-* Potential PowerShell Obfuscation via String Concatenation
-* Potential PowerShell Obfuscation via String Reordering
-* PowerShell Obfuscation via Negative Index String Reversal
+* AWS Signin Single Factor Console Login with Federated User
+* Potential AWS S3 Bucket Ransomware Note Uploaded
 
 ### Unsupported function: now (10)
 
@@ -402,24 +396,25 @@ Rules version: 8.16.16
 * Unusual File Transfer Utility Launched
 * Unusual Process Spawned from Web Server Parent
 
-### Unsupported command: DISSECT (9)
+### Unsupported WHERE on a field made by EVAL: script_len (9)
 
 9 rules:
 
-* AWS EC2 EBS Snapshot Access Removed
-* AWS EC2 EBS Snapshot Shared or Made Public
-* AWS IAM AdministratorAccess Policy Attached to Group
-* AWS IAM AdministratorAccess Policy Attached to Role
-* AWS IAM AdministratorAccess Policy Attached to User
-* AWS S3 Object Encryption Using External KMS Key
-* AWS S3 Static Site JavaScript File Uploaded
-* AWS Signin Single Factor Console Login with Federated User
-* Potential AWS S3 Bucket Ransomware Note Uploaded
+* Dynamic IEX Reconstruction via Method String Access
+* Potential Dynamic IEX Reconstruction via Environment Variables
+* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
+* Potential PowerShell Obfuscation via High Numeric Character Proportion
+* Potential PowerShell Obfuscation via High Special Character Proportion
+* Potential PowerShell Obfuscation via Special Character Overuse
+* Potential PowerShell Obfuscation via String Concatenation
+* Potential PowerShell Obfuscation via String Reordering
+* PowerShell Obfuscation via Negative Index String Reversal
 
-### Unsupported operator: RLIKE (6)
+### Unsupported operator: RLIKE (7)
 
-6 rules:
+7 rules:
 
+* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
 * Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
 * High Number of Okta Device Token Cookies Generated for Authentication
 * Multiple Device Token Hashes for Single Okta Session
@@ -456,12 +451,12 @@ Rules version: 8.16.16
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
-### Unsupported aggregate function: MAX (2)
+### Unsupported WHERE on a field made by EVAL: count (2)
 
 2 rules:
 
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
+* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
+* Potential PowerShell Obfuscation via Invalid Escape Sequences
 
 ### Unsupported right operand, it must be a literal (2)
 
@@ -469,6 +464,12 @@ Rules version: 8.16.16
 
 * AWS IAM User Created Access Keys For Another User
 * AWS STS Role Chaining
+
+### Unsupported WHERE on a field made by EVAL: policy_violations (1)
+
+1 rules:
+
+* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
 
 ### Unsupported command: GROK (1)
 
@@ -487,6 +488,12 @@ Rules version: 8.16.16
 1 rules:
 
 * AWS IAM Login Profile Added for Root
+
+### Unsupported left operand, it must be a field (1)
+
+1 rules:
+
+* AWS Discovery API Calls via CLI from a Single Resource
 
 ## Generation errors
 
@@ -1011,6 +1018,21 @@ Rules version: 8.16.16
 
 1 rules:
 * Remote Computer Account DnsHostName Update
+
+### Unsupported condition on the aggregate avg_request_size (1)
+
+1 rules:
+* Potential Denial of Azure OpenAI ML Service
+
+### Unsupported condition on the aggregate max_data_transferred (1)
+
+1 rules:
+* Potential Azure OpenAI Model Theft
+
+### Unsupported condition on the aggregate max_tokens (1)
+
+1 rules:
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 

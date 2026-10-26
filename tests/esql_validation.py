@@ -130,6 +130,12 @@ def validate_query(es, name, query, schema, stack_version=None, rule=None):
         root = se.add_rule(rule) if rule is not None else se.add_query(query)
         branches = [[event.doc for event in branch] for branch in se.emit(root, timestamp=True, complete=True, count=1)]
         mappings = infer_mappings(se.mappings(root), [doc for docs in branches for doc in docs], schema)
+        for docs in branches:
+            for doc in docs:
+                # what an EVAL makes is for the query to make, not for the documents to have
+                made = [path for path, _ in flatten(doc) if path in parsed.aliases]
+                if made:
+                    return Result(name, "failed", len(branches), f"the documents have {made[0]}, which an EVAL makes")
     except Exception as e:  # noqa: BLE001
         return Result(name, "skipped", 0, f"{type(e).__name__}: {e}".splitlines()[0][:160])
 

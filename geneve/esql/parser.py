@@ -37,19 +37,34 @@ from .. import kql
 from ..events_emitter_eql import collect_constraints
 from ..utils import has_wildcards
 from .errors import EsqlParseError
+from .lexical import (
+    assignment,
+    call,
+    identifiers,
+    is_name,
+    split_keyword,
+    split_top,
+    strip_comments,
+)
 
 __all__ = ("Aggregate", "EsqlQuery", "EsqlStats", "parse", "to_eql")
 
 # `where` is the plain translation of the WHERE clauses before STATS, `stats` is None when there is no STATS
-EsqlQuery = namedtuple("EsqlQuery", ["sources", "metadata", "where", "stats"], defaults=(None,))
+# `aliases` are the fields that an EVAL makes, that the documents do not have
+EsqlQuery = namedtuple("EsqlQuery", ["sources", "metadata", "where", "stats", "aliases"], defaults=(None, ()))
 # `where` is the translation of the WHERE clauses after STATS, about the aliases of the aggregates and the BY fields
-EsqlStats = namedtuple("EsqlStats", ["aggregates", "by", "where"])
-Aggregate = namedtuple("Aggregate", ["alias", "function", "argument"])
+# `by` are the names of the keys, `fields` those that are fields of the documents and `join` the fields of the documents that the
+# keys depend on, which are the same for the documents of a group. `simple` is for the aggregates that a condition can be about:
+# a count of the documents, or of the values of a field
+EsqlStats = namedtuple("EsqlStats", ["aggregates", "by", "fields", "join", "where"])
+Aggregate = namedtuple("Aggregate", ["alias", "function", "argument", "simple"])
 
 # commands that do not change which documents match a preceding WHERE, LIMIT does
 IGNORED_COMMANDS = ("KEEP", "DROP", "SORT", "LIMIT")
 # aggregate functions that tell how many documents there are, VALUES just collects what they have
-AGGREGATE_FUNCTIONS = ("count", "count_distinct", "values")
+COUNTING_FUNCTIONS = ("count", "count_distinct")
+# the time is not a field that the documents can be made to share
+NOT_JOINED = ("@timestamp",)
 
 # fields that describe the indexed document and are not part of its content
 METADATA_FIELDS = ("_id", "_index", "_version", "_ignored", "_index_mode", "_source", "_score")
@@ -118,6 +133,7 @@ class EsqlToEql(Interpreter):
         self.blocking = None  # LIMIT was seen, neither a WHERE nor a STATS is allowed after it
         self.stats = None
         self.post_wheres = []
+        self.evals = {}  # what the EVALs before STATS make, and the fields of the documents that they depend on
 
     @staticmethod
     def reject(tree, message):
@@ -133,10 +149,11 @@ class EsqlToEql(Interpreter):
             where = eql.ast.And(self.wheres)
         stats = None
         if self.stats is not None:
-            aggregates, by = self.stats
+            aggregates, by, fields, join = self.stats
             post_where = eql.ast.And(self.post_wheres) if len(self.post_wheres) > 1 else (self.post_wheres or [eql.ast.Boolean(True)])[0]
-            stats = EsqlStats(tuple(aggregates), tuple(by), post_where)
-        return EsqlQuery(tuple(self.sources), tuple(self.metadata_fields), where, stats)
+            stats = EsqlStats(tuple(aggregates), tuple(by), tuple(fields), tuple(join), post_where)
+        aliases = tuple(alias for alias, depends in self.evals.items() if alias not in depends)
+        return EsqlQuery(tuple(self.sources), tuple(self.metadata_fields), where, stats, aliases)
 
     # commands
 
@@ -158,63 +175,112 @@ class EsqlToEql(Interpreter):
     def where_cmd(self, tree):
         if self.blocking:
             self.reject(tree, f"pipe before WHERE: {self.blocking}")
-        (self.post_wheres if self.stats is not None else self.wheres).append(self.boolean(tree.children[1]))
+        expression = self.boolean(tree.children[1])
+        if self.stats is not None:
+            self.post_wheres.append(expression)
+            return
+        for node in expression:
+            if isinstance(node, eql.ast.Field) and self.field_key(node.render()) in self.evals:
+                self.reject(tree, f"WHERE on a field made by EVAL: {node.render()}")
+        self.wheres.append(expression)
 
     def other_cmd(self, tree):
         name = str(tree.children[0]).upper()
-        # after STATS an EVAL makes fields, that no WHERE can then ask for (it would not be about an aggregate)
-        if name not in IGNORED_COMMANDS and not (name == "EVAL" and self.stats is not None):
+        body = str(tree.children[1]) if len(tree.children) > 1 else ""
+        if name == "STATS":
+            return self.stats_command(tree, strip_comments(body))
+        if name == "EVAL":
+            return self.eval_command(tree, strip_comments(body))
+        if name not in IGNORED_COMMANDS:
             self.reject(tree, f"command: {name}")
-        if name == "LIMIT" and re.fullmatch(r"\s*0+\s*", str(tree.children[1]) if len(tree.children) > 1 else ""):
+        if name == "LIMIT" and re.fullmatch(r"\s*0+\s*", body):
             self.reject(tree, "LIMIT 0, no document is returned")
         if name == "LIMIT":
             self.blocking = self.blocking or name
 
-    def stats_cmd(self, tree):
+    @staticmethod
+    def field_key(name):
+        """Return the name of a field as the constraints know it, with no quotes."""
+        return ".".join(split_field(name))
+
+    @staticmethod
+    def field_name(name):
+        base, *path = split_field(name)
+        return eql.ast.Field(base, path).render()
+
+    def dependencies(self, expression):
+        """Return the fields of the documents that an expression depends on, what an EVAL makes is by what it depends on."""
+        found = []
+        for name in identifiers(expression):
+            key = self.field_key(name)
+            for field in self.evals.get(key, [key]):
+                if field not in found and field not in NOT_JOINED:
+                    found.append(field)
+        return found
+
+    def eval_command(self, tree, body):
+        # what an EVAL makes is not a field of the documents, no WHERE can ask for it, and it is not
+        # of interest after STATS (nothing asks for it, a WHERE after it is checked later)
+        if self.stats is not None:
+            return
+        for item in split_top(body):
+            made = assignment(item)
+            if made:
+                self.evals[self.field_key(made[0])] = self.dependencies(made[1])
+
+    def stats_command(self, tree, body):
         if self.stats is not None:
             self.reject(tree, "second STATS")
         if self.blocking:
             self.reject(tree, f"pipe before STATS: {self.blocking}")
-        aggregates, by = [], []
-        for child in tree.children:
-            if not isinstance(child, Tree):
-                continue
-            if child.data == "by_clause":
-                by = [self.by_key(item) for item in child.children if isinstance(item, Tree)]
-            else:
-                aggregates.append(self.aggregate(child))
-        self.stats = (aggregates, by)
+        aggregations, by = split_keyword(body, "by")
+        aggregates = [self.aggregate(tree, item) for item in self.items(aggregations, body, "STATS without aggregates")]
+        keys = self.items(by, body, "BY without keys") if by is not None else []
+        names, fields, join = [], [], []
+        for item in keys:
+            name, depends = self.key(tree, item)
+            if name:
+                names.append(name)
+            if name and is_name(item) and self.field_key(item) not in self.evals:
+                fields.append(name)
+            join.extend(field for field in depends if field not in join)
+        self.stats = (aggregates, names, fields, join)
 
     @staticmethod
-    def field_name(token):
-        base, *path = split_field(str(token))
-        return eql.ast.Field(base, path).render()
+    def items(text, command, message):
+        items = [item.strip() for item in split_top(text)]
+        if not text.strip() or not all(items):
+            raise EsqlParseError(f"Invalid syntax: {message}", 0, 0, command)
+        return items
 
-    def aggregate(self, tree):
-        if tree.data == "unnamed_item":
+    def aggregate(self, tree, item):
+        made = assignment(item)
+        if made is None:
             self.reject(tree, "aggregate without a name")
-        alias, call = tree.children
-        alias = self.field_name(alias)
-        if call.data not in ("func_call", "func_star"):
+        alias, expression = self.field_name(made[0]), made[1]
+        function = call(expression)
+        if function is None:
             self.reject(tree, f"aggregate {alias}, it must be a function")
-        name = str(call.children[0]).lower()
-        if name not in AGGREGATE_FUNCTIONS:
-            self.reject(tree, f"aggregate function: {name.upper()}")
-        args = [] if call.data == "func_star" else [arg for arg in call.children[1:] if isinstance(arg, Tree)]
-        if name == "count" and not args:
-            return Aggregate(alias, name, None)
-        if len(args) != 1 or args[0].data != "field":
-            self.reject(tree, f"aggregate argument of {name.upper()}, it must be one field")
-        argument = self.visit(args[0])
-        self.check_field(tree, argument)
-        return Aggregate(alias, name, argument.render())
+        name, arguments = function[0].lower(), function[1]
+        if name == "count" and arguments in ("", "*"):
+            return Aggregate(alias, name, None, True)
+        if (name in COUNTING_FUNCTIONS or name == "values") and is_name(arguments) and self.field_key(arguments) not in self.evals:
+            if self.field_key(arguments) in METADATA_FIELDS:
+                self.reject(tree, f"predicate on metadata field: {arguments}")
+            return Aggregate(alias, name, self.field_name(arguments), True)
+        return Aggregate(alias, name, None, False)
 
-    def by_key(self, tree):
-        if tree.data != "by_expr" or tree.children[0].data != "field":
-            self.reject(tree, "BY, only the fields are supported as they are")
-        field = self.visit(tree.children[0])
-        self.check_field(tree, field)
-        return field.render()
+    def key(self, tree, item):
+        """Return the name of a key of BY (None when it has none), and the fields of the documents that it depends on."""
+        made = assignment(item)
+        if made:
+            return self.field_name(made[0]), self.dependencies(made[1])
+        if is_name(item):
+            key = self.field_key(item)
+            if key in METADATA_FIELDS:
+                self.reject(tree, f"predicate on metadata field: {key}")
+            return self.field_name(item.strip()), self.evals.get(key, [key])
+        return None, self.dependencies(item)
 
     # boolean expressions
 
@@ -471,6 +537,6 @@ def to_eql(text):
     query = parse(text)
     node = query.where
     if query.stats is not None:
-        spec = {"aggregates": [list(a) for a in query.stats.aggregates], "by": list(query.stats.by)}
+        spec = {"aggregates": [list(a) for a in query.stats.aggregates], "by": list(query.stats.fields), "join": list(query.stats.join)}
         node = eql.ast.FunctionCall("_stats", [query.where, query.stats.where, eql.ast.String(json.dumps(spec))])
     return eql.ast.FunctionCall("_esql", [node])

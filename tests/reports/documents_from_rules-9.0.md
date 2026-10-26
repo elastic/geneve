@@ -11,15 +11,15 @@ Rules version: 9.0.19
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: new_terms (153)](#unsupported-rule-type-new_terms-153)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
-      1. [Unsupported command: EVAL (35)](#unsupported-command-eval-35)
       1. [Unsupported rule type: threshold (33)](#unsupported-rule-type-threshold-33)
       1. [Unsupported function: now (13)](#unsupported-function-now-13)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (8)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-8)
       1. [Unsupported command: MV_EXPAND (7)](#unsupported-command-mv_expand-7)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
+      1. [Unsupported command: DISSECT (5)](#unsupported-command-dissect-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
-      1. [Unsupported command: DISSECT (3)](#unsupported-command-dissect-3)
-      1. [Unsupported aggregate function: MAX (2)](#unsupported-aggregate-function-max-2)
-      1. [Unsupported operator: RLIKE (2)](#unsupported-operator-rlike-2)
+      1. [Unsupported operator: RLIKE (3)](#unsupported-operator-rlike-3)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_pattern_count-2)
       1. [Error at line:46,column:47
 Invalid syntax
 | where not powershell.file.script_block_text like "*[System.IO.File]::Open('C:\\\\ProgramData\\\\Microsoft\\\\Windows Defender Advanced Threat Protection\\\\DataCollection*"
@@ -47,8 +47,14 @@ invalid-syntax
 -match-will-ignore-the--and-look-for-the-individual-words
 -where-powershellfilescript_block_text--rahcmetsysstekcostcejboimwecalperecnerferpenoitcennocniojemanvnegnirtstcejbo-wen_23niwnoisserpxeekovnidaolnwod
 -------------------------------------------1)
-      1. [Unsupported aggregate function: SUM (1)](#unsupported-aggregate-function-sum-1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.source_ip (1)](#unsupported-where-on-a-field-made-by-eval-esqlsource_ip-1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.target_user_name (1)](#unsupported-where-on-a-field-made-by-eval-esqltarget_user_name-1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.user_agent_original_to_lower (1)](#unsupported-where-on-a-field-made-by-eval-esqluser_agent_original_to_lower-1)
+      1. [Unsupported WHERE on a field made by EVAL: multi_spaces (1)](#unsupported-where-on-a-field-made-by-eval-multi_spaces-1)
+      1. [Unsupported WHERE on a field made by EVAL: session.id (1)](#unsupported-where-on-a-field-made-by-eval-sessionid-1)
       1. [Unsupported command: GROK (1)](#unsupported-command-grok-1)
+      1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
       1. [Unsupported right operand, it must be a literal (1)](#unsupported-right-operand-it-must-be-a-literal-1)
    1. [Generation errors](#generation-errors)
       1. [Unsupported function: match (26)](#unsupported-function-match-26)
@@ -66,6 +72,7 @@ invalid-syntax
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
+      1. [Cannot choose from an empty set (2)](#cannot-choose-from-an-empty-set-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-2)
@@ -146,6 +153,17 @@ invalid-syntax
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: > (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
+      1. [Unsupported condition on the aggregate Esql.any_payload_keyword_max (1)](#unsupported-condition-on-the-aggregate-esqlany_payload_keyword_max-1)
+      1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_request_length_avg (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_request_length_avg-1)
+      1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_response_length_max (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_response_length_max-1)
+      1. [Unsupported condition on the aggregate Esql.is_browser_case_max (1)](#unsupported-condition-on-the-aggregate-esqlis_browser_case_max-1)
+      1. [Unsupported condition on the aggregate Esql.is_interactive (1)](#unsupported-condition-on-the-aggregate-esqlis_interactive-1)
+      1. [Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)](#unsupported-condition-on-the-aggregate-esqlml_usage_prompt_tokens_max-1)
+      1. [Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqloauth_token_count_distinct-1)
+      1. [Unsupported condition on the aggregate Esql.url_original_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlurl_original_count_distinct-1)
+      1. [Unsupported condition on the aggregate Esql.vendor_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlvendor_count_distinct-1)
+      1. [Unsupported field in WHERE after STATS: Esql.brute_force_type (1)](#unsupported-field-in-where-after-stats-esqlbrute_force_type-1)
+      1. [Unsupported field in WHERE after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-field-in-where-after-stats-esqlrisk_alerts_count_ratio-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -408,46 +426,6 @@ invalid-syntax
 * Unusual Windows Username
 * User Detected with Suspicious Windows Process(es)
 
-### Unsupported command: EVAL (35)
-
-35 rules:
-
-* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
-* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
-* AWS Discovery API Calls via CLI from a Single Resource
-* AWS EC2 Multi-Region DescribeInstances API Calls
-* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* Command Line Obfuscation via Whitespace Padding
-* Dynamic IEX Reconstruction via Method String Access
-* Elastic Defend and Email Alerts Correlation
-* Elastic Defend and Network Security Alerts Correlation
-* Excessive Secret or Key Retrieval from Azure Key Vault
-* M365 OneDrive Excessive File Downloads with OAuth Token
-* Microsoft 365 Brute Force via Entra ID Sign-Ins
-* Microsoft Entra ID Sign-In Brute Force Activity
-* Microsoft Entra ID Suspicious Session Reuse to Graph Access
-* Multiple Cloud Secrets Accessed by Source Address
-* Multiple Elastic Defend Alerts by Agent
-* OIDC Discovery URL Changed in Entra ID
-* Potential Denial of Azure OpenAI ML Service
-* Potential Dynamic IEX Reconstruction via Environment Variables
-* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
-* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
-* Potential PowerShell Obfuscation via High Special Character Proportion
-* Potential PowerShell Obfuscation via Invalid Escape Sequences
-* Potential PowerShell Obfuscation via Special Character Overuse
-* Potential PowerShell Obfuscation via String Concatenation
-* Potential PowerShell Obfuscation via String Reordering
-* Potential Ransomware Behavior - Note Files by System
-* PowerShell Obfuscation via Negative Index String Reversal
-* Suspicious Microsoft 365 UserLoggedIn via OAuth Code
-* Suspicious Microsoft Entra ID Concurrent Sign-Ins via DeviceCode
-* Suspicious Microsoft OAuth Flow via Auth Broker to DRS
-* Web Server Discovery or Fuzzing Activity
-* Web Server Potential Command Injection Request
-* Web Server Potential Spike in Error Response Codes
-* Web Server Suspicious User Agent Requests
-
 ### Unsupported rule type: threshold (33)
 
 33 rules:
@@ -504,6 +482,19 @@ invalid-syntax
 * Unusual File Transfer Utility Launched
 * Unusual Process Spawned from Web Server Parent
 
+### Unsupported WHERE on a field made by EVAL: Esql.script_block_length (8)
+
+8 rules:
+
+* Dynamic IEX Reconstruction via Method String Access
+* Potential Dynamic IEX Reconstruction via Environment Variables
+* Potential PowerShell Obfuscation via Backtick-Escaped Variable Expansion
+* Potential PowerShell Obfuscation via High Special Character Proportion
+* Potential PowerShell Obfuscation via Special Character Overuse
+* Potential PowerShell Obfuscation via String Concatenation
+* Potential PowerShell Obfuscation via String Reordering
+* PowerShell Obfuscation via Negative Index String Reversal
+
 ### Unsupported command: MV_EXPAND (7)
 
 7 rules:
@@ -527,6 +518,16 @@ invalid-syntax
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
 
+### Unsupported command: DISSECT (5)
+
+5 rules:
+
+* AWS EC2 LOLBin Execution via SSM SendCommand
+* AWS S3 Object Encryption Using External KMS Key
+* AWS S3 Static Site JavaScript File Uploaded
+* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
+* OIDC Discovery URL Changed in Entra ID
+
 ### Unsupported query language: lucene (4)
 
 4 rules:
@@ -536,27 +537,20 @@ invalid-syntax
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
-### Unsupported command: DISSECT (3)
+### Unsupported operator: RLIKE (3)
 
 3 rules:
 
-* AWS EC2 LOLBin Execution via SSM SendCommand
-* AWS S3 Object Encryption Using External KMS Key
-* AWS S3 Static Site JavaScript File Uploaded
-
-### Unsupported aggregate function: MAX (2)
-
-2 rules:
-
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
-
-### Unsupported operator: RLIKE (2)
-
-2 rules:
-
 * Entra ID Actor Token User Impersonation Abuse
+* Microsoft 365 Brute Force via Entra ID Sign-Ins
 * Multiple Device Token Hashes for Single Okta Session
+
+### Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)
+
+2 rules:
+
+* Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
+* Potential PowerShell Obfuscation via Invalid Escape Sequences
 
 ### Error at line:46,column:47
 Invalid syntax
@@ -588,17 +582,53 @@ Invalid syntax
 
 * Potential PowerShell Obfuscation via Reverse Keywords
 
-### Unsupported aggregate function: SUM (1)
+### Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)
 
 1 rules:
 
-* Alerts in Different ATT&CK Tactics by Host
+* Microsoft Entra ID Suspicious Session Reuse to Graph Access
+
+### Unsupported WHERE on a field made by EVAL: Esql.source_ip (1)
+
+1 rules:
+
+* Elastic Defend and Network Security Alerts Correlation
+
+### Unsupported WHERE on a field made by EVAL: Esql.target_user_name (1)
+
+1 rules:
+
+* Elastic Defend and Email Alerts Correlation
+
+### Unsupported WHERE on a field made by EVAL: Esql.user_agent_original_to_lower (1)
+
+1 rules:
+
+* Web Server Suspicious User Agent Requests
+
+### Unsupported WHERE on a field made by EVAL: multi_spaces (1)
+
+1 rules:
+
+* Command Line Obfuscation via Whitespace Padding
+
+### Unsupported WHERE on a field made by EVAL: session.id (1)
+
+1 rules:
+
+* M365 OneDrive Excessive File Downloads with OAuth Token
 
 ### Unsupported command: GROK (1)
 
 1 rules:
 
 * Potential Malicious PowerShell Based on Alert Correlation
+
+### Unsupported left operand, it must be a field (1)
+
+1 rules:
+
+* AWS Discovery API Calls via CLI from a Single Resource
 
 ### Unsupported right operand, it must be a literal (1)
 
@@ -797,6 +827,12 @@ Invalid syntax
 * Potential Computer Account Relay Activity
 * Potential Machine Account Relay Attack via SMB
 * Unusual Execution via Microsoft Common Console File
+
+### Cannot choose from an empty set (2)
+
+2 rules:
+* Excessive Secret or Key Retrieval from Azure Key Vault
+* Multiple Elastic Defend Alerts by Agent
 
 ### Pipes are unsupported (2)
 
@@ -1202,6 +1238,61 @@ Invalid syntax
 
 1 rules:
 * Potential Privilege Escalation via UID INT_MAX Bug Detected
+
+### Unsupported condition on the aggregate Esql.any_payload_keyword_max (1)
+
+1 rules:
+* Web Server Potential Command Injection Request
+
+### Unsupported condition on the aggregate Esql.azure_open_ai_properties_request_length_avg (1)
+
+1 rules:
+* Potential Denial of Azure OpenAI ML Service
+
+### Unsupported condition on the aggregate Esql.azure_open_ai_properties_response_length_max (1)
+
+1 rules:
+* Potential Azure OpenAI Model Theft
+
+### Unsupported condition on the aggregate Esql.is_browser_case_max (1)
+
+1 rules:
+* Suspicious Microsoft OAuth Flow via Auth Broker to DRS
+
+### Unsupported condition on the aggregate Esql.is_interactive (1)
+
+1 rules:
+* Suspicious Microsoft Entra ID Concurrent Sign-Ins via DeviceCode
+
+### Unsupported condition on the aggregate Esql.ml_usage_prompt_tokens_max (1)
+
+1 rules:
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+
+### Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)
+
+1 rules:
+* Suspicious Microsoft 365 UserLoggedIn via OAuth Code
+
+### Unsupported condition on the aggregate Esql.url_original_count_distinct (1)
+
+1 rules:
+* Web Server Discovery or Fuzzing Activity
+
+### Unsupported condition on the aggregate Esql.vendor_count_distinct (1)
+
+1 rules:
+* Multiple Cloud Secrets Accessed by Source Address
+
+### Unsupported field in WHERE after STATS: Esql.brute_force_type (1)
+
+1 rules:
+* Microsoft Entra ID Sign-In Brute Force Activity
+
+### Unsupported field in WHERE after STATS: Esql.risk_alerts_count_ratio (1)
+
+1 rules:
+* Alerts in Different ATT&CK Tactics by Host
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 

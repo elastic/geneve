@@ -12,14 +12,14 @@ Rules version: 8.13.23
       1. [Unsupported rule type: new_terms (82)](#unsupported-rule-type-new_terms-82)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported command: DISSECT (7)](#unsupported-command-dissect-7)
-      1. [Unsupported command: EVAL (7)](#unsupported-command-eval-7)
-      1. [Unsupported operator: RLIKE (6)](#unsupported-operator-rlike-6)
+      1. [Unsupported command: DISSECT (8)](#unsupported-command-dissect-8)
+      1. [Unsupported operator: RLIKE (7)](#unsupported-operator-rlike-7)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
+      1. [Unsupported command: MV_EXPAND (2)](#unsupported-command-mv_expand-2)
       1. [Unsupported right operand, it must be a literal (2)](#unsupported-right-operand-it-must-be-a-literal-2)
-      1. [Unsupported aggregate function: MAX (1)](#unsupported-aggregate-function-max-1)
-      1. [Unsupported command: MV_EXPAND (1)](#unsupported-command-mv_expand-1)
+      1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
+      1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
@@ -106,6 +106,7 @@ Rules version: 8.13.23
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
+      1. [Unsupported condition on the aggregate max_tokens (1)](#unsupported-condition-on-the-aggregate-max_tokens-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -308,35 +309,25 @@ Rules version: 8.13.23
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported command: DISSECT (7)
+### Unsupported command: DISSECT (8)
 
-7 rules:
+8 rules:
 
 * AWS EC2 EBS Snapshot Shared with Another Account
 * AWS IAM AdministratorAccess Policy Attached to Group
 * AWS IAM AdministratorAccess Policy Attached to Role
 * AWS IAM AdministratorAccess Policy Attached to User
 * AWS S3 Object Encryption Using External KMS Key
+* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 * AWS Signin Single Factor Console Login with Federated User
 * Potential AWS S3 Bucket Ransomware Note Uploaded
 
-### Unsupported command: EVAL (7)
+### Unsupported operator: RLIKE (7)
 
 7 rules:
 
-* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
-* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
-* AWS Discovery API Calls via CLI from a Single Resource
-* AWS EC2 Multi-Region DescribeInstances API Calls
-* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* Attempts to Brute Force a Microsoft 365 User Account
-* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
-
-### Unsupported operator: RLIKE (6)
-
-6 rules:
-
 * Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
+* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
 * High Number of Okta Device Token Cookies Generated for Authentication
 * Multiple Device Token Hashes for Single Okta Session
 * Multiple Okta User Authentication Events with Client Address
@@ -362,6 +353,13 @@ Rules version: 8.13.23
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
+### Unsupported command: MV_EXPAND (2)
+
+2 rules:
+
+* Attempts to Brute Force a Microsoft 365 User Account
+* Unusual High Confidence Misconduct Blocks Detected
+
 ### Unsupported right operand, it must be a literal (2)
 
 2 rules:
@@ -369,17 +367,17 @@ Rules version: 8.13.23
 * AWS IAM User Created Access Keys For Another User
 * AWS STS Role Chaining
 
-### Unsupported aggregate function: MAX (1)
+### Unsupported WHERE on a field made by EVAL: policy_violations (1)
 
 1 rules:
 
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
+* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
 
-### Unsupported command: MV_EXPAND (1)
+### Unsupported left operand, it must be a field (1)
 
 1 rules:
 
-* Unusual High Confidence Misconduct Blocks Detected
+* AWS Discovery API Calls via CLI from a Single Resource
 
 ## Generation errors
 
@@ -883,6 +881,11 @@ Rules version: 8.13.23
 
 1 rules:
 * Remote Computer Account DnsHostName Update
+
+### Unsupported condition on the aggregate max_tokens (1)
+
+1 rules:
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 

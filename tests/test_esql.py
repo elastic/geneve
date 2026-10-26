@@ -164,7 +164,6 @@ class TestEsqlParser(unittest.TestCase):
 
     def test_unsupported_command(self):
         for command in (
-            "EVAL b = a",
             'DISSECT a "%{x}"',
             'GROK a "%{WORD:x}"',
             "ENRICH p ON a",
@@ -505,7 +504,9 @@ class TestEsqlStats(unittest.TestCase):
             (("c", "count", None), ("d", "count_distinct", "u"), ("v", "values", "f"), ("e", "count", "g")),
             tuple((a.alias, a.function, a.argument) for a in query.stats.aggregates),
         )
+        self.assertTrue(all(a.simple for a in query.stats.aggregates))
         self.assertEqual(("h",), query.stats.by)
+        self.assertEqual(("h",), query.stats.join)
         self.assertEqual(eql.parse_expression("c >= 10 and d >= 2"), query.stats.where)
 
     def test_stats_variants(self):
@@ -540,33 +541,112 @@ class TestEsqlStats(unittest.TestCase):
         pre, post, spec = stats.arguments
         self.assertEqual(eql.parse_expression("a == 1"), pre)
         self.assertEqual(eql.parse_expression("c >= 3"), post)
-        self.assertEqual({"aggregates": [["c", "count", None], ["d", "count_distinct", "u"]], "by": ["h"]}, json.loads(spec.value))
+        self.assertEqual(
+            {"aggregates": [["c", "count", None, True], ["d", "count_distinct", "u", True]], "by": ["h"], "join": ["h"]},
+            json.loads(spec.value),
+        )
         # the plain translation is the one of the documents before the aggregation
         self.assertEqual(eql.parse_expression("a == 1"), where(text))
 
+    def test_other_aggregates_and_arguments_are_accepted(self):
+        # what no condition asks for is not a constraint, whatever it is
+        query = esql.parse(
+            "FROM x | STATS m = MAX(f), n = MIN(@timestamp), t = SUM(CASE(a == 1, b, 0)), u = COUNT_DISTINCT(TO_LOWER(f)),"
+            " w = COUNT_DISTINCT(f, 100), z = AVG(y), v = VALUES(f) BY h"
+        )
+        self.assertEqual(
+            [
+                ("m", "max", None, False),
+                ("n", "min", None, False),
+                ("t", "sum", None, False),
+                ("u", "count_distinct", None, False),
+                ("w", "count_distinct", None, False),
+                ("z", "avg", None, False),
+                ("v", "values", "f", True),
+            ],
+            [tuple(a) for a in query.stats.aggregates],
+        )
+
     def test_stats_rejected(self):
         for query, message in (
-            ("STATS m = MAX(f) BY h", "Unsupported aggregate function: MAX"),
-            ("STATS m = SUM(f) BY h", "Unsupported aggregate function: SUM"),
-            ("STATS c = COUNT(CASE(a == 1, f, NULL)) BY h", "Unsupported aggregate argument"),
-            ("STATS c = COUNT_DISTINCT(TO_LOWER(f)) BY h", "Unsupported aggregate argument"),
-            ("STATS c = COUNT_DISTINCT(f, 100) BY h", "Unsupported aggregate argument"),
             ("STATS COUNT(*) BY h", "Unsupported aggregate without a name"),
-            ("STATS c = COUNT(*) BY k = TO_LOWER(h)", "Unsupported BY"),
-            ("STATS c = COUNT(*) BY DATE_TRUNC(1 hour, @timestamp)", "Unsupported BY"),
-            ("STATS c = COUNT(*) BY k = h", "Unsupported BY"),
+            ("STATS c = h BY h", "Unsupported aggregate c, it must be a function"),
             ("STATS c = COUNT(*) BY h | STATS d = COUNT(*)", "Unsupported second STATS"),
-            ("EVAL k = TO_LOWER(h) | STATS c = COUNT(*) BY k", "Unsupported command: EVAL"),
             ("LIMIT 5 | STATS c = COUNT(*) BY h", "Unsupported pipe before STATS: LIMIT"),
             ("STATS c = COUNT(*) BY h | LIMIT 5 | WHERE c > 1", "Unsupported pipe before WHERE: LIMIT"),
             ("MV_EXPAND f | STATS c = COUNT(*) BY h", "Unsupported command: MV_EXPAND"),
+            ('GROK f "%{WORD:w}" | STATS c = COUNT(*) BY h', "Unsupported command: GROK"),
+            ("STATS c = COUNT(*) BY _id", "Unsupported predicate on metadata field"),
         ):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, message):
+                esql.parse(f"FROM x METADATA _id | {query}")
+        for query in ("STATS", "STATS c = COUNT(*) BY", "STATS c = COUNT(*) BY ,", "STATS ,"):
+            with self.subTest(query), self.assertRaises(esql.EsqlParseError):
                 esql.parse(f"FROM x | {query}")
-        with self.assertRaises(esql.EsqlParseError):
-            esql.parse("FROM x | STATS")
-        with self.assertRaises(esql.EsqlParseError):
-            esql.parse("FROM x | STATS c = COUNT(*) BY")
+
+    def test_eval_before_stats(self):
+        def keys(text):
+            stats = esql.parse(text).stats
+            return list(stats.by), list(stats.join)
+
+        base = "STATS c = COUNT(*) BY"
+        self.assertEqual((["k"], ["a", "b"]), keys(f"FROM x | EVAL k = COALESCE(a, b) | {base} k"))
+        self.assertEqual((["w", "h"], ["h"]), keys(f"FROM x | EVAL w = DATE_TRUNC(30 seconds, @timestamp) | {base} w, h"))
+        self.assertEqual((["k"], ["f"]), keys(f"FROM x | EVAL a = f | EVAL k = TO_LOWER(a) | {base} k"))
+        self.assertEqual((["k"], ["f", "g"]), keys(f"FROM x | EVAL a = f, k = CONCAT(a, g) | {base} k"))
+        self.assertEqual((["h"], ["h"]), keys(f"FROM x | {base} DATE_TRUNC(1 hour, @timestamp), h"))
+        self.assertEqual((["k"], ["h"]), keys(f"FROM x | {base} k = h"))
+        self.assertEqual((["k"], ["h"]), keys(f"FROM x | {base} k = TO_LOWER(h)"))
+        self.assertEqual((["k"], ["ip"]), keys(f"FROM x | EVAL k = ip::STRING | {base} k"))
+        self.assertEqual((["k"], ["a.b", "c d"]), keys(f'FROM x | EVAL k = CONCAT(a.b, `c d`, "literal and or not x.y") | {base} k'))
+        self.assertEqual((["k"], ["f"]), keys(f'FROM x | EVAL k = CASE(f == "a" AND NOT f IS NULL, "yes", "no") | {base} k'))
+        # what is not a field is not a dependency
+        self.assertEqual(([], []), keys("FROM x | EVAL k = NOW() - 1 hour | STATS c = COUNT(*)"))
+        # the ones before a WHERE and the ones that are not used
+        self.assertEqual((["h"], ["h"]), keys(f"FROM x | EVAL k = LOWER(z) | WHERE a == 1 | {base} h"))
+
+    def test_comments_in_the_commands(self):
+        # they are everywhere in the rules, and they must not hide a name or make one up
+        query = esql.parse(
+            """FROM x
+            | EVAL
+                // hosts with a lot of load, k is not a field of the documents
+                k = CASE(a == "x // not a comment" AND b >= 1, host.id, NULL), /* another one */
+                // and the last
+                z = c
+            | STATS
+                // how many
+                d = COUNT_DISTINCT(k), /* and the key */
+                e = COUNT(*) BY z // by the alias
+            | WHERE d >= 2"""
+        )
+        self.assertEqual(("z",), query.stats.by)
+        self.assertEqual(("c",), query.stats.join)
+        self.assertEqual([("d", "count_distinct", None, False), ("e", "count", None, True)], [tuple(a) for a in query.stats.aggregates])
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL: k"):
+            esql.parse('FROM x | EVAL /* c */ // c\n k = TO_LOWER(a) // c\n | WHERE k == "x"')
+
+    def test_aliases_of_the_query(self):
+        self.assertEqual(("k", "z"), esql.parse("FROM x | EVAL k = TO_LOWER(a), z = b | STATS c = COUNT(*) BY k").aliases)
+        self.assertEqual((), esql.parse("FROM x | WHERE a == 1").aliases)
+        # a field that an EVAL makes out of itself is still one of the documents
+        self.assertEqual(("k",), esql.parse("FROM x | EVAL a = TO_LOWER(a), k = a").aliases)
+
+    def test_eval_aliases_are_not_fields_of_the_documents(self):
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL: k"):
+            esql.parse('FROM x | EVAL k = TO_LOWER(a) | WHERE k == "x"')
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL: `my k`"):
+            esql.parse("FROM x | EVAL `my k` = a | WHERE NOT `my k` IS NULL")
+        # an alias that a WHERE redefines is still one
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL"):
+            esql.parse('FROM x | EVAL a = TO_LOWER(a) | WHERE a == "x"')
+        # unrelated fields are fine
+        esql.parse('FROM x | EVAL k = TO_LOWER(a) | WHERE b == "x" | STATS c = COUNT(*) BY k')
+
+    def test_eval_without_stats_is_unsupported(self):
+        # an EVAL changes the columns, not which documents match: fine when nothing asks for what it makes
+        self.assertEqual(eql.parse_expression("a == 1"), esql.parse("FROM x | EVAL k = a | WHERE a == 1 | KEEP k").where)
+        self.assertEqual(eql.ast.Boolean(True), esql.parse("FROM x | EVAL k = a").where)
 
 
 class TestEsqlRouting(unittest.TestCase):
@@ -617,7 +697,7 @@ class TestEsqlRouting(unittest.TestCase):
 
     def test_guess_esql_error_propagates(self):
         # no fallback to EQL or KQL: they would accept some of these as plain text
-        for query in ("FROM x | EVAL b = a", "FROM x | LIMIT 1 | WHERE a == 1", "ROW a = 1", "SHOW INFO"):
+        for query in ("FROM x | MV_EXPAND b", "FROM x | LIMIT 1 | WHERE a == 1", "ROW a = 1", "SHOW INFO"):
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
                 guess_from_query(query)
         for query in ("FROM x | WHERE", "FROM x |", "from  x | where a =="):
@@ -633,8 +713,8 @@ class TestEsqlRouting(unittest.TestCase):
             with self.subTest(rule_type, language=language), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
                 ast_from_rule(rule)
 
-        rule = SimpleNamespace(type="esql", language="esql", query="FROM idx | EVAL b = a")
-        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: EVAL"):
+        rule = SimpleNamespace(type="esql", language="esql", query="FROM idx | MV_EXPAND b")
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported command: MV_EXPAND"):
             ast_from_rule(rule)
 
     def test_rule_types_unchanged(self):
@@ -888,6 +968,54 @@ class TestEsqlStatsEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCa
         self.assertEqual(3, len(docs))
         self.assertTrue(all("name" in doc["user"] for doc in docs), docs)
 
+    def test_unreferenced_aggregates_are_not_constraints(self):
+        docs = self.branches(
+            f"{self.pre}, first = MIN(@timestamp), last = MAX(@timestamp), s = SUM(process.pid), a = AVG(process.pid),"
+            ' u = COUNT_DISTINCT(TO_LOWER(user.name)), t = SUM(CASE(host.name == "x", 1, 0)) BY host.id | WHERE c >= 2'
+        )[0]
+        self.assertEqual(2, len(docs))
+        self.assertShared(docs, "host.id")
+
+    def test_eval_keys_join_the_fields_they_come_from(self):
+        base = 'FROM x | WHERE process.name == "a.exe" | EVAL {eval} | STATS c = COUNT(*) BY {by} | WHERE c >= 3'
+        docs = self.branches(base.format(eval="k = TO_LOWER(host.name)", by="k"))[0]
+        self.assertEqual(3, len(docs))
+        self.assertShared(docs, "host.name")
+        self.assertTrue(all("k" not in doc for doc in docs), docs)
+
+        docs = self.branches(base.format(eval="k = COALESCE(host.name, user.name)", by="k"))[0]
+        self.assertShared(docs, "host.name")
+        self.assertShared(docs, "user.name")
+
+        docs = self.branches(base.format(eval='a = host.name, k = CONCAT(a, user.name, "-x")', by="k, source.ip"))[0]
+        for field in ("host.name", "user.name", "source.ip"):
+            self.assertShared(docs, field)
+
+        # the bucket of the time is not a field of the documents, all of them are written within a few milliseconds
+        docs = self.branches(base.format(eval="w = DATE_TRUNC(30 seconds, @timestamp)", by="w, host.id"))[0]
+        self.assertEqual(3, len(docs))
+        self.assertShared(docs, "host.id")
+
+        docs = self.branches(base.format(eval='k = REPLACE(process.executable, "[0-9]+", "N")', by="k"))[0]
+        self.assertShared(docs, "process.executable")
+
+        # a key that is just an expression, and one with a name
+        docs = self.branches("FROM x | STATS c = COUNT(*) BY TO_LOWER(host.name), g = user.name | WHERE c >= 2")[0]
+        self.assertShared(docs, "host.name")
+        self.assertShared(docs, "user.name")
+
+    def test_eval_aliases_are_not_generated(self):
+        query = (
+            'FROM x | WHERE process.name == "a.exe"\n| EVAL\n // a flag\n k = CASE(host.name == "x", user.name, NULL)\n'
+            "| STATS c = COUNT(*), d = COUNT_DISTINCT(k) BY host.id | WHERE c >= 2"
+        )
+        # d is not asked for, so k is not either, and it is not a field of the documents
+        docs = self.branches(query)[0]
+        self.assertEqual(2, len(docs))
+        self.assertTrue(all("k" not in doc for doc in docs), docs)
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported condition on the aggregate d"):
+            self.branches(query.replace("c >= 2", "c >= 2 AND d >= 1"))
+
     def test_values_just_collect(self):
         docs = self.branches("FROM x | STATS c = COUNT(*), v = VALUES(user.name) BY host.id | WHERE c >= 3")[0]
         self.assertEqual(3, len(docs))
@@ -904,6 +1032,17 @@ class TestEsqlStatsEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCa
     def test_conditions_that_are_not_about_the_aggregates(self):
         for query, message in (
             (f"{self.pre} BY host.id | WHERE other >= 1", "Unsupported field in WHERE after STATS: other"),
+            (f"{self.pre}, m = MIN(user.name) BY host.id | WHERE m > 5", "Unsupported condition on the aggregate m"),
+            (f"{self.pre}, t = SUM(process.pid) BY host.id | WHERE t > 5", "Unsupported condition on the aggregate t"),
+            (f"{self.pre}, u = COUNT_DISTINCT(TO_LOWER(user.name)) BY host.id | WHERE u >= 2", "Unsupported condition on the aggregate u"),
+            (
+                "FROM x | EVAL k = user.name | STATS d = COUNT_DISTINCT(k) BY host.id | WHERE d >= 2",
+                "Unsupported condition on the aggregate d",
+            ),
+            (
+                'FROM x | EVAL w = TO_LOWER(host.name) | STATS c = COUNT(*) BY w | WHERE w == "x"',
+                "Unsupported field in WHERE after STATS: w",
+            ),
             (f"{self.pre} BY host.id | EVAL r = c / 2 | WHERE r >= 1", "Unsupported field in WHERE after STATS: r"),
             (f'{self.pre}, v = VALUES(user.name) BY host.id | WHERE v == "x"', "Unsupported condition on the values of v"),
         ):
