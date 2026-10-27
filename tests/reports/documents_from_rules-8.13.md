@@ -16,7 +16,6 @@ Rules version: 8.13.23
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
       1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
       1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
-      1. [Unsupported function: to_lower (3)](#unsupported-function-to_lower-3)
       1. [Unsupported WHERE on a field made by DISSECT: mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-mfa_used-1)
       1. [Unsupported WHERE on a field made by DISSECT: object_name (1)](#unsupported-where-on-a-field-made-by-dissect-object_name-1)
       1. [Unsupported WHERE on a field made by DISSECT: service_code (1)](#unsupported-where-on-a-field-made-by-dissect-service_code-1)
@@ -346,14 +345,6 @@ Rules version: 8.13.23
 * AWS IAM AdministratorAccess Policy Attached to Group
 * AWS IAM AdministratorAccess Policy Attached to Role
 * AWS IAM AdministratorAccess Policy Attached to User
-
-### Unsupported function: to_lower (3)
-
-3 rules:
-
-* Attempts to Brute Force a Microsoft 365 User Account
-* Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
-* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
 
 ### Unsupported WHERE on a field made by DISSECT: mfa_used (1)
 

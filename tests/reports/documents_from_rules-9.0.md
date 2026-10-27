@@ -49,6 +49,7 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by DISSECT: Esql.azure_auditlogs_properties_auth_oidc_discovery_url_new (1)](#unsupported-where-on-a-field-made-by-dissect-esqlazure_auditlogs_properties_auth_oidc_discovery_url_new-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_bf_type-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_duration_seconds-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrisk_alerts_count_ratio-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.aws_ssm_command_id (1)](#unsupported-where-on-a-field-made-by-eval-esqlaws_ssm_command_id-1)
@@ -62,7 +63,6 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by EVAL: session.id (1)](#unsupported-where-on-a-field-made-by-eval-sessionid-1)
       1. [Unsupported WHERE on a field made by GROK: Esql.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-esqlscript_block_id-1)
       1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
-      1. [Unsupported function: to_lower (1)](#unsupported-function-to_lower-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
       1. [Unsupported second STATS (1)](#unsupported-second-stats-1)
    1. [Generation errors](#generation-errors)
@@ -589,6 +589,12 @@ Invalid syntax
 
 * Microsoft 365 Brute Force via Entra ID Sign-Ins
 
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)
+
+1 rules:
+
+* Multiple Microsoft 365 User Account Lockouts in Short Time Window
+
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
 
 1 rules:
@@ -666,12 +672,6 @@ Invalid syntax
 1 rules:
 
 * AWS S3 Static Site JavaScript File Uploaded
-
-### Unsupported function: to_lower (1)
-
-1 rules:
-
-* Multiple Microsoft 365 User Account Lockouts in Short Time Window
 
 ### Unsupported left operand, it must be a field (1)
 

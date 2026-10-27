@@ -69,6 +69,41 @@ class TestRegexGen(tu.SeededTestCase, unittest.TestCase):
                 # but if there is no other, the empty string
                 self.assertTrue(value or pattern == ".+")
 
+    def test_lower(self):
+        pattern = "(Chrome|firefox)[a-z]*|[A-Z]+"
+        # `[A-Z]+` has no lowercase string, the other alternatives do
+        values = regex_gen.matching(pattern, lower=True)
+        self.assertGreater(len(values), 0)
+        for value in values:
+            self.assertEqual(value.lower(), value)
+            self.assertIsNotNone(re.fullmatch(pattern, value))
+        with self.assertRaisesRegex(NotImplementedError, "lowercase"):
+            regex_gen.matching("[A-Z]+", lower=True)
+        for _ in range(20):
+            value = regex_gen.not_matching("[a-z]+", lower=True)
+            self.assertEqual(value.lower(), value)
+            self.assertIsNone(re.fullmatch("[a-z]+", value))
+
+    def test_lower_samples_what_a_lowercase_string_has(self):
+        # `A` is not a character of a string in lowercase, `b` is
+        for _ in range(30):
+            self.assertEqual(["b"], regex_gen.matching("[Ab]", lower=True))
+            self.assertEqual(["x"], regex_gen.matching("[A-Zx]", lower=True))
+            self.assertRegex(regex_gen.matching(r"[^a-y]{3}", lower=True)[0], r"^[^A-Za-y]{3}$")
+        # one alternative is left for the others
+        self.assertEqual(["firefox"], regex_gen.matching("(Chrome|firefox)", lower=True))
+        self.assertEqual([""], regex_gen.matching("[A-Z]*", lower=True))
+        self.assertEqual(["ax"], regex_gen.matching("a([A-Z]*)x", lower=True))
+        # without that it is as it was
+        self.assertEqual({"A", "b"}, {regex_gen.matching("[Ab]")[0] for _ in range(100)})
+
+    def test_lower_not_matching_with_punctuation(self):
+        for _ in range(20):
+            for pattern in ("[a-z0-9]*", "[a-zA-Z0-9]+", r"\w+", "[a-z0-9]{1,5}"):
+                value = regex_gen.not_matching(pattern, lower=True)
+                self.assertEqual(value.lower(), value)
+                self.assertIsNone(re.fullmatch(pattern, value), (pattern, value))
+
     def test_not_matching_what_matches_everything(self):
         for pattern in (".*", "(.*)", "[a-z]*|.*"):
             with self.subTest(pattern), self.assertRaisesRegex(NotImplementedError, "doesn't match"):

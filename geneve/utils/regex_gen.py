@@ -54,6 +54,10 @@ CATEGORIES = {
 }
 
 
+class Unmatchable(Exception):
+    """What cannot be matched by a string in lowercase."""
+
+
 def parse(pattern):
     try:
         parsed = sre_parse.parse(pattern)
@@ -69,8 +73,8 @@ def unsupported(what, pattern):
     return NotImplementedError(f"Unsupported {what} in the regular expression {pattern!r}")
 
 
-def char_choices(items, pattern):
-    """Return the characters of a class."""
+def char_choices(items, pattern, lower=False):
+    """Return the characters of a class, those that have no uppercase form if `lower`."""
     negate = bool(items) and str(items[0][0]) == "NEGATE"
     tests = []
     for op, av in items[1:] if negate else items:
@@ -83,8 +87,10 @@ def char_choices(items, pattern):
             tests.append(CATEGORIES[str(av)])
         else:
             raise unsupported(f"class item {op}", pattern)
-    choices = [c for c in PRINTABLE if any(test(c) for test in tests) != negate]
+    choices = [c for c in printable(lower) if any(test(c) for test in tests) != negate]
     if not choices:
+        if lower and any(any(test(c) for test in tests) != negate for c in PRINTABLE):
+            raise Unmatchable
         raise ValueError(f"The class of characters is empty in the regular expression {pattern!r}")
     return choices
 
@@ -101,37 +107,55 @@ def pick(choices, preferred=ALPHABET):
     return random.choice(likely or choices)
 
 
-def variants_of(nodes, pattern):
+def printable(lower=False):
+    """Return the characters that are picked from: those that a lowercase string can have if `lower`."""
+    return [c for c in PRINTABLE if not lower or c == c.lower()]
+
+
+def variants_of(nodes, pattern, lower=False):
     """Return the strings that a sequence of nodes generates."""
-    return combine([node_variants(op, av, pattern) for op, av in nodes])
+    return combine([node_variants(op, av, pattern, lower) for op, av in nodes])
 
 
-def node_variants(op, av, pattern):
+def node_variants(op, av, pattern, lower=False):
     op = str(op)
     if op == "LITERAL":
         return [chr(av)]
     if op == "NOT_LITERAL":
-        return [pick([c for c in PRINTABLE if ord(c) != av])]
+        return [pick([c for c in printable(lower) if ord(c) != av])]
     if op == "ANY":
-        return [pick(PRINTABLE)]
+        return [pick(printable(lower))]
     if op == "IN":
-        return [pick(char_choices(list(av), pattern))]
+        return [pick(char_choices(list(av), pattern, lower))]
     if op == "CATEGORY":
-        return [pick(char_choices([(op, av)], pattern))]
+        return [pick(char_choices([(op, av)], pattern, lower))]
     if op == "SUBPATTERN":
         _, add_flags, del_flags, subpattern = av
         if add_flags or del_flags:
             raise unsupported("flags", pattern)
-        return variants_of(subpattern, pattern)
+        return variants_of(subpattern, pattern, lower)
     if op == "BRANCH":
-        return [variant for alternative in av[1] for variant in variants_of(alternative, pattern)]
+        variants = []
+        for alternative in av[1]:
+            try:
+                variants.extend(variants_of(alternative, pattern, lower))
+            except Unmatchable:
+                continue  # `[A-Z]` has no lowercase string, the other alternatives may
+        if not variants:
+            raise Unmatchable
+        return variants
     if op in ("MAX_REPEAT", "MIN_REPEAT"):
         lo, hi, subpattern = av
         count = min(hi, max(lo, MAX_REPEAT))
         if count == 0:
             return [""]
         # each repetition has its own characters, the variants of the group are rotated through them
-        repetitions = [variants_of(subpattern, pattern) for _ in range(count)]
+        try:
+            repetitions = [variants_of(subpattern, pattern, lower) for _ in range(count)]
+        except Unmatchable:
+            if lo == 0:
+                return [""]
+            raise
         size = len(repetitions[0])
         return ["".join(repetition[(i + k) % size] for k, repetition in enumerate(repetitions)) for i in range(size)]
     raise unsupported(f"element {op}", pattern)
@@ -142,22 +166,29 @@ def check(pattern):
     variants_of(parse(pattern), pattern)
 
 
-def matching(pattern, limit=MAX_VARIANTS):
-    """Return strings that match the expression, at least one per alternative (up to a limit)."""
-    variants = variants_of(parse(pattern), pattern)
+def matching(pattern, limit=MAX_VARIANTS, lower=False):
+    """Return strings that match the expression, at least one per alternative (up to a limit), in lowercase if asked."""
+    try:
+        variants = variants_of(parse(pattern), pattern, lower)
+    except Unmatchable:
+        raise NotImplementedError(f"Cannot generate a lowercase string for the regular expression {pattern!r}") from None
     compiled = re.compile(pattern, re.DOTALL)
-    unique = list(dict.fromkeys(variants))
+    unique = list(dict.fromkeys(v.lower() if lower else v for v in variants))
     # Python and Lucene agree on the syntax that is supported, this is to be sure
-    wrong = next((v for v in unique if not compiled.fullmatch(v)), None)
-    if wrong is not None:
-        raise NotImplementedError(f"Cannot generate a string for the regular expression {pattern!r}")
-    return unique[:limit]
+    matches = [v for v in unique if compiled.fullmatch(v)]
+    # in lowercase an alternative can be left without a match (`[A-Z]+`), the others are enough
+    if not matches or (len(matches) != len(unique) and not lower):
+        raise NotImplementedError(f"Cannot generate a{' lowercase' if lower else ''} string for the regular expression {pattern!r}")
+    return matches[:limit]
 
 
-def mutations(pattern):
+def mutations(pattern, lower=False):
     """Return strings that are close to what the expression matches, they are the likeliest to be near misses."""
-    base = variants_of(parse(pattern), pattern)[0]
     yield ""
+    try:
+        base = variants_of(parse(pattern), pattern, lower)[0]
+    except Unmatchable:
+        return  # nothing in lowercase matches, any string is a candidate
     yield base[:-1]
     yield base + random.choice(ALPHABET)
     yield random.choice(ALPHABET) + base
@@ -166,14 +197,19 @@ def mutations(pattern):
         yield base[:i] + random.choice(ALPHABET) + base[i + 1 :]
 
 
-def not_matching(pattern):
-    """Return a string that doesn't match the expression."""
+def not_matching(pattern, lower=False):
+    """Return a string that doesn't match the expression, in lowercase if asked."""
     parsed = parse(pattern)  # fails if it is not valid
     variants_of(parsed, pattern)
     compiled = re.compile(pattern, re.DOTALL)
-    candidates = list(mutations(pattern))
+    candidates = list(mutations(pattern, lower))
     for _ in range(ATTEMPTS):
         candidates.append("".join(random.choices(ALPHABET, k=random.randint(1, 12))))
+    # what is left, in case that what the expression matches is made of letters and digits
+    candidates.extend(printable(lower))
+    candidates.extend(random.choice(printable(lower)) + random.choice(ALPHABET) for _ in range(ATTEMPTS))
+    if lower:
+        candidates = [candidate.lower() for candidate in candidates]
     # an empty string is the last resort, it is the only one that `.+` doesn't match
     for candidate in sorted(candidates, key=lambda c: not c):
         if not compiled.fullmatch(candidate):

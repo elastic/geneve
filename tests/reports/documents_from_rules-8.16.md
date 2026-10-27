@@ -19,7 +19,6 @@ Rules version: 8.16.16
       1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
       1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
       1. [Unsupported WHERE on a field made by EVAL: count (2)](#unsupported-where-on-a-field-made-by-eval-count-2)
-      1. [Unsupported function: to_lower (2)](#unsupported-function-to_lower-2)
       1. [Unsupported WHERE on a field made by DISSECT: mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-mfa_used-1)
       1. [Unsupported WHERE on a field made by DISSECT: object_name (1)](#unsupported-where-on-a-field-made-by-dissect-object_name-1)
       1. [Unsupported WHERE on a field made by DISSECT: operationType (1)](#unsupported-where-on-a-field-made-by-dissect-operationtype-1)
@@ -29,7 +28,6 @@ Rules version: 8.16.16
       1. [Unsupported WHERE on a field made by GROK: powershell.file.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-powershellfilescript_block_id-1)
       1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
       1. [Unsupported function: NOW (1)](#unsupported-function-now-1)
-      1. [Unsupported function: TO_LOWER (1)](#unsupported-function-to_lower-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
       1. [Unsupported second STATS (1)](#unsupported-second-stats-1)
    1. [Generation errors](#generation-errors)
@@ -55,6 +53,7 @@ Rules version: 8.16.16
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*imageId*'}): ('*add*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringsimageid-add-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
+      1. [Unsolvable constraints: azure.signinlogs.category (excluded by Strings({'NonInteractiveUserSignInLogs'}): ('NonInteractiveUserSignInLogs')) (1)](#unsolvable-constraints-azuresigninlogscategory-excluded-by-stringsnoninteractiveusersigninlogs-noninteractiveusersigninlogs-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficdns-zeekdns-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.rdp')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekrdp-1)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.smb')) (1)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeeksmb-1)
@@ -444,13 +443,6 @@ Rules version: 8.16.16
 * Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
 * Potential PowerShell Obfuscation via Invalid Escape Sequences
 
-### Unsupported function: to_lower (2)
-
-2 rules:
-
-* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
-* Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
-
 ### Unsupported WHERE on a field made by DISSECT: mfa_used (1)
 
 1 rules:
@@ -504,12 +496,6 @@ Rules version: 8.16.16
 1 rules:
 
 * Microsoft Entra ID Concurrent Sign-Ins with Suspicious Properties
-
-### Unsupported function: TO_LOWER (1)
-
-1 rules:
-
-* AWS IAM Login Profile Added for Root
 
 ### Unsupported left operand, it must be a field (1)
 
@@ -716,6 +702,11 @@ Rules version: 8.16.16
 
 1 rules:
 * AWS Lambda Function Policy Updated to Allow Public Invocation
+
+### Unsolvable constraints: azure.signinlogs.category (excluded by Strings({'NonInteractiveUserSignInLogs'}): ('NonInteractiveUserSignInLogs')) (1)
+
+1 rules:
+* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
 
 ### Unsolvable constraints: event.dataset (not in Strings({'network_traffic.dns'}): ('zeek.dns')) (1)
 

@@ -207,6 +207,75 @@ class TestEsqlParser(unittest.TestCase):
         self.assertEqual(where(r'FROM x | WHERE a RLIKE "a\\.b"'), rlike("a", r"a\.b"))
         self.assertEqual(where('FROM x | WHERE a RLIKE """a\\.b"""'), rlike("a", r"a\.b"))
 
+    def test_to_lower(self):
+        def rlike(name, pattern):
+            return eql.ast.FunctionCall("_rlike", [field(name), eql.ast.String(pattern), eql.ast.String("lower")])
+
+        def present(name):
+            return eql.ast.FunctionCall("_present", [field(name)])
+
+        def never(name, value):
+            return eql.ast.Not(eql.ast.FunctionCall("wildcard", [field(name), eql.ast.String(value)]))
+
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) == "foo"'), eql.parse_expression('a == "foo"'))
+        self.assertEqual(where('FROM x | WHERE to_lower(a.b) == "f*o"'), literal("a.b", "f*o"))
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) != "foo"'), never("a", "foo"))
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) != "FOO"'), present("a"))
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) LIKE "*foo*"'), like("a", "*foo*"))
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) NOT LIKE "*foo*"'), eql.ast.Not(like("a", "*foo*")))
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) NOT LIKE "*FOO*"'), present("a"))
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) RLIKE "fo+"'), rlike("a", "fo+"))
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) NOT RLIKE "fo+"'), eql.ast.Not(rlike("a", "fo+")))
+        # what is not in lowercase is not there for a value to have
+        self.assertEqual(
+            where('FROM x | WHERE TO_LOWER(a) IN ("foo", "BAR", "baz")'),
+            eql.ast.Or([eql.parse_expression('a == "foo"'), eql.parse_expression('a == "baz"')]),
+        )
+        self.assertEqual(
+            where('FROM x | WHERE TO_LOWER(a) NOT IN ("foo", "BAR")'),
+            eql.ast.And([never("a", "foo"), present("a")]),
+        )
+
+    def test_to_string(self):
+        # it is the same text for what has the type that it is asked for
+        self.assertEqual(where('FROM x | WHERE TO_STRING(a) == "foo"'), eql.parse_expression('a == "foo"'))
+        self.assertEqual(where('FROM x | WHERE to_string(a) IN ("1", "2")'), where('FROM x | WHERE a IN ("1", "2")'))
+        self.assertEqual(where('FROM x | WHERE TO_STRING(a) LIKE "f*"'), like("a", "f*"))
+        self.assertEqual(where('FROM x | WHERE TO_STRING(a) != "foo"'), where('FROM x | WHERE a != "foo"'))
+
+    def test_to_string_round_trip(self):
+        # what is compared is the text that a value is written as, a literal that is not written so is never equal
+        for value in ("127.0.0.1", "::1", "2001:db8::1", "5", "-3", "0", "true", "false", "foo", "a b", "1.2.3", "S-1-5-21"):
+            with self.subTest(value):
+                where(f'FROM x | WHERE TO_STRING(a) == "{value}"')
+        for value in ("0:0:0:0:0:0:0:1", "2001:DB8::1", "001", "-0", "+5", "1.50", "1e3", "TRUE", "False"):
+            with self.subTest(value), self.assertRaisesRegex(NotImplementedError, "not how a value of any type is written"):
+                where(f'FROM x | WHERE TO_STRING(a) == "{value}"')
+            with self.subTest(value), self.assertRaisesRegex(NotImplementedError, "not how a value of any type is written"):
+                where(f'FROM x | WHERE TO_STRING(a) IN ("x", "{value}")')
+            with self.subTest(value), self.assertRaisesRegex(NotImplementedError, "not how a value of any type is written"):
+                where(f'FROM x | WHERE TO_STRING(a) != "{value}"')
+        # and it is text: no order of numbers
+        with self.assertRaisesRegex(NotImplementedError, "TO_STRING comparison operator: <"):
+            where('FROM x | WHERE TO_STRING(a) < "5"')
+
+    def test_scalar_functions_unsupported(self):
+        for query, message in (
+            ('TO_LOWER(a) == "FOO"', "TO_LOWER comparison, it is never true"),
+            ('TO_LOWER(a) IN ("FOO", "BAR")', "TO_LOWER IN, it is never true"),
+            ('TO_LOWER(a) LIKE "F*"', "TO_LOWER LIKE, it is never true"),
+            ('TO_LOWER(a) > "foo"', "TO_LOWER comparison operator: >"),
+            ("TO_LOWER(a) == 1", "TO_LOWER comparison with something that is not a string literal"),
+            ('TO_LOWER(a) != "f*"', "string literal with wildcard characters"),
+            ('TO_LOWER(a, b) == "foo"', "TO_LOWER argument, it must be a field"),
+            ('TO_LOWER(CONCAT(a, b)) == "foo"', "function: CONCAT"),
+            ("TO_LOWER(a) IS NULL", "left operand, it must be a field"),
+            ("TO_LOWER(a)", "non-boolean expression|Unsupported"),
+            ('TO_STRING(a, b) == "foo"', "TO_STRING argument, it must be a field"),
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, f"Unsupported .*({message})"):
+                where(f"FROM x | WHERE {query}")
+
     def test_rlike_unsupported(self):
         for pattern, message in (("^foo", "AT"), ("(?i)foo", "flags"), ("(", "Invalid regular expression")):
             with self.subTest(pattern), self.assertRaisesRegex(NotImplementedError, rf"Unsupported RLIKE pattern: .*{message}"):
@@ -1378,6 +1447,79 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             self.assertIn("foo", docs[0]["process"]["name"])
             self.assertGreater(docs[0]["process"]["pid"], 1000)
             self.assertFalse(matches("a+", docs[0]["user"]["name"]))
+
+    def test_to_lower_emission(self):
+        import re
+
+        # what a field has in lowercase is what the query says, it does not have to be that way in the document
+        for docs in self.emit_branches('FROM x | WHERE TO_LOWER(a) LIKE "*foo*" AND TO_LOWER(b) IN ("x", "y")'):
+            self.assertIn("foo", docs[0]["a"])
+            self.assertIn(docs[0]["b"], ("x", "y"))
+        values = {docs[0]["a"] for docs in self.emit_branches('FROM x | WHERE TO_LOWER(a) LIKE "*foo*"') for _ in range(3)}
+        self.assertTrue(all("foo" in value for value in values))
+
+        # the opposite is for any case: a value that is "X" is excluded as well
+        for docs in self.emit_branches('FROM x | WHERE TO_LOWER(a) != "x" AND TO_LOWER(b) NOT LIKE "foo*"'):
+            self.assertNotEqual("x", docs[0]["a"].lower())
+            self.assertFalse(docs[0]["b"].lower().startswith("foo"))
+
+        pattern = "(chrome|firefox)[a-z]*"
+        branches = self.emit_branches(f'FROM x | WHERE TO_LOWER(a) RLIKE "{pattern}"')
+        self.assertEqual(2, len(branches))
+        for docs in branches:
+            # the string is in lowercase, which is where it must match
+            self.assertEqual(docs[0]["a"], docs[0]["a"].lower())
+            self.assertIsNotNone(re.fullmatch(pattern, docs[0]["a"]))
+        for docs in self.emit_branches(f'FROM x | WHERE TO_LOWER(a) NOT RLIKE "{pattern}"'):
+            self.assertIsNone(re.fullmatch(pattern, docs[0]["a"].lower()))
+
+        # no lowercase string matches
+        with self.assertRaisesRegex(NotImplementedError, "never true"):
+            self.emit_branches('FROM x | WHERE TO_LOWER(a) RLIKE "[A-Z]+"')
+
+    def test_to_lower_null_propagation(self):
+        # a field with a value that is never equal to the literal is there, and no value is a null: under a
+        # NOT it is the opposite of true that is wanted, which is false for a value and null for none
+        for query in (
+            'NOT (TO_LOWER(a) != "FOO")',
+            'NOT (TO_LOWER(a) NOT LIKE "*FOO*")',
+            'NOT (TO_LOWER(a) NOT IN ("FOO", "BAR"))',
+            'NOT (TO_LOWER(a) NOT IN ("FOO", "BAR")) AND b == 1',
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "never true"):
+                self.emit_branches(f"FROM x | WHERE {query}")
+        # a side of an OR that cannot be true does not matter for the other
+        docs = self.emit_branches('FROM x | WHERE NOT (TO_LOWER(a) != "FOO") OR b == 1')
+        self.assertEqual([[{"b": 1}]], docs)
+        docs = self.emit_branches('FROM x | WHERE NOT (TO_LOWER(a) NOT IN ("foo", "BAR"))')
+        self.assertEqual([[{"a": "foo"}]], docs)
+        # without NOT the field is there
+        for query in ('TO_LOWER(a) != "FOO"', 'TO_LOWER(a) NOT LIKE "*FOO*"', 'TO_LOWER(a) NOT IN ("FOO", "BAR")'):
+            with self.subTest(query):
+                for docs in self.emit_branches(f"FROM x | WHERE {query}"):
+                    self.assertIn("a", docs[0])
+        with self.assertRaisesRegex(NotImplementedError, "never true"):
+            self.emit_branches("FROM x | WHERE false")
+
+    def test_to_lower_rlike_samples_lowercase(self):
+        # Elasticsearch never matches what has an uppercase letter in its regular expression, not even a class or
+        # one alternative of many, and what is to match it is a lowercase string
+        for pattern in ("[Ab]", "(Chrome|firefox)", "[A-Za-z]+", r"\S+", "[^A-Z]+"):
+            with self.subTest(pattern), self.assertRaisesRegex(NotImplementedError, "TO_LOWER RLIKE, it is never true"):
+                self.emit_branches(f'FROM x | WHERE TO_LOWER(a) RLIKE """{pattern}"""')
+        self.assertEqual([[{"a": "x"}]], self.emit_branches('FROM x | WHERE TO_LOWER(a) NOT RLIKE """[A-Z]+""" AND a == "x"'))
+        for _ in range(10):
+            value = self.emit_branches(r'FROM x | WHERE TO_LOWER(a) RLIKE """[^a-y]{3}"""')[0][0]["a"]
+            self.assertRegex(value, r"^[^A-Za-y]{3}$")
+        for _ in range(10):
+            value = self.emit_branches('FROM x | WHERE TO_LOWER(a) NOT RLIKE "[a-z0-9]*"')[0][0]["a"]
+            self.assertNotRegex(value, "^[a-z0-9]*$")
+
+    def test_to_string_emission(self):
+        branches = self.emit_branches('FROM x | WHERE TO_STRING(source.ip) IN ("127.0.0.1", "::1")')
+        self.assertEqual([[{"source": {"ip": "127.0.0.1"}}], [{"source": {"ip": "::1"}}]], branches)
+        for docs in self.emit_branches('FROM x | WHERE TO_STRING(source.ip) != "127.0.0.1"'):
+            self.assertNotEqual("127.0.0.1", docs[0]["source"]["ip"])
 
     def test_rlike_conflicts(self):
         # a string is what the expression is made into, it is not combined with another condition on the same field

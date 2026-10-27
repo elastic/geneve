@@ -15,15 +15,14 @@ Rules version: 9.1.20
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (7)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-7)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (6)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrecent-6)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
-      1. [Unsupported function: to_lower (5)](#unsupported-function-to_lower-5)
+      1. [Unsupported second STATS (6)](#unsupported-second-stats-6)
       1. [Unsupported right operand, it must be a literal (5)](#unsupported-right-operand-it-must-be-a-literal-5)
       1. [Unsupported function: now (4)](#unsupported-function-now-4)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
-      1. [Unsupported second STATS (4)](#unsupported-second-stats-4)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (2)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldate_diff-2)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_pattern_count-2)
       1. [Unsupported WHERE on a field made by EVAL: Esql.source_ip (2)](#unsupported-where-on-a-field-made-by-eval-esqlsource_ip-2)
       1. [Unsupported function: TO_IP (2)](#unsupported-function-to_ip-2)
-      1. [Unsupported function: to_string (2)](#unsupported-function-to_string-2)
       1. [Error at line:3,column:38
 Invalid syntax
 | where event.category == "process" and event.type == "start" and
@@ -78,13 +77,15 @@ invalid-syntax
 ----githubreasonscode--workflow_updates-and
 ----matchgithubreasonsmessagestring-refusing-to-allow-a-github-app-to-create-or-update-workflow
 ---------------------------------1)
+      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\*' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-c-1)
+      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\program files\\\\*.exe' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-cprogram-filesexe-1)
       1. [Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)](#unsupported-where-on-a-field-made-by-dissect-esqlaws_cloudtrail_request_parameters_service_code-1)
       1. [Unsupported WHERE on a field made by DISSECT: Esql.external_idp_old_issuer (1)](#unsupported-where-on-a-field-made-by-dissect-esqlexternal_idp_old_issuer-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.attempts_per_user (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlattempts_per_user-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
-      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldate_diff-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldt_per_attempt-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_bf_type-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_duration_seconds-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrisk_alerts_count_ratio-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-concat_vuln_severity_values-1)
@@ -108,10 +109,10 @@ invalid-syntax
       1. [Unsupported command: RENAME (1)](#unsupported-command-rename-1)
       1. [Unsupported conflicting constraints on email.subject: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-emailsubject-only-one-equality-or-pattern-per-field-is-supported-1)
       1. [Unsupported conflicting constraints on process.args: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-processargs-only-one-equality-or-pattern-per-field-is-supported-1)
+      1. [Unsupported conflicting constraints on process.command_line: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-processcommand_line-only-one-equality-or-pattern-per-field-is-supported-1)
       1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
       1. [Unsupported function: NOW (1)](#unsupported-function-now-1)
       1. [Unsupported function: TO_INTEGER (1)](#unsupported-function-to_integer-1)
-      1. [Unsupported function: TO_LOWER (1)](#unsupported-function-to_lower-1)
       1. [Unsupported function: length (1)](#unsupported-function-length-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
    1. [Generation errors](#generation-errors)
@@ -234,6 +235,7 @@ invalid-syntax
       1. [Unsupported condition on the aggregate Esql.device_code_auth_count (1)](#unsupported-condition-on-the-aggregate-esqldevice_code_auth_count-1)
       1. [Unsupported condition on the aggregate Esql.is_browser_case_max (1)](#unsupported-condition-on-the-aggregate-esqlis_browser_case_max-1)
       1. [Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqloauth_token_count_distinct-1)
+      1. [Unsupported condition on the aggregate Esql.patterns_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlpatterns_count_distinct-1)
       1. [Unsupported condition on the aggregate Esql.url_original_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlurl_original_count_distinct-1)
       1. [Unsupported condition on the aggregate host_with_cpu_spike (1)](#unsupported-condition-on-the-aggregate-host_with_cpu_spike-1)
       1. [Unsupported condition on the values of Esql.rule_risk_score_values (1)](#unsupported-condition-on-the-values-of-esqlrule_risk_score_values-1)
@@ -597,15 +599,16 @@ invalid-syntax
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
 
-### Unsupported function: to_lower (5)
+### Unsupported second STATS (6)
 
-5 rules:
+6 rules:
 
-* LSASS Process Access via Windows API
-* M365 Identity User Account Lockouts
+* Multiple Elastic Defend Alerts from a Single Process Tree
+* Potential Account Takeover - Logon from New Source IP
 * Potential Account Takeover - Mixed Logon Types
-* Potential Credential Discovery via Recursive Grep
-* Potential Ransomware Behavior - Note Files by System
+* Potential Okta Credential Stuffing (Single Source)
+* Potential Okta Password Spray (Single Source)
+* Unusual High Confidence Content Filter Blocks Detected
 
 ### Unsupported right operand, it must be a literal (5)
 
@@ -635,14 +638,12 @@ invalid-syntax
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
-### Unsupported second STATS (4)
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (2)
 
-4 rules:
+2 rules:
 
-* Multiple Elastic Defend Alerts from a Single Process Tree
-* Potential Okta Credential Stuffing (Single Source)
-* Potential Okta Password Spray (Single Source)
-* Unusual High Confidence Content Filter Blocks Detected
+* Lateral Movement Alerts from a Newly Observed Source Address
+* Lateral Movement Alerts from a Newly Observed User
 
 ### Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)
 
@@ -664,13 +665,6 @@ invalid-syntax
 
 * Multiple Logon Failure from the same Source Address
 * Privileged Accounts Brute Force
-
-### Unsupported function: to_string (2)
-
-2 rules:
-
-* Lateral Movement Alerts from a Newly Observed User
-* Potential Account Takeover - Logon from New Source IP
 
 ### Error at line:3,column:38
 Invalid syntax
@@ -732,6 +726,18 @@ Invalid syntax
 
 * GitHub Actions Workflow Modification Blocked
 
+### Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\*' (1)
+
+1 rules:
+
+* Potential Ransomware Behavior - Note Files by System
+
+### Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\program files\\\\*.exe' (1)
+
+1 rules:
+
+* LSASS Process Access via Windows API
+
 ### Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)
 
 1 rules:
@@ -756,12 +762,6 @@ Invalid syntax
 
 * Entra ID User Sign-in Brute Force Attempted
 
-### Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (1)
-
-1 rules:
-
-* Lateral Movement Alerts from a Newly Observed Source Address
-
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt (1)
 
 1 rules:
@@ -773,6 +773,12 @@ Invalid syntax
 1 rules:
 
 * Entra ID Sign-in Brute Force Attempted (Microsoft 365)
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)
+
+1 rules:
+
+* M365 Identity User Account Lockouts
 
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
 
@@ -912,6 +918,12 @@ Invalid syntax
 
 * Unusual Base64 Encoding/Decoding Activity
 
+### Unsupported conflicting constraints on process.command_line: only one equality or pattern per field is supported (1)
+
+1 rules:
+
+* Potential Credential Discovery via Recursive Grep
+
 ### Unsupported field name: {?bucket.name.key (1)
 
 1 rules:
@@ -929,12 +941,6 @@ Invalid syntax
 1 rules:
 
 * Newly Observed Palo Alto Network Alert
-
-### Unsupported function: TO_LOWER (1)
-
-1 rules:
-
-* Suspicious Python Shell Command Execution
 
 ### Unsupported function: length (1)
 
@@ -1683,6 +1689,11 @@ Invalid syntax
 
 1 rules:
 * M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
+
+### Unsupported condition on the aggregate Esql.patterns_count_distinct (1)
+
+1 rules:
+* Suspicious Python Shell Command Execution
 
 ### Unsupported condition on the aggregate Esql.url_original_count_distinct (1)
 

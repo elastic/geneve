@@ -23,6 +23,7 @@ raises `NotImplementedError`, so that unsupported queries are reported instead
 of silently generating events that do not match.
 """
 
+import ipaddress
 import json
 import re
 from collections import namedtuple
@@ -61,6 +62,9 @@ EsqlQuery = namedtuple("EsqlQuery", ["sources", "metadata", "where", "stats", "a
 # `expanded` are the fields of the documents that MV_EXPAND expands before STATS
 EsqlStats = namedtuple("EsqlStats", ["aggregates", "by", "fields", "join", "where", "expanded"], defaults=((),))
 Aggregate = namedtuple("Aggregate", ["alias", "function", "argument", "simple"])
+# what a function of a field makes of it in a comparison: only the ones that the generation can undo
+Scalar = namedtuple("Scalar", ["function", "field"])
+SCALAR_FUNCTIONS = ("to_lower", "to_string")
 
 # commands that do not change which documents match a preceding WHERE, LIMIT does
 IGNORED_COMMANDS = ("KEEP", "DROP", "SORT", "LIMIT")
@@ -365,7 +369,7 @@ class EsqlToEql(Interpreter):
         if isinstance(node, eql.ast.Field):
             self.check_field(tree, node)
             return eql.ast.Comparison(node, "==", eql.ast.Boolean(True))
-        if isinstance(node, eql.ast.Literal) and not isinstance(node, eql.ast.Boolean):
+        if isinstance(node, Scalar) or (isinstance(node, eql.ast.Literal) and not isinstance(node, eql.ast.Boolean)):
             self.reject(tree, "non-boolean expression")
         return node
 
@@ -398,6 +402,15 @@ class EsqlToEql(Interpreter):
             self.reject(tree, "left operand, it must be a field")
         return self.check_field(tree, operand)
 
+    def scalar_operand(self, tree, operand):
+        """Return (field, function) of the operand of a predicate, the function is None if it is a field."""
+        node = self.visit(operand)
+        if isinstance(node, Scalar):
+            return self.check_field(tree, node.field), node.function
+        if not isinstance(node, eql.ast.Field):
+            self.reject(tree, "left operand, it must be a field")
+        return self.check_field(tree, node), None
+
     def literal_operand(self, tree, operand, equality=False):
         operand = self.visit(operand)
         if not isinstance(operand, eql.ast.Literal):
@@ -427,17 +440,75 @@ class EsqlToEql(Interpreter):
     def like_call(field, pattern):
         return eql.ast.FunctionCall("_like", [field, eql.ast.String(pattern)])
 
-    def rlike_call(self, tree, field, pattern):
+    def rlike_call(self, tree, field, pattern, lower=False):
         try:
             regex_gen.check(pattern)
         except (NotImplementedError, ValueError) as e:
             self.reject(tree, f"RLIKE pattern: {e}")
-        return eql.ast.FunctionCall("_rlike", [field, eql.ast.String(pattern)])
+        # the string that is generated is in lowercase, which is what TO_LOWER makes of any string
+        extra = [eql.ast.String("lower")] if lower else []
+        return eql.ast.FunctionCall("_rlike", [field, eql.ast.String(pattern)] + extra)
+
+    def lower_equal(self, tree, field, literal):
+        """`TO_LOWER(field) == literal`: the field has the literal, which cannot have uppercase letters (None if it does)."""
+        self.check_string(tree, "TO_LOWER", literal)
+        return self.equal(field, literal) if literal.value == literal.value.lower() else None
+
+    def lower_not_equal(self, tree, field, literal):
+        """`TO_LOWER(field) != literal`: the field has a value, and not the literal in any case."""
+        self.check_string(tree, "TO_LOWER", literal)
+        if has_wildcards(literal.value):
+            self.reject(tree, f"string literal with wildcard characters: {literal.value!r}")
+        if literal.value != literal.value.lower():
+            return self.present(field)  # what is in lowercase is never equal to it
+        return eql.ast.Not(eql.ast.FunctionCall("wildcard", [field, literal]))
+
+    @staticmethod
+    def present(field):
+        """True for any value of the field, and null (not false) for none: what is not is never true, whatever is above it."""
+        return eql.ast.FunctionCall("_present", [field])
+
+    def check_round_trip(self, tree, literal):
+        """`TO_STRING(field)` of a typed field is how its value is written: only a literal that is written so can be equal to it."""
+        self.check_string(tree, "TO_STRING", literal)
+        value = literal.value
+        try:
+            written = str(ipaddress.ip_address(value))
+        except ValueError:
+            written = value
+            if re.fullmatch(r"[+-]?\d+", value):
+                written = str(int(value))
+            elif re.fullmatch(r"[+-]?\d+(\.\d+)?([eE][+-]?\d+)?", value):
+                written = None  # how a decimal number is written depends on its type
+            elif value.lower() in ("true", "false"):
+                written = value.lower()
+        if written != value:
+            self.reject(tree, f"TO_STRING comparison with a string that is not how a value of any type is written: {value!r}")
+
+    def check_string(self, tree, function, literal):
+        if not isinstance(literal, eql.ast.String):
+            self.reject(tree, f"{function} comparison with something that is not a string literal")
+
+    def lower_comparison(self, tree, op, field, right):
+        if str(op) == "==":
+            expr = self.lower_equal(tree, field, right)
+            if expr is None:
+                self.reject(tree, f"TO_LOWER comparison, it is never true for a literal with uppercase letters: {right.value!r}")
+            return expr
+        if str(op) == "!=":
+            return self.lower_not_equal(tree, field, right)
+        self.reject(tree, f"TO_LOWER comparison operator: {op}")
 
     def comparison(self, tree):
         left, op, right = tree.children
-        left = self.field_operand(tree, left)
+        left, function = self.scalar_operand(tree, left)
         right = self.literal_operand(tree, right, equality=str(op) in ("==", "!="))
+        if function == "to_lower":
+            return self.lower_comparison(tree, op, left, right)
+        if function == "to_string":
+            if str(op) not in ("==", "!="):
+                self.reject(tree, f"TO_STRING comparison operator: {op}, what is compared is text and not the value")
+            self.check_round_trip(tree, right)
         if str(op) == "==":
             return self.equal(left, right)
         if str(op) == "!=":
@@ -448,8 +519,18 @@ class EsqlToEql(Interpreter):
     def in_expr(self, tree):
         negate = any(isinstance(child, Token) and child.type == "NOT" for child in tree.children)
         operands = [child for child in tree.children if isinstance(child, Tree)]
-        left = self.field_operand(tree, operands[0])
+        left, function = self.scalar_operand(tree, operands[0])
         container = [self.literal_operand(tree, operand, equality=True) for operand in operands[1:]]
+        if function == "to_string":
+            for item in container:
+                self.check_round_trip(tree, item)
+        if function == "to_lower":
+            if negate:
+                return eql.ast.And([self.lower_not_equal(tree, left, item) for item in container])
+            terms = [term for term in (self.lower_equal(tree, left, item) for item in container) if term is not None]
+            if not terms:
+                self.reject(tree, "TO_LOWER IN, it is never true for literals with uppercase letters")
+            return terms[0] if len(terms) == 1 else eql.ast.Or(terms)
         if any(isinstance(item, eql.ast.String) and has_wildcards(item.value) for item in container):
             terms = [self.equal(left, item) for item in container]
             expr = terms[0] if len(terms) == 1 else eql.ast.Or(terms)
@@ -466,12 +547,21 @@ class EsqlToEql(Interpreter):
         negate = any(isinstance(child, Token) and child.type == "NOT" for child in tree.children)
         operator = next(child for child in tree.children if isinstance(child, Token) and child.type in ("LIKE", "RLIKE"))
         left, right = (child for child in tree.children if isinstance(child, Tree))
-        left = self.field_operand(tree, left)
+        left, function = self.scalar_operand(tree, left)
         right = self.visit(right)
         if not isinstance(right, eql.ast.String):
             self.reject(tree, f"{operator.type} pattern, it must be a string literal")
+        lower = function == "to_lower"
+        if lower and right.value != right.value.lower():
+            # the lowercase value of a field has no uppercase letters to match, and Elasticsearch takes a
+            # regular expression that has them (even a class or one alternative of many) as never matched
+            if not negate:
+                self.reject(tree, f"TO_LOWER {operator.type}, it is never true for a pattern with uppercase letters: {right.value!r}")
+            if operator.type == "RLIKE":
+                regex_gen.check(right.value)
+            return self.present(left)
         if operator.type == "RLIKE":
-            expr = self.rlike_call(tree, left, right.value)
+            expr = self.rlike_call(tree, left, right.value, lower)
         else:
             self.check_pattern(tree, right.value)
             expr = self.like_call(left, right.value)
@@ -504,6 +594,11 @@ class EsqlToEql(Interpreter):
         special = {"kql": self.function_kql, "mv_contains": self.function_mv_contains}
         if name.lower() in special:
             return special[name.lower()](tree, name.upper(), [self.visit(arg) for arg in args])
+        if name.lower() in SCALAR_FUNCTIONS:
+            args = [self.visit(arg) for arg in args]
+            if len(args) != 1 or not isinstance(args[0], eql.ast.Field):
+                self.reject(tree, f"{name.upper()} argument, it must be a field")
+            return Scalar(name.lower(), args[0])
         # not getattr(): lark's Interpreter answers to any unknown attribute
         functions = {
             "starts_with": self.function_starts_with,
@@ -591,7 +686,10 @@ def validate_branches(ast):
     one positive constraint on a field is therefore not supported, whatever its schema is: this
     covers repeated and nested `==`, `IN` and `LIKE`, their negations, and mixes of them.
     """
-    for branch in collect_constraints(ast, max_branches=MAX_BRANCHES):
+    branches = list(collect_constraints(ast, max_branches=MAX_BRANCHES))
+    if not branches:
+        raise NotImplementedError("Unsupported WHERE that is never true")
+    for branch in branches:
         for doc in branch:
             for field, constraints in doc.items():
                 positives = [c for c in constraints or [] if c[0] in POSITIVE_CONSTRAINTS]

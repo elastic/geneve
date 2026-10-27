@@ -19,7 +19,6 @@ Rules version: 8.18.15
       1. [Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_policy_name (3)](#unsupported-where-on-a-field-made-by-dissect-esqlaws_cloudtrail_request_parameters_policy_name-3)
       1. [Unsupported right operand, it must be a literal (3)](#unsupported-right-operand-it-must-be-a-literal-3)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_pattern_count-2)
-      1. [Unsupported function: to_lower (2)](#unsupported-function-to_lower-2)
       1. [Error at line:47,column:47
 Invalid syntax
 | where not powershell.file.script_block_text like "*[System.IO.File]::Open('C:\\\\ProgramData\\\\Microsoft\\\\Windows Defender Advanced Threat Protection\\\\DataCollection*"
@@ -53,6 +52,7 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by DISSECT: Esql.azure_auditlogs_properties_auth_oidc_discovery_url_new (1)](#unsupported-where-on-a-field-made-by-dissect-esqlazure_auditlogs_properties_auth_oidc_discovery_url_new-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_bf_type-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_duration_seconds-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)](#unsupported-where-on-a-field-made-by-eval-esqlml_policy_violations_mv_count-1)
@@ -521,13 +521,6 @@ invalid-syntax
 * Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
 * Potential PowerShell Obfuscation via Invalid Escape Sequences
 
-### Unsupported function: to_lower (2)
-
-2 rules:
-
-* AWS IAM Login Profile Added for Root
-* Multiple Microsoft 365 User Account Lockouts in Short Time Window
-
 ### Error at line:47,column:47
 Invalid syntax
 | where not powershell.file.script_block_text like "*[System.IO.File]::Open('C:\\\\ProgramData\\\\Microsoft\\\\Windows Defender Advanced Threat Protection\\\\DataCollection*"
@@ -593,6 +586,12 @@ Invalid syntax
 1 rules:
 
 * Microsoft 365 Brute Force via Entra ID Sign-Ins
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)
+
+1 rules:
+
+* Multiple Microsoft 365 User Account Lockouts in Short Time Window
 
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
 

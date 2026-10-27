@@ -17,13 +17,11 @@ Rules version: 8.15.18
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
       1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
       1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
-      1. [Unsupported function: to_lower (3)](#unsupported-function-to_lower-3)
       1. [Unsupported WHERE on a field made by DISSECT: mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-mfa_used-1)
       1. [Unsupported WHERE on a field made by DISSECT: object_name (1)](#unsupported-where-on-a-field-made-by-dissect-object_name-1)
       1. [Unsupported WHERE on a field made by DISSECT: service_code (1)](#unsupported-where-on-a-field-made-by-dissect-service_code-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-risk_factor-1)
       1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
-      1. [Unsupported function: TO_LOWER (1)](#unsupported-function-to_lower-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
       1. [Unsupported second STATS (1)](#unsupported-second-stats-1)
    1. [Generation errors](#generation-errors)
@@ -389,14 +387,6 @@ Rules version: 8.15.18
 * AWS IAM AdministratorAccess Policy Attached to Role
 * AWS IAM AdministratorAccess Policy Attached to User
 
-### Unsupported function: to_lower (3)
-
-3 rules:
-
-* Attempts to Brute Force a Microsoft 365 User Account
-* Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
-* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
-
 ### Unsupported WHERE on a field made by DISSECT: mfa_used (1)
 
 1 rules:
@@ -426,12 +416,6 @@ Rules version: 8.15.18
 1 rules:
 
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
-
-### Unsupported function: TO_LOWER (1)
-
-1 rules:
-
-* AWS IAM Login Profile Added for Root
 
 ### Unsupported left operand, it must be a field (1)
 

@@ -50,8 +50,6 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
       1. [Unsupported WHERE on a field made by GROK: powershell.file.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-powershellfilescript_block_id-1)
       1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
-      1. [Unsupported function: TO_LOWER (1)](#unsupported-function-to_lower-1)
-      1. [Unsupported function: to_lower (1)](#unsupported-function-to_lower-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
       1. [Unsupported second STATS (1)](#unsupported-second-stats-1)
    1. [Generation errors](#generation-errors)
@@ -569,18 +567,6 @@ Invalid syntax
 1 rules:
 
 * AWS S3 Static Site JavaScript File Uploaded
-
-### Unsupported function: TO_LOWER (1)
-
-1 rules:
-
-* AWS IAM Login Profile Added for Root
-
-### Unsupported function: to_lower (1)
-
-1 rules:
-
-* Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
 
 ### Unsupported left operand, it must be a field (1)
 

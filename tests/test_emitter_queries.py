@@ -234,7 +234,7 @@ mono_branch_mono_doc = {
     ],
     """FROM logs-* | WHERE process.name RLIKE \"\"\"[a-z]{3}\\.exe\"\"\" AND user.name NOT RLIKE \"\"\"[a-z]+[0-9]{2}\"\"\"
     """: [
-        [{"process": {"name": "ekr.exe"}, "user": {"name": "q5"}}],
+        [{"process": {"name": "uqh.exe"}, "user": {"name": "m8"}}],
     ],
 }
 
@@ -337,6 +337,12 @@ multi_branch_mono_doc = {
     """: [
         [{"process": {"name": "cmd.exe"}}],
         [{"process": {"name": "powershell.exe"}}],
+    ],
+    """FROM logs-* | WHERE TO_LOWER(process.name) IN ("cmd.exe", "powershell.exe") OR TO_STRING(source.ip) == "127.0.0.1"
+    """: [
+        [{"process": {"name": "cmd.exe"}}],
+        [{"process": {"name": "powershell.exe"}}],
+        [{"source": {"ip": "127.0.0.1"}}],
     ],
     """FROM logs-* | WHERE process.name == "a.exe" OR source.port < 1024
     """: [

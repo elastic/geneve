@@ -229,6 +229,8 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool, max_branches: int
         return cc_literal(node, negate, max_branches)
     elif fn_name == "_rlike":
         return cc_rlike(node, negate, max_branches)
+    elif fn_name == "_present":
+        return cc_present(node, negate, max_branches)
     else:
         raise NotImplementedError(f"Unsupported function: {node.name}")
 
@@ -440,12 +442,21 @@ def cc_literal(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> R
     return Root([Branch([doc])])
 
 
+def cc_present(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # a condition that any value of the field satisfies but no null does, as `NOT (x != y)` is null for a null:
+    # asked to be false it is not satisfied by a missing field nor by any value
+    if negate:
+        return Root([])
+    return collect_constraints(eql.ast.IsNotNull(node.arguments[0]), False, max_branches)
+
+
 def cc_rlike(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
     # a regular expression is not something that the solvers can exclude or combine, a string is generated
     # for it (one per alternative if it matches, any that doesn't if it must not) and asked for as it is
     field = node.arguments[0].render()
     pattern = node.arguments[1].value
-    values = [regex_gen.not_matching(pattern)] if negate else regex_gen.matching(pattern)
+    lower = len(node.arguments) > 2  # for TO_LOWER(field): the field is in lowercase
+    values = [regex_gen.not_matching(pattern, lower)] if negate else regex_gen.matching(pattern, lower=lower)
     if max_branches and len(values) > max_branches:
         raise ValueError(f"Root with too many branches (limit: {max_branches})")
     branches = []

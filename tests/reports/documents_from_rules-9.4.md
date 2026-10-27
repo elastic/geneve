@@ -13,20 +13,18 @@ Rules version: 9.4.16
       1. ['types.SimpleNamespace' object has no attribute 'type' (131)](#typessimplenamespace-object-has-no-attribute-type-131)
       1. [Unsupported rule type: machine_learning (106)](#unsupported-rule-type-machine_learning-106)
       1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
-      1. [Unsupported function: to_lower (11)](#unsupported-function-to_lower-11)
+      1. [Unsupported right operand, it must be a literal (11)](#unsupported-right-operand-it-must-be-a-literal-11)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (10)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrecent-10)
-      1. [Unsupported right operand, it must be a literal (10)](#unsupported-right-operand-it-must-be-a-literal-10)
-      1. [Unsupported function: to_string (9)](#unsupported-function-to_string-9)
+      1. [Unsupported second STATS (8)](#unsupported-second-stats-8)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (7)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-7)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
-      1. [Unsupported second STATS (6)](#unsupported-second-stats-6)
-      1. [Unsupported function: TO_LOWER (5)](#unsupported-function-to_lower-5)
       1. [Unsupported WHERE on a field made by EVAL: Esql.dest_host (4)](#unsupported-where-on-a-field-made-by-eval-esqldest_host-4)
       1. [Unsupported WHERE on a field made by EVAL: Esql.executed_command (4)](#unsupported-where-on-a-field-made-by-eval-esqlexecuted_command-4)
       1. [Unsupported WHERE on a field made by EVAL: Esql.message_text (3)](#unsupported-where-on-a-field-made-by-eval-esqlmessage_text-3)
       1. [Unsupported WHERE on a field made by EVAL: Esql.source_geo_lat (3)](#unsupported-where-on-a-field-made-by-eval-esqlsource_geo_lat-3)
       1. [Unsupported command: COMPLETION (3)](#unsupported-command-completion-3)
       1. [Unsupported function: NOW (3)](#unsupported-function-now-3)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (2)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldate_diff-2)
       1. [Unsupported WHERE on a field made by EVAL: Esql.client_ip (2)](#unsupported-where-on-a-field-made-by-eval-esqlclient_ip-2)
       1. [Unsupported WHERE on a field made by EVAL: Esql.method (2)](#unsupported-where-on-a-field-made-by-eval-esqlmethod-2)
       1. [Unsupported WHERE on a field made by EVAL: Esql.prompt_text (2)](#unsupported-where-on-a-field-made-by-eval-esqlprompt_text-2)
@@ -145,15 +143,20 @@ invalid-syntax
 ----matchgithubreasonsmessagestring-refusing-to-allow-a-github-app-to-create-or-update-workflow
 ---------------------------------1)
       1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: '*..\\\\..\\\\..\\\\..*' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported--1)
+      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: '?:\\\\windows\\\\system32\\\\mrt.exe' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-windowssystem32mrtexe-1)
+      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\*' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-c-1)
+      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\program files\\\\*.exe' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-cprogram-filesexe-1)
+      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'hkey_users\\\\*\\\\software\\\\microsoft\\\\windows\\\\currentversion\\\\explorer\\\\runmru\\\\*' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-hkey_userssoftwaremicrosoftwindowscurrentversionexplorerrunmru-1)
+      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'hkey_users\\\\*\\\\software\\\\microsoft\\\\windows\\\\currentversion\\\\explorer\\\\typedpaths\\\\*' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-hkey_userssoftwaremicrosoftwindowscurrentversionexplorertypedpaths-1)
       1. [Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)](#unsupported-where-on-a-field-made-by-dissect-esqlaws_cloudtrail_request_parameters_service_code-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.activity_fidelity_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlactivity_fidelity_score-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.attempts_per_user (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlattempts_per_user-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
-      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldate_diff-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldt_per_attempt-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.duration_minutes (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlduration_minutes-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.error_rate (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlerror_rate-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_bf_type-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_duration_seconds-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.recent_minutes (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrecent_minutes-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-concat_vuln_severity_values-1)
@@ -175,13 +178,17 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by EVAL: Esql.opcode (1)](#unsupported-where-on-a-field-made-by-eval-esqlopcode-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.reply_text (1)](#unsupported-where-on-a-field-made-by-eval-esqlreply_text-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.rmm_vendor (1)](#unsupported-where-on-a-field-made-by-eval-esqlrmm_vendor-1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.scopes (1)](#unsupported-where-on-a-field-made-by-eval-esqlscopes-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.ssh_enabled (1)](#unsupported-where-on-a-field-made-by-eval-esqlssh_enabled-1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.target_endpoints (1)](#unsupported-where-on-a-field-made-by-eval-esqltarget_endpoints-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.target_user_name (1)](#unsupported-where-on-a-field-made-by-eval-esqltarget_user_name-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.url_original_url_decoded_to_lower (1)](#unsupported-where-on-a-field-made-by-eval-esqlurl_original_url_decoded_to_lower-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.user (1)](#unsupported-where-on-a-field-made-by-eval-esqluser-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.user_agent_original_to_lower (1)](#unsupported-where-on-a-field-made-by-eval-esqluser_agent_original_to_lower-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql_priv.aws_bedrock_agentcore_request_payload_prompt_lower (1)](#unsupported-where-on-a-field-made-by-eval-esql_privaws_bedrock_agentcore_request_payload_prompt_lower-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql_priv.aws_cloudtrail_access_key_id_correlation (1)](#unsupported-where-on-a-field-made-by-eval-esql_privaws_cloudtrail_access_key_id_correlation-1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql_priv.aws_cloudtrail_lifecycle_script (1)](#unsupported-where-on-a-field-made-by-eval-esql_privaws_cloudtrail_lifecycle_script-1)
+      1. [Unsupported WHERE on a field made by EVAL: cloud_target (1)](#unsupported-where-on-a-field-made-by-eval-cloud_target-1)
       1. [Unsupported WHERE on a field made by EVAL: is_curl_download (1)](#unsupported-where-on-a-field-made-by-eval-is_curl_download-1)
       1. [Unsupported WHERE on a field made by EVAL: is_genai_spawn (1)](#unsupported-where-on-a-field-made-by-eval-is_genai_spawn-1)
       1. [Unsupported WHERE on a field made by EVAL: is_pkg_install (1)](#unsupported-where-on-a-field-made-by-eval-is_pkg_install-1)
@@ -208,6 +215,7 @@ invalid-syntax
       1. [Unsupported conflicting constraints on aws.cloudtrail.request_parameters: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-awscloudtrailrequest_parameters-only-one-equality-or-pattern-per-field-is-supported-1)
       1. [Unsupported conflicting constraints on email.subject: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-emailsubject-only-one-equality-or-pattern-per-field-is-supported-1)
       1. [Unsupported conflicting constraints on process.args: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-processargs-only-one-equality-or-pattern-per-field-is-supported-1)
+      1. [Unsupported conflicting constraints on process.command_line: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-processcommand_line-only-one-equality-or-pattern-per-field-is-supported-1)
       1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
       1. [Unsupported function: CONTAINS (1)](#unsupported-function-contains-1)
       1. [Unsupported function: TO_INTEGER (1)](#unsupported-function-to_integer-1)
@@ -218,7 +226,7 @@ invalid-syntax
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
       1. [Unsupported predicate on metadata field: _ignored (1)](#unsupported-predicate-on-metadata-field-_ignored-1)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (418)](#field-type-solver-constant_keyword-418)
+      1. [Field type solver: constant_keyword (419)](#field-type-solver-constant_keyword-419)
       1. [Unsupported function: match (40)](#unsupported-function-match-40)
       1. [Root with too many branches (limit: 10000) (30)](#root-with-too-many-branches-limit-10000-30)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
@@ -226,7 +234,7 @@ invalid-syntax
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (9)](#unsupported-argument-types-class-eqlastfield-9)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (8)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-8)
-      1. [Cannot choose from an empty set (5)](#cannot-choose-from-an-empty-set-5)
+      1. [Cannot choose from an empty set (6)](#cannot-choose-from-an-empty-set-6)
       1. [Field type solver: match_only_text (4)](#field-type-solver-match_only_text-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Unsolvable constraints: event.category & event.type (empty intersection) (3)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-3)
@@ -342,12 +350,15 @@ invalid-syntax
       1. [Unsupported condition on the aggregate Esql.is_browser_case_max (1)](#unsupported-condition-on-the-aggregate-esqlis_browser_case_max-1)
       1. [Unsupported condition on the aggregate Esql.miner_register_sum (1)](#unsupported-condition-on-the-aggregate-esqlminer_register_sum-1)
       1. [Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqloauth_token_count_distinct-1)
+      1. [Unsupported condition on the aggregate Esql.patterns_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlpatterns_count_distinct-1)
       1. [Unsupported condition on the aggregate Esql.sensitive_query_count (1)](#unsupported-condition-on-the-aggregate-esqlsensitive_query_count-1)
       1. [Unsupported condition on the aggregate Esql.total_tokens_sum (1)](#unsupported-condition-on-the-aggregate-esqltotal_tokens_sum-1)
+      1. [Unsupported condition on the aggregate Esql.unique_resources (1)](#unsupported-condition-on-the-aggregate-esqlunique_resources-1)
       1. [Unsupported condition on the aggregate Esql.url_original_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlurl_original_count_distinct-1)
       1. [Unsupported condition on the aggregate host_with_cpu_spike (1)](#unsupported-condition-on-the-aggregate-host_with_cpu_spike-1)
       1. [Unsupported condition on the values of Esql.kibana_alert_risk_score_values (1)](#unsupported-condition-on-the-values-of-esqlkibana_alert_risk_score_values-1)
       1. [Unsupported field in WHERE after STATS: access_key (1)](#unsupported-field-in-where-after-stats-access_key-1)
+      1. [Unsupported number of different values of event.outcome: between 2 and 2 in 6 documents (1)](#unsupported-number-of-different-values-of-eventoutcome-between-2-and-2-in-6-documents-1)
       1. [Unsupported number of different values of kubernetes.audit.annotations.`authorization_k8s_io/decision`: between 2 and 2 in 6 documents (1)](#unsupported-number-of-different-values-of-kubernetesauditannotationsauthorization_k8s_iodecision-between-2-and-2-in-6-documents-1)
 
 ## Skipped rules
@@ -901,21 +912,21 @@ invalid-syntax
 * Potential macOS SSH Brute Force Detected
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported function: to_lower (11)
+### Unsupported right operand, it must be a literal (11)
 
 11 rules:
 
-* Azure AD Graph Potential Enumeration (ROADrecon)
-* LSASS Process Access via Windows API
-* M365 Identity User Account Lockouts
-* OpenAI ChatGPT Enterprise Authentication from a Suspicious User Agent
-* Potential Account Takeover - Mixed Logon Types
-* Potential ClickFix Command via Windows Run Dialog
-* Potential Credential Discovery via Recursive Grep
-* Potential Entra ID PRT Extraction via BrowserCore
-* Potential Evasion via Boot Time Removal Tool
-* Potential FileFix Command via Windows Explorer Address Bar
-* Potential Ransomware Behavior - Note Files by System
+* AWS IAM User Created Access Keys For Another User
+* AWS Lambda Function Invoked Cross-Account
+* AWS S3 Object Encryption Using External KMS Key
+* AWS SES Email Identity Verified Then Deleted
+* Entra ID Application Self-Assigned to Privileged Role
+* Entra ID Federated Identity Credential Modified
+* Entra ID Privileged Role Assigned to Another Account
+* GKE Sensitive RBAC Change Followed by Workload Modification
+* Multiple SonicWall Login Failures Followed by Successful Login
+* Okta AiTM Session Cookie Replay
+* Potential Self-Signed TLS Certificate Recently Issued on External Connection
 
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (10)
 
@@ -932,34 +943,18 @@ invalid-syntax
 * Newly Observed IPSEC NAT Traversal Peer
 * Newly Observed Process Exhibiting High CPU Usage
 
-### Unsupported right operand, it must be a literal (10)
+### Unsupported second STATS (8)
 
-10 rules:
+8 rules:
 
-* AWS IAM User Created Access Keys For Another User
-* AWS Lambda Function Invoked Cross-Account
-* AWS S3 Object Encryption Using External KMS Key
-* AWS SES Email Identity Verified Then Deleted
-* Entra ID Application Self-Assigned to Privileged Role
-* Entra ID Federated Identity Credential Modified
-* Entra ID Privileged Role Assigned to Another Account
-* Multiple SonicWall Login Failures Followed by Successful Login
-* Okta AiTM Session Cookie Replay
-* Potential Self-Signed TLS Certificate Recently Issued on External Connection
-
-### Unsupported function: to_string (9)
-
-9 rules:
-
-* GKE API Request Failure Burst by User
-* GKE Endpoint Permission Enumeration
-* GKE Multi-Resource Discovery
-* GKE Rapid Secret GET Activity Against Multiple Objects
-* GKE Sensitive RBAC Change Followed by Workload Modification
-* Kubernetes Multi-Resource Discovery
-* Kubernetes Rapid Secret GET Activity Against Multiple Objects
-* Lateral Movement Alerts from a Newly Observed User
+* Google Workspace Impossible Travel Login
+* Microsoft Entra ID Impossible Travel Sign-in
+* Multiple Elastic Defend Alerts from a Single Process Tree
 * Potential Account Takeover - Logon from New Source IP
+* Potential Account Takeover - Mixed Logon Types
+* Potential Okta Credential Stuffing (Single Source)
+* Potential Okta Password Spray (Single Source)
+* Unusual High Confidence Content Filter Blocks Detected
 
 ### Unsupported WHERE on a field made by EVAL: Esql.script_block_length (7)
 
@@ -983,27 +978,6 @@ invalid-syntax
 * Threat Intel IP Address Indicator Match
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
-
-### Unsupported second STATS (6)
-
-6 rules:
-
-* Google Workspace Impossible Travel Login
-* Microsoft Entra ID Impossible Travel Sign-in
-* Multiple Elastic Defend Alerts from a Single Process Tree
-* Potential Okta Credential Stuffing (Single Source)
-* Potential Okta Password Spray (Single Source)
-* Unusual High Confidence Content Filter Blocks Detected
-
-### Unsupported function: TO_LOWER (5)
-
-5 rules:
-
-* AWS SageMaker Notebook Lifecycle Configuration With Suspicious Script Content
-* Entra ID End-User Consent to Application with High-Risk Delegated Scopes
-* Multi-Cloud CLI Token and Credential Access Commands
-* Suspicious Python Shell Command Execution
-* Unusual Process Resolving AWS ECS Agent Communication Service Endpoint
 
 ### Unsupported WHERE on a field made by EVAL: Esql.dest_host (4)
 
@@ -1054,6 +1028,13 @@ invalid-syntax
 * AWS Credentials Used from GitHub Actions and Non-CI/CD Infrastructure
 * AWS Rare Source AS Organization Activity
 * Kubernetes Secret or ConfigMap Access via Azure Arc Proxy
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (2)
+
+2 rules:
+
+* Lateral Movement Alerts from a Newly Observed Source Address
+* Lateral Movement Alerts from a Newly Observed User
 
 ### Unsupported WHERE on a field made by EVAL: Esql.client_ip (2)
 
@@ -1244,6 +1225,36 @@ Invalid syntax
 
 * Web Server Local File Inclusion Activity
 
+### Unsupported LIKE pattern, backslash escapes and character classes are not supported: '?:\\\\windows\\\\system32\\\\mrt.exe' (1)
+
+1 rules:
+
+* Potential Evasion via Boot Time Removal Tool
+
+### Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\*' (1)
+
+1 rules:
+
+* Potential Ransomware Behavior - Note Files by System
+
+### Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\program files\\\\*.exe' (1)
+
+1 rules:
+
+* LSASS Process Access via Windows API
+
+### Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'hkey_users\\\\*\\\\software\\\\microsoft\\\\windows\\\\currentversion\\\\explorer\\\\runmru\\\\*' (1)
+
+1 rules:
+
+* Potential ClickFix Command via Windows Run Dialog
+
+### Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'hkey_users\\\\*\\\\software\\\\microsoft\\\\windows\\\\currentversion\\\\explorer\\\\typedpaths\\\\*' (1)
+
+1 rules:
+
+* Potential FileFix Command via Windows Explorer Address Bar
+
 ### Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)
 
 1 rules:
@@ -1268,12 +1279,6 @@ Invalid syntax
 
 * Entra ID User Sign-in Brute Force Attempted
 
-### Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (1)
-
-1 rules:
-
-* Lateral Movement Alerts from a Newly Observed Source Address
-
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt (1)
 
 1 rules:
@@ -1297,6 +1302,12 @@ Invalid syntax
 1 rules:
 
 * Entra ID Sign-in Brute Force Attempted (Microsoft 365)
+
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)
+
+1 rules:
+
+* M365 Identity User Account Lockouts
 
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
 
@@ -1424,11 +1435,23 @@ Invalid syntax
 
 * Multiple Remote Management Tool Vendors on Same Host
 
+### Unsupported WHERE on a field made by EVAL: Esql.scopes (1)
+
+1 rules:
+
+* Entra ID End-User Consent to Application with High-Risk Delegated Scopes
+
 ### Unsupported WHERE on a field made by EVAL: Esql.ssh_enabled (1)
 
 1 rules:
 
 * ESXi Host Prepared for an Unsigned Install
+
+### Unsupported WHERE on a field made by EVAL: Esql.target_endpoints (1)
+
+1 rules:
+
+* Azure AD Graph Potential Enumeration (ROADrecon)
 
 ### Unsupported WHERE on a field made by EVAL: Esql.target_user_name (1)
 
@@ -1465,6 +1488,18 @@ Invalid syntax
 1 rules:
 
 * AWS IAM User Self-Created Access Key Subsequently Used
+
+### Unsupported WHERE on a field made by EVAL: Esql_priv.aws_cloudtrail_lifecycle_script (1)
+
+1 rules:
+
+* AWS SageMaker Notebook Lifecycle Configuration With Suspicious Script Content
+
+### Unsupported WHERE on a field made by EVAL: cloud_target (1)
+
+1 rules:
+
+* Multi-Cloud CLI Token and Credential Access Commands
 
 ### Unsupported WHERE on a field made by EVAL: is_curl_download (1)
 
@@ -1622,6 +1657,12 @@ Invalid syntax
 
 * Unusual Base64 Encoding/Decoding Activity
 
+### Unsupported conflicting constraints on process.command_line: only one equality or pattern per field is supported (1)
+
+1 rules:
+
+* Potential Credential Discovery via Recursive Grep
+
 ### Unsupported field name: {?bucket.name.key (1)
 
 1 rules:
@@ -1678,9 +1719,9 @@ Invalid syntax
 
 ## Generation errors
 
-### Field type solver: constant_keyword (418)
+### Field type solver: constant_keyword (419)
 
-418 rules:
+419 rules:
 * AWS Account Closed
 * AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
 * AWS Attempt to Leave Organization
@@ -1938,6 +1979,7 @@ Invalid syntax
 * GCP Virtual Private Cloud Network Deletion
 * GCP Virtual Private Cloud Route Creation
 * GCP Virtual Private Cloud Route Deletion
+* GKE API Request Failure Burst by User
 * GKE API Request Impersonating Privileged Identity
 * GKE API Server Proxying Request to Kubelet
 * GKE Admission Webhook Created or Modified
@@ -2262,12 +2304,13 @@ Invalid syntax
 * Suspicious Shell Execution via Velociraptor
 * Suspicious Windows Command Shell Arguments
 
-### Cannot choose from an empty set (5)
+### Cannot choose from an empty set (6)
 
-5 rules:
+6 rules:
 * AWS EC2 Stop, Start, and User Data Modification Correlation
 * Anthropic Organization Member and Group Enumeration
 * Azure Key Vault Excessive Secret or Key Retrieved
+* Kubernetes Multi-Resource Discovery
 * Multiple Elastic Defend Alerts by Agent
 * Suspicious TCC Access Granted for User Folders
 
@@ -2874,6 +2917,11 @@ Invalid syntax
 1 rules:
 * M365 Identity OAuth Flow by First-Party Microsoft App from Multiple IPs
 
+### Unsupported condition on the aggregate Esql.patterns_count_distinct (1)
+
+1 rules:
+* Suspicious Python Shell Command Execution
+
 ### Unsupported condition on the aggregate Esql.sensitive_query_count (1)
 
 1 rules:
@@ -2883,6 +2931,11 @@ Invalid syntax
 
 1 rules:
 * GCP Vertex AI High Request and Token Volume
+
+### Unsupported condition on the aggregate Esql.unique_resources (1)
+
+1 rules:
+* GKE Multi-Resource Discovery
 
 ### Unsupported condition on the aggregate Esql.url_original_count_distinct (1)
 
@@ -2903,6 +2956,11 @@ Invalid syntax
 
 1 rules:
 * AWS Lateral Movement from Kubernetes SA via AssumeRoleWithWebIdentity
+
+### Unsupported number of different values of event.outcome: between 2 and 2 in 6 documents (1)
+
+1 rules:
+* GKE Endpoint Permission Enumeration
 
 ### Unsupported number of different values of kubernetes.audit.annotations.`authorization_k8s_io/decision`: between 2 and 2 in 6 documents (1)
 
