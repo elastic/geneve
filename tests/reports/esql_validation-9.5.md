@@ -8,14 +8,17 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 
 | validated | failed | error | skipped |
 |---|---|---|---|
-| 95 | 0 | 0 | 225 |
+| 103 | 0 | 0 | 217 |
 
-## Validated (95)
+## Validated (103)
 
+* AWS Bedrock API Key Used for Destructive or Anti-Recovery Action, 8 branch(es)
+* AWS Bedrock AgentCore Runtime Prompt Containing Credentials, 5 branch(es)
 * AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User, 1 branch(es)
 * AWS Bedrock Detected Multiple Validation Exception Errors by a Single User, 1 branch(es)
 * AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session, 1 branch(es)
 * AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session, 1 branch(es)
+* AWS Bedrock Model Prompt or Completion Containing Credentials, 28 branch(es)
 * AWS EC2 Multi-Region DescribeInstances API Calls, 1 branch(es)
 * AWS IAM Credentials Added to a Bedrock API Key Phantom User, 3 branch(es)
 * AWS IAM User Console Login from Multiple Geolocations, 1 branch(es)
@@ -45,6 +48,8 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 * Anthropic Primary Owner Transferred, 1 branch(es)
 * Anthropic SSO Disabled or Connection Removed, 3 branch(es)
 * Azure OpenAI Insecure Output Handling, 1 branch(es)
+* Cobalt Strike Command and Control Beacon, 9 branch(es)
+* Entra ID Actor Token User Impersonation Abuse, 5 branch(es)
 * Entra ID MFA TOTP Brute Force Attempted, 2 branch(es)
 * Entra ID Multiple Device Registrations by a Single User, 1 branch(es)
 * File Transfer Utility Launched from Unusual Parent, 186 branch(es)
@@ -57,6 +62,7 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 * GitHub Exfiltration via High Number of Repository Clones by User, 1 branch(es)
 * GitHub OAuth Application Authorized, 1 branch(es)
 * Google Workspace Device Registration Burst for Single User, 1 branch(es)
+* Halfbaked Command and Control Beacon, 16 branch(es)
 * High Number of Closed Pull Requests by User, 1 branch(es)
 * High Number of Egress Network Connections from Unusual Executable, 12 branch(es)
 * High Number of Protected Branch Force Pushes by User, 1 branch(es)
@@ -64,6 +70,7 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 * Kubernetes RBAC Wildcard Elevation on Existing Role, 4 branch(es)
 * Microsoft Foundry Jailbreak Detected, 3 branch(es)
 * Multiple Alerts in Same ATT&CK Tactic by Host, 4 branch(es)
+* Multiple Device Token Hashes for Single Okta Session, 1 branch(es)
 * Multiple Machine Learning Alerts by Influencer Field, 1 branch(es)
 * Multiple Okta User Authentication Events with Same Device Token Hash, 2 branch(es)
 * Okta User Sessions Started from Different Geolocations, 2 branch(es)
@@ -87,6 +94,7 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 * OpenAI ChatGPT Enterprise Workspace Feature Toggled, 1 branch(es)
 * OpenAI ChatGPT Enterprise Workspace Log File Deleted, 1 branch(es)
 * OpenAI ChatGPT Enterprise Workspace Log Files Accessed, 2 branch(es)
+* Possible FIN7 DGA Command and Control Behavior, 48 branch(es)
 * Potential Linux Local Account Brute Force Detected, 1 branch(es)
 * Potential Malware-Driven SSH Brute Force Attempt, 8 branch(es)
 * Potential Okta Brute Force (Multi-Source), 16 branch(es)
@@ -108,18 +116,19 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 * Unusual High Word Policy Blocks Detected, 1 branch(es)
 * Web Server Potential Spike in Error Response Codes, 4 branch(es)
 
-## Skipped (225)
+## Skipped (217)
 
-* 34 x NotImplementedError: Unsupported operator: RLIKE
+* 11 x NotImplementedError: Unsupported function: to_lower
 * 10 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.recent
-* 10 x NotImplementedError: Unsupported function: to_lower
 * 10 x NotImplementedError: Unsupported right operand, it must be a literal
-* 8 x NotImplementedError: Unsupported function: to_string
+* 9 x NotImplementedError: Unsupported function: to_string
 * 7 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.script_block_length
 * 6 x NotImplementedError: Unsupported second STATS
-* 4 x IndexError: Cannot choose from an empty set
+* 5 x IndexError: Cannot choose from an empty set
+* 5 x NotImplementedError: Unsupported function: TO_LOWER
 * 4 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.dest_host
-* 4 x NotImplementedError: Unsupported function: TO_LOWER
+* 4 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.executed_command
+* 3 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.message_text
 * 3 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.source_geo_lat
 * 3 x NotImplementedError: Unsupported command: COMPLETION
 * 3 x NotImplementedError: Unsupported command: IP_LOCATION
@@ -127,11 +136,13 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 * 3 x NotImplementedError: Unsupported function: NOW
 * 2 x EsqlParseError: Error at line:8,column:3
 * 2 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.client_ip
-* 2 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.message_text
 * 2 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.method
+* 2 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.prompt_text
 * 2 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count
 * 2 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.source_ip
+* 2 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.stage
 * 2 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.ua_lower
+* 2 x NotImplementedError: Unsupported WHERE on a field made by EVAL: request_text
 * 2 x NotImplementedError: Unsupported command: INLINE
 * 2 x NotImplementedError: Unsupported function: TO_IP
 * 1 x EsqlParseError: Error at line:14,column:53
@@ -153,6 +164,7 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.duration_minutes
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.error_rate
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: Esql.recent_minutes
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values
@@ -174,31 +186,40 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.message_type
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.normalized_requester
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.o365_audit_ExtendedProperties_RequestType_lower
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.opcode
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.reply_text
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.rmm_vendor
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.ssh_enabled
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.target_user_name
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.url_original_url_decoded_to_lower
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.user
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.user_agent_original_to_lower
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql_priv.aws_bedrock_agentcore_request_payload_prompt_lower
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql_priv.aws_cloudtrail_access_key_id_correlation
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: is_curl_download
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: is_genai_spawn
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: is_pkg_install
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: is_susp_powershell
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: message_type
+* 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: message_upper
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: multi_spaces
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: parent_domain
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: response_text
 * 1 x NotImplementedError: Unsupported WHERE on a field made by EVAL: session.id
 * 1 x NotImplementedError: Unsupported WHERE on a field made by GROK: Esql.aws_cloudtrail_request_parameters_role_arn
+* 1 x NotImplementedError: Unsupported WHERE on a field made by GROK: Esql.executable
+* 1 x NotImplementedError: Unsupported WHERE on a field made by GROK: Esql.inbox_rule_name
 * 1 x NotImplementedError: Unsupported WHERE on a field made by GROK: Esql.model_id
+* 1 x NotImplementedError: Unsupported WHERE on a field made by GROK: Esql.plist_path
 * 1 x NotImplementedError: Unsupported WHERE on a field made by GROK: Esql.screenconnect_server
 * 1 x NotImplementedError: Unsupported WHERE on a field made by GROK: Esql.script_block_id
+* 1 x NotImplementedError: Unsupported WHERE on a field made by GROK: chunk_index
 * 1 x NotImplementedError: Unsupported WHERE on a field made by GROK: user
 * 1 x NotImplementedError: Unsupported aggregate Esql.azure_ai_foundry_result_signature_failed_count, it must be a function
 * 1 x NotImplementedError: Unsupported aggregate Esql.count_distinct_sensitive_ports, it must be a function
 * 1 x NotImplementedError: Unsupported aggregate Esql.create_count, it must be a function
+* 1 x NotImplementedError: Unsupported command: RENAME
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.alert_count_long_term_key_new_ip_rule
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.any_payload_keyword_max
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.attempt_total
@@ -215,6 +236,7 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 * 1 x NotImplementedError: Unsupported condition on the aggregate Esql.url_original_count_distinct
 * 1 x NotImplementedError: Unsupported condition on the aggregate host_with_cpu_spike
 * 1 x NotImplementedError: Unsupported condition on the values of Esql.kibana_alert_risk_score_values
+* 1 x NotImplementedError: Unsupported conflicting constraints on aws.cloudtrail.request_parameters: only one equality or pattern per field is supported
 * 1 x NotImplementedError: Unsupported conflicting constraints on email.subject: only one equality or pattern per field is supported
 * 1 x NotImplementedError: Unsupported conflicting constraints on process.args: only one equality or pattern per field is supported
 * 1 x NotImplementedError: Unsupported field in WHERE after STATS: access_key

@@ -13,12 +13,11 @@ Rules version: 9.1.20
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (7)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-7)
-      1. [Unsupported operator: RLIKE (7)](#unsupported-operator-rlike-7)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (6)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrecent-6)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
+      1. [Unsupported function: to_lower (5)](#unsupported-function-to_lower-5)
       1. [Unsupported right operand, it must be a literal (5)](#unsupported-right-operand-it-must-be-a-literal-5)
       1. [Unsupported function: now (4)](#unsupported-function-now-4)
-      1. [Unsupported function: to_lower (4)](#unsupported-function-to_lower-4)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
       1. [Unsupported second STATS (4)](#unsupported-second-stats-4)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_pattern_count-2)
@@ -85,6 +84,7 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldate_diff-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.dt_per_attempt (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldt_per_attempt-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_bf_type-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrisk_alerts_count_ratio-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-concat_vuln_severity_values-1)
@@ -93,6 +93,7 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.cloud_vendor (1)](#unsupported-where-on-a-field-made-by-eval-esqlcloud_vendor-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)](#unsupported-where-on-a-field-made-by-eval-esqlml_policy_violations_mv_count-1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.o365_audit_ExtendedProperties_RequestType_lower (1)](#unsupported-where-on-a-field-made-by-eval-esqlo365_audit_extendedproperties_requesttype_lower-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.rmm_vendor (1)](#unsupported-where-on-a-field-made-by-eval-esqlrmm_vendor-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.target_user_name (1)](#unsupported-where-on-a-field-made-by-eval-esqltarget_user_name-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.user (1)](#unsupported-where-on-a-field-made-by-eval-esqluser-1)
@@ -104,6 +105,7 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by GROK: Esql.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-esqlscript_block_id-1)
       1. [Unsupported aggregate Esql.count_distinct_sensitive_ports, it must be a function (1)](#unsupported-aggregate-esqlcount_distinct_sensitive_ports-it-must-be-a-function-1)
       1. [Unsupported command: COMPLETION (1)](#unsupported-command-completion-1)
+      1. [Unsupported command: RENAME (1)](#unsupported-command-rename-1)
       1. [Unsupported conflicting constraints on email.subject: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-emailsubject-only-one-equality-or-pattern-per-field-is-supported-1)
       1. [Unsupported conflicting constraints on process.args: only one equality or pattern per field is supported (1)](#unsupported-conflicting-constraints-on-processargs-only-one-equality-or-pattern-per-field-is-supported-1)
       1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
@@ -122,9 +124,9 @@ invalid-syntax
       1. [Root without branches (8)](#root-without-branches-8)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (8)](#unsupported-argument-types-class-eqlastfield-8)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (6)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-6)
+      1. [Cannot choose from an empty set (4)](#cannot-choose-from-an-empty-set-4)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
-      1. [Cannot choose from an empty set (3)](#cannot-choose-from-an-empty-set-3)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported condition on the values of Esql.rule_severity_values (3)](#unsupported-condition-on-the-values-of-esqlrule_severity_values-3)
@@ -573,18 +575,6 @@ invalid-syntax
 * Potential PowerShell Obfuscation via String Concatenation
 * Potential PowerShell Obfuscation via String Reordering
 
-### Unsupported operator: RLIKE (7)
-
-7 rules:
-
-* Entra ID Actor Token User Impersonation Abuse
-* Entra ID Illicit Consent Grant via Registered Application
-* Entra ID Sign-in Brute Force Attempted (Microsoft 365)
-* M365 Identity User Account Lockouts
-* M365 Identity User Brute Force Attempted
-* Multiple Device Token Hashes for Single Okta Session
-* Suspicious TCC Access Granted for User Folders
-
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (6)
 
 6 rules:
@@ -607,6 +597,16 @@ invalid-syntax
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
 
+### Unsupported function: to_lower (5)
+
+5 rules:
+
+* LSASS Process Access via Windows API
+* M365 Identity User Account Lockouts
+* Potential Account Takeover - Mixed Logon Types
+* Potential Credential Discovery via Recursive Grep
+* Potential Ransomware Behavior - Note Files by System
+
 ### Unsupported right operand, it must be a literal (5)
 
 5 rules:
@@ -625,15 +625,6 @@ invalid-syntax
 * Entra ID Concurrent Sign-in with Suspicious Properties
 * M365 or Entra ID Identity Sign-in from a Suspicious Source
 * Rare Connection to WebDAV Target
-
-### Unsupported function: to_lower (4)
-
-4 rules:
-
-* LSASS Process Access via Windows API
-* Potential Account Takeover - Mixed Logon Types
-* Potential Credential Discovery via Recursive Grep
-* Potential Ransomware Behavior - Note Files by System
 
 ### Unsupported query language: lucene (4)
 
@@ -777,6 +768,12 @@ Invalid syntax
 
 * Potential Okta Brute Force (Device Token Rotation)
 
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type (1)
+
+1 rules:
+
+* Entra ID Sign-in Brute Force Attempted (Microsoft 365)
+
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
 
 1 rules:
@@ -824,6 +821,12 @@ Invalid syntax
 1 rules:
 
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
+
+### Unsupported WHERE on a field made by EVAL: Esql.o365_audit_ExtendedProperties_RequestType_lower (1)
+
+1 rules:
+
+* M365 Identity User Brute Force Attempted
 
 ### Unsupported WHERE on a field made by EVAL: Esql.rmm_vendor (1)
 
@@ -890,6 +893,12 @@ Invalid syntax
 1 rules:
 
 * Correlated Alerts on Similar User Identities
+
+### Unsupported command: RENAME (1)
+
+1 rules:
+
+* Entra ID Illicit Consent Grant via Registered Application
 
 ### Unsupported conflicting constraints on email.subject: only one equality or pattern per field is supported (1)
 
@@ -1103,6 +1112,14 @@ Invalid syntax
 * Suspicious Shell Execution via Velociraptor
 * Suspicious Windows Command Shell Arguments
 
+### Cannot choose from an empty set (4)
+
+4 rules:
+* Azure Key Vault Excessive Secret or Key Retrieved
+* DNS Request for IP Lookup Service via Unsigned Binary
+* Multiple Elastic Defend Alerts by Agent
+* Suspicious TCC Access Granted for User Folders
+
 ### Unsupported function: startsWith (4)
 
 4 rules:
@@ -1117,13 +1134,6 @@ Invalid syntax
 * Network Connection from Binary with RWX Memory Region
 * Potential Meterpreter Reverse Shell
 * Potential Reverse Shell via UDP
-
-### Cannot choose from an empty set (3)
-
-3 rules:
-* Azure Key Vault Excessive Secret or Key Retrieved
-* DNS Request for IP Lookup Service via Unsigned Binary
-* Multiple Elastic Defend Alerts by Agent
 
 ### Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)
 

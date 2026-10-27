@@ -35,7 +35,7 @@ from lark.visitors import Interpreter
 
 from .. import kql
 from ..events_emitter_eql import collect_constraints
-from ..utils import has_wildcards
+from ..utils import has_wildcards, regex_gen
 from .errors import EsqlParseError
 from .lexical import (
     STRING_RE,
@@ -427,6 +427,13 @@ class EsqlToEql(Interpreter):
     def like_call(field, pattern):
         return eql.ast.FunctionCall("_like", [field, eql.ast.String(pattern)])
 
+    def rlike_call(self, tree, field, pattern):
+        try:
+            regex_gen.check(pattern)
+        except (NotImplementedError, ValueError) as e:
+            self.reject(tree, f"RLIKE pattern: {e}")
+        return eql.ast.FunctionCall("_rlike", [field, eql.ast.String(pattern)])
+
     def comparison(self, tree):
         left, op, right = tree.children
         left = self.field_operand(tree, left)
@@ -459,14 +466,15 @@ class EsqlToEql(Interpreter):
         negate = any(isinstance(child, Token) and child.type == "NOT" for child in tree.children)
         operator = next(child for child in tree.children if isinstance(child, Token) and child.type in ("LIKE", "RLIKE"))
         left, right = (child for child in tree.children if isinstance(child, Tree))
-        if operator.type == "RLIKE":
-            self.reject(tree, "operator: RLIKE")
         left = self.field_operand(tree, left)
         right = self.visit(right)
         if not isinstance(right, eql.ast.String):
-            self.reject(tree, "LIKE pattern, it must be a string literal")
-        self.check_pattern(tree, right.value)
-        expr = self.like_call(left, right.value)
+            self.reject(tree, f"{operator.type} pattern, it must be a string literal")
+        if operator.type == "RLIKE":
+            expr = self.rlike_call(tree, left, right.value)
+        else:
+            self.check_pattern(tree, right.value)
+            expr = self.like_call(left, right.value)
         return eql.ast.Not(expr) if negate else expr
 
     # operands

@@ -27,7 +27,7 @@ from typing import Any, NoReturn
 import eql
 
 from .constraints import Branch, ConflictError, Document, Root
-from .utils import TreeTraverser, split_path
+from .utils import TreeTraverser, regex_gen, split_path
 
 __all__ = ()
 
@@ -227,6 +227,8 @@ def cc_function_call(node: eql.ast.FunctionCall, negate: bool, max_branches: int
         return cc_like(node, negate, max_branches)
     elif fn_name == "_literal":
         return cc_literal(node, negate, max_branches)
+    elif fn_name == "_rlike":
+        return cc_rlike(node, negate, max_branches)
     else:
         raise NotImplementedError(f"Unsupported function: {node.name}")
 
@@ -436,6 +438,22 @@ def cc_literal(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> R
     doc = Document()
     doc.append_constraint(field, "==" if not negate else "!=", node.arguments[1].value, {"literal": True})
     return Root([Branch([doc])])
+
+
+def cc_rlike(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # a regular expression is not something that the solvers can exclude or combine, a string is generated
+    # for it (one per alternative if it matches, any that doesn't if it must not) and asked for as it is
+    field = node.arguments[0].render()
+    pattern = node.arguments[1].value
+    values = [regex_gen.not_matching(pattern)] if negate else regex_gen.matching(pattern)
+    if max_branches and len(values) > max_branches:
+        raise ValueError(f"Root with too many branches (limit: {max_branches})")
+    branches = []
+    for value in values:
+        doc = Document()
+        doc.append_constraint(field, "==", value, {"literal": True})
+        branches.append(Branch([doc]))
+    return Root(branches)
 
 
 def cc_like(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:

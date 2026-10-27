@@ -12,12 +12,13 @@ Rules version: 8.13.23
       1. [Unsupported rule type: new_terms (82)](#unsupported-rule-type-new_terms-82)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported operator: RLIKE (9)](#unsupported-operator-rlike-9)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
       1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
       1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
+      1. [Unsupported function: to_lower (3)](#unsupported-function-to_lower-3)
       1. [Unsupported WHERE on a field made by DISSECT: mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-mfa_used-1)
+      1. [Unsupported WHERE on a field made by DISSECT: object_name (1)](#unsupported-where-on-a-field-made-by-dissect-object_name-1)
       1. [Unsupported WHERE on a field made by DISSECT: service_code (1)](#unsupported-where-on-a-field-made-by-dissect-service_code-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-risk_factor-1)
       1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
@@ -310,20 +311,6 @@ Rules version: 8.13.23
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported operator: RLIKE (9)
-
-9 rules:
-
-* Attempts to Brute Force a Microsoft 365 User Account
-* Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
-* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
-* High Number of Okta Device Token Cookies Generated for Authentication
-* Multiple Device Token Hashes for Single Okta Session
-* Multiple Okta User Authentication Events with Client Address
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Okta User Sessions Started from Different Geolocations
-* Potential AWS S3 Bucket Ransomware Note Uploaded
-
 ### Unsupported rule type: threat_match (5)
 
 5 rules:
@@ -360,11 +347,25 @@ Rules version: 8.13.23
 * AWS IAM AdministratorAccess Policy Attached to Role
 * AWS IAM AdministratorAccess Policy Attached to User
 
+### Unsupported function: to_lower (3)
+
+3 rules:
+
+* Attempts to Brute Force a Microsoft 365 User Account
+* Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
+* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
+
 ### Unsupported WHERE on a field made by DISSECT: mfa_used (1)
 
 1 rules:
 
 * AWS Signin Single Factor Console Login with Federated User
+
+### Unsupported WHERE on a field made by DISSECT: object_name (1)
+
+1 rules:
+
+* Potential AWS S3 Bucket Ransomware Note Uploaded
 
 ### Unsupported WHERE on a field made by DISSECT: service_code (1)
 

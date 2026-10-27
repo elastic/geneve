@@ -14,13 +14,14 @@ Rules version: 8.16.16
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported function: now (10)](#unsupported-function-now-10)
       1. [Unsupported WHERE on a field made by EVAL: script_len (9)](#unsupported-where-on-a-field-made-by-eval-script_len-9)
-      1. [Unsupported operator: RLIKE (8)](#unsupported-operator-rlike-8)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
       1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
       1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
       1. [Unsupported WHERE on a field made by EVAL: count (2)](#unsupported-where-on-a-field-made-by-eval-count-2)
+      1. [Unsupported function: to_lower (2)](#unsupported-function-to_lower-2)
       1. [Unsupported WHERE on a field made by DISSECT: mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-mfa_used-1)
+      1. [Unsupported WHERE on a field made by DISSECT: object_name (1)](#unsupported-where-on-a-field-made-by-dissect-object_name-1)
       1. [Unsupported WHERE on a field made by DISSECT: operationType (1)](#unsupported-where-on-a-field-made-by-dissect-operationtype-1)
       1. [Unsupported WHERE on a field made by DISSECT: service_code (1)](#unsupported-where-on-a-field-made-by-dissect-service_code-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-risk_factor-1)
@@ -399,19 +400,6 @@ Rules version: 8.16.16
 * Potential PowerShell Obfuscation via String Reordering
 * PowerShell Obfuscation via Negative Index String Reversal
 
-### Unsupported operator: RLIKE (8)
-
-8 rules:
-
-* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
-* Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
-* High Number of Okta Device Token Cookies Generated for Authentication
-* Multiple Device Token Hashes for Single Okta Session
-* Multiple Okta User Authentication Events with Client Address
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Okta User Sessions Started from Different Geolocations
-* Potential AWS S3 Bucket Ransomware Note Uploaded
-
 ### Unsupported rule type: threat_match (6)
 
 6 rules:
@@ -456,11 +444,24 @@ Rules version: 8.16.16
 * Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
 * Potential PowerShell Obfuscation via Invalid Escape Sequences
 
+### Unsupported function: to_lower (2)
+
+2 rules:
+
+* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
+* Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
+
 ### Unsupported WHERE on a field made by DISSECT: mfa_used (1)
 
 1 rules:
 
 * AWS Signin Single Factor Console Login with Federated User
+
+### Unsupported WHERE on a field made by DISSECT: object_name (1)
+
+1 rules:
+
+* Potential AWS S3 Bucket Ransomware Note Uploaded
 
 ### Unsupported WHERE on a field made by DISSECT: operationType (1)
 

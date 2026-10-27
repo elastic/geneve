@@ -13,7 +13,6 @@ Rules version: 8.17.14
       1. [Unsupported rule type: machine_learning (74)](#unsupported-rule-type-machine_learning-74)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported function: now (10)](#unsupported-function-now-10)
-      1. [Unsupported operator: RLIKE (10)](#unsupported-operator-rlike-10)
       1. [Unsupported WHERE on a field made by EVAL: script_len (9)](#unsupported-where-on-a-field-made-by-eval-script_len-9)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported function: NOW (4)](#unsupported-function-now-4)
@@ -21,6 +20,7 @@ Rules version: 8.17.14
       1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
       1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
       1. [Unsupported WHERE on a field made by EVAL: count (2)](#unsupported-where-on-a-field-made-by-eval-count-2)
+      1. [Unsupported WHERE on a field made by EVAL: request_type (2)](#unsupported-where-on-a-field-made-by-eval-request_type-2)
       1. [Error at line:5,column:43
 Invalid syntax
 // Filter for scripts that contain the "char" keyword using MATCH, boosts the query performance
@@ -39,7 +39,9 @@ invalid-syntax
 -filter-for-scripts-that-contains-these-keywords-using-match-boosts-the-query-performance-match-will-ignore-the--and-look-for-the-individual-words
 -where-powershellfilescript_block_text--rahcmetsysstekcostcejboimwecalperecnerferpenoitcennocniojemanvnegnirtstcejbo-wen_23niwnoisserpxeekovnidaolnwod
 -------------------------------------------1)
+      1. [Unsupported STARTS_WITH arguments, the first must be a field (1)](#unsupported-starts_with-arguments-the-first-must-be-a-field-1)
       1. [Unsupported WHERE on a field made by DISSECT: mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-mfa_used-1)
+      1. [Unsupported WHERE on a field made by DISSECT: object_name (1)](#unsupported-where-on-a-field-made-by-dissect-object_name-1)
       1. [Unsupported WHERE on a field made by DISSECT: operationType (1)](#unsupported-where-on-a-field-made-by-dissect-operationtype-1)
       1. [Unsupported WHERE on a field made by DISSECT: service_code (1)](#unsupported-where-on-a-field-made-by-dissect-service_code-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: duration_minutes (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-duration_minutes-1)
@@ -49,6 +51,7 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by GROK: powershell.file.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-powershellfilescript_block_id-1)
       1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
       1. [Unsupported function: TO_LOWER (1)](#unsupported-function-to_lower-1)
+      1. [Unsupported function: to_lower (1)](#unsupported-function-to_lower-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
       1. [Unsupported second STATS (1)](#unsupported-second-stats-1)
    1. [Generation errors](#generation-errors)
@@ -407,21 +410,6 @@ invalid-syntax
 * Unusual File Transfer Utility Launched
 * Unusual Process Spawned from Web Server Parent
 
-### Unsupported operator: RLIKE (10)
-
-10 rules:
-
-* Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
-* High Number of Okta Device Token Cookies Generated for Authentication
-* Multiple Device Token Hashes for Single Okta Session
-* Multiple Microsoft 365 User Account Lockouts in Short Time Window
-* Multiple Okta User Authentication Events with Client Address
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Okta User Sessions Started from Different Geolocations
-* Potential AWS S3 Bucket Ransomware Note Uploaded
-* Potential Microsoft 365 Brute Force via Entra ID Sign-Ins
-* Potential Microsoft 365 User Account Brute Force
-
 ### Unsupported WHERE on a field made by EVAL: script_len (9)
 
 9 rules:
@@ -489,6 +477,13 @@ invalid-syntax
 * Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
 * Potential PowerShell Obfuscation via Invalid Escape Sequences
 
+### Unsupported WHERE on a field made by EVAL: request_type (2)
+
+2 rules:
+
+* Multiple Microsoft 365 User Account Lockouts in Short Time Window
+* Potential Microsoft 365 User Account Brute Force
+
 ### Error at line:5,column:43
 Invalid syntax
 // Filter for scripts that contain the "char" keyword using MATCH, boosts the query performance
@@ -509,11 +504,23 @@ Invalid syntax
 
 * Potential PowerShell Obfuscation via Reverse Keywords
 
+### Unsupported STARTS_WITH arguments, the first must be a field (1)
+
+1 rules:
+
+* Potential Microsoft 365 Brute Force via Entra ID Sign-Ins
+
 ### Unsupported WHERE on a field made by DISSECT: mfa_used (1)
 
 1 rules:
 
 * AWS Signin Single Factor Console Login with Federated User
+
+### Unsupported WHERE on a field made by DISSECT: object_name (1)
+
+1 rules:
+
+* Potential AWS S3 Bucket Ransomware Note Uploaded
 
 ### Unsupported WHERE on a field made by DISSECT: operationType (1)
 
@@ -568,6 +575,12 @@ Invalid syntax
 1 rules:
 
 * AWS IAM Login Profile Added for Root
+
+### Unsupported function: to_lower (1)
+
+1 rules:
+
+* Deprecated - Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
 
 ### Unsupported left operand, it must be a field (1)
 

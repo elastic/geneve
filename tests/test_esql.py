@@ -191,10 +191,26 @@ class TestEsqlParser(unittest.TestCase):
         )
 
     def test_like_unsupported(self):
-        with self.assertRaisesRegex(NotImplementedError, "Unsupported operator: RLIKE"):
-            where('FROM x | WHERE a RLIKE "foo.*"')
         with self.assertRaisesRegex(NotImplementedError, "Unsupported .*LIKE pattern.*string literal"):
             where("FROM x | WHERE a LIKE 1")
+        with self.assertRaisesRegex(NotImplementedError, "Unsupported RLIKE pattern.*string literal"):
+            where("FROM x | WHERE a RLIKE b")
+
+    def test_rlike(self):
+        def rlike(name, pattern):
+            return eql.ast.FunctionCall("_rlike", [field(name), eql.ast.String(pattern)])
+
+        self.assertEqual(where('FROM x | WHERE a RLIKE "foo.*"'), rlike("a", "foo.*"))
+        self.assertEqual(where('FROM x | WHERE a.b rlike "(c|d)"'), rlike("a.b", "(c|d)"))
+        self.assertEqual(where('FROM x | WHERE a NOT RLIKE "foo.*"'), eql.ast.Not(rlike("a", "foo.*")))
+        # the escapes of a string are the ones of ES|QL, those of the regular expression are for the regular expression
+        self.assertEqual(where(r'FROM x | WHERE a RLIKE "a\\.b"'), rlike("a", r"a\.b"))
+        self.assertEqual(where('FROM x | WHERE a RLIKE """a\\.b"""'), rlike("a", r"a\.b"))
+
+    def test_rlike_unsupported(self):
+        for pattern, message in (("^foo", "AT"), ("(?i)foo", "flags"), ("(", "Invalid regular expression")):
+            with self.subTest(pattern), self.assertRaisesRegex(NotImplementedError, rf"Unsupported RLIKE pattern: .*{message}"):
+                where(f'FROM x | WHERE a RLIKE """{pattern}"""')
 
     def test_like_escapes_and_classes_rejected(self):
         for pattern in (r"foo\\*", r"a\\?b", r"a\\\\b", "[ab]*", "a[b"):
@@ -1332,6 +1348,56 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         self.assertEqual([[{"process": {"name": "x"}}], [{"process": {"name": "y"}}]], docs[:2])
         self.assertEqual(1, len(docs[2]))
         self.assertIn("pid", docs[2][0]["process"])
+
+    def test_rlike_emission(self):
+        import re
+
+        def matches(pattern, value):
+            return re.fullmatch(pattern, value, re.DOTALL) is not None
+
+        # a value of each alternative, the whole string matches
+        pattern = r"(cmd|powershell)\.exe|[a-z]{3}[0-9]{2}"
+        branches = list(self.emit_branches(f'FROM x | WHERE process.name RLIKE """{pattern}"""'))
+        self.assertEqual(["cmd.exe", "powershell.exe"], [docs[0]["process"]["name"] for docs in branches[:2]])
+        self.assertEqual(3, len(branches))
+        for docs in branches:
+            self.assertTrue(matches(pattern, docs[0]["process"]["name"]))
+
+        # what is not matched is generated
+        for docs in self.emit_branches(f'FROM x | WHERE process.name NOT RLIKE """{pattern}"""'):
+            self.assertFalse(matches(pattern, docs[0]["process"]["name"]))
+        for docs in self.emit_branches(f'FROM x | WHERE NOT process.name RLIKE """{pattern}"""'):
+            self.assertFalse(matches(pattern, docs[0]["process"]["name"]))
+
+        # `*` and `?` that the expression asks for are what they are, not wildcards
+        docs = self.emit_branches(r'FROM x | WHERE process.name RLIKE "a\\*b"')
+        self.assertEqual([[{"process": {"name": "a*b"}}]], docs)
+
+        # together with what the rest of the query asks
+        for docs in self.emit_branches('FROM x | WHERE process.name RLIKE ".*foo.*" AND process.pid > 1000 AND user.name NOT RLIKE "a+"'):
+            self.assertIn("foo", docs[0]["process"]["name"])
+            self.assertGreater(docs[0]["process"]["pid"], 1000)
+            self.assertFalse(matches("a+", docs[0]["user"]["name"]))
+
+    def test_rlike_conflicts(self):
+        # a string is what the expression is made into, it is not combined with another condition on the same field
+        for query in (
+            'FROM x | WHERE a RLIKE "foo" AND a == "bar"',
+            'FROM x | WHERE a RLIKE "foo" AND a NOT RLIKE "bar"',
+            'FROM x | WHERE a RLIKE "foo" AND a LIKE "f*"',
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported conflicting constraints on a"):
+                self.emit_branches(query)
+
+    def test_rlike_nothing_to_exclude(self):
+        with self.assertRaisesRegex(NotImplementedError, "doesn't match"):
+            self.emit_branches('FROM x | WHERE a NOT RLIKE ".*"')
+
+    def emit_branches(self, query):
+        se = SourceEvents(self.schema)
+        se.stack_version = self.stack_version
+        se.add_query(query)
+        return [[event.doc for event in branch] for branch in se.emit(timestamp=False, complete=True, count=1)]
 
     def test_booleans_from_strings(self):
         schema = {"flag": {"type": "boolean"}}

@@ -232,6 +232,10 @@ mono_branch_mono_doc = {
     """: [
         [{"process": {"name": "FOOlhmkIerHD"}}],
     ],
+    """FROM logs-* | WHERE process.name RLIKE \"\"\"[a-z]{3}\\.exe\"\"\" AND user.name NOT RLIKE \"\"\"[a-z]+[0-9]{2}\"\"\"
+    """: [
+        [{"process": {"name": "ekr.exe"}, "user": {"name": "q5"}}],
+    ],
 }
 
 multi_branch_mono_doc = {
@@ -328,6 +332,11 @@ multi_branch_mono_doc = {
     """: [
         [{"process": {"name": "cmd.exe", "pid": 1961221159}}],
         [{"process": {"name": "powershell.exe", "pid": 1086324984}}],
+    ],
+    """FROM logs-* | WHERE process.name RLIKE \"\"\"(cmd|powershell)\\.exe\"\"\"
+    """: [
+        [{"process": {"name": "cmd.exe"}}],
+        [{"process": {"name": "powershell.exe"}}],
     ],
     """FROM logs-* | WHERE process.name == "a.exe" OR source.port < 1024
     """: [
