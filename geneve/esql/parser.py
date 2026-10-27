@@ -149,7 +149,9 @@ class EsqlToEql(Interpreter):
         self.unknown_expansions = []  # what an EVAL makes that MV_EXPAND expands, of which the number of values is not known
         self.expanded = []  # the fields of the documents that MV_EXPAND expands before STATS
         self.scalars = {}  # what an EVAL makes that is a field, or TO_LOWER or TO_STRING of one: a WHERE can ask for it
-        self.resolved = set()  # the ids of the fields that those are, they are what the WHERE asks for and not an alias
+        # the fields that those are, they are what the WHERE asks for and not an alias: by id, and the objects are kept
+        # so that the id is not the one of another that comes after (when they are freed it can be reused)
+        self.resolved = {}
         self.overwritten = set()  # the names that an EVAL after STATS makes: they are no longer what STATS said
 
     @staticmethod
@@ -431,7 +433,7 @@ class EsqlToEql(Interpreter):
             if inner is None or (function is not None and inner.function is not None):
                 return None
             scalar = inner if function is None else Scalar(function, inner.field)
-        self.resolved.add(id(scalar.field))
+        self.resolved[id(scalar.field)] = scalar.field
         return scalar
 
     def scalar_operand(self, tree, operand):
