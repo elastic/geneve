@@ -13,14 +13,12 @@ Rules version: 9.1.20
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (7)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-7)
-      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (6)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrecent-6)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported second STATS (6)](#unsupported-second-stats-6)
       1. [Unsupported right operand, it must be a literal (5)](#unsupported-right-operand-it-must-be-a-literal-5)
       1. [Unsupported function: now (4)](#unsupported-function-now-4)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (2)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-2)
-      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (2)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldate_diff-2)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_pattern_count-2)
       1. [Unsupported WHERE on a field made by EVAL: Esql.source_ip (2)](#unsupported-where-on-a-field-made-by-eval-esqlsource_ip-2)
       1. [Unsupported function: TO_IP (2)](#unsupported-function-to_ip-2)
@@ -78,8 +76,6 @@ invalid-syntax
 ----githubreasonscode--workflow_updates-and
 ----matchgithubreasonsmessagestring-refusing-to-allow-a-github-app-to-create-or-update-workflow
 ---------------------------------1)
-      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\*' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-c-1)
-      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\program files\\\\*.exe' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-cprogram-filesexe-1)
       1. [Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)](#unsupported-where-on-a-field-made-by-dissect-esqlaws_cloudtrail_request_parameters_service_code-1)
       1. [Unsupported WHERE on a field made by DISSECT: Esql.external_idp_old_issuer (1)](#unsupported-where-on-a-field-made-by-dissect-esqlexternal_idp_old_issuer-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.attempts_per_user (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlattempts_per_user-1)
@@ -89,6 +85,7 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrisk_alerts_count_ratio-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-concat_vuln_severity_values-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: isLocal (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-islocal-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: process.executable (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-processexecutable-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.aws_ssm_command_id (1)](#unsupported-where-on-a-field-made-by-eval-esqlaws_ssm_command_id-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
@@ -119,7 +116,7 @@ invalid-syntax
       1. [Root with too many branches (limit: 10000) (17)](#root-with-too-many-branches-limit-10000-17)
       1. [Field type solver: constant_keyword (13)](#field-type-solver-constant_keyword-13)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
-      1. [Field type solver: match_only_text (8)](#field-type-solver-match_only_text-8)
+      1. [Field type solver: match_only_text (9)](#field-type-solver-match_only_text-9)
       1. [Root without branches (8)](#root-without-branches-8)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (8)](#unsupported-argument-types-class-eqlastfield-8)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (6)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-6)
@@ -227,6 +224,7 @@ invalid-syntax
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: <= (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: > (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
+      1. [Unsupported &keyword 'system.process.cpu.total.norm.pct' constraint: >= (1)](#unsupported-keyword-systemprocesscputotalnormpct-constraint--1)
       1. [Unsupported condition on the aggregate Esql.any_payload_keyword_max (1)](#unsupported-condition-on-the-aggregate-esqlany_payload_keyword_max-1)
       1. [Unsupported condition on the aggregate Esql.authz_forbid_count (1)](#unsupported-condition-on-the-aggregate-esqlauthz_forbid_count-1)
       1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_request_length_avg (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_request_length_avg-1)
@@ -575,17 +573,6 @@ invalid-syntax
 * Potential PowerShell Obfuscation via String Concatenation
 * Potential PowerShell Obfuscation via String Reordering
 
-### Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (6)
-
-6 rules:
-
-* First-Time FortiGate Administrator Login
-* FortiGate Administrator Login from Multiple IP Addresses
-* FortiGate FortiCloud SSO Login from Unusual Source
-* Newly Observed FortiGate Alert
-* Newly Observed High Severity Suricata Alert
-* Newly Observed Process Exhibiting High CPU Usage
-
 ### Unsupported rule type: threat_match (6)
 
 6 rules:
@@ -642,13 +629,6 @@ invalid-syntax
 
 * Entra ID User Sign-in Brute Force Attempted
 * M365 Identity User Brute Force Attempted
-
-### Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (2)
-
-2 rules:
-
-* Lateral Movement Alerts from a Newly Observed Source Address
-* Lateral Movement Alerts from a Newly Observed User
 
 ### Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)
 
@@ -731,18 +711,6 @@ Invalid syntax
 
 * GitHub Actions Workflow Modification Blocked
 
-### Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\*' (1)
-
-1 rules:
-
-* Potential Ransomware Behavior - Note Files by System
-
-### Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\program files\\\\*.exe' (1)
-
-1 rules:
-
-* LSASS Process Access via Windows API
-
 ### Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)
 
 1 rules:
@@ -796,6 +764,12 @@ Invalid syntax
 1 rules:
 
 * Multiple Vulnerabilities by Asset via Wiz
+
+### Unsupported WHERE on a field made by EVAL after STATS: isLocal (1)
+
+1 rules:
+
+* Lateral Movement Alerts from a Newly Observed Source Address
 
 ### Unsupported WHERE on a field made by EVAL after STATS: process.executable (1)
 
@@ -1059,9 +1033,10 @@ Invalid syntax
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
 
-### Field type solver: match_only_text (8)
+### Field type solver: match_only_text (9)
 
-8 rules:
+9 rules:
+* Newly Observed FortiGate Alert
 * Process Started with Executable Stack
 * React2Shell Network Security Alert
 * Segfault Detected
@@ -1647,6 +1622,11 @@ Invalid syntax
 
 1 rules:
 * Suspicious Inter-Process Communication via Outlook
+
+### Unsupported &keyword 'system.process.cpu.total.norm.pct' constraint: >= (1)
+
+1 rules:
+* Newly Observed Process Exhibiting High CPU Usage
 
 ### Unsupported condition on the aggregate Esql.any_payload_keyword_max (1)
 

@@ -13,7 +13,6 @@ Rules version: 9.2.19
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (7)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-7)
-      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (6)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrecent-6)
       1. [Unsupported right operand, it must be a literal (6)](#unsupported-right-operand-it-must-be-a-literal-6)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported second STATS (6)](#unsupported-second-stats-6)
@@ -21,7 +20,6 @@ Rules version: 9.2.19
       1. [Unsupported WHERE on a field made by EVAL: Esql.executed_command (4)](#unsupported-where-on-a-field-made-by-eval-esqlexecuted_command-4)
       1. [Unsupported function: NOW (3)](#unsupported-function-now-3)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (2)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-2)
-      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (2)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqldate_diff-2)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_pattern_count-2)
       1. [Unsupported WHERE on a field made by EVAL: Esql.source_ip (2)](#unsupported-where-on-a-field-made-by-eval-esqlsource_ip-2)
       1. [Unsupported function: TO_IP (2)](#unsupported-function-to_ip-2)
@@ -97,9 +95,7 @@ invalid-syntax
 ----githubreasonscode--workflow_updates-and
 ----matchgithubreasonsmessagestring-refusing-to-allow-a-github-app-to-create-or-update-workflow
 ---------------------------------1)
-      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: '*..\\\\..\\\\..\\\\..*' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported--1)
-      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\*' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-c-1)
-      1. [Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\program files\\\\*.exe' (1)](#unsupported-like-pattern-backslash-escapes-and-character-classes-are-not-supported-cprogram-filesexe-1)
+      1. [Unsupported LIKE pattern, only a backslash can be escaped with a backslash: '*...\\*' (1)](#unsupported-like-pattern-only-a-backslash-can-be-escaped-with-a-backslash--1)
       1. [Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)](#unsupported-where-on-a-field-made-by-dissect-esqlaws_cloudtrail_request_parameters_service_code-1)
       1. [Unsupported WHERE on a field made by DISSECT: Esql.external_idp_old_issuer (1)](#unsupported-where-on-a-field-made-by-dissect-esqlexternal_idp_old_issuer-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.activity_fidelity_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlactivity_fidelity_score-1)
@@ -113,6 +109,7 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrisk_alerts_count_ratio-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: concat_vuln_severity_values (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-concat_vuln_severity_values-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: delta_sec (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-delta_sec-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: isLocal (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-islocal-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: process.executable (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-processexecutable-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.aws_ssm_command_id (1)](#unsupported-where-on-a-field-made-by-eval-esqlaws_ssm_command_id-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
@@ -162,9 +159,9 @@ invalid-syntax
       1. [Root without branches (9)](#root-without-branches-9)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (7)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-7)
       1. [Cannot choose from an empty set (5)](#cannot-choose-from-an-empty-set-5)
+      1. [Field type solver: match_only_text (4)](#field-type-solver-match_only_text-4)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
-      1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
       1. [Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (3)](#unsolvable-constraints-processname-excluded-by-stringspowershellexe-powershellexe-3)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
@@ -260,6 +257,7 @@ invalid-syntax
       1. [Unsupported &keyword 'powershell.file.script_block_length' constraint: > (1)](#unsupported-keyword-powershellfilescript_block_length-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: <= (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: > (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
+      1. [Unsupported &keyword 'system.process.cpu.total.norm.pct' constraint: >= (1)](#unsupported-keyword-systemprocesscputotalnormpct-constraint--1)
       1. [Unsupported condition on the aggregate Esql.alert_count_long_term_key_new_ip_rule (1)](#unsupported-condition-on-the-aggregate-esqlalert_count_long_term_key_new_ip_rule-1)
       1. [Unsupported condition on the aggregate Esql.any_payload_keyword_max (1)](#unsupported-condition-on-the-aggregate-esqlany_payload_keyword_max-1)
       1. [Unsupported condition on the aggregate Esql.authz_forbid_count (1)](#unsupported-condition-on-the-aggregate-esqlauthz_forbid_count-1)
@@ -640,17 +638,6 @@ invalid-syntax
 * Potential PowerShell Obfuscation via String Concatenation
 * Potential PowerShell Obfuscation via String Reordering
 
-### Unsupported WHERE on a field made by EVAL after STATS: Esql.recent (6)
-
-6 rules:
-
-* First-Time FortiGate Administrator Login
-* FortiGate Administrator Login from Multiple IP Addresses
-* FortiGate FortiCloud SSO Login from Unusual Source
-* Newly Observed FortiGate Alert
-* Newly Observed High Severity Suricata Alert
-* Newly Observed Process Exhibiting High CPU Usage
-
 ### Unsupported right operand, it must be a literal (6)
 
 6 rules:
@@ -717,13 +704,6 @@ invalid-syntax
 
 * Entra ID User Sign-in Brute Force Attempted
 * M365 Identity User Brute Force Attempted
-
-### Unsupported WHERE on a field made by EVAL after STATS: Esql.date_diff (2)
-
-2 rules:
-
-* Lateral Movement Alerts from a Newly Observed Source Address
-* Lateral Movement Alerts from a Newly Observed User
 
 ### Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)
 
@@ -826,23 +806,11 @@ Invalid syntax
 
 * GitHub Actions Workflow Modification Blocked
 
-### Unsupported LIKE pattern, backslash escapes and character classes are not supported: '*..\\\\..\\\\..\\\\..*' (1)
+### Unsupported LIKE pattern, only a backslash can be escaped with a backslash: '*...\\*' (1)
 
 1 rules:
 
 * Web Server Local File Inclusion Activity
-
-### Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\*' (1)
-
-1 rules:
-
-* Potential Ransomware Behavior - Note Files by System
-
-### Unsupported LIKE pattern, backslash escapes and character classes are not supported: 'c:\\\\program files\\\\*.exe' (1)
-
-1 rules:
-
-* LSASS Process Access via Windows API
 
 ### Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)
 
@@ -921,6 +889,12 @@ Invalid syntax
 1 rules:
 
 * Azure Run Command Correlated with Process Execution
+
+### Unsupported WHERE on a field made by EVAL after STATS: isLocal (1)
+
+1 rules:
+
+* Lateral Movement Alerts from a Newly Observed Source Address
 
 ### Unsupported WHERE on a field made by EVAL after STATS: process.executable (1)
 
@@ -1657,6 +1631,14 @@ Invalid syntax
 * Multiple Elastic Defend Alerts by Agent
 * Suspicious TCC Access Granted for User Folders
 
+### Field type solver: match_only_text (4)
+
+4 rules:
+* Newly Observed FortiGate Alert
+* Segfault Detected
+* Segfault from Sensitive Process Detected
+* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
+
 ### Unsupported function: startsWith (4)
 
 4 rules:
@@ -1671,13 +1653,6 @@ Invalid syntax
 * Network Connection from Binary with RWX Memory Region
 * Potential Meterpreter Reverse Shell
 * Potential Reverse Shell via UDP
-
-### Field type solver: match_only_text (3)
-
-3 rules:
-* Segfault Detected
-* Segfault from Sensitive Process Detected
-* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (3)
 
@@ -2171,6 +2146,11 @@ Invalid syntax
 
 1 rules:
 * Machine Learning Detected a Suspicious Windows Event with a High Malicious Probability Score
+
+### Unsupported &keyword 'system.process.cpu.total.norm.pct' constraint: >= (1)
+
+1 rules:
+* Newly Observed Process Exhibiting High CPU Usage
 
 ### Unsupported condition on the aggregate Esql.alert_count_long_term_key_new_ip_rule (1)
 

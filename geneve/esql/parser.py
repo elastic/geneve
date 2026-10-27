@@ -152,6 +152,8 @@ class EsqlToEql(Interpreter):
         # the fields that those are, they are what the WHERE asks for and not an alias: by id, and the objects are kept
         # so that the id is not the one of another that comes after (when they are freed it can be reused)
         self.resolved = {}
+        self.times = set()  # the aggregates of STATS that are the first or the last time of the documents: MIN or MAX of @timestamp
+        self.recent = set()  # what an EVAL after STATS makes of one of those and now: how long ago it was
         self.overwritten = set()  # the names that an EVAL after STATS makes: they are no longer what STATS said
 
     @staticmethod
@@ -196,6 +198,7 @@ class EsqlToEql(Interpreter):
             self.reject(tree, f"pipe before WHERE: {self.blocking}")
         expression = self.boolean(tree.children[1])
         if self.stats is not None:
+            expression = self.drop_recent(expression)
             for node in expression:
                 if isinstance(node, eql.ast.Field) and self.field_key(node.render()) in self.overwritten:
                     self.reject(tree, f"WHERE on a field made by EVAL after STATS: {node.render()}")
@@ -251,7 +254,11 @@ class EsqlToEql(Interpreter):
         for item in split_top(body):
             made = assignment(item)
             if made and self.stats is not None:
-                self.overwritten.add(self.field_key(made[0]))
+                key = self.field_key(made[0])
+                recent = self.is_recent(made[1])  # by what the names were before this one
+                self.overwritten.add(key)
+                self.times.discard(key)  # whatever it was, it is no longer what STATS made
+                (self.recent.add if recent else self.recent.discard)(key)
             elif made:
                 key = self.field_key(made[0])
                 scalar = self.scalar_of(made[1])  # before the alias takes the place of the field that it may be made of
@@ -275,6 +282,8 @@ class EsqlToEql(Interpreter):
         for key in (self.field_key(made) for made in self.extracted(tree, name, texts)):
             if self.stats is not None:
                 self.overwritten.add(key)
+                self.times.discard(key)
+                self.recent.discard(key)
             else:
                 self.evals[key] = depends
                 self.made_by[key] = name
@@ -357,7 +366,44 @@ class EsqlToEql(Interpreter):
             if self.field_key(arguments) in METADATA_FIELDS:
                 self.reject(tree, f"predicate on metadata field: {arguments}")
             return Aggregate(alias, name, self.field_name(arguments), True)
+        # the time that the documents are written at, not one that an EVAL or a GROK before STATS made of it
+        if name in ("min", "max") and arguments.strip() == "@timestamp" and self.field_key("@timestamp") not in self.evals:
+            self.times.add(self.field_key(alias))
         return Aggregate(alias, name, None, False)
+
+    def is_recent(self, expression):
+        """Is it `DATE_DIFF("unit", <first or last time of the documents>, NOW())`, how long ago the documents were written?"""
+        made = call(expression)
+        if made is None or made[0].lower() != "date_diff":
+            return False
+        args = [arg.strip() for arg in split_top(made[1])]
+        return (
+            len(args) == 3
+            and re.fullmatch(STRING_RE.pattern, args[0]) is not None
+            and is_name(args[1])
+            and self.field_key(args[1]) in self.times
+            and re.fullmatch(r"now\s*\(\s*\)", args[2], re.IGNORECASE) is not None
+        )
+
+    def drop_recent(self, expression):
+        """Take out of the conditions the ones that say that the documents were written not long ago: they are, as they are written now.
+
+        `recent <= 6` (or `<`) in the terms of an AND, as the rules have them. Wherever else the alias is, it is refused.
+        """
+        terms = expression.terms if isinstance(expression, eql.ast.And) else [expression]
+
+        def now(term):
+            return (
+                isinstance(term, eql.ast.Comparison)
+                and isinstance(term.left, eql.ast.Field)
+                and self.field_key(term.left.render()) in self.recent
+                and term.comparator in ("<=", "<")
+                and isinstance(term.right, eql.ast.Number)
+                and term.right.value >= (0 if term.comparator == "<=" else 1)
+            )
+
+        kept = [eql.ast.Boolean(True) if now(term) else term for term in terms]
+        return eql.ast.And(kept) if len(kept) > 1 else kept[0]
 
     def key(self, tree, item):
         """Return the name of a key of BY (None when it has none), and the fields of the documents that it depends on."""
@@ -469,9 +515,26 @@ class EsqlToEql(Interpreter):
         return operand
 
     def check_pattern(self, tree, pattern):
-        # the solvers expand `*` and `?` only, they don't know about escapes or character classes
-        if "\\" in pattern or "[" in pattern:
-            self.reject(tree, f"LIKE pattern, backslash escapes and character classes are not supported: {pattern!r}")
+        # the solvers expand `*` and `?` only, they don't know about character classes (a backslash is just a character)
+        if "[" in pattern:
+            self.reject(tree, f"LIKE pattern, character classes are not supported: {pattern!r}")
+
+    def like_pattern(self, tree, pattern):
+        """Return the pattern of a LIKE as the solvers have it: in ES|QL a backslash escapes the next character, in them it is one.
+
+        An escaped backslash (a path of Windows) is one, what is escaped to be a literal `*` or `?` is not something that
+        the solvers can be asked for.
+        """
+        self.check_pattern(tree, pattern)
+        chars, i = [], 0
+        while i < len(pattern):
+            if pattern[i] == "\\":
+                if pattern[i + 1 : i + 2] != "\\":
+                    self.reject(tree, f"LIKE pattern, only a backslash can be escaped with a backslash: {pattern!r}")
+                i += 1
+            chars.append(pattern[i])
+            i += 1
+        return "".join(chars)
 
     @staticmethod
     def like_call(field, pattern):
@@ -600,8 +663,7 @@ class EsqlToEql(Interpreter):
         if operator.type == "RLIKE":
             expr = self.rlike_call(tree, left, right.value, lower)
         else:
-            self.check_pattern(tree, right.value)
-            expr = self.like_call(left, right.value)
+            expr = self.like_call(left, self.like_pattern(tree, right.value))
         return eql.ast.Not(expr) if negate else expr
 
     # operands

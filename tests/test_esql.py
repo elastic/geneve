@@ -281,9 +281,27 @@ class TestEsqlParser(unittest.TestCase):
             with self.subTest(pattern), self.assertRaisesRegex(NotImplementedError, rf"Unsupported RLIKE pattern: .*{message}"):
                 where(f'FROM x | WHERE a RLIKE """{pattern}"""')
 
+    def test_like_escapes_and_classes(self):
+        # a backslash escapes the next character in LIKE, and an escaped backslash is the one of a path of Windows
+        for source, decoded in (
+            (r"c:\\*", r"c:\*"),
+            (r"c:\\program files\\*.exe", r"c:\program files\*.exe"),
+            (r"?:\\windows\\system32", r"?:\windows\system32"),
+            (r"*..\\..\\*", r"*..\..\*"),
+            (r"a\\\\b", r"a\\b"),
+        ):
+            with self.subTest(source):
+                # in a triple-quoted string nothing is escaped, in the other the escapes of a string come first
+                self.assertEqual(like("a", decoded), where(f'FROM x | WHERE a LIKE """{source}"""'))
+                self.assertEqual(like("a", decoded), where('FROM x | WHERE a LIKE "' + source.replace("\\", "\\\\") + '"'))
+        self.assertEqual(eql.ast.Not(like("a", r"c:\*")), where(r'FROM x | WHERE a NOT LIKE """c:\\*"""'))
+        # not for STARTS_WITH and ENDS_WITH, whose literals are not patterns: a backslash is one
+        self.assertEqual(like("a", "c:\\*"), where(r'FROM x | WHERE STARTS_WITH(a, """c:\""")'))
+
     def test_like_escapes_and_classes_rejected(self):
-        for pattern in (r"foo\\*", r"a\\?b", r"a\\\\b", "[ab]*", "a[b"):
-            query = f'FROM x | WHERE a LIKE "{pattern}"'
+        # what is escaped to be a literal wildcard cannot be asked for, and neither can a class of characters
+        for pattern in (r"foo\*", r"a\?b", r"a\x", r"a\\\*", "a\\", "[ab]*", "a[b"):
+            query = f'FROM x | WHERE a LIKE """{pattern}"""'
             with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported LIKE pattern"):
                 where(query)
 
@@ -910,6 +928,43 @@ class TestEsqlStats(unittest.TestCase):
         self.assertEqual(("k",), query.stats.by)
         self.assertEqual(eql.parse_expression('k == "x" and c > 1'), query.stats.where)
 
+    def test_how_long_ago_the_documents_were_written(self):
+        # they are written now: `DATE_DIFF(unit, first or last time, NOW()) <= n` is true for the group
+        stats = "FROM x | STATS c = COUNT(*), first = MIN(@timestamp), last = MAX(@timestamp) BY h"
+        for query, expected in (
+            ('EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6', "true"),
+            ('EVAL recent = date_diff("seconds", last, now()) | WHERE recent < 10 AND c >= 3', "true and c >= 3"),
+            ('EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE c >= 3 AND recent <= 0', "c >= 3 and true"),
+            ('EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6 | WHERE c >= 3', "true and c >= 3"),
+            ('EVAL r = DATE_DIFF("minute", first, NOW()), q = 1 | WHERE r <= 6 AND h == "x"', 'true and h == "x"'),
+        ):
+            with self.subTest(query):
+                self.assertEqual(expected, esql.parse(f"{stats} | {query}").stats.where.render())
+
+    def test_how_long_ago_the_documents_were_written_is_refused_elsewhere(self):
+        stats = "FROM x | STATS c = COUNT(*), first = MIN(@timestamp), other = MIN(f), v = VALUES(f) BY h"
+        for query in (
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent >= 6',  # they would have to be old
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= -1',
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent < 0',
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6 OR c >= 3',
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE NOT recent <= 6',
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent == 0',
+            'EVAL recent = DATE_DIFF("minute", other, NOW()) | WHERE recent <= 6',  # not a time
+            'EVAL recent = DATE_DIFF("minute", first, c) | WHERE recent <= 6',
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) + 1 | WHERE recent <= 6',
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) | EVAL recent = recent + 1 | WHERE recent <= 6',
+            # what was made of the time or of how long ago it was, is no longer what the documents say
+            'EVAL first = first - 1 day | EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6',
+            'EVAL first = first - 1 day, recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6',
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) | EVAL first = 1 | EVAL recent2 = DATE_DIFF("minute", first, NOW()) | WHERE recent2 <= 6',
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) | GROK h "%{WORD:recent}" | WHERE recent <= 6',
+            'EVAL recent = DATE_DIFF("minute", first, NOW()) | DISSECT h "%{recent}" | WHERE recent <= 6',
+            'GROK h "%{WORD:first}" | EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6',
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
+                esql.parse(f"{stats} | {query}")
+
     def test_eval_without_stats_is_unsupported(self):
         # an EVAL changes the columns, not which documents match: fine when nothing asks for what it makes
         self.assertEqual(eql.parse_expression("a == 1"), esql.parse("FROM x | EVAL k = a | WHERE a == 1 | KEEP k").where)
@@ -1115,6 +1170,32 @@ class TestEsqlStatsEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCa
 
     maxDiff = None
     pre = 'FROM x | WHERE process.name == "a.exe" | STATS c = COUNT(*)'
+
+    def test_how_long_ago_requires_the_time_of_the_documents(self):
+        # before STATS the @timestamp was made by an EVAL or a GROK: what MIN and MAX see is not when they are written
+        for before in ("EVAL @timestamp = @timestamp - 1 day", 'EVAL @timestamp = DATE_TRUNC(1 day, @timestamp)', 'GROK h "%{WORD:@timestamp}"'):
+            query = (
+                f"FROM x | {before} | STATS c = COUNT(*), first = MIN(@timestamp) BY h"
+                ' | EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6'
+            )
+            with self.subTest(before), self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL after STATS: recent"):
+                esql.parse(query)
+        # and the ones that do not touch it do not matter
+        esql.parse(
+            'FROM x | EVAL other = @timestamp - 1 day | STATS c = COUNT(*), first = MIN(@timestamp) BY h'
+            ' | EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6'
+        )
+
+    def test_how_long_ago_the_documents_were_written_emission(self):
+        se = SourceEvents(self.schema)
+        se.stack_version = self.stack_version
+        se.add_query(
+            "FROM x | WHERE host.id IS NOT NULL | STATS c = COUNT(*), first = MIN(@timestamp) BY host.id"
+            ' | EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6 AND c >= 3'
+        )
+        (branch,) = list(se.emit(timestamp=True, complete=True, count=1))
+        self.assertGreaterEqual(len(branch), 3)
+        self.assertEqual(1, len({event.doc["host"]["id"] for event in branch}))
 
     def branches(self, query, schema=None, **kwargs):
         se = SourceEvents(self.schema if schema is None else schema)
