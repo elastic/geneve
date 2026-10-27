@@ -66,7 +66,8 @@ def cc_field(node: eql.ast.Field, value: str, negate: bool, max_branches: int) -
 def cc_boolean(node: eql.ast.Boolean, negate: bool, max_branches: int) -> Root:
     branches = []
     if _nope(node.value, negate):
-        branches.append(Branch.Identity)
+        # not the shared one: whoever comes after (ES|QL flags it) must not find it flagged
+        branches.append(Branch([Document()]))
     return Root(branches)
 
 

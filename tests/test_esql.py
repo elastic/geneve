@@ -1472,6 +1472,46 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         branches = [[event.doc for event in branch] for branch in se.emit(timestamp=False, complete=True)]
         self.assertEqual([[{"process": {"args": ["*"]}}], [{"process": {"args": ["escalate"]}}]], branches)
 
+    def test_group_fields_that_the_query_asks_for(self):
+        # the geo and the AS groups make up their fields, but for those that the query says something about
+        docs = self.emit('FROM x | WHERE source.geo.country_name == "Spain" AND source.geo.city_name == "Madrid"', count=3)
+        for doc in docs:
+            self.assertEqual("Spain", doc["source"]["geo"]["country_name"])
+            self.assertEqual("Madrid", doc["source"]["geo"]["city_name"])
+            self.assertIn("location", doc["source"]["geo"])  # the rest is still made up
+        docs = self.emit("FROM x | WHERE source.geo.country_name IS NOT NULL AND destination.geo.region_name IS NOT NULL", count=3)
+        self.assertTrue(all(isinstance(doc["source"]["geo"]["country_name"], str) for doc in docs), docs)
+        self.assertTrue(all(isinstance(doc["destination"]["geo"]["region_name"], str) for doc in docs), docs)
+        docs = self.emit("FROM x | WHERE source.geo.city_name IS NULL AND source.geo.country_name IS NOT NULL", count=3)
+        self.assertTrue(all("city_name" not in doc["source"]["geo"] for doc in docs), docs)
+        docs = self.emit('FROM x | WHERE source.geo.country_iso_code != "ES" AND source.geo.timezone LIKE "Europe/*"', count=10)
+        self.assertTrue(all(doc["source"]["geo"]["country_iso_code"] != "ES" for doc in docs), docs)
+        self.assertTrue(all(doc["source"]["geo"]["timezone"].startswith("Europe/") for doc in docs), docs)
+        docs = self.emit('FROM x | WHERE source.as.organization.name == "Acme" AND source.as.number > 100', count=3)
+        for doc in docs:
+            self.assertEqual("Acme", doc["source"]["as"]["organization"]["name"])
+            self.assertGreater(doc["source"]["as"]["number"], 100)
+        docs = self.emit('FROM x | WHERE source.as.organization.name != "Acme"', count=5)
+        self.assertTrue(all(doc["source"]["as"]["organization"]["name"] != "Acme" for doc in docs), docs)
+        # what the query does not ask for is as it was
+        docs = self.emit('FROM x | WHERE process.name == "a.exe"', count=1)
+        self.assertEqual([{"process": {"name": "a.exe"}}], docs)
+
+    def test_group_fields_in_the_groups_of_stats(self):
+        base = "FROM x | WHERE source.geo.country_name IS NOT NULL | STATS d = COUNT_DISTINCT(source.geo.country_name) BY client.user.email"
+        docs = SourceEvents(self.schema)
+        docs.add_query(f"{base} | WHERE d >= 3")
+        (branch,) = [[event.doc for event in branch] for branch in docs.emit(timestamp=False, complete=True, count=1)]
+        self.assertEqual(3, len(branch))
+        self.assertEqual(3, len({doc["source"]["geo"]["country_name"] for doc in branch}), branch)
+
+    def test_group_fields_are_as_they_were_for_the_other_languages(self):
+        se = SourceEvents(self.schema)
+        se.add_query('any where source.geo.country_name == "Spain" and source.as.organization.name == "Acme"')
+        for event in se.emit(timestamp=False, count=3):
+            self.assertNotIn("country_name", event.doc["source"]["geo"])
+            self.assertNotEqual("Acme", event.doc["source"]["as"]["organization"]["name"])
+
     def test_constant_keyword_fields(self):
         docs = self.emit('FROM x | WHERE data_stream.dataset == "aws.cloudtrail"', count=2)
         self.assertEqual([{"data_stream": {"dataset": "aws.cloudtrail"}}] * 2, docs)

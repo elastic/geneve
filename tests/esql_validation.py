@@ -80,7 +80,10 @@ def infer_mappings(mappings, docs, schema):
     inferred = {}
     for doc in docs:
         for path, value in flatten(doc):
-            if path not in schema and path != "@timestamp":
+            parts = path.split(".")
+            # what hangs from a field that the schema knows is the field (a geo_point is an object with lat and lon)
+            known = any(".".join(parts[:i]) in schema for i in range(1, len(parts) + 1))
+            if not known and path != "@timestamp":
                 inferred[path] = {"type": value_type(value)}
     deep_merge(mappings, {"properties": emit_mappings(list(inferred), inferred).get("properties", {})}, overwrite=True)
     return mappings
@@ -167,6 +170,10 @@ def validate_query(es, name, query, schema, stack_version=None, rule=None):
                 if not rows:
                     return Result(name, "failed", len(branches), f"branch {i}: no rows for {doc}")
             return Result(name, "failed", len(branches), f"{rows} rows were returned for {len(chunk)} documents")
+    except Exception as e:  # noqa: BLE001
+        # what Elasticsearch refuses of the index (the mappings) is a result too
+        body = getattr(e, "body", None)
+        return Result(name, "error", len(branches), f"{type(e).__name__}: {body if body else e}"[:300])
     finally:
         es.options(ignore_status=404).indices.delete(index=index)
         es.options(ignore_status=404).indices.delete_index_template(name=TEMPLATE)

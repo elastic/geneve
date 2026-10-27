@@ -59,6 +59,7 @@ class Document:
     def __init__(self, field=None, name=None, value=None):
         self.__aliases = {}
         self.__constraints = hdict()
+        self.__flags = {}  # where the document comes from, for the solvers of the groups of fields (constraints with none have no flags)
         if field is not None:
             self.append_constraint(field, name, value)
 
@@ -66,6 +67,7 @@ class Document:
         doc = Document()
         doc.__aliases = {k: copy(v) for k, v in self.__aliases.items()}
         doc.__constraints = copy(self.__constraints)
+        doc.__flags = dict(self.__flags)
         return doc
 
     def append_constraint(self, field, name=None, value=None, flags=None):
@@ -104,6 +106,7 @@ class Document:
 
     def flag_constraints(self, flags, *, unless=None):
         """Add flags to all the constraints, for the solvers to read, but to those flagged `unless`."""
+        self.__flags.update(flags)
         for _, constraints in self.__constraints.items():  # noqa: PERF102, hdict has no values()
             if constraints:
                 constraints[:] = [
@@ -118,6 +121,7 @@ class Document:
     def __iadd__(self, other):
         for field, constraints in other.__constraints.items():
             self.extend_constraints(field, constraints)
+        self.__flags.update(other.__flags)
         return self
 
     def __add__(self, other):
@@ -164,7 +168,12 @@ class Document:
     def optimize(self, *args, **kwargs):
         from .solver import solver
 
-        self.__entities = {group: solver.new_entity(group, fields, *args, **kwargs) for group, fields in self.__constraints.groups()}
+        # ES|QL (and the KQL in it) asks for what it says, the groups of fields that make up what they like are told
+        asked = frozenset(self.__constraints)
+        extra = {"strict": True, "asked": asked} if self.__flags.get("esql") or self.__flags.get("kql") else {}
+        self.__entities = {
+            group: solver.new_entity(group, fields, *args, **kwargs, **extra) for group, fields in self.__constraints.groups()
+        }
 
     def solve(self, join_doc, environment):
         doc = {}

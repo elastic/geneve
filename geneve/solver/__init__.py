@@ -104,8 +104,8 @@ class solver:
         return Entity
 
     @classmethod
-    def new_entity(cls, group, fields, schema, stack_version=None):
-        return cls.get_group_solver(group)(group, fields, schema, stack_version)
+    def new_entity(cls, group, fields, schema, stack_version=None, **extra):
+        return cls.get_group_solver(group)(group, fields, schema, stack_version, **extra)
 
     @classmethod
     def type(cls, name):
@@ -121,11 +121,11 @@ class solver:
 
         def __call__(self, func):
             @wraps(func)
-            def wrapper(group, fields, schema, stack_version):
+            def wrapper(group, fields, schema, stack_version, **extra):
                 if self.name:
                     deep_merge(schema, load_integration_schema(self.name, stack_version))
                     self.name = None
-                return func(group, fields, schema, stack_version)
+                return func(group, fields, schema, stack_version, **extra)
 
             return wrapper
 
@@ -133,10 +133,21 @@ class solver:
 class Entity:
     ecs_constraints: ClassVar[dict] = {}
 
-    def __init__(self, group, fields, schema, stack_version):
+    def __init__(self, group, fields, schema, stack_version, strict=False, asked=frozenset()):
         self.group = group
         self.schema = schema
         self.fields = {field: self.field_solver(field, constraints) for field, constraints in fields.items()}
+        # the groups that make up their fields do so for the languages that never asked for them, as they always did, but
+        # for ES|QL (and the KQL in it) the fields that the query says something about are the ones that it says
+        self.strict = strict
+        self.asked = asked  # all the fields of the document that have constraints, those of the groups below this one too
+
+    def solve_asked(self, doc, join_doc, env, made):
+        """Emit what a group makes up but for the fields that the query asks for, which are solved as any other field."""
+        asked = {key for key in made if any(key == field or key.startswith(f"{field}.") for field in self.fields)} if self.strict else set()
+        self.emit_group(doc, {key: value for key, value in made.items() if key not in asked})
+        if self.strict:
+            Entity.solve(self, doc, join_doc, env)
 
     def field_solver(self, field, constraints=()):
         if constraints is not None:
