@@ -102,7 +102,7 @@ def show(branches, limit):
         print(f"--- branch {i}: {len(docs)} document(s)")
         for doc in docs:
             print(json.dumps(doc, indent=2, sort_keys=True))
-    if len(branches) > limit:
+    if len(branches) > limit > 0:
         print(f"\n... {len(branches) - limit} more branch(es), use --branches to see them")
 
 
