@@ -71,6 +71,8 @@ def ast_from_rule(rule):
 
 ES|QL queries are parsed by [geneve/esql](../geneve/esql), a small [lark](https://lark-parser.readthedocs.io) grammar that covers the part of the language that selects documents. The query is translated to the same AST as EQL, so the following steps need no changes.
 
+To try it, `scripts/esql_demo.py` prints the documents generated for a query (`-i` to type queries one after another) and, with `--es http://localhost:9200`, indexes them into a throwaway index and runs the query against it, which must return them (it needs an Elasticsearch, not Kibana).
+
 `esql.to_eql()` returns the AST to generate documents from: the translation is wrapped in a private `_esql` function, which the constraints collector uses to flag the constraints that come from ES|QL (and only them, even when the AST is mixed with EQL nodes). `esql.parse(query).where` is the plain translation, to inspect it.
 
 Supported:
