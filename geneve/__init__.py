@@ -17,4 +17,4 @@
 
 from .events_emitter import *
 
-version = "0.5.0"
+version = "0.6.0-dev"
