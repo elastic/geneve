@@ -19,6 +19,7 @@
 
 from __future__ import annotations
 
+import contextvars
 import json
 import math
 from itertools import chain, product
@@ -80,13 +81,19 @@ def cc_or_terms(node: eql.ast.Or | eql.ast.And, negate: bool, max_branches: int)
     return Root.chain(terms)
 
 
+# a combination of the terms of an AND that conflicts is not a way to be true, but one of the others may be: ES|QL
+# queries have alternatives that are made to be true together (COALESCE) and some of them cannot be
+# it holds the list that gets the conflicts that were left out, so that when nothing else is left they are told
+prune_conflicts = contextvars.ContextVar("prune_conflicts", default=None)
+
+
 def cc_and_terms(node: eql.ast.Or | eql.ast.And, negate: bool, max_branches: int) -> Root:
     terms = tuple(collect_constraints(term, negate, max_branches) for term in node.terms)
     if max_branches:
         nr_branches = math.prod(len(branches) for branches in terms)
         if nr_branches > max_branches:
             raise ValueError(f"Root with too many branches (limit: {max_branches})")
-    return Root.product(terms)
+    return Root.product(terms, prune=prune_conflicts.get())
 
 
 @traverser(eql.ast.Or)
@@ -247,7 +254,14 @@ def cc_esql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root
     # only them, wherever the node sits in the tree) for the solvers that know the field types to check
     if len(node.arguments) != 1:
         raise NotImplementedError(f"Unsupported number of arguments for {node.name}: {len(node.arguments)}")
-    root = collect_constraints(node.arguments[0], negate, max_branches)
+    pruned = []
+    token = prune_conflicts.set(pruned)
+    try:
+        root = collect_constraints(node.arguments[0], negate, max_branches)
+    finally:
+        prune_conflicts.reset(token)
+    if not len(root) and pruned:
+        raise pruned[0]
     joined = {}
     for doc in root.constraints():
         doc.flag_constraints({"esql": True}, unless="kql")
@@ -316,16 +330,52 @@ def cc_stats(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Roo
     post_root = collect_constraints(post, False, max_branches)
     if max_branches and len(pre_root) * len(post_root) > max_branches:
         raise ValueError(f"Root with too many branches (limit: {max_branches})")
-    return Root(
-        [stats_branch(pre_branch, post_branch, aggregates, by, join, expanded) for pre_branch in pre_root for post_branch in post_root]
-    )
+    branches, errors = [], []
+    for pre_branch in pre_root:
+        for post_branch in post_root:
+            try:
+                branch = stats_branch(pre_branch, post_branch, aggregates, by, join, expanded, pre_root)
+            except ConflictError as e:
+                errors.append(e)  # it is not a way to be true, the others may be
+                continue
+            if branch is not None:
+                branches.append(branch)
+    if not branches and errors:
+        raise errors[0]
+    return Root(branches)
 
 
 def positive_constraints(constraints: Any) -> list:
     return [c for c in constraints or [] if c[0] in ("==", "wildcard", "in")]
 
 
-def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: list, join: list, expanded: list) -> Branch:
+def single_equality(doc: Document, field: str) -> Any:
+    """Return the constraint that says that a field has one value (not a pattern), None if it is anything else."""
+    constraints = dict(doc.items()).get(field)
+    if constraints and len(constraints) == 1 and constraints[0][0] == "==" and constraints[0][1] is not None:
+        return constraints[0]
+    return None
+
+
+def siblings_of(base: Document, field: str, pre_root: Root) -> list:
+    """Return the documents that are as the base but for the value that a field has: another way to have one of them."""
+
+    def rest(doc):
+        return sorted((name, repr(constraints)) for name, constraints in doc.items() if name != field)
+
+    if single_equality(base, field) is None:
+        return [base]
+    return [
+        doc
+        for branch in pre_root
+        for doc in list(branch)[:1]
+        if len(branch) == 1 and single_equality(doc, field) is not None and rest(doc) == rest(base)
+    ]
+
+
+def stats_branch(
+    pre_branch: Branch, post_branch: Branch, aggregates: dict, by: list, join: list, expanded: list, pre_root: Root | None = None
+) -> Branch | None:
     if len(pre_branch) != 1:
         raise NotImplementedError("Unsupported STATS of documents that are related")
     base = pre_branch[0]
@@ -393,10 +443,26 @@ def stats_branch(pre_branch: Branch, post_branch: Branch, aggregates: dict, by: 
             raise NotImplementedError(f"Unsupported COUNT_DISTINCT of a BY field: {field}")
     present = {argument for _, argument, *_ in counts if argument} | set(distinct)
 
+    # different values of a field that the conditions before STATS make a branch for each of: a document of each of the branches
+    # (the ones that are as the base but for that value), and the group is made for all of them by the first
+    siblings = None
+    for field in list(different):
+        options = siblings_of(base, field, pre_root or [pre_branch])
+        values = {single_equality(doc, field)[1] for doc in options if single_equality(doc, field)}
+        if single_equality(base, field) is not None and len(values) < distinct[field][0]:
+            raise ConflictError(f"{distinct[field][0]} different values are needed, the conditions allow {len(values)}", field)
+        if len(options) > 1:
+            if siblings is not None:
+                raise NotImplementedError("Unsupported COUNT_DISTINCT of many fields that the conditions give different values to")
+            if options[0] is not base:
+                return None
+            siblings = options
+            different.remove(field)
+
     join_doc = Document()
     docs = []
-    for _ in range(size):
-        doc = base.clone()
+    for i in range(size):
+        doc = (siblings[i % len(siblings)] if siblings else base).clone()
         for field, constraints in by_conditions:
             for name, value, *flags in constraints:
                 doc.append_constraint(field, name, value, flags[0] if flags else None)

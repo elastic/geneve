@@ -13,7 +13,7 @@ Rules version: 9.2.19
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (28)](#unsupported-rule-type-threshold-28)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (7)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-7)
-      1. [Unsupported right operand, it must be a literal (6)](#unsupported-right-operand-it-must-be-a-literal-6)
+      1. [Unsupported right operand, it must be a literal (7)](#unsupported-right-operand-it-must-be-a-literal-7)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported second STATS (6)](#unsupported-second-stats-6)
       1. [Unsupported query language: lucene (5)](#unsupported-query-language-lucene-5)
@@ -112,24 +112,20 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by EVAL after STATS: isLocal (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-islocal-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: process.executable (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-processexecutable-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.aws_ssm_command_id (1)](#unsupported-where-on-a-field-made-by-eval-esqlaws_ssm_command_id-1)
-      1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.cloud_vendor (1)](#unsupported-where-on-a-field-made-by-eval-esqlcloud_vendor-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.is_high_value (1)](#unsupported-where-on-a-field-made-by-eval-esqlis_high_value-1)
-      1. [Unsupported WHERE on a field made by EVAL: Esql.message_type (1)](#unsupported-where-on-a-field-made-by-eval-esqlmessage_type-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)](#unsupported-where-on-a-field-made-by-eval-esqlml_policy_violations_mv_count-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.rmm_vendor (1)](#unsupported-where-on-a-field-made-by-eval-esqlrmm_vendor-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.server_webdav_server (1)](#unsupported-where-on-a-field-made-by-eval-esqlserver_webdav_server-1)
+      1. [Unsupported WHERE on a field made by EVAL: Esql.signin_source_asn (1)](#unsupported-where-on-a-field-made-by-eval-esqlsignin_source_asn-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.target_endpoints (1)](#unsupported-where-on-a-field-made-by-eval-esqltarget_endpoints-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.target_user_name (1)](#unsupported-where-on-a-field-made-by-eval-esqltarget_user_name-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.url_original_url_decoded_to_lower (1)](#unsupported-where-on-a-field-made-by-eval-esqlurl_original_url_decoded_to_lower-1)
-      1. [Unsupported WHERE on a field made by EVAL: Esql.user (1)](#unsupported-where-on-a-field-made-by-eval-esqluser-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql_priv.aws_cloudtrail_lifecycle_script (1)](#unsupported-where-on-a-field-made-by-eval-esql_privaws_cloudtrail_lifecycle_script-1)
       1. [Unsupported WHERE on a field made by EVAL: cloud_target (1)](#unsupported-where-on-a-field-made-by-eval-cloud_target-1)
-      1. [Unsupported WHERE on a field made by EVAL: message_type (1)](#unsupported-where-on-a-field-made-by-eval-message_type-1)
       1. [Unsupported WHERE on a field made by EVAL: message_upper (1)](#unsupported-where-on-a-field-made-by-eval-message_upper-1)
       1. [Unsupported WHERE on a field made by EVAL: multi_spaces (1)](#unsupported-where-on-a-field-made-by-eval-multi_spaces-1)
       1. [Unsupported WHERE on a field made by EVAL: parent_domain (1)](#unsupported-where-on-a-field-made-by-eval-parent_domain-1)
-      1. [Unsupported WHERE on a field made by EVAL: session.id (1)](#unsupported-where-on-a-field-made-by-eval-sessionid-1)
       1. [Unsupported WHERE on a field made by GROK: Esql.inbox_rule_name (1)](#unsupported-where-on-a-field-made-by-grok-esqlinbox_rule_name-1)
       1. [Unsupported WHERE on a field made by GROK: Esql.model_id (1)](#unsupported-where-on-a-field-made-by-grok-esqlmodel_id-1)
       1. [Unsupported WHERE on a field made by GROK: Esql.screenconnect_server (1)](#unsupported-where-on-a-field-made-by-grok-esqlscreenconnect_server-1)
@@ -158,7 +154,6 @@ invalid-syntax
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (10)](#unsupported-argument-types-class-eqlastfield-10)
       1. [Root without branches (9)](#root-without-branches-9)
       1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (7)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-7)
-      1. [Cannot choose from an empty set (5)](#cannot-choose-from-an-empty-set-5)
       1. [Field type solver: match_only_text (4)](#field-type-solver-match_only_text-4)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
@@ -177,6 +172,7 @@ invalid-syntax
       1. [Unsupported is_negated: {'is_negated': True} (2)](#unsupported-is_negated-is_negated-true-2)
       1. ['NoneType' object is not subscriptable (1)](#nonetype-object-is-not-subscriptable-1)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
+      1. [Unsolvable constraints: event.action (3 different values are needed, the conditions allow 2) (1)](#unsolvable-constraints-eventaction-3-different-values-are-needed-the-conditions-allow-2-1)
       1. [Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)](#unsolvable-constraints-fileextheader_bytes-excluded-by-strings504b0304-504b0304-1)
       1. [Unsolvable constraints: file.extension (cannot be non-null) (1)](#unsolvable-constraints-fileextension-cannot-be-non-null-1)
       1. [Unsolvable constraints: file.name (excluded by Strings({'Local State'}): ('Local State')) (1)](#unsolvable-constraints-filename-excluded-by-stringslocal-state-local-state-1)
@@ -264,6 +260,7 @@ invalid-syntax
       1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_request_length_avg (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_request_length_avg-1)
       1. [Unsupported condition on the aggregate Esql.azure_open_ai_properties_response_length_max (1)](#unsupported-condition-on-the-aggregate-esqlazure_open_ai_properties_response_length_max-1)
       1. [Unsupported condition on the aggregate Esql.device_code_auth_count (1)](#unsupported-condition-on-the-aggregate-esqldevice_code_auth_count-1)
+      1. [Unsupported condition on the aggregate Esql.dhcpv4_client_mac_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqldhcpv4_client_mac_count_distinct-1)
       1. [Unsupported condition on the aggregate Esql.is_browser_case_max (1)](#unsupported-condition-on-the-aggregate-esqlis_browser_case_max-1)
       1. [Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqloauth_token_count_distinct-1)
       1. [Unsupported condition on the aggregate Esql.patterns_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlpatterns_count_distinct-1)
@@ -638,9 +635,9 @@ invalid-syntax
 * Potential PowerShell Obfuscation via String Concatenation
 * Potential PowerShell Obfuscation via String Reordering
 
-### Unsupported right operand, it must be a literal (6)
+### Unsupported right operand, it must be a literal (7)
 
-6 rules:
+7 rules:
 
 * AWS IAM User Created Access Keys For Another User
 * AWS Lambda Function Invoked Cross-Account
@@ -648,6 +645,7 @@ invalid-syntax
 * Newly Observed Elastic Defend Behavior Alert
 * Newly Observed High Severity Detection Alert
 * Okta AiTM Session Cookie Replay
+* Okta Successful Login After Credential Attack
 
 ### Unsupported rule type: threat_match (6)
 
@@ -908,12 +906,6 @@ Invalid syntax
 
 * AWS EC2 LOLBin Execution via SSM SendCommand
 
-### Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)
-
-1 rules:
-
-* Entra ID OAuth User Impersonation to Microsoft Graph
-
 ### Unsupported WHERE on a field made by EVAL: Esql.cloud_vendor (1)
 
 1 rules:
@@ -925,12 +917,6 @@ Invalid syntax
 1 rules:
 
 * Microsoft Graph Multi-Category Reconnaissance Burst
-
-### Unsupported WHERE on a field made by EVAL: Esql.message_type (1)
-
-1 rules:
-
-* Potential DHCP Starvation via High Client MAC Cardinality
 
 ### Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)
 
@@ -950,6 +936,12 @@ Invalid syntax
 
 * Rare Connection to WebDAV Target
 
+### Unsupported WHERE on a field made by EVAL: Esql.signin_source_asn (1)
+
+1 rules:
+
+* Entra ID OAuth User Impersonation to Microsoft Graph
+
 ### Unsupported WHERE on a field made by EVAL: Esql.target_endpoints (1)
 
 1 rules:
@@ -968,12 +960,6 @@ Invalid syntax
 
 * Web Server Potential Remote File Inclusion Activity
 
-### Unsupported WHERE on a field made by EVAL: Esql.user (1)
-
-1 rules:
-
-* Okta Successful Login After Credential Attack
-
 ### Unsupported WHERE on a field made by EVAL: Esql_priv.aws_cloudtrail_lifecycle_script (1)
 
 1 rules:
@@ -985,12 +971,6 @@ Invalid syntax
 1 rules:
 
 * Multi-Cloud CLI Token and Credential Access Commands
-
-### Unsupported WHERE on a field made by EVAL: message_type (1)
-
-1 rules:
-
-* Multiple DHCP Servers Responding to the Same Transaction
 
 ### Unsupported WHERE on a field made by EVAL: message_upper (1)
 
@@ -1009,12 +989,6 @@ Invalid syntax
 1 rules:
 
 * First Time Seen DNS Query to RMM Domain
-
-### Unsupported WHERE on a field made by EVAL: session.id (1)
-
-1 rules:
-
-* M365 OneDrive/SharePoint Excessive File Downloads
 
 ### Unsupported WHERE on a field made by GROK: Esql.inbox_rule_name (1)
 
@@ -1622,15 +1596,6 @@ Invalid syntax
 * Suspicious Shell Execution via Velociraptor
 * Suspicious Windows Command Shell Arguments
 
-### Cannot choose from an empty set (5)
-
-5 rules:
-* AWS EC2 Stop, Start, and User Data Modification Correlation
-* Azure Key Vault Excessive Secret or Key Retrieved
-* Kubernetes Multi-Resource Discovery
-* Multiple Elastic Defend Alerts by Agent
-* Suspicious TCC Access Granted for User Folders
-
 ### Field type solver: match_only_text (4)
 
 4 rules:
@@ -1746,6 +1711,11 @@ Invalid syntax
 
 1 rules:
 * Potential Okta MFA Bombing via Push Notifications
+
+### Unsolvable constraints: event.action (3 different values are needed, the conditions allow 2) (1)
+
+1 rules:
+* AWS EC2 Stop, Start, and User Data Modification Correlation
 
 ### Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)
 
@@ -2181,6 +2151,11 @@ Invalid syntax
 
 1 rules:
 * Entra ID OAuth Device Code Flow with Concurrent Sign-ins
+
+### Unsupported condition on the aggregate Esql.dhcpv4_client_mac_count_distinct (1)
+
+1 rules:
+* Potential DHCP Starvation via High Client MAC Cardinality
 
 ### Unsupported condition on the aggregate Esql.is_browser_case_max (1)
 

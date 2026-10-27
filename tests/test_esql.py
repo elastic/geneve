@@ -259,6 +259,165 @@ class TestEsqlParser(unittest.TestCase):
         with self.assertRaisesRegex(NotImplementedError, "TO_STRING comparison operator: <"):
             where('FROM x | WHERE TO_STRING(a) < "5"')
 
+    def test_coalesce(self):
+        def nulls(*names):
+            return [eql.ast.IsNull(field(name)) for name in names]
+
+        # the first field that has a value is the one: a branch for each, the ones before it have none
+        self.assertEqual(
+            where('FROM x | WHERE COALESCE(a, b) == "x"'),
+            eql.ast.Or([eql.parse_expression('a == "x"'), eql.ast.And([eql.parse_expression('b == "x"')] + nulls("a"))]),
+        )
+        self.assertEqual(
+            where('FROM x | WHERE COALESCE(a, b, c.d) IN ("x", "y")'),
+            eql.ast.Or(
+                [
+                    eql.ast.InSet(field("a"), [eql.ast.String("x"), eql.ast.String("y")]),
+                    eql.ast.And([eql.ast.InSet(field("b"), [eql.ast.String("x"), eql.ast.String("y")])] + nulls("a")),
+                    eql.ast.And([eql.ast.InSet(field("c.d"), [eql.ast.String("x"), eql.ast.String("y")])] + nulls("a", "b")),
+                ]
+            ),
+        )
+        self.assertEqual(
+            where('FROM x | WHERE COALESCE(a, b) NOT LIKE "f*"'),
+            eql.ast.Or([eql.ast.Not(like("a", "f*")), eql.ast.And([eql.ast.Not(like("b", "f*"))] + nulls("a"))]),
+        )
+        # what is after a literal is not reached, and the literal is no field
+        self.assertEqual(where('FROM x | WHERE COALESCE(a, "") == "x"'), where('FROM x | WHERE a == "x"'))
+        # a null is not the end, it is the next that is asked for
+        self.assertEqual(where('FROM x | WHERE COALESCE(a, null, b) == "x"'), where('FROM x | WHERE COALESCE(a, b) == "x"'))
+        self.assertEqual(where('FROM x | WHERE COALESCE(null, a) == "x"'), where('FROM x | WHERE a == "x"'))
+        self.assertEqual(where('FROM x | WHERE COALESCE(a, "d") > 1'), where("FROM x | WHERE a > 1"))
+        # with TO_LOWER and TO_STRING, which are about each of the fields
+        self.assertEqual(
+            where('FROM x | WHERE TO_LOWER(COALESCE(a, b)) LIKE "f*"'),
+            eql.ast.Or([like("a", "f*"), eql.ast.And([like("b", "f*")] + nulls("a"))]),
+        )
+        self.assertEqual(where('FROM x | WHERE TO_STRING(COALESCE(a, "")) == "5"'), where('FROM x | WHERE a == "5"'))
+
+    def test_coalesce_conditions_on_the_same_fields_agree_on_the_field(self):
+        # each alternative has all of them, not any of the first with any of the second (they would not agree on which field)
+        def nulls(*names):
+            return [eql.ast.IsNull(field(name)) for name in names]
+
+        both = eql.ast.Or(
+            [
+                eql.ast.And([eql.parse_expression('a != "x"'), eql.ast.Not(like("a", "y*"))]),
+                eql.ast.And([eql.ast.And([eql.parse_expression('b != "x"'), eql.ast.Not(like("b", "y*"))])] + nulls("a")),
+            ]
+        )
+        for query in (
+            'WHERE COALESCE(a, b) != "x" AND COALESCE(a, b) NOT LIKE "y*"',
+            'EVAL m = COALESCE(a, b) | WHERE m != "x" AND m NOT LIKE "y*"',
+            'EVAL m = COALESCE(a, b) | WHERE m != "x" | WHERE m NOT LIKE "y*"',
+            'EVAL m = COALESCE(a, b) | WHERE m != "x" AND COALESCE(a, b) NOT LIKE "y*"',
+        ):
+            with self.subTest(query):
+                self.assertEqual(both, where(f"FROM x | {query}"))
+        # the others of the AND are as they were, and the fields that are not the same are not put together
+        terms = where('FROM x | WHERE COALESCE(a, b) == "x" AND c == 1 AND COALESCE(a, b) NOT LIKE "y*" AND COALESCE(d, e) == "z"').terms
+        self.assertEqual(3, len(terms))
+        self.assertEqual(eql.parse_expression("c == 1"), terms[1])
+
+    def test_is_null_of_what_is_made_of_fields(self):
+        def nulls(*names):
+            return [eql.ast.IsNull(field(name)) for name in names]
+
+        # no value when none of the fields has one, and one of them has a value if it has not
+        self.assertEqual(
+            eql.ast.Or([eql.ast.IsNotNull(field("a")), eql.ast.And([eql.ast.IsNotNull(field("b"))] + nulls("a"))]),
+            where("FROM x | WHERE COALESCE(a, b) IS NOT NULL"),
+        )
+        self.assertEqual(eql.ast.And(nulls("a", "b")), where("FROM x | WHERE COALESCE(a, b) IS NULL"))
+        self.assertEqual(eql.ast.And(nulls("a", "b")), where("FROM x | EVAL m = COALESCE(a, b, null) | WHERE m IS NULL"))
+        for query in (
+            "TO_LOWER(a) IS NOT NULL",
+            "TO_STRING(a) IS NOT NULL",
+            "COALESCE(a, null) IS NOT NULL",
+        ):
+            with self.subTest(query):
+                self.assertEqual(eql.ast.IsNotNull(field("a")), where(f"FROM x | WHERE {query}"))
+        self.assertEqual(eql.ast.IsNull(field("a")), where("FROM x | EVAL k = TO_LOWER(a) | WHERE k IS NULL"))
+        self.assertEqual(eql.ast.IsNotNull(field("a")), where("FROM x | EVAL k = a | WHERE k IS NOT NULL"))
+        # together with the rest that is about the same fields: all of it for each of them
+        self.assertEqual(
+            eql.ast.Or(
+                [
+                    eql.ast.And([eql.ast.IsNotNull(field("a")), like("a", "f*")]),
+                    eql.ast.And([eql.ast.And([eql.ast.IsNotNull(field("b")), like("b", "f*")])] + nulls("a")),
+                ]
+            ),
+            where('FROM x | EVAL m = COALESCE(a, b) | WHERE m IS NOT NULL AND m LIKE "f*"'),
+        )
+
+    def test_coalesce_with_a_literal_that_is_not_null(self):
+        # it has a value whatever the fields have: it is never null, and the fields after it are never reached
+        self.assertEqual(eql.ast.Boolean(True), where('FROM x | WHERE COALESCE(a, "d") IS NOT NULL'))
+        self.assertEqual(eql.ast.Boolean(True), where("FROM x | EVAL m = COALESCE(a, 0) | WHERE m IS NOT NULL"))
+        for query in (
+            'COALESCE(a, "d") IS NULL',
+            "COALESCE(a, 1) IS NULL",
+            'COALESCE(COALESCE(a, "x"), b) IS NULL',
+            'TO_LOWER(COALESCE(a, "x")) IS NULL',
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "never true"):
+                where(f"FROM x | WHERE {query}")
+        self.assertEqual(where('FROM x | WHERE COALESCE(a, "x") == "y"'), where('FROM x | WHERE a == "y"'))
+        # the inner one ends it: b is not asked
+        self.assertEqual(where('FROM x | WHERE COALESCE(COALESCE(a, "x"), b) == "y"'), where('FROM x | WHERE a == "y"'))
+        self.assertEqual(where('FROM x | EVAL m = COALESCE(COALESCE(a, "x"), b) | WHERE m == "y"'), where('FROM x | WHERE a == "y"'))
+        # a null is skipped, it does not end it
+        self.assertEqual(where("FROM x | WHERE COALESCE(a, null, b) IS NOT NULL"), where("FROM x | WHERE COALESCE(a, b) IS NOT NULL"))
+        with self.assertRaises(ConflictError):  # the value is b, which has none
+            where('FROM x | WHERE COALESCE(a, null, b) IS NULL AND b == "x"')
+
+    def test_coalesce_alternatives_that_cannot_be_true_are_left_out(self):
+        se = SourceEvents({})
+        for query, expected in (
+            ('COALESCE(a, b) == "x" AND a IS NULL', [[{"b": "x"}]]),
+            ('COALESCE(a, a) == "x"', [[{"a": "x"}]]),
+            ('COALESCE(a, b, a) == "x" AND b IS NULL', [[{"a": "x"}]]),
+        ):
+            with self.subTest(query):
+                se = SourceEvents({})
+                se.add_query(f"FROM l | WHERE {query}")
+                branches = [[event.doc for event in branch] for branch in se.emit(timestamp=False, complete=True, count=1)]
+                self.assertEqual(expected, branches)
+        # but when none is left it is the conflict that is told
+        with self.assertRaises(ConflictError):
+            SourceEvents({}).add_query('FROM l | WHERE COALESCE(a, b) == "x" AND a IS NULL AND b IS NULL')
+
+    def test_coalesce_aliases(self):
+        for query, expected in (
+            ('EVAL m = COALESCE(a, b) | WHERE m == "x"', 'WHERE COALESCE(a, b) == "x"'),
+            ('EVAL m = TO_LOWER(COALESCE(a, b)) | WHERE m IN ("x", "y")', 'WHERE TO_LOWER(COALESCE(a, b)) IN ("x", "y")'),
+            ('EVAL m = COALESCE(a, "") | WHERE m RLIKE "x+"', 'WHERE a RLIKE "x+"'),
+            ('EVAL a = COALESCE(a, b) | WHERE a == "x"', 'WHERE COALESCE(a, b) == "x"'),  # the one that it is made of too
+            ('EVAL u = a, m = COALESCE(u, b) | WHERE m == "x"', 'WHERE COALESCE(a, b) == "x"'),
+            ('EVAL m = COALESCE(a, b), n = COALESCE(m, c) | WHERE n == "x"', 'WHERE COALESCE(a, b, c) == "x"'),
+            ('EVAL m = COALESCE(a, b, null) | WHERE m != "x"', 'WHERE COALESCE(a, b) != "x"'),
+        ):
+            with self.subTest(query):
+                self.assertEqual(where(f"FROM x | {expected.replace('WHERE', 'WHERE', 1)}"), where(f"FROM x | {query}"))
+
+    def test_coalesce_unsupported(self):
+        for query, message in (
+            ("WHERE COALESCE(a, b) > 1", "COALESCE comparison operator: >"),
+            ('WHERE COALESCE(a, CONCAT(b, c)) == "x"', "function: CONCAT"),
+            ('WHERE COALESCE("x", a) == "x"', "COALESCE argument, it must be a field"),
+            ("WHERE COALESCE(a, b) == c", "right operand, it must be a literal"),
+            ("WHERE COALESCE(a, b)", "non-boolean expression"),
+            ('WHERE TO_LOWER(a, b) == "x"', "TO_LOWER argument, it must be a field"),
+            ('WHERE TO_LOWER(TO_STRING(a)) == "x"', "TO_LOWER argument, it must be a field"),
+            ('WHERE COALESCE(TO_LOWER(a), b) == "x"', "COALESCE argument, it must be a field"),
+            ('EVAL m = COALESCE(a, b + 1) | WHERE m == "x"', "WHERE on a field made by EVAL: m"),
+            ('EVAL m = COALESCE(a, TO_LOWER(b)) | WHERE m == "x"', "WHERE on a field made by EVAL: m"),
+            ('EVAL m = TO_LOWER(a) | EVAL n = COALESCE(m, b) | WHERE n == "x"', "WHERE on a field made by EVAL: n"),
+            ("EVAL m = COALESCE(a, CONCAT(b, c)) | WHERE m IS NULL", "WHERE on a field made by EVAL: m"),
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, f"Unsupported .*({message})"):
+                where(f"FROM x | {query}")
+
     def test_scalar_functions_unsupported(self):
         for query, message in (
             ('TO_LOWER(a) == "FOO"', "TO_LOWER comparison, it is never true"),
@@ -269,7 +428,7 @@ class TestEsqlParser(unittest.TestCase):
             ('TO_LOWER(a) != "f*"', "string literal with wildcard characters"),
             ('TO_LOWER(a, b) == "foo"', "TO_LOWER argument, it must be a field"),
             ('TO_LOWER(CONCAT(a, b)) == "foo"', "function: CONCAT"),
-            ("TO_LOWER(a) IS NULL", "left operand, it must be a field"),
+            ("CONCAT(a, b) IS NULL", "function: CONCAT"),
             ("TO_LOWER(a)", "non-boolean expression|Unsupported"),
             ('TO_STRING(a, b) == "foo"', "TO_STRING argument, it must be a field"),
         ):
@@ -878,7 +1037,7 @@ class TestEsqlStats(unittest.TestCase):
         with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL: k"):
             esql.parse('FROM x | EVAL k = CONCAT(a, b) | WHERE k == "x"')
         with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL: `my k`"):
-            esql.parse("FROM x | EVAL `my k` = a | WHERE NOT `my k` IS NULL")
+            esql.parse("FROM x | EVAL `my k` = CONCAT(a, b) | WHERE NOT `my k` IS NULL")
         # an alias that a WHERE redefines is still one
         with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL"):
             esql.parse('FROM x | EVAL a = CONCAT(a, b) | WHERE a == "x"')
@@ -908,7 +1067,7 @@ class TestEsqlStats(unittest.TestCase):
 
     def test_eval_aliases_that_are_not_a_field_are_still_refused(self):
         for query in (
-            "EVAL k = TO_LOWER(a) | WHERE k IS NULL",
+            "EVAL k = CONCAT(a, b) | WHERE k IS NULL",
             'EVAL k = TO_LOWER(a) | WHERE STARTS_WITH(k, "x")',
             'EVAL k = TO_LOWER(a), m = TO_STRING(k) | WHERE m == "x"',  # a function of what a function made
             'EVAL k = TO_LOWER(TO_STRING(a)) | WHERE k == "x"',
@@ -1173,16 +1332,22 @@ class TestEsqlStatsEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCa
 
     def test_how_long_ago_requires_the_time_of_the_documents(self):
         # before STATS the @timestamp was made by an EVAL or a GROK: what MIN and MAX see is not when they are written
-        for before in ("EVAL @timestamp = @timestamp - 1 day", 'EVAL @timestamp = DATE_TRUNC(1 day, @timestamp)', 'GROK h "%{WORD:@timestamp}"'):
+        for before in (
+            "EVAL @timestamp = @timestamp - 1 day",
+            "EVAL @timestamp = DATE_TRUNC(1 day, @timestamp)",
+            'GROK h "%{WORD:@timestamp}"',
+        ):
             query = (
                 f"FROM x | {before} | STATS c = COUNT(*), first = MIN(@timestamp) BY h"
                 ' | EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6'
             )
-            with self.subTest(before), self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL after STATS: recent"):
+            with self.subTest(before), self.assertRaisesRegex(
+                NotImplementedError, "Unsupported WHERE on a field made by EVAL after STATS: recent"
+            ):
                 esql.parse(query)
         # and the ones that do not touch it do not matter
         esql.parse(
-            'FROM x | EVAL other = @timestamp - 1 day | STATS c = COUNT(*), first = MIN(@timestamp) BY h'
+            "FROM x | EVAL other = @timestamp - 1 day | STATS c = COUNT(*), first = MIN(@timestamp) BY h"
             ' | EVAL recent = DATE_DIFF("minute", first, NOW()) | WHERE recent <= 6'
         )
 
@@ -1204,6 +1369,54 @@ class TestEsqlStatsEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCa
             setattr(se, key, value)
         se.add_query(query)
         return [[event.doc for event in branch] for branch in se.emit(timestamp=False, complete=True, count=1)]
+
+    def test_count_distinct_of_a_field_that_the_conditions_give_many_values(self):
+        # IN makes a branch for each value, and the group takes the documents of all of them
+        (docs,) = self.branches(
+            'FROM x | WHERE host.type IN ("a", "b", "c") | STATS d = COUNT_DISTINCT(host.type) BY host.name | WHERE d >= 2'
+        )
+        self.assertEqual(["a", "b"], [doc["host"]["type"] for doc in docs])
+        self.assertShared(docs, "host.name")
+        # the group is as big as the other conditions need, and they take turns
+        (docs,) = self.branches(
+            'FROM x | WHERE host.type IN ("a", "b", "c") | STATS d = COUNT_DISTINCT(host.type), c = COUNT(*) BY host.name'
+            " | WHERE d >= 3 AND c >= 7"
+        )
+        self.assertEqual(["a", "b", "c", "a", "b", "c", "a"], [doc["host"]["type"] for doc in docs])
+        # what the rest of the branches have is as it was, and what is only for one of them is not for the others
+        (docs,) = self.branches(
+            'FROM x | WHERE host.type IN ("a", "b") AND event.code == "1" | STATS d = COUNT_DISTINCT(host.type) BY host.name'
+            " | WHERE d >= 2"
+        )
+        self.assertEqual([{"a", "1"}, {"b", "1"}], [{doc["host"]["type"], doc["event"]["code"]} for doc in docs])
+        # a branch that cannot be the group is left out, if there is another that can
+        branches = self.branches(
+            'FROM x | WHERE host.type IN ("a", "b") OR (host.type == "z" AND event.code == "1")'
+            " | STATS d = COUNT_DISTINCT(host.type) BY host.name | WHERE d >= 2"
+        )
+        self.assertEqual([["a", "b"]], [[doc["host"]["type"] for doc in docs] for docs in branches])
+        # more than the conditions give is not satisfiable, and it is said so
+        for query, allowed in (
+            ('host.type IN ("a", "b")', 2),
+            ('host.type == "a"', 1),
+            ('host.type IN ("a", "a")', 1),
+        ):
+            with self.subTest(query), self.assertRaisesRegex(
+                ConflictError, rf"host.type \(3 different values are needed, the conditions allow {allowed}\)"
+            ):
+                self.branches(f"FROM x | WHERE {query} | STATS d = COUNT_DISTINCT(host.type) BY host.name | WHERE d >= 3")
+        # it is the same when it is the other ways to have the value
+        (docs,) = self.branches(
+            'FROM x | WHERE host.type IN ("a", "b") | STATS d = COUNT_DISTINCT(host.type) BY host.name | WHERE d >= 2 AND d <= 5'
+        )
+        self.assertEqual(2, len(docs))
+
+    def test_count_distinct_of_many_fields_with_many_values_is_refused(self):
+        with self.assertRaisesRegex(NotImplementedError, "many fields that the conditions give different values to"):
+            self.branches(
+                'FROM x | WHERE host.type IN ("a", "b") AND event.code IN ("1", "2")'
+                " | STATS d = COUNT_DISTINCT(host.type), e = COUNT_DISTINCT(event.code) BY host.name | WHERE d >= 2 AND e >= 2"
+            )
 
     def assertShared(self, docs, field, shared=True):
         values = []
@@ -1681,6 +1894,21 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         )
         self.assertEqual([[{"a": "x"}]], self.emit_branches('FROM x | EVAL a = TO_LOWER(a) | WHERE a == "x"'))
         self.assertEqual([[{"b": "x"}]], self.emit_branches('FROM x | EVAL a = TO_LOWER(b) | WHERE a == "x"'))
+
+    def test_coalesce_emission(self):
+        # the branches say which field it is, and the fields before it are not in the document
+        self.assertEqual([[{"a": "x"}], [{"b": "x"}], [{"c": "x"}]], self.emit_branches('FROM x | WHERE COALESCE(a, b, c) == "x"'))
+        for docs in self.emit_branches('FROM x | EVAL m = COALESCE(a, b) | WHERE m != "x" AND m NOT LIKE "y*"'):
+            (field,) = docs[0]
+            self.assertIn(field, ("a", "b"))
+            self.assertNotEqual("x", docs[0][field])
+            self.assertFalse(docs[0][field].startswith("y"))
+        docs = self.emit_branches('FROM x | EVAL m = TO_LOWER(COALESCE(a, b)) | WHERE m RLIKE "(foo|bar)+"')
+        self.assertEqual(4, len(docs))
+        self.assertEqual({"a", "b"}, {key for branch in docs for key in branch[0]})
+        # no value can be the one of the first field and of the next at once
+        with self.assertRaisesRegex(NotImplementedError, "conflicting constraints on a"):
+            self.emit_branches('FROM x | WHERE COALESCE(a, b) == "x" AND a == "y"')
 
     def test_to_string_emission(self):
         branches = self.emit_branches('FROM x | WHERE TO_STRING(source.ip) IN ("127.0.0.1", "::1")')

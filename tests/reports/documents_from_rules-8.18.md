@@ -53,8 +53,8 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by DISSECT: Esql.azure_auditlogs_properties_auth_oidc_discovery_url_new (1)](#unsupported-where-on-a-field-made-by-dissect-esqlazure_auditlogs_properties_auth_oidc_discovery_url_new-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_bf_type-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_duration_seconds-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_signin_to_graph_delay_minutes_date_diff (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_signin_to_graph_delay_minutes_date_diff-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
-      1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)](#unsupported-where-on-a-field-made-by-eval-esqlml_policy_violations_mv_count-1)
       1. [Unsupported WHERE on a field made by EVAL: multi_spaces (1)](#unsupported-where-on-a-field-made-by-eval-multi_spaces-1)
       1. [Unsupported WHERE on a field made by GROK: Esql.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-esqlscript_block_id-1)
@@ -82,7 +82,6 @@ invalid-syntax
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
-      1. [Cannot choose from an empty set (1)](#cannot-choose-from-an-empty-set-1)
       1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*LifecycleConfiguration*'}): ('*Expiration=*')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslifecycleconfiguration-expiration-1)
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
@@ -593,17 +592,17 @@ Invalid syntax
 
 * Multiple Microsoft 365 User Account Lockouts in Short Time Window
 
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.event_signin_to_graph_delay_minutes_date_diff (1)
+
+1 rules:
+
+* Microsoft Entra ID Suspicious Session Reuse to Graph Access
+
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
 
 1 rules:
 
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
-
-### Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)
-
-1 rules:
-
-* Microsoft Entra ID Suspicious Session Reuse to Graph Access
 
 ### Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)
 
@@ -840,11 +839,6 @@ Invalid syntax
 
 1 rules:
 * Potential Okta MFA Bombing via Push Notifications
-
-### Cannot choose from an empty set (1)
-
-1 rules:
-* Excessive Secret or Key Retrieval from Azure Key Vault
 
 ### Field type solver: flattened (1)
 

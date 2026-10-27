@@ -233,5 +233,17 @@ class Root(List[Branch]):
         return Root(chain(*roots))
 
     @classmethod
-    def product(cls, roots):
-        return Root(reduce(operator.mul, branches, Branch.Identity) for branches in product(*roots))
+    def product(cls, roots, prune=None):
+        """Return the branches of all the combinations.
+
+        The ones that conflict are left out if `prune` is a list, which gets the errors: it is not a way to be true, the others may be.
+        """
+        branches = []
+        for combination in product(*roots):
+            try:
+                branches.append(reduce(operator.mul, combination, Branch.Identity))
+            except ConflictError as e:
+                if prune is None:
+                    raise
+                prune.append(e)
+        return Root(branches)

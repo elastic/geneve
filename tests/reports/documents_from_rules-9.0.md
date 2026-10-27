@@ -50,15 +50,14 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by DISSECT: Esql.azure_auditlogs_properties_auth_oidc_discovery_url_new (1)](#unsupported-where-on-a-field-made-by-dissect-esqlazure_auditlogs_properties_auth_oidc_discovery_url_new-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_bf_type-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_duration_seconds-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_signin_to_graph_delay_minutes_date_diff (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_signin_to_graph_delay_minutes_date_diff-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.risk_alerts_count_ratio (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlrisk_alerts_count_ratio-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.aws_ssm_command_id (1)](#unsupported-where-on-a-field-made-by-eval-esqlaws_ssm_command_id-1)
-      1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)](#unsupported-where-on-a-field-made-by-eval-esqlml_policy_violations_mv_count-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.source_ip (1)](#unsupported-where-on-a-field-made-by-eval-esqlsource_ip-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.target_user_name (1)](#unsupported-where-on-a-field-made-by-eval-esqltarget_user_name-1)
       1. [Unsupported WHERE on a field made by EVAL: multi_spaces (1)](#unsupported-where-on-a-field-made-by-eval-multi_spaces-1)
-      1. [Unsupported WHERE on a field made by EVAL: session.id (1)](#unsupported-where-on-a-field-made-by-eval-sessionid-1)
       1. [Unsupported WHERE on a field made by GROK: Esql.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-esqlscript_block_id-1)
       1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
@@ -79,7 +78,6 @@ invalid-syntax
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
-      1. [Cannot choose from an empty set (2)](#cannot-choose-from-an-empty-set-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Unsolvable constraints: event.dataset (not in Strings({'network_traffic.flow'}): ('zeek.dce_rpc')) (2)](#unsolvable-constraints-eventdataset-not-in-stringsnetwork_trafficflow-zeekdce_rpc-2)
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-2)
@@ -594,6 +592,12 @@ Invalid syntax
 
 * Multiple Microsoft 365 User Account Lockouts in Short Time Window
 
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.event_signin_to_graph_delay_minutes_date_diff (1)
+
+1 rules:
+
+* Microsoft Entra ID Suspicious Session Reuse to Graph Access
+
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)
 
 1 rules:
@@ -611,12 +615,6 @@ Invalid syntax
 1 rules:
 
 * AWS EC2 LOLBin Execution via SSM SendCommand
-
-### Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)
-
-1 rules:
-
-* Microsoft Entra ID Suspicious Session Reuse to Graph Access
 
 ### Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)
 
@@ -641,12 +639,6 @@ Invalid syntax
 1 rules:
 
 * Command Line Obfuscation via Whitespace Padding
-
-### Unsupported WHERE on a field made by EVAL: session.id (1)
-
-1 rules:
-
-* M365 OneDrive Excessive File Downloads with OAuth Token
 
 ### Unsupported WHERE on a field made by GROK: Esql.script_block_id (1)
 
@@ -863,12 +855,6 @@ Invalid syntax
 * Potential Computer Account Relay Activity
 * Potential Machine Account Relay Attack via SMB
 * Unusual Execution via Microsoft Common Console File
-
-### Cannot choose from an empty set (2)
-
-2 rules:
-* Excessive Secret or Key Retrieval from Azure Key Vault
-* Multiple Elastic Defend Alerts by Agent
 
 ### Pipes are unsupported (2)
 

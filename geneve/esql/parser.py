@@ -35,7 +35,7 @@ from lark.exceptions import UnexpectedInput
 from lark.visitors import Interpreter
 
 from .. import kql
-from ..events_emitter_eql import collect_constraints
+from ..events_emitter_eql import collect_constraints, prune_conflicts
 from ..utils import has_wildcards, regex_gen
 from .errors import EsqlParseError
 from .lexical import (
@@ -63,8 +63,12 @@ EsqlQuery = namedtuple("EsqlQuery", ["sources", "metadata", "where", "stats", "a
 EsqlStats = namedtuple("EsqlStats", ["aggregates", "by", "fields", "join", "where", "expanded"], defaults=((),))
 Aggregate = namedtuple("Aggregate", ["alias", "function", "argument", "simple"])
 # what a function of a field makes of it in a comparison: only the ones that the generation can undo
-Scalar = namedtuple("Scalar", ["function", "field"])
+# `fields` are the fields of the documents that it can be made of, the first that has a value for COALESCE, and `total` is
+# that it has a value whatever the fields have (a literal that is not null is where COALESCE ends)
+Scalar = namedtuple("Scalar", ["function", "fields", "total"])
 SCALAR_FUNCTIONS = ("to_lower", "to_string")
+LITERAL_RE = re.compile(rf"{STRING_RE.pattern}|[+-]?\d+(\.\d+)?|true|false", re.IGNORECASE)
+NULL_RE = re.compile("null", re.IGNORECASE)
 
 # commands that do not change which documents match a preceding WHERE, LIMIT does
 IGNORED_COMMANDS = ("KEEP", "DROP", "SORT", "LIMIT")
@@ -152,6 +156,8 @@ class EsqlToEql(Interpreter):
         # the fields that those are, they are what the WHERE asks for and not an alias: by id, and the objects are kept
         # so that the id is not the one of another that comes after (when they are freed it can be reused)
         self.resolved = {}
+        # the conditions on the first field that has a value (COALESCE), by id, to put together those that are about the same fields
+        self.over = {}
         self.times = set()  # the aggregates of STATS that are the first or the last time of the documents: MIN or MAX of @timestamp
         self.recent = set()  # what an EVAL after STATS makes of one of those and now: how long ago it was
         self.overwritten = set()  # the names that an EVAL after STATS makes: they are no longer what STATS said
@@ -167,7 +173,8 @@ class EsqlToEql(Interpreter):
         elif len(self.wheres) == 1:
             where = self.wheres[0]
         else:
-            where = eql.ast.And(self.wheres)
+            terms = self.merge_over(self.wheres)
+            where = eql.ast.And(terms) if len(terms) > 1 else terms[0]
         stats = None
         if self.stats is not None:
             aggregates, by, fields, join = self.stats
@@ -439,7 +446,8 @@ class EsqlToEql(Interpreter):
         left, _, right = tree.children
         left, right = self.boolean(left), self.boolean(right)
         terms = left.terms if isinstance(left, eql.ast.And) else [left]
-        return eql.ast.And(terms + [right])
+        terms = self.merge_over(terms + [right])
+        return eql.ast.And(terms) if len(terms) > 1 else terms[0]
 
     def not_op(self, tree):
         return eql.ast.Not(self.boolean(tree.children[1]))
@@ -460,39 +468,95 @@ class EsqlToEql(Interpreter):
 
     def scalar_of(self, expression):
         """Return the Scalar that an expression is (the function is None for a field), None if it is anything else."""
-        expression = expression.strip()
-        function, argument = None, expression
-        made = call(expression)
-        if made:
-            function, argument = made[0].lower(), made[1].strip()
-            if function not in SCALAR_FUNCTIONS:
-                return None
-        if not is_name(argument) or argument.lower() in ("true", "false", "null"):
-            return None
-        key = self.field_key(argument)
-        if key not in self.evals:
-            base, *path = split_field(argument)
-            scalar = Scalar(function, eql.ast.Field(base, path))
-        else:
-            # an alias of what a field is, or a function of a field that was renamed
-            inner = self.scalars.get(key)
-            if inner is None or (function is not None and inner.function is not None):
-                return None
-            scalar = inner if function is None else Scalar(function, inner.field)
-        self.resolved[id(scalar.field)] = scalar.field
+        scalar = self.scalar_made_of(expression.strip())
+        for field in scalar.fields if scalar else ():
+            self.resolved[id(field)] = field
         return scalar
 
+    def scalar_made_of(self, expression):
+        made = call(expression)
+        if made is None:
+            if not is_name(expression) or expression.lower() in ("true", "false", "null"):
+                return None
+            key = self.field_key(expression)
+            if key in self.evals:
+                return self.scalars.get(key)  # an alias of what a field is
+            base, *path = split_field(expression)
+            return Scalar(None, (eql.ast.Field(base, path),), False)
+        name, arguments = made[0].lower(), made[1].strip()
+        if name in SCALAR_FUNCTIONS:
+            inner = self.scalar_made_of(arguments)
+            return Scalar(name, inner.fields, inner.total) if inner is not None and inner.function is None else None
+        if name == "coalesce":
+            fields, total = [], False
+            for argument in split_top(arguments):
+                argument = argument.strip()
+                if NULL_RE.fullmatch(argument):
+                    continue  # it is the next that is asked for
+                if LITERAL_RE.fullmatch(argument):
+                    total = True  # what is after a literal is never reached, and it is what is there for no field
+                    break
+                inner = self.scalar_made_of(argument)
+                if inner is None or inner.function is not None:
+                    return None
+                fields.extend(inner.fields)
+                if inner.total:
+                    total = True
+                    break
+            return Scalar(None, tuple(fields), total) if fields else None
+        return None
+
     def scalar_operand(self, tree, operand):
-        """Return (field, function) of the operand of a predicate, the function is None if it is a field."""
+        """Return (fields, function, total) of the operand of a predicate, the function is None if it is a field.
+
+        There is more than one field when it is made of the first of them that has a value (COALESCE), and `total`
+        is that it has a value even if none of them has (a literal that is not null ends the COALESCE).
+        """
         node = self.visit(operand)
         # before STATS only: after it what an alias makes is a key of BY, and it is what the conditions are about
         if isinstance(node, eql.ast.Field) and self.stats is None:
             node = self.scalars.get(self.field_key(node.render()), node)
         if isinstance(node, Scalar):
-            return self.check_field(tree, node.field), node.function
+            return tuple(self.check_field(tree, field) for field in node.fields), node.function, node.total
         if not isinstance(node, eql.ast.Field):
             self.reject(tree, "left operand, it must be a field")
-        return self.check_field(tree, node), None
+        return (self.check_field(tree, node),), None, False
+
+    def over_fields(self, fields, build, builds=None):
+        """Build a condition for each field, which has to be the one with the value: the ones before it have none."""
+        terms = []
+        for i, field in enumerate(fields):
+            term = build(field)
+            nulls = [eql.ast.IsNull(before) for before in fields[:i]]
+            terms.append(eql.ast.And([term] + nulls) if nulls else term)
+        if len(terms) == 1:
+            return terms[0]
+        expr = eql.ast.Or(terms)
+        self.over[id(expr)] = (expr, fields, builds or [build])  # the expression is kept so that its id is not reused
+        return expr
+
+    def merge_over(self, terms):
+        """Put together the conditions of an AND that are about the same fields.
+
+        One that is about the first field that has a value, and another about the same, are about the same field, which is
+        the one of each of the alternatives: not any of the first with any of the second (they would not agree on which).
+        """
+        groups = {}
+        for term in terms:
+            if id(term) in self.over:
+                groups.setdefault(tuple(field.render() for field in self.over[id(term)][1]), []).append(term)
+        merged = []
+        for term in terms:
+            group = groups.get(tuple(field.render() for field in self.over[id(term)][1])) if id(term) in self.over else None
+            if group is None or len(group) == 1:
+                merged.append(term)
+            elif term is group[0]:
+                fields = self.over[id(term)][1]
+                builds = [build for member in group for build in self.over[id(member)][2]]
+                merged.append(
+                    self.over_fields(fields, lambda field, builds=builds: eql.ast.And([build(field) for build in builds]), builds)
+                )
+        return merged
 
     def literal_operand(self, tree, operand, equality=False):
         operand = self.visit(operand)
@@ -601,53 +665,69 @@ class EsqlToEql(Interpreter):
 
     def comparison(self, tree):
         left, op, right = tree.children
-        left, function = self.scalar_operand(tree, left)
+        fields, function, _ = self.scalar_operand(tree, left)
         right = self.literal_operand(tree, right, equality=str(op) in ("==", "!="))
-        if function == "to_lower":
-            return self.lower_comparison(tree, op, left, right)
         if function == "to_string":
             if str(op) not in ("==", "!="):
                 self.reject(tree, f"TO_STRING comparison operator: {op}, what is compared is text and not the value")
             self.check_round_trip(tree, right)
-        if str(op) == "==":
-            return self.equal(left, right)
-        if str(op) == "!=":
-            equal = self.equal(left, right)
-            return eql.ast.Comparison(left, "!=", right) if isinstance(equal, eql.ast.Comparison) else eql.ast.Not(equal)
-        return eql.ast.Comparison(left, str(op), right)
+        if len(fields) > 1 and str(op) not in ("==", "!="):
+            self.reject(tree, f"COALESCE comparison operator: {op}")
+
+        def build(field):
+            if function == "to_lower":
+                return self.lower_comparison(tree, op, field, right)
+            if str(op) == "==":
+                return self.equal(field, right)
+            if str(op) == "!=":
+                equal = self.equal(field, right)
+                return eql.ast.Comparison(field, "!=", right) if isinstance(equal, eql.ast.Comparison) else eql.ast.Not(equal)
+            return eql.ast.Comparison(field, str(op), right)
+
+        return self.over_fields(fields, build)
 
     def in_expr(self, tree):
         negate = any(isinstance(child, Token) and child.type == "NOT" for child in tree.children)
         operands = [child for child in tree.children if isinstance(child, Tree)]
-        left, function = self.scalar_operand(tree, operands[0])
+        fields, function, _ = self.scalar_operand(tree, operands[0])
         container = [self.literal_operand(tree, operand, equality=True) for operand in operands[1:]]
         if function == "to_string":
             for item in container:
                 self.check_round_trip(tree, item)
-        if function == "to_lower":
-            if negate:
-                return eql.ast.And([self.lower_not_equal(tree, left, item) for item in container])
-            terms = [term for term in (self.lower_equal(tree, left, item) for item in container) if term is not None]
-            if not terms:
-                self.reject(tree, "TO_LOWER IN, it is never true for literals with uppercase letters")
-            return terms[0] if len(terms) == 1 else eql.ast.Or(terms)
-        if any(isinstance(item, eql.ast.String) and has_wildcards(item.value) for item in container):
-            terms = [self.equal(left, item) for item in container]
-            expr = terms[0] if len(terms) == 1 else eql.ast.Or(terms)
-        else:
-            expr = eql.ast.InSet(left, container)
-        return eql.ast.Not(expr) if negate else expr
+
+        def build(field):
+            if function == "to_lower":
+                if negate:
+                    return eql.ast.And([self.lower_not_equal(tree, field, item) for item in container])
+                terms = [term for term in (self.lower_equal(tree, field, item) for item in container) if term is not None]
+                if not terms:
+                    self.reject(tree, "TO_LOWER IN, it is never true for literals with uppercase letters")
+                return terms[0] if len(terms) == 1 else eql.ast.Or(terms)
+            if any(isinstance(item, eql.ast.String) and has_wildcards(item.value) for item in container):
+                terms = [self.equal(field, item) for item in container]
+                expr = terms[0] if len(terms) == 1 else eql.ast.Or(terms)
+            else:
+                expr = eql.ast.InSet(field, container)
+            return eql.ast.Not(expr) if negate else expr
+
+        return self.over_fields(fields, build)
 
     def is_null(self, tree):
         negate = any(isinstance(child, Token) and child.type == "NOT" for child in tree.children)
-        left = self.field_operand(tree, tree.children[0])
-        return eql.ast.IsNotNull(left) if negate else eql.ast.IsNull(left)
+        # a function of a field, or the first of some, has no value when none of them has
+        fields, _, total = self.scalar_operand(tree, tree.children[0])
+        if total:
+            return eql.ast.Boolean(negate)  # a value for any of the fields, a null for none of them
+        if negate:
+            return self.over_fields(fields, eql.ast.IsNotNull)
+        nulls = [eql.ast.IsNull(field) for field in fields]
+        return eql.ast.And(nulls) if len(nulls) > 1 else nulls[0]
 
     def like_expr(self, tree):
         negate = any(isinstance(child, Token) and child.type == "NOT" for child in tree.children)
         operator = next(child for child in tree.children if isinstance(child, Token) and child.type in ("LIKE", "RLIKE"))
         left, right = (child for child in tree.children if isinstance(child, Tree))
-        left, function = self.scalar_operand(tree, left)
+        fields, function, _ = self.scalar_operand(tree, left)
         right = self.visit(right)
         if not isinstance(right, eql.ast.String):
             self.reject(tree, f"{operator.type} pattern, it must be a string literal")
@@ -659,12 +739,14 @@ class EsqlToEql(Interpreter):
                 self.reject(tree, f"TO_LOWER {operator.type}, it is never true for a pattern with uppercase letters: {right.value!r}")
             if operator.type == "RLIKE":
                 regex_gen.check(right.value)
-            return self.present(left)
-        if operator.type == "RLIKE":
-            expr = self.rlike_call(tree, left, right.value, lower)
-        else:
-            expr = self.like_call(left, self.like_pattern(tree, right.value))
-        return eql.ast.Not(expr) if negate else expr
+            return self.over_fields(fields, self.present)
+        pattern = right.value if operator.type == "RLIKE" else self.like_pattern(tree, right.value)
+
+        def build(field):
+            expr = self.rlike_call(tree, field, pattern, lower) if operator.type == "RLIKE" else self.like_call(field, pattern)
+            return eql.ast.Not(expr) if negate else expr
+
+        return self.over_fields(fields, build)
 
     # operands
 
@@ -693,11 +775,8 @@ class EsqlToEql(Interpreter):
         special = {"kql": self.function_kql, "mv_contains": self.function_mv_contains}
         if name.lower() in special:
             return special[name.lower()](tree, name.upper(), [self.visit(arg) for arg in args])
-        if name.lower() in SCALAR_FUNCTIONS:
-            args = [self.visit(arg) for arg in args]
-            if len(args) != 1 or not isinstance(args[0], eql.ast.Field):
-                self.reject(tree, f"{name.upper()} argument, it must be a field")
-            return Scalar(name.lower(), args[0])
+        if name.lower() in SCALAR_FUNCTIONS or name.lower() == "coalesce":
+            return self.scalar_call(tree, name, [self.visit(arg) for arg in args])
         # not getattr(): lark's Interpreter answers to any unknown attribute
         functions = {
             "starts_with": self.function_starts_with,
@@ -714,6 +793,32 @@ class EsqlToEql(Interpreter):
         if any(not isinstance(arg, eql.ast.String) for arg in args[1:]):
             self.reject(tree, f"{name.upper()} arguments, the others must be string literals")
         return function(tree, name.upper(), args[0], [arg.value for arg in args[1:]])
+
+    def scalar_call(self, tree, name, args):
+        """A function of a field that a predicate may be about: TO_LOWER, TO_STRING and COALESCE of fields."""
+        name = name.lower()
+        fields, total = [], False
+        for arg in args:
+            if isinstance(arg, eql.ast.Null):
+                continue  # it is the next that is asked for
+            if isinstance(arg, eql.ast.Literal) and name == "coalesce" and fields:
+                total = True  # what is after a literal is never reached, and it is what is there for no field
+                break
+            node = arg
+            if isinstance(arg, eql.ast.Field) and self.stats is None:
+                node = self.scalars.get(self.field_key(arg.render()), arg)  # an alias of what a field is
+            if isinstance(node, Scalar) and node.function is None:
+                fields.extend(node.fields)
+                if node.total:
+                    total = True
+                    break
+            elif isinstance(node, eql.ast.Field):
+                fields.append(node)
+            else:
+                self.reject(tree, f"{name.upper()} argument, it must be a field")
+        if not fields or (name != "coalesce" and len(args) != 1):
+            self.reject(tree, f"{name.upper()} argument, it must be a field")
+        return Scalar(None if name == "coalesce" else name, tuple(fields), total)
 
     def function_kql(self, tree, name, args):
         if len(args) != 1 or not isinstance(args[0], eql.ast.String):
@@ -785,8 +890,15 @@ def validate_branches(ast):
     one positive constraint on a field is therefore not supported, whatever its schema is: this
     covers repeated and nested `==`, `IN` and `LIKE`, their negations, and mixes of them.
     """
-    branches = list(collect_constraints(ast, max_branches=MAX_BRANCHES))
+    pruned = []
+    token = prune_conflicts.set(pruned)  # as when the documents are made
+    try:
+        branches = list(collect_constraints(ast, max_branches=MAX_BRANCHES))
+    finally:
+        prune_conflicts.reset(token)
     if not branches:
+        if pruned:
+            raise pruned[0]  # what was left out was all there was
         raise NotImplementedError("Unsupported WHERE that is never true")
     for branch in branches:
         for doc in branch:
