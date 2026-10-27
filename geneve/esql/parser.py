@@ -148,6 +148,8 @@ class EsqlToEql(Interpreter):
         self.renames = {}  # what an EVAL makes by naming a field of the documents again: the field that it is
         self.unknown_expansions = []  # what an EVAL makes that MV_EXPAND expands, of which the number of values is not known
         self.expanded = []  # the fields of the documents that MV_EXPAND expands before STATS
+        self.scalars = {}  # what an EVAL makes that is a field, or TO_LOWER or TO_STRING of one: a WHERE can ask for it
+        self.resolved = set()  # the ids of the fields that those are, they are what the WHERE asks for and not an alias
         self.overwritten = set()  # the names that an EVAL after STATS makes: they are no longer what STATS said
 
     @staticmethod
@@ -198,7 +200,7 @@ class EsqlToEql(Interpreter):
             self.post_wheres.append(expression)
             return
         for node in expression:
-            if isinstance(node, eql.ast.Field) and self.field_key(node.render()) in self.evals:
+            if isinstance(node, eql.ast.Field) and id(node) not in self.resolved and self.field_key(node.render()) in self.evals:
                 made_by = self.made_by.get(self.field_key(node.render()), "EVAL")
                 self.reject(tree, f"WHERE on a field made by {made_by}: {node.render()}")
         self.wheres.append(expression)
@@ -250,7 +252,12 @@ class EsqlToEql(Interpreter):
                 self.overwritten.add(self.field_key(made[0]))
             elif made:
                 key = self.field_key(made[0])
+                scalar = self.scalar_of(made[1])  # before the alias takes the place of the field that it may be made of
                 self.evals[key] = self.dependencies(made[1])
+                if scalar is None:
+                    self.scalars.pop(key, None)
+                else:
+                    self.scalars[key] = scalar
                 self.made_by[key] = "EVAL"
                 self.renames.pop(key, None)
                 if is_name(made[1]) and len(self.evals[key]) == 1:
@@ -270,6 +277,7 @@ class EsqlToEql(Interpreter):
                 self.evals[key] = depends
                 self.made_by[key] = name
                 self.renames.pop(key, None)
+                self.scalars.pop(key, None)
 
     def extracted(self, tree, name, texts):
         """Return the names of the fields that the patterns take out of a text."""
@@ -402,9 +410,36 @@ class EsqlToEql(Interpreter):
             self.reject(tree, "left operand, it must be a field")
         return self.check_field(tree, operand)
 
+    def scalar_of(self, expression):
+        """Return the Scalar that an expression is (the function is None for a field), None if it is anything else."""
+        expression = expression.strip()
+        function, argument = None, expression
+        made = call(expression)
+        if made:
+            function, argument = made[0].lower(), made[1].strip()
+            if function not in SCALAR_FUNCTIONS:
+                return None
+        if not is_name(argument) or argument.lower() in ("true", "false", "null"):
+            return None
+        key = self.field_key(argument)
+        if key not in self.evals:
+            base, *path = split_field(argument)
+            scalar = Scalar(function, eql.ast.Field(base, path))
+        else:
+            # an alias of what a field is, or a function of a field that was renamed
+            inner = self.scalars.get(key)
+            if inner is None or (function is not None and inner.function is not None):
+                return None
+            scalar = inner if function is None else Scalar(function, inner.field)
+        self.resolved.add(id(scalar.field))
+        return scalar
+
     def scalar_operand(self, tree, operand):
         """Return (field, function) of the operand of a predicate, the function is None if it is a field."""
         node = self.visit(operand)
+        # before STATS only: after it what an alias makes is a key of BY, and it is what the conditions are about
+        if isinstance(node, eql.ast.Field) and self.stats is None:
+            node = self.scalars.get(self.field_key(node.render()), node)
         if isinstance(node, Scalar):
             return self.check_field(tree, node.field), node.function
         if not isinstance(node, eql.ast.Field):

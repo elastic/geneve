@@ -24,6 +24,9 @@ Examples:
     python scripts/esql_demo.py -f query.esql --count 2
     python scripts/esql_demo.py -i                      # type queries, one per line (end with an empty line)
     python scripts/esql_demo.py --es http://localhost:9200 'FROM logs-* | WHERE host.name LIKE "web-*"'
+    python scripts/esql_demo.py --list                  # the built-in examples
+    python scripts/esql_demo.py -e 6 -e 12              # run some of them (--example all runs every one)
+    python scripts/esql_demo.py -e all --es http://localhost:9200 -b 1
 
 Without --es, only the documents are printed. With --es, they are indexed into a throwaway index of that
 Elasticsearch (no Kibana needed) and the query itself is run against it: it must return the documents.
@@ -42,6 +45,46 @@ from geneve.events_emitter import SourceEvents
 from geneve.utils import load_schema
 
 DEFAULT_SCHEMA = root_dir / "etc" / "ecs-v9.5.0.tar.gz"
+
+# what is supported and what is not (the last ones), as the rules use it: (title, query)
+EXAMPLES = (
+    ("Equality and comparison", 'FROM logs-* | WHERE process.name == "regsvr32.exe" AND process.pid > 1024'),
+    ("IN: a branch for each value", 'FROM logs-* | WHERE process.name IN ("cmd.exe", "powershell.exe", "bash")'),
+    ("OR: a branch for each side", 'FROM logs-* | WHERE process.name == "a.exe" OR source.port < 1024'),
+    ("LIKE: the wildcards are filled in", 'FROM logs-* | WHERE process.name LIKE "FOO*" AND file.path LIKE "/home/*/.ssh/?d_*"'),
+    ("STARTS_WITH and ENDS_WITH", 'FROM logs-* | WHERE STARTS_WITH(process.command_line, "curl ") AND ENDS_WITH(file.name, ".sh")'),
+    (
+        "RLIKE: a string is made out of the regular expression",
+        r'FROM logs-* | WHERE process.name RLIKE """(cmd|powershell)\.exe""" AND user.id RLIKE """[0-9]{3}-[a-z]+"""',
+    ),
+    ("NOT RLIKE: a string that does not match", r'FROM logs-* | WHERE process.name NOT RLIKE """(cmd|powershell)\.exe"""'),
+    (
+        "TO_LOWER: what the field is, whatever its case",
+        'FROM logs-* | WHERE TO_LOWER(user_agent.original) LIKE "*curl*" AND TO_LOWER(process.name) IN ("cmd.exe", "bash")',
+    ),
+    ("TO_STRING of an ip", 'FROM logs-* | WHERE TO_STRING(source.ip) IN ("127.0.0.1", "::1")'),
+    ("CIDR_MATCH", 'FROM logs-* | WHERE CIDR_MATCH(source.ip, "10.0.0.0/8", "192.168.0.0/16") AND user.name IS NOT NULL'),
+    ("IS NULL and NOT", 'FROM logs-* | WHERE process.parent.name IS NULL AND NOT process.name == "a.exe"'),
+    ("KQL() inside ES|QL", 'FROM logs-* | WHERE KQL("process.name: (cmd.exe or powershell.exe) and event.category: process")'),
+    ("An EVAL alias that is a field", 'FROM logs-* | EVAL ua = TO_LOWER(user_agent.original) | WHERE ua LIKE "*fasthttp*"'),
+    ("STATS: a group of documents", "FROM logs-* | STATS c = COUNT(*) BY host.id | WHERE c >= 5"),
+    (
+        "STATS: different values and a key",
+        "FROM logs-* | WHERE event.action IS NOT NULL | STATS d = COUNT_DISTINCT(user.name), c = COUNT(*) BY host.id, source.ip | WHERE d >= 3 AND c >= 3",
+    ),
+    (
+        "A rule-like query: METADATA, comments, KEEP, SORT",
+        """FROM logs-endpoint.events.process-* METADATA _id
+// programs started from a temporary folder
+| WHERE host.os.type == "linux" AND event.type == "start"
+    AND process.executable LIKE "/tmp/*" AND NOT process.parent.name IN ("cron", "systemd")
+| KEEP @timestamp, host.name, process.executable
+| SORT @timestamp DESC""",
+    ),
+    ("Not supported: the anchor of a regular expression", 'FROM logs-* | WHERE process.name RLIKE "^cmd"'),
+    ("Not supported: it could never be true", 'FROM logs-* | WHERE TO_LOWER(process.name) == "CMD.EXE"'),
+    ("Not supported: what CASE makes", 'FROM logs-* | EVAL k = CASE(process.pid > 10, "a", "b") | WHERE k == "a"'),
+)
 SKIP = "(no documents could be generated)"
 
 
@@ -87,8 +130,32 @@ def run(schema, query, args, es):
     return check(es, schema, query) if es else True
 
 
+def examples_to_run(selection):
+    """Return the numbers (from 1) of the examples that were asked for, `all` is every one."""
+    if "all" in selection:
+        return range(1, len(EXAMPLES) + 1)
+    numbers = []
+    for item in selection:
+        if not item.isdigit() or not 1 <= int(item) <= len(EXAMPLES):
+            sys.exit(f"There is no example {item!r}, see --list")
+        numbers.append(int(item))
+    return numbers
+
+
+def list_examples():
+    for number, (title, query) in enumerate(EXAMPLES, 1):
+        print(f"{number:2}. {title}")
+        for line in query.splitlines():
+            print(f"      {line}")
+
+
 def read_queries(args):
-    if args.file:
+    if args.example:
+        for number in examples_to_run(args.example):
+            title, query = EXAMPLES[number - 1]
+            print(f"\n{'=' * 100}\n{number}. {title}\n\n{query}\n")
+            yield query
+    elif args.file:
         yield Path(args.file).read_text()
     elif args.query:
         yield args.query
@@ -113,6 +180,10 @@ def read_queries(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("-l", "--list", action="store_true", help="list the examples")
+    parser.add_argument(
+        "-e", "--example", action="append", metavar="N", help="run an example (a number of --list, or all), can be repeated"
+    )
     parser.add_argument("query", nargs="?", help="the ES|QL query, if neither this nor -f nor -i, it is read from stdin")
     parser.add_argument("-f", "--file", help="read the query from a file")
     parser.add_argument("-i", "--interactive", action="store_true", help="read queries until ^D")
@@ -121,6 +192,9 @@ def main():
     parser.add_argument("--schema", default=str(DEFAULT_SCHEMA), help="ECS archive, default: %(default)s")
     parser.add_argument("--es", help="Elasticsearch url to check the documents against, eg. http://localhost:9200")
     args = parser.parse_args()
+    if args.list:
+        list_examples()
+        return
 
     schema = load_schema(args.schema, "generated/ecs/ecs_flat.yml", root_dir)
     es = None
@@ -132,6 +206,10 @@ def main():
             sys.exit(f"Could not reach Elasticsearch: {args.es}")
 
     results = [run(schema, query, args, es) for query in read_queries(args)]  # all of them, not until the first failure
+    if args.example:
+        # the examples that say that they are not supported are expected to fail
+        numbers = examples_to_run(args.example)
+        sys.exit(0 if all(ok != EXAMPLES[number - 1][0].startswith("Not supported") for number, ok in zip(numbers, results)) else 1)
     sys.exit(0 if all(results) else 1)
 
 

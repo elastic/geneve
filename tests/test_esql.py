@@ -573,6 +573,36 @@ def stats_summary(query):
     return [(a.alias, a.function, a.argument) for a in stats.aggregates], list(stats.by)
 
 
+class TestEsqlDemo(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
+    """The examples of scripts/esql_demo.py are what the documentation shows, they have to keep doing what they say."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("esql_demo", tu.root_dir / "scripts" / "esql_demo.py")
+        cls.demo = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.demo)
+
+    def test_examples(self):
+        self.assertGreater(len(self.demo.EXAMPLES), 10)
+        for title, query in self.demo.EXAMPLES:
+            with self.subTest(title):
+                if title.startswith("Not supported"):
+                    with self.assertRaises(NotImplementedError):
+                        self.demo.generate(self.schema, query, 1)
+                else:
+                    self.assertGreater(len(self.demo.generate(self.schema, query, 1)), 0)
+
+    def test_select_examples(self):
+        self.assertEqual(range(1, len(self.demo.EXAMPLES) + 1), self.demo.examples_to_run(["all"]))
+        self.assertEqual([2, 5], self.demo.examples_to_run(["2", "5"]))
+        for wrong in ("0", "x", str(len(self.demo.EXAMPLES) + 1)):
+            with self.subTest(wrong), self.assertRaises(SystemExit):
+                self.demo.examples_to_run([wrong])
+
+
 class TestEsqlStats(unittest.TestCase):
     def test_no_stats(self):
         self.assertIsNone(esql.parse("FROM x | WHERE a == 1").stats)
@@ -705,7 +735,7 @@ class TestEsqlStats(unittest.TestCase):
         self.assertEqual(("c",), query.stats.join)
         self.assertEqual([("d", "count_distinct", None, False), ("e", "count", None, True)], [tuple(a) for a in query.stats.aggregates])
         with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL: k"):
-            esql.parse('FROM x | EVAL /* c */ // c\n k = TO_LOWER(a) // c\n | WHERE k == "x"')
+            esql.parse('FROM x | EVAL /* c */ // c\n k = CONCAT(a, b) // c\n | WHERE k == "x"')
 
     def test_aliases_of_the_query(self):
         self.assertEqual(("k", "z"), esql.parse("FROM x | EVAL k = TO_LOWER(a), z = b | STATS c = COUNT(*) BY k").aliases)
@@ -729,7 +759,7 @@ class TestEsqlStats(unittest.TestCase):
         self.assertEqual(("k", "r"), esql.parse('FROM x | GROK a """(?<k>.)""" | EVAL r = 1 | KEEP r').aliases)
         # not used, it just goes through
         self.assertEqual(eql.parse_expression("b == 1"), esql.parse('FROM x | GROK a "%{WORD:w}" | WHERE b == 1').where)
-        for command, name in (('GROK a "%{WORD:w}"', "GROK"), ('DISSECT a "%{w}"', "DISSECT"), ("EVAL w = TO_LOWER(a)", "EVAL")):
+        for command, name in (('GROK a "%{WORD:w}"', "GROK"), ('DISSECT a "%{w}"', "DISSECT"), ("EVAL w = CONCAT(a, b)", "EVAL")):
             with self.subTest(command), self.assertRaisesRegex(NotImplementedError, f"Unsupported WHERE on a field made by {name}: w"):
                 esql.parse(f'FROM x | {command} | WHERE w == "x"')
         # after STATS they are not what STATS said
@@ -828,14 +858,57 @@ class TestEsqlStats(unittest.TestCase):
 
     def test_eval_aliases_are_not_fields_of_the_documents(self):
         with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL: k"):
-            esql.parse('FROM x | EVAL k = TO_LOWER(a) | WHERE k == "x"')
+            esql.parse('FROM x | EVAL k = CONCAT(a, b) | WHERE k == "x"')
         with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL: `my k`"):
             esql.parse("FROM x | EVAL `my k` = a | WHERE NOT `my k` IS NULL")
         # an alias that a WHERE redefines is still one
         with self.assertRaisesRegex(NotImplementedError, "Unsupported WHERE on a field made by EVAL"):
-            esql.parse('FROM x | EVAL a = TO_LOWER(a) | WHERE a == "x"')
+            esql.parse('FROM x | EVAL a = CONCAT(a, b) | WHERE a == "x"')
         # unrelated fields are fine
         esql.parse('FROM x | EVAL k = TO_LOWER(a) | WHERE b == "x" | STATS c = COUNT(*) BY k')
+
+    def test_eval_aliases_of_a_field_can_be_asked_for(self):
+        # an alias that is a field, or TO_LOWER or TO_STRING of one, is what the field is
+        for query, expected in (
+            ('EVAL k = TO_LOWER(a) | WHERE k == "x"', 'a == "x"'),
+            ('EVAL k = a | WHERE k IN ("x", "y")', 'a in ("x", "y")'),
+            ('EVAL k = a | WHERE k == "x" AND b == 1', 'a == "x" and b == 1'),
+            ('EVAL k = TO_STRING(a.b) | WHERE k != "x"', 'a.b != "x"'),
+            ("EVAL `my k` = a | WHERE `my k` == 1", "a == 1"),
+        ):
+            with self.subTest(query):
+                self.assertEqual(eql.parse_expression(expected), esql.parse(f"FROM x | {query}").where)
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) LIKE "*x*"'), where('FROM x | EVAL l = TO_LOWER(a) | WHERE l LIKE "*x*"'))
+        self.assertEqual(
+            where('FROM x | WHERE TO_LOWER(a) NOT IN ("x", "y")'), where('FROM x | EVAL l = TO_LOWER(a) | WHERE l NOT IN ("x", "y")')
+        )
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) RLIKE "x+"'), where('FROM x | EVAL l = TO_LOWER(a) | WHERE l RLIKE "x+"'))
+        # one that takes the place of the field that it is made of, and the one of an alias
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) == "x"'), where('FROM x | EVAL a = TO_LOWER(a) | WHERE a == "x"'))
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) == "x"'), where('FROM x | EVAL u = a, l = TO_LOWER(u) | WHERE l == "x"'))
+        self.assertEqual(where('FROM x | WHERE TO_LOWER(a) == "x"'), where('FROM x | EVAL l = TO_LOWER(a), m = l | WHERE m == "x"'))
+
+    def test_eval_aliases_that_are_not_a_field_are_still_refused(self):
+        for query in (
+            "EVAL k = TO_LOWER(a) | WHERE k IS NULL",
+            'EVAL k = TO_LOWER(a) | WHERE STARTS_WITH(k, "x")',
+            'EVAL k = TO_LOWER(a), m = TO_STRING(k) | WHERE m == "x"',  # a function of what a function made
+            'EVAL k = TO_LOWER(TO_STRING(a)) | WHERE k == "x"',
+            'EVAL k = TO_LOWER(a, b) | WHERE k == "x"',
+            'EVAL k = true | WHERE k == "x"',
+            'EVAL k = null | WHERE k == "x"',
+            "EVAL k = a + 1 | WHERE k == 1",
+            'EVAL k = a | EVAL k = CONCAT(k, "x") | WHERE k == "x"',  # what was an alias of a field no longer is
+            'EVAL k = a | GROK k "%{WORD:k}" | WHERE k == "x"',
+            "EVAL k = a | WHERE k",
+            "EVAL k = a | WHERE k == TO_LOWER(b)",
+        ):
+            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "Unsupported"):
+                esql.parse(f"FROM x | {query}")
+        # after STATS an alias is what STATS made of it, a key of BY, and the conditions are about it
+        query = esql.parse('FROM x | EVAL k = TO_LOWER(a) | STATS c = COUNT(*) BY k | WHERE k == "x" AND c > 1')
+        self.assertEqual(("k",), query.stats.by)
+        self.assertEqual(eql.parse_expression('k == "x" and c > 1'), query.stats.where)
 
     def test_eval_without_stats_is_unsupported(self):
         # an EVAL changes the columns, not which documents match: fine when nothing asks for what it makes
@@ -1514,6 +1587,19 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
         for _ in range(10):
             value = self.emit_branches('FROM x | WHERE TO_LOWER(a) NOT RLIKE "[a-z0-9]*"')[0][0]["a"]
             self.assertNotRegex(value, "^[a-z0-9]*$")
+
+    def test_eval_alias_emission(self):
+        # the documents have the field that the alias is made of, and no alias
+        for docs in self.emit_branches(
+            'FROM x | EVAL ua = TO_LOWER(user_agent.original) | WHERE ua LIKE "*fasthttp*" AND ua NOT LIKE "*bot*"'
+        ):
+            self.assertEqual({"user_agent"}, set(docs[0]))
+            self.assertIn("fasthttp", docs[0]["user_agent"]["original"])
+        self.assertEqual(
+            [[{"client": {"ip": "10.0.0.1"}}]], self.emit_branches('FROM x | EVAL client_ip = client.ip | WHERE client_ip == "10.0.0.1"')
+        )
+        self.assertEqual([[{"a": "x"}]], self.emit_branches('FROM x | EVAL a = TO_LOWER(a) | WHERE a == "x"'))
+        self.assertEqual([[{"b": "x"}]], self.emit_branches('FROM x | EVAL a = TO_LOWER(b) | WHERE a == "x"'))
 
     def test_to_string_emission(self):
         branches = self.emit_branches('FROM x | WHERE TO_STRING(source.ip) IN ("127.0.0.1", "::1")')

@@ -20,7 +20,6 @@ Rules version: 8.17.14
       1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
       1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
       1. [Unsupported WHERE on a field made by EVAL: count (2)](#unsupported-where-on-a-field-made-by-eval-count-2)
-      1. [Unsupported WHERE on a field made by EVAL: request_type (2)](#unsupported-where-on-a-field-made-by-eval-request_type-2)
       1. [Error at line:5,column:43
 Invalid syntax
 // Filter for scripts that contain the "char" keyword using MATCH, boosts the query performance
@@ -44,10 +43,12 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by DISSECT: object_name (1)](#unsupported-where-on-a-field-made-by-dissect-object_name-1)
       1. [Unsupported WHERE on a field made by DISSECT: operationType (1)](#unsupported-where-on-a-field-made-by-dissect-operationtype-1)
       1. [Unsupported WHERE on a field made by DISSECT: service_code (1)](#unsupported-where-on-a-field-made-by-dissect-service_code-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: bf_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-bf_type-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: duration_minutes (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-duration_minutes-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: duration_seconds (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-duration_seconds-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-risk_factor-1)
-      1. [Unsupported WHERE on a field made by EVAL: error_code (1)](#unsupported-where-on-a-field-made-by-eval-error_code-1)
       1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
+      1. [Unsupported WHERE on a field made by EVAL: user_id (1)](#unsupported-where-on-a-field-made-by-eval-user_id-1)
       1. [Unsupported WHERE on a field made by GROK: powershell.file.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-powershellfilescript_block_id-1)
       1. [Unsupported field name: {?bucket.name.key (1)](#unsupported-field-name-bucketnamekey-1)
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
@@ -475,13 +476,6 @@ invalid-syntax
 * Potential PowerShell Obfuscation via Concatenated Dynamic Command Invocation
 * Potential PowerShell Obfuscation via Invalid Escape Sequences
 
-### Unsupported WHERE on a field made by EVAL: request_type (2)
-
-2 rules:
-
-* Multiple Microsoft 365 User Account Lockouts in Short Time Window
-* Potential Microsoft 365 User Account Brute Force
-
 ### Error at line:5,column:43
 Invalid syntax
 // Filter for scripts that contain the "char" keyword using MATCH, boosts the query performance
@@ -532,11 +526,23 @@ Invalid syntax
 
 * AWS Service Quotas Multi-Region `GetServiceQuota` Requests
 
+### Unsupported WHERE on a field made by EVAL after STATS: bf_type (1)
+
+1 rules:
+
+* Potential Microsoft 365 User Account Brute Force
+
 ### Unsupported WHERE on a field made by EVAL after STATS: duration_minutes (1)
 
 1 rules:
 
 * Microsoft Entra ID Session Reuse with Suspicious Graph Access
+
+### Unsupported WHERE on a field made by EVAL after STATS: duration_seconds (1)
+
+1 rules:
+
+* Multiple Microsoft 365 User Account Lockouts in Short Time Window
 
 ### Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)
 
@@ -544,17 +550,17 @@ Invalid syntax
 
 * Potential Abuse of Resources by High Token Count and Large Response Sizes
 
-### Unsupported WHERE on a field made by EVAL: error_code (1)
-
-1 rules:
-
-* Microsoft Entra ID Exccessive Account Lockouts Detected
-
 ### Unsupported WHERE on a field made by EVAL: policy_violations (1)
 
 1 rules:
 
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
+
+### Unsupported WHERE on a field made by EVAL: user_id (1)
+
+1 rules:
+
+* Microsoft Entra ID Exccessive Account Lockouts Detected
 
 ### Unsupported WHERE on a field made by GROK: powershell.file.script_block_id (1)
 

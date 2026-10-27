@@ -16,6 +16,7 @@ Rules version: 9.0.19
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_length (8)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_length-8)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (2)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-2)
       1. [Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)](#unsupported-where-on-a-field-made-by-eval-esqlscript_block_pattern_count-2)
       1. [Unsupported right operand, it must be a literal (2)](#unsupported-right-operand-it-must-be-a-literal-2)
       1. [Error at line:46,column:47
@@ -47,7 +48,6 @@ invalid-syntax
 -------------------------------------------1)
       1. [Unsupported WHERE on a field made by DISSECT: Esql.aws_cloudtrail_request_parameters_service_code (1)](#unsupported-where-on-a-field-made-by-dissect-esqlaws_cloudtrail_request_parameters_service_code-1)
       1. [Unsupported WHERE on a field made by DISSECT: Esql.azure_auditlogs_properties_auth_oidc_discovery_url_new (1)](#unsupported-where-on-a-field-made-by-dissect-esqlazure_auditlogs_properties_auth_oidc_discovery_url_new-1)
-      1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlbrute_force_type-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_bf_type-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.event_duration_seconds (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlevent_duration_seconds-1)
       1. [Unsupported WHERE on a field made by EVAL after STATS: Esql.ml_risk_score (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-esqlml_risk_score-1)
@@ -55,10 +55,8 @@ invalid-syntax
       1. [Unsupported WHERE on a field made by EVAL: Esql.aws_ssm_command_id (1)](#unsupported-where-on-a-field-made-by-eval-esqlaws_ssm_command_id-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.azure_signinlogs_properties_app_id_coalesce (1)](#unsupported-where-on-a-field-made-by-eval-esqlazure_signinlogs_properties_app_id_coalesce-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.ml_policy_violations_mv_count (1)](#unsupported-where-on-a-field-made-by-eval-esqlml_policy_violations_mv_count-1)
-      1. [Unsupported WHERE on a field made by EVAL: Esql.o365_audit_ExtendedProperties_RequestType_lower (1)](#unsupported-where-on-a-field-made-by-eval-esqlo365_audit_extendedproperties_requesttype_lower-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.source_ip (1)](#unsupported-where-on-a-field-made-by-eval-esqlsource_ip-1)
       1. [Unsupported WHERE on a field made by EVAL: Esql.target_user_name (1)](#unsupported-where-on-a-field-made-by-eval-esqltarget_user_name-1)
-      1. [Unsupported WHERE on a field made by EVAL: Esql.user_agent_original_to_lower (1)](#unsupported-where-on-a-field-made-by-eval-esqluser_agent_original_to_lower-1)
       1. [Unsupported WHERE on a field made by EVAL: multi_spaces (1)](#unsupported-where-on-a-field-made-by-eval-multi_spaces-1)
       1. [Unsupported WHERE on a field made by EVAL: session.id (1)](#unsupported-where-on-a-field-made-by-eval-sessionid-1)
       1. [Unsupported WHERE on a field made by GROK: Esql.script_block_id (1)](#unsupported-where-on-a-field-made-by-grok-esqlscript_block_id-1)
@@ -87,6 +85,7 @@ invalid-syntax
       1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-2)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
+      1. [Unsupported condition on the aggregate Esql.url_original_count_distinct (2)](#unsupported-condition-on-the-aggregate-esqlurl_original_count_distinct-2)
       1. ['NoneType' object is not subscriptable (1)](#nonetype-object-is-not-subscriptable-1)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
       1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
@@ -168,7 +167,6 @@ invalid-syntax
       1. [Unsupported condition on the aggregate Esql.is_browser_case_max (1)](#unsupported-condition-on-the-aggregate-esqlis_browser_case_max-1)
       1. [Unsupported condition on the aggregate Esql.is_interactive (1)](#unsupported-condition-on-the-aggregate-esqlis_interactive-1)
       1. [Unsupported condition on the aggregate Esql.oauth_token_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqloauth_token_count_distinct-1)
-      1. [Unsupported condition on the aggregate Esql.url_original_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlurl_original_count_distinct-1)
       1. [Unsupported condition on the aggregate Esql.vendor_count_distinct (1)](#unsupported-condition-on-the-aggregate-esqlvendor_count_distinct-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
@@ -521,6 +519,13 @@ invalid-syntax
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
 
+### Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (2)
+
+2 rules:
+
+* Microsoft Entra ID Sign-In Brute Force Activity
+* Potential Microsoft 365 User Account Brute Force
+
 ### Unsupported WHERE on a field made by EVAL: Esql.script_block_pattern_count (2)
 
 2 rules:
@@ -577,12 +582,6 @@ Invalid syntax
 
 * OIDC Discovery URL Changed in Entra ID
 
-### Unsupported WHERE on a field made by EVAL after STATS: Esql.brute_force_type (1)
-
-1 rules:
-
-* Microsoft Entra ID Sign-In Brute Force Activity
-
 ### Unsupported WHERE on a field made by EVAL after STATS: Esql.event_bf_type (1)
 
 1 rules:
@@ -625,12 +624,6 @@ Invalid syntax
 
 * AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
 
-### Unsupported WHERE on a field made by EVAL: Esql.o365_audit_ExtendedProperties_RequestType_lower (1)
-
-1 rules:
-
-* Potential Microsoft 365 User Account Brute Force
-
 ### Unsupported WHERE on a field made by EVAL: Esql.source_ip (1)
 
 1 rules:
@@ -642,12 +635,6 @@ Invalid syntax
 1 rules:
 
 * Elastic Defend and Email Alerts Correlation
-
-### Unsupported WHERE on a field made by EVAL: Esql.user_agent_original_to_lower (1)
-
-1 rules:
-
-* Web Server Suspicious User Agent Requests
 
 ### Unsupported WHERE on a field made by EVAL: multi_spaces (1)
 
@@ -912,6 +899,12 @@ Invalid syntax
 2 rules:
 * Parent Process PID Spoofing
 * Privileges Elevation via Parent Process PID Spoofing
+
+### Unsupported condition on the aggregate Esql.url_original_count_distinct (2)
+
+2 rules:
+* Web Server Discovery or Fuzzing Activity
+* Web Server Suspicious User Agent Requests
 
 ### 'NoneType' object is not subscriptable (1)
 
@@ -1317,11 +1310,6 @@ Invalid syntax
 
 1 rules:
 * Suspicious Microsoft 365 UserLoggedIn via OAuth Code
-
-### Unsupported condition on the aggregate Esql.url_original_count_distinct (1)
-
-1 rules:
-* Web Server Discovery or Fuzzing Activity
 
 ### Unsupported condition on the aggregate Esql.vendor_count_distinct (1)
 
