@@ -1,3 +1,26 @@
+## v0.5.0 - Oct 27, 2026
+
+#### Core
+
+* Upgrade to EQL 1.0.
+* Update the ECS schemas through 9.5.
+* Refresh the detection rules for supported Stack and Serverless versions.
+* Emit `event.ingested` one millisecond after `@timestamp` to ensure generated
+  events are available to rule execution.
+
+#### Testing
+
+* Extend the Stack test drill through 9.6, including the 8.18 and 8.19 releases.
+* Treat partial rule-execution failures as failed executions.
+* Retry Elasticsearch bulk data loads safely and fix EPR timeout retries.
+* Add checks to detect drift between CI workflows and branch protection rules.
+* Test on 3.15 while retaining Python 3.8 as the minimum supported version.
+
+#### Tooling
+
+* Add scripts and agents to automate detection rule updates.
+* Use PyPI trusted publishing for releases.
+
 ## v0.4.0 - Jan 28, 2025
 
 #### Core

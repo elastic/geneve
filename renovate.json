@@ -11,7 +11,7 @@
       "matchPackageNames": [
         "python"
       ],
-      "matchCurrentValue": "^3\\.8$",
+      "matchCurrentValue": "/^3\\.8$/",
       "enabled": false
     },
     {
