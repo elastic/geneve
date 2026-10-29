@@ -220,6 +220,22 @@ mono_branch_mono_doc = {
     """: [
         [{"event": {"category": ["process"]}, "process": {"args": ["IjvkBbQFwv"]}}],
     ],
+    """FROM logs-* | WHERE process.name == "regsvr32.exe" AND process.pid > 1024
+    """: [
+        [{"process": {"name": "regsvr32.exe", "pid": 1205578803}}],
+    ],
+    """FROM logs-* METADATA _id | WHERE CIDR_MATCH(source.ip, "10.0.0.0/8") AND user.name IS NOT NULL
+    """: [
+        [{"source": {"ip": "10.87.181.23"}, "user": {"name": "y"}}],
+    ],
+    """FROM logs-* | WHERE process.name LIKE "FOO*" AND process.parent.name IS NULL
+    """: [
+        [{"process": {"name": "FOOlhmkIerHD"}}],
+    ],
+    """FROM logs-* | WHERE process.name RLIKE \"\"\"[a-z]{3}\\.exe\"\"\" AND user.name NOT RLIKE \"\"\"[a-z]+[0-9]{2}\"\"\"
+    """: [
+        [{"process": {"name": "uqh.exe"}, "user": {"name": "m8"}}],
+    ],
 }
 
 multi_branch_mono_doc = {
@@ -311,6 +327,27 @@ multi_branch_mono_doc = {
         [{"event": {"category": ["process"]}, "process": {"args": ["a", "b1", "c2"]}}],
         [{"event": {"category": ["process"]}, "process": {"args": ["a", "b2", "c1"]}}],
         [{"event": {"category": ["process"]}, "process": {"args": ["a", "b2", "c2"]}}],
+    ],
+    """FROM logs-* | WHERE process.name IN ("cmd.exe", "powershell.exe") AND process.pid > 1024
+    """: [
+        [{"process": {"name": "cmd.exe", "pid": 1961221159}}],
+        [{"process": {"name": "powershell.exe", "pid": 1086324984}}],
+    ],
+    """FROM logs-* | WHERE process.name RLIKE \"\"\"(cmd|powershell)\\.exe\"\"\"
+    """: [
+        [{"process": {"name": "cmd.exe"}}],
+        [{"process": {"name": "powershell.exe"}}],
+    ],
+    """FROM logs-* | WHERE TO_LOWER(process.name) IN ("cmd.exe", "powershell.exe") OR TO_STRING(source.ip) == "127.0.0.1"
+    """: [
+        [{"process": {"name": "cmd.exe"}}],
+        [{"process": {"name": "powershell.exe"}}],
+        [{"source": {"ip": "127.0.0.1"}}],
+    ],
+    """FROM logs-* | WHERE process.name == "a.exe" OR source.port < 1024
+    """: [
+        [{"process": {"name": "a.exe"}}],
+        [{"source": {"port": 593}}],
     ],
 }
 
@@ -511,6 +548,10 @@ exceptions = {
     """sequence
         [process where process.name in ("cmd.exe", "powershell.exe")] with runs=10000
     """: "Root with too many branches (limit: 10000)",
+    """FROM logs-* | WHERE process.pid == 0
+    """: "Unsolvable constraints: process.pid (out of boundary, 1 <= 0 <= 4294967295)",
+    """FROM logs-* | WHERE process.name IS NULL AND process.name IS NOT NULL
+    """: "Unsolvable constraints: process.name (cannot be non-null)",
 }
 
 cardinality = [
@@ -640,6 +681,19 @@ cardinality = [
 ]
 
 
+def all_queries():
+    return tuple(mono_branch_mono_doc) + tuple(multi_branch_mono_doc) + tuple(mono_branch_multi_doc) + tuple(multi_branch_multi_doc)
+
+
+def signals_queries():
+    """Return the queries for the online test.
+
+    ES|QL queries are left out, they search the indices named in their own FROM
+    while the generated documents are indexed into the geneve-ut-* ones.
+    """
+    return tuple(query for query in all_queries() if guess_from_query(query).language != "esql")
+
+
 class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
     maxDiff = None
     nb = jupyter.Notebook()
@@ -695,6 +749,13 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 and, why not?, report any interesting finding. You can also add and remove cells at will.
             """),
         ]
+
+    def test_signals_queries_skip_esql(self):
+        esql_queries = {query for query in all_queries() if guess_from_query(query).language == "esql"}
+        selected = signals_queries()
+        self.assertGreater(len(esql_queries), 0)
+        self.assertFalse(esql_queries & set(selected))
+        self.assertEqual(len(all_queries()) - len(esql_queries), len(selected))
 
     def test_len(self):
         se = SourceEvents(self.schema)
@@ -894,8 +955,7 @@ class TestSignalsQueries(tu.SignalsTestCase, tu.OnlineTestCase, tu.SeededTestCas
 
     def test_queries(self):
         mf_ext = f"_{self.multiplying_factor}x" if self.multiplying_factor > 1 else ""
-        queries = tuple(mono_branch_mono_doc) + tuple(multi_branch_mono_doc) + tuple(mono_branch_multi_doc) + tuple(multi_branch_multi_doc)
-        rules, asts = self.parse_from_queries(queries)
+        rules, asts = self.parse_from_queries(signals_queries())
         pending = self.load_rules_and_docs(rules, asts)
         try:
             self.check_signals(rules, pending)

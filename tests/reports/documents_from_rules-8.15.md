@@ -11,10 +11,19 @@ Rules version: 8.15.18
    1. [Skipped rules](#skipped-rules)
       1. [Unsupported rule type: new_terms (102)](#unsupported-rule-type-new_terms-102)
       1. [Unsupported rule type: machine_learning (74)](#unsupported-rule-type-machine_learning-74)
-      1. [Unsupported rule type: esql (48)](#unsupported-rule-type-esql-48)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
+      1. [Unsupported function: now (10)](#unsupported-function-now-10)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
+      1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
+      1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
+      1. [Unsupported WHERE on a field made by DISSECT: mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-mfa_used-1)
+      1. [Unsupported WHERE on a field made by DISSECT: object_name (1)](#unsupported-where-on-a-field-made-by-dissect-object_name-1)
+      1. [Unsupported WHERE on a field made by DISSECT: service_code (1)](#unsupported-where-on-a-field-made-by-dissect-service_code-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-risk_factor-1)
+      1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
+      1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
+      1. [Unsupported second STATS (1)](#unsupported-second-stats-1)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
       1. [Unsupported function: match (13)](#unsupported-function-match-13)
@@ -101,6 +110,8 @@ Rules version: 8.15.18
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-processextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'user.id' constraint: >= (1)](#unsupported-keyword-userid-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (1)](#unsupported-argument-types-class-eqlastfunctioncall-1)
+      1. [Unsupported condition on the aggregate avg_request_size (1)](#unsupported-condition-on-the-aggregate-avg_request_size-1)
+      1. [Unsupported condition on the aggregate max_data_transferred (1)](#unsupported-condition-on-the-aggregate-max_data_transferred-1)
       1. [Unsupported is_negated: {'is_negated': True} (1)](#unsupported-is_negated-is_negated-true-1)
 
 ## Skipped rules
@@ -291,59 +302,6 @@ Rules version: 8.15.18
 * Unusual Windows User Privilege Elevation Activity
 * Unusual Windows Username
 
-### Unsupported rule type: esql (48)
-
-48 rules:
-
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
-* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
-* AWS Discovery API Calls via CLI from a Single Resource
-* AWS EC2 EBS Snapshot Shared or Made Public
-* AWS EC2 Multi-Region DescribeInstances API Calls
-* AWS IAM AdministratorAccess Policy Attached to Group
-* AWS IAM AdministratorAccess Policy Attached to Role
-* AWS IAM AdministratorAccess Policy Attached to User
-* AWS IAM Login Profile Added for Root
-* AWS IAM User Created Access Keys For Another User
-* AWS S3 Bucket Enumeration or Brute Force
-* AWS S3 Object Encryption Using External KMS Key
-* AWS STS Role Chaining
-* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* AWS Signin Single Factor Console Login with Federated User
-* Attempts to Brute Force a Microsoft 365 User Account
-* Azure Entra ID Password Spraying (Non-Interactive SFA)
-* Azure Entra MFA TOTP Brute Force Attempts
-* Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
-* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
-* Azure OpenAI Insecure Output Handling
-* High Number of Egress Network Connections from Unusual Executable
-* High Number of Okta Device Token Cookies Generated for Authentication
-* M365 OneDrive Excessive File Downloads with OAuth Token
-* Multiple Device Token Hashes for Single Okta Session
-* Multiple Okta User Authentication Events with Client Address
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Okta User Sessions Started from Different Geolocations
-* Potential AWS S3 Bucket Ransomware Note Uploaded
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Azure OpenAI Model Theft
-* Potential Denial of Azure OpenAI ML Service
-* Potential Malware-Driven SSH Brute Force Attempt
-* Potential Port Scanning Activity from Compromised Host
-* Potential Subnet Scanning Activity from Compromised Host
-* Potential Widespread Malware Infection Across Multiple Hosts
-* Unusual Base64 Encoding/Decoding Activity
-* Unusual Command Execution from Web Server Parent
-* Unusual File Creation by Web Server
-* Unusual File Transfer Utility Launched
-* Unusual High Confidence Content Filter Blocks Detected
-* Unusual High Denied Sensitive Information Policy Blocks Detected
-* Unusual High Denied Topic Blocks Detected
-* Unusual High Word Policy Blocks Detected
-* Unusual Process Spawned from Web Server Parent
-
 ### Unsupported rule type: threshold (29)
 
 29 rules:
@@ -378,6 +336,21 @@ Rules version: 8.15.18
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
+### Unsupported function: now (10)
+
+10 rules:
+
+* High Number of Egress Network Connections from Unusual Executable
+* M365 OneDrive Excessive File Downloads with OAuth Token
+* Potential Malware-Driven SSH Brute Force Attempt
+* Potential Port Scanning Activity from Compromised Host
+* Potential Subnet Scanning Activity from Compromised Host
+* Unusual Base64 Encoding/Decoding Activity
+* Unusual Command Execution from Web Server Parent
+* Unusual File Creation by Web Server
+* Unusual File Transfer Utility Launched
+* Unusual Process Spawned from Web Server Parent
+
 ### Unsupported rule type: threat_match (5)
 
 5 rules:
@@ -396,6 +369,65 @@ Rules version: 8.15.18
 * Halfbaked Command and Control Beacon
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
+
+### Unsupported right operand, it must be a literal (4)
+
+4 rules:
+
+* AWS EC2 EBS Snapshot Shared or Made Public
+* AWS IAM User Created Access Keys For Another User
+* AWS S3 Object Encryption Using External KMS Key
+* AWS STS Role Chaining
+
+### Unsupported WHERE on a field made by DISSECT: policyName (3)
+
+3 rules:
+
+* AWS IAM AdministratorAccess Policy Attached to Group
+* AWS IAM AdministratorAccess Policy Attached to Role
+* AWS IAM AdministratorAccess Policy Attached to User
+
+### Unsupported WHERE on a field made by DISSECT: mfa_used (1)
+
+1 rules:
+
+* AWS Signin Single Factor Console Login with Federated User
+
+### Unsupported WHERE on a field made by DISSECT: object_name (1)
+
+1 rules:
+
+* Potential AWS S3 Bucket Ransomware Note Uploaded
+
+### Unsupported WHERE on a field made by DISSECT: service_code (1)
+
+1 rules:
+
+* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
+
+### Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)
+
+1 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+
+### Unsupported WHERE on a field made by EVAL: policy_violations (1)
+
+1 rules:
+
+* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
+
+### Unsupported left operand, it must be a field (1)
+
+1 rules:
+
+* AWS Discovery API Calls via CLI from a Single Resource
+
+### Unsupported second STATS (1)
+
+1 rules:
+
+* Unusual High Confidence Content Filter Blocks Detected
 
 ## Generation errors
 
@@ -903,6 +935,16 @@ Rules version: 8.15.18
 
 1 rules:
 * Remote Computer Account DnsHostName Update
+
+### Unsupported condition on the aggregate avg_request_size (1)
+
+1 rules:
+* Potential Denial of Azure OpenAI ML Service
+
+### Unsupported condition on the aggregate max_data_transferred (1)
+
+1 rules:
+* Potential Azure OpenAI Model Theft
 
 ### Unsupported is_negated: {'is_negated': True} (1)
 

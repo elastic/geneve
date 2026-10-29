@@ -26,6 +26,29 @@ from typing import List
 from .utils.hdict import hdict
 
 
+def infer_type(constraints):
+    """Return the type that the literals of ES|QL say a field has, None if they don't or it is not ES|QL.
+
+    The schema may not know the field (those of the integrations), and a typed literal is the type of the field in ES|QL.
+    """
+    types = set()
+    for name, value, *flags in constraints or ():
+        if not (flags and flags[0].get("esql")):
+            return None
+        if name in ("wildcard", "not wildcard"):
+            types.add("keyword")
+        elif name in ("==", "!=", "<", "<=", ">", ">="):
+            if isinstance(value, bool):
+                types.add("boolean")
+            elif isinstance(value, str):
+                types.add("keyword")
+            elif isinstance(value, int) or (isinstance(value, float) and value.is_integer()):
+                types.add("long")
+            else:
+                return None
+    return types.pop() if len(types) == 1 else None
+
+
 class ConflictError(ValueError):
     def __init__(self, msg, field, name=None):
         name = f" {name}" if name else ""
@@ -36,6 +59,7 @@ class Document:
     def __init__(self, field=None, name=None, value=None):
         self.__aliases = {}
         self.__constraints = hdict()
+        self.__flags = {}  # where the document comes from, for the solvers of the groups of fields (constraints with none have no flags)
         if field is not None:
             self.append_constraint(field, name, value)
 
@@ -43,6 +67,7 @@ class Document:
         doc = Document()
         doc.__aliases = {k: copy(v) for k, v in self.__aliases.items()}
         doc.__constraints = copy(self.__constraints)
+        doc.__flags = dict(self.__flags)
         return doc
 
     def append_constraint(self, field, name=None, value=None, flags=None):
@@ -60,7 +85,7 @@ class Document:
             if name is not None and not (name == "!=" and value is None):
                 self.__constraints[field].append((name, value, flags or {}))
 
-    def extend_constraints(self, field, constraints):
+    def extend_constraints(self, field, constraints, *, unique=False):
         if field not in self.__constraints:
             self.__constraints[field] = copy(constraints)
         elif self.__constraints[field] is None:
@@ -69,10 +94,26 @@ class Document:
         else:
             if constraints is None:
                 raise ConflictError("cannot be null", field)
-            self.__constraints[field].extend(constraints)
+            current = self.__constraints[field]
+            # the same constraint of each of the documents that share the field says it once, not many times (many values for an array)
+            current.extend([c for c in constraints if not (unique and c in current)])
 
     def fields(self):
         return set(self.__constraints)
+
+    def items(self):
+        return self.__constraints.items()
+
+    def flag_constraints(self, flags, *, unless=None):
+        """Add flags to all the constraints, for the solvers to read, but to those flagged `unless`."""
+        self.__flags.update(flags)
+        for _, constraints in self.__constraints.items():  # noqa: PERF102, hdict has no values()
+            if constraints:
+                constraints[:] = [
+                    (name, value, {**flags_, **flags} if unless is None or not flags_.get(unless) else flags_)
+                    for name, value, *rest in constraints
+                    for flags_ in [rest[0] if rest else {}]
+                ]
 
     def entities(self):
         return self.__entities.values()
@@ -80,6 +121,7 @@ class Document:
     def __iadd__(self, other):
         for field, constraints in other.__constraints.items():
             self.extend_constraints(field, constraints)
+        self.__flags.update(other.__flags)
         return self
 
     def __add__(self, other):
@@ -100,7 +142,7 @@ class Document:
             doc.extend_constraints(field, constraints)
         return doc
 
-    def join_fields(self, doc, fields):
+    def join_fields(self, doc, fields, *, unique=False):
         doc = doc.clone()
         for i, field in enumerate(fields):
             # remembed the field names referring to the same join field
@@ -110,7 +152,7 @@ class Document:
             alias = self.__aliases[i][0]
             # concatenate all the constraints that refer to the same join field
             if field in doc.__constraints:
-                self.extend_constraints(alias, doc.__constraints[field])
+                self.extend_constraints(alias, doc.__constraints[field], unique=unique)
             else:
                 self.append_constraint(alias)
             # each of the depending fields need access to the join field
@@ -126,7 +168,12 @@ class Document:
     def optimize(self, *args, **kwargs):
         from .solver import solver
 
-        self.__entities = {group: solver.new_entity(group, fields, *args, **kwargs) for group, fields in self.__constraints.groups()}
+        # ES|QL (and the KQL in it) asks for what it says, the groups of fields that make up what they like are told
+        asked = frozenset(self.__constraints)
+        extra = {"strict": True, "asked": asked} if self.__flags.get("esql") or self.__flags.get("kql") else {}
+        self.__entities = {
+            group: solver.new_entity(group, fields, *args, **kwargs, **extra) for group, fields in self.__constraints.groups()
+        }
 
     def solve(self, join_doc, environment):
         doc = {}
@@ -186,5 +233,17 @@ class Root(List[Branch]):
         return Root(chain(*roots))
 
     @classmethod
-    def product(cls, roots):
-        return Root(reduce(operator.mul, branches, Branch.Identity) for branches in product(*roots))
+    def product(cls, roots, prune=None):
+        """Return the branches of all the combinations.
+
+        The ones that conflict are left out if `prune` is a list, which gets the errors: it is not a way to be true, the others may be.
+        """
+        branches = []
+        for combination in product(*roots):
+            try:
+                branches.append(reduce(operator.mul, combination, Branch.Identity))
+            except ConflictError as e:
+                if prune is None:
+                    raise
+                prune.append(e)
+        return Root(branches)

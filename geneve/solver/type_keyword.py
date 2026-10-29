@@ -19,6 +19,7 @@
 
 import string
 from copy import copy
+from itertools import chain
 from typing import ClassVar
 
 from ..constraints import ConflictError
@@ -26,16 +27,23 @@ from ..utils.solution_space import Strings
 from . import Field, solver
 
 
+def as_strings(v, flags):
+    """The values of a constraint, as literals (no wildcards in them) when the constraint is flagged so."""
+    if flags and flags[0].get("literal"):
+        return Strings(v, literal=True)
+    return v
+
+
 def get_templ(field, constraints):
     templ = Strings()
     templ.min_star_len = 1
     templ.max_star_len = 12
 
-    for k, v, *_ in constraints:
+    for k, v, *flags in constraints:
         if k in ("==", "wildcard"):
             if not isinstance(v, (list, tuple)):
                 v = [v]
-            new_value = templ & v
+            new_value = templ & as_strings(v, flags)
             if not new_value:
                 v = "', '".join(sorted(v))
                 raise ConflictError(f"not in {templ}: ('{v}')", field)
@@ -43,7 +51,7 @@ def get_templ(field, constraints):
         elif k in ("!=", "not wildcard"):
             if not isinstance(v, (list, tuple)):
                 v = [v]
-            new_value = templ - v
+            new_value = templ - as_strings(v, flags)
             if not new_value:
                 v = "', '".join(sorted(v))
                 raise ConflictError(f"excluded by {templ}: ('{v}')", field)
@@ -64,14 +72,22 @@ class KeywordField(Field):
         self.templ = get_templ(field, field_constraints)
         self.value = []
 
-        for k, v, *_ in constraints:
+        # a constraint flagged as case sensitive (ES|QL's LIKE) makes all the patterns of the field so
+        self.case_sensitive = any(flags[0].get("case_sensitive") for _, _, *flags in chain(constraints, field_constraints) if flags)
+        self.templ.case_sensitive = self.case_sensitive
+
+        for k, v, *flags in constraints:
             if k in ("==", "wildcard"):
                 if not isinstance(v, (list, tuple)):
                     v = [v]
                 if self.is_array or not self.value:
-                    self.value.append(self.templ & v)
+                    new_value = self.templ & as_strings(v, flags)
+                    if self.case_sensitive and not new_value:
+                        v = "', '".join(sorted(v))
+                        raise ConflictError(f"not in {self.templ} (case sensitive): ('{v}')", field)
+                    self.value.append(new_value)
                 else:
-                    new_value = self.value[0] & v
+                    new_value = self.value[0] & as_strings(v, flags)
                     if not new_value:
                         v = "', '".join(sorted(v))
                         raise ConflictError(f"not in {self.value[0]}: ('{v}')", field)
@@ -81,12 +97,13 @@ class KeywordField(Field):
                     v = [v]
                 if not self.value:
                     self.value.append(copy(self.templ))
+                excluded = as_strings(v, flags)
                 for i, value in enumerate(self.value):
-                    new_value = value - v
+                    new_value = value - excluded
                     if not new_value:
                         v = "', '".join(sorted(v))
                         raise ConflictError(f"excluded by {value}: ('{v}')", field)
-                    value -= v
+                    value -= excluded
         if not self.value:
             self.value.append(copy(self.templ))
 
@@ -97,3 +114,17 @@ class KeywordField(Field):
         if not self.is_array:
             value = value[0]
         return {"value": value, "left_attempts": left_attempts}
+
+
+@solver.type("constant_keyword")
+class ConstantKeywordField(KeywordField):
+    """A keyword that is the same for all the documents of an index.
+
+    For the time being it is solved as any other keyword, but only for the queries that come from ES|QL
+    (or from a KQL string in it): the other languages keep rejecting the field type as they always did.
+    """
+
+    def __init__(self, field, constraints, field_constraints, schema):
+        if not any(flags[0].get("esql") or flags[0].get("kql") for _, _, *flags in constraints if flags):
+            raise NotImplementedError(f"Field type solver: {self.type[1:]}")
+        super().__init__(field, constraints, field_constraints, schema)

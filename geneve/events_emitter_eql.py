@@ -19,14 +19,16 @@
 
 from __future__ import annotations
 
+import contextvars
+import json
 import math
 from itertools import chain, product
 from typing import Any, NoReturn
 
 import eql
 
-from .constraints import Branch, Document, Root
-from .utils import TreeTraverser
+from .constraints import Branch, ConflictError, Document, Root
+from .utils import TreeTraverser, regex_gen, split_path
 
 __all__ = ()
 
@@ -65,7 +67,8 @@ def cc_field(node: eql.ast.Field, value: str, negate: bool, max_branches: int) -
 def cc_boolean(node: eql.ast.Boolean, negate: bool, max_branches: int) -> Root:
     branches = []
     if _nope(node.value, negate):
-        branches.append(Branch.Identity)
+        # not the shared one: whoever comes after (ES|QL flags it) must not find it flagged
+        branches.append(Branch([Document()]))
     return Root(branches)
 
 
@@ -78,13 +81,19 @@ def cc_or_terms(node: eql.ast.Or | eql.ast.And, negate: bool, max_branches: int)
     return Root.chain(terms)
 
 
+# a combination of the terms of an AND that conflicts is not a way to be true, but one of the others may be: ES|QL
+# queries have alternatives that are made to be true together (COALESCE) and some of them cannot be
+# it holds the list that gets the conflicts that were left out, so that when nothing else is left they are told
+prune_conflicts = contextvars.ContextVar("prune_conflicts", default=None)
+
+
 def cc_and_terms(node: eql.ast.Or | eql.ast.And, negate: bool, max_branches: int) -> Root:
     terms = tuple(collect_constraints(term, negate, max_branches) for term in node.terms)
     if max_branches:
         nr_branches = math.prod(len(branches) for branches in terms)
         if nr_branches > max_branches:
             raise ValueError(f"Root with too many branches (limit: {max_branches})")
-    return Root.product(terms)
+    return Root.product(terms, prune=prune_conflicts.get())
 
 
 @traverser(eql.ast.Or)
@@ -128,6 +137,8 @@ def cc_in_set(node: eql.ast.InSet, negate: bool, max_branches: int) -> Root:
             doc.append_constraint(field, "!=", term.value)
         branches.append(Branch([doc]))
     else:
+        if max_branches and len(node.container) > max_branches:
+            raise ValueError(f"Root with too many branches (limit: {max_branches})")
         for term in node.container:
             branches.extend(cc_field(node.expression, term.value, negate, max_branches))
     return Root(branches)
@@ -199,19 +210,34 @@ def cc_sequence(node: eql.ast.Sequence, negate: bool, max_branches: int) -> Root
 
 @traverser(eql.ast.FunctionCall)
 def cc_function_call(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    fn_name = node.name.lower()
+    if fn_name == "_esql":
+        # its argument is a whole expression, not a field
+        return cc_esql(node, negate, max_branches)
+    if fn_name == "_kql":
+        return cc_kql(node, negate, max_branches)
+    if fn_name == "_stats":
+        return cc_stats(node, negate, max_branches)
     if type(node.arguments[0]) is not eql.ast.Field:
         raise NotImplementedError(f"Unsupported argument type: {type(node.arguments[0])}")
     args_types = (eql.ast.String, eql.ast.Number)
     if any(type(arg) not in args_types for arg in node.arguments[1:]):
         wrong_types = sorted({str(type(arg)) for arg in node.arguments[1:] if type(arg) not in args_types})
         raise NotImplementedError(f"Unsupported argument type(s): {', '.join(wrong_types)}")
-    fn_name = node.name.lower()
     if fn_name == "wildcard":
         return cc_wildcard(node, negate, max_branches)
     elif fn_name == "cidrmatch":
         return cc_function(node, negate, max_branches, "in")
     elif fn_name == "_cardinality":
         return cc_function(node, negate, max_branches, "cardinality")
+    elif fn_name == "_like":
+        return cc_like(node, negate, max_branches)
+    elif fn_name == "_literal":
+        return cc_literal(node, negate, max_branches)
+    elif fn_name == "_rlike":
+        return cc_rlike(node, negate, max_branches)
+    elif fn_name == "_present":
+        return cc_present(node, negate, max_branches)
     else:
         raise NotImplementedError(f"Unsupported function: {node.name}")
 
@@ -220,6 +246,303 @@ def cc_function(node: eql.ast.FunctionCall, negate: bool, max_branches: int, con
     field = node.arguments[0].render()
     constraint_name = constraint_name if not negate else f"not {constraint_name}"
     doc = Document(field, constraint_name, tuple(arg.value for arg in node.arguments[1:]))
+    return Root([Branch([doc])])
+
+
+def cc_esql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # the expression comes from an ES|QL query, which is stricter than EQL: flag its constraints (and
+    # only them, wherever the node sits in the tree) for the solvers that know the field types to check
+    if len(node.arguments) != 1:
+        raise NotImplementedError(f"Unsupported number of arguments for {node.name}: {len(node.arguments)}")
+    pruned = []
+    token = prune_conflicts.set(pruned)
+    try:
+        root = collect_constraints(node.arguments[0], negate, max_branches)
+    finally:
+        prune_conflicts.reset(token)
+    if not len(root) and pruned:
+        raise pruned[0]
+    joined = {}
+    for doc in root.constraints():
+        doc.flag_constraints({"esql": True}, unless="kql")
+        # the document of what the documents of a group share is not one of them, and it solves their fields
+        for _, constraints in doc.items():  # noqa: PERF102, a Document has no values()
+            for name, value, *_ in constraints or ():
+                if name == "join_value":
+                    joined[id(value[0])] = value[0]
+    for join_doc in joined.values():
+        join_doc.flag_constraints({"esql": True}, unless="kql")
+    return root
+
+
+# a cardinality that is never reached, all the values of the field are different
+DISTINCT = 2**31
+# the documents that a threshold may ask for
+MAX_DOCUMENTS = 1000
+
+
+def normalize_name(name: str) -> str:
+    return ".".join(split_path(name))
+
+
+def count_interval(field: str, constraints: Any) -> tuple[int, float, set]:
+    """Return the least, the most and what is not allowed in between that the conditions on a count allow, at least one document."""
+    if constraints is None:
+        raise ConflictError("cannot be null", field)
+    lo, hi, excluded = 1, math.inf, set()
+    for name, value, *_ in constraints:
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            raise NotImplementedError(f"Unsupported value in the condition on {field}: {value!r}")
+        if name == ">=":
+            lo = max(lo, math.ceil(value))
+        elif name == ">":
+            lo = max(lo, math.floor(value) + 1)
+        elif name == "<=":
+            hi = min(hi, math.floor(value))
+        elif name == "<":
+            hi = min(hi, math.ceil(value) - 1)
+        elif name == "==":
+            lo, hi = max(lo, math.ceil(value)), min(hi, math.floor(value))
+        elif name == "!=":
+            excluded.add(value)
+        else:
+            raise NotImplementedError(f"Unsupported condition on {field}: {name}")
+    while lo in excluded:
+        lo += 1
+    while hi in excluded:
+        hi -= 1
+    if lo > hi:
+        raise ConflictError(f"empty solution space, {lo} <= x <= {hi}", field)
+    return lo, hi, {value for value in excluded if lo < value < hi}
+
+
+def cc_stats(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # the documents before an aggregation, in the number that its conditions ask for and related as BY asks
+    if negate:
+        raise NotImplementedError("Unsupported negation of STATS")
+    pre, post, spec = node.arguments
+    spec = json.loads(spec.value)
+    aggregates = {normalize_name(alias): (function, argument, simple) for alias, function, argument, simple in spec["aggregates"]}
+    by = [normalize_name(field) for field in spec["by"]]
+    join = [normalize_name(field) for field in spec["join"]]
+    expanded = [normalize_name(field) for field in spec.get("expanded", [])]
+    pre_root = collect_constraints(pre, False, max_branches)
+    post_root = collect_constraints(post, False, max_branches)
+    if max_branches and len(pre_root) * len(post_root) > max_branches:
+        raise ValueError(f"Root with too many branches (limit: {max_branches})")
+    branches, errors = [], []
+    for pre_branch in pre_root:
+        for post_branch in post_root:
+            try:
+                branch = stats_branch(pre_branch, post_branch, aggregates, by, join, expanded, pre_root)
+            except ConflictError as e:
+                errors.append(e)  # it is not a way to be true, the others may be
+                continue
+            if branch is not None:
+                branches.append(branch)
+    if not branches and errors:
+        raise errors[0]
+    return Root(branches)
+
+
+def positive_constraints(constraints: Any) -> list:
+    return [c for c in constraints or [] if c[0] in ("==", "wildcard", "in")]
+
+
+def single_equality(doc: Document, field: str) -> Any:
+    """Return the constraint that says that a field has one value (not a pattern), None if it is anything else."""
+    constraints = dict(doc.items()).get(field)
+    if constraints and len(constraints) == 1 and constraints[0][0] == "==" and constraints[0][1] is not None:
+        return constraints[0]
+    return None
+
+
+def siblings_of(base: Document, field: str, pre_root: Root) -> list:
+    """Return the documents that are as the base but for the value that a field has: another way to have one of them."""
+
+    def rest(doc):
+        return sorted((name, repr(constraints)) for name, constraints in doc.items() if name != field)
+
+    if single_equality(base, field) is None:
+        return [base]
+    return [
+        doc
+        for branch in pre_root
+        for doc in list(branch)[:1]
+        if len(branch) == 1 and single_equality(doc, field) is not None and rest(doc) == rest(base)
+    ]
+
+
+def stats_branch(
+    pre_branch: Branch, post_branch: Branch, aggregates: dict, by: list, join: list, expanded: list, pre_root: Root | None = None
+) -> Branch | None:
+    if len(pre_branch) != 1:
+        raise NotImplementedError("Unsupported STATS of documents that are related")
+    base = pre_branch[0]
+    counts, distinct, by_conditions = [], {}, []
+    for doc in post_branch:
+        for field, constraints in doc.items():
+            if field in aggregates:
+                function, argument, simple = aggregates[field]
+                if function == "values":
+                    raise NotImplementedError(f"Unsupported condition on the values of {field}")
+                if not simple or function not in ("count", "count_distinct"):
+                    raise NotImplementedError(f"Unsupported condition on the aggregate {field}")
+                lo, hi, excluded = count_interval(field, constraints)
+                if function == "count":
+                    counts.append((field, argument, lo, hi, excluded))
+                else:
+                    old_lo, old_hi, old_excluded = distinct.get(argument, (1, math.inf, set()))
+                    distinct[argument] = (max(lo, old_lo), min(hi, old_hi), excluded | old_excluded)
+            elif field in by:
+                if constraints is None:
+                    raise NotImplementedError(f"Unsupported condition on the BY field {field}: it is null")
+                by_conditions.append((field, constraints))
+            else:
+                raise NotImplementedError(f"Unsupported field in WHERE after STATS: {field}")
+
+    # what is counted of a field are its values, those of a document that has many are not a document
+    base_constraints = dict(base.items())
+    for field in expanded:
+        # and MV_EXPAND makes a row of each of them
+        if len(positive_constraints(base_constraints.get(field))) > 1:
+            raise NotImplementedError(f"Unsupported STATS over a field that MV_EXPAND expands with many values: {field}")
+    for field in {argument for _, argument, *_ in counts if argument} | set(distinct):
+        if len(positive_constraints(base_constraints.get(field))) > 1:
+            raise NotImplementedError(f"Unsupported aggregate of a field with many values: {field}")
+
+    # how many documents there are, a COUNT of a field counts those that have it and all of them have it
+    size = max([lo for _, _, lo, *_ in counts] + [lo for lo, *_ in distinct.values()] + [1])
+    size_hi = min([hi for _, _, _, hi, _ in counts] + [math.inf])
+    excluded = set().union(*(e for *_, e in counts))
+    while size in excluded:
+        size += 1
+    if size > size_hi:
+        raise ConflictError(f"empty solution space, {size} <= x <= {size_hi}", counts[0][0] if counts else "count")
+    if size > MAX_DOCUMENTS:
+        raise NotImplementedError(f"Unsupported threshold, {size} documents are needed (limit: {MAX_DOCUMENTS})")
+
+    # how many different values: one for all of them, a different one for each, or not more than a number
+    shared, different, capped = [], [], {}
+    for field, (lo, hi, not_allowed) in distinct.items():
+        if lo > hi:
+            raise ConflictError(f"empty solution space, {lo} <= x <= {hi}", field)
+        if not_allowed:
+            raise NotImplementedError(f"Unsupported exclusion of the number of different values of {field}: {sorted(not_allowed)}")
+        if hi == 1:
+            shared.append(field)
+        elif lo > 1 and hi < size:
+            raise NotImplementedError(f"Unsupported number of different values of {field}: between {lo} and {hi} in {size} documents")
+        elif lo > 1:
+            different.append(field)
+        elif hi < size:
+            capped[field] = int(hi)
+    join_fields = join + [field for field in shared if field not in join]
+    for field in different:
+        if field in join_fields:
+            raise NotImplementedError(f"Unsupported COUNT_DISTINCT of a BY field: {field}")
+    present = {argument for _, argument, *_ in counts if argument} | set(distinct)
+
+    # different values of a field that the conditions before STATS make a branch for each of: a document of each of the branches
+    # (the ones that are as the base but for that value), and the group is made for all of them by the first
+    siblings = None
+    for field in list(different):
+        options = siblings_of(base, field, pre_root or [pre_branch])
+        values = {single_equality(doc, field)[1] for doc in options if single_equality(doc, field)}
+        if single_equality(base, field) is not None and len(values) < distinct[field][0]:
+            raise ConflictError(f"{distinct[field][0]} different values are needed, the conditions allow {len(values)}", field)
+        if len(options) > 1:
+            if siblings is not None:
+                raise NotImplementedError("Unsupported COUNT_DISTINCT of many fields that the conditions give different values to")
+            if options[0] is not base:
+                return None
+            siblings = options
+            different.remove(field)
+
+    join_doc = Document()
+    docs = []
+    for i in range(size):
+        doc = (siblings[i % len(siblings)] if siblings else base).clone()
+        for field, constraints in by_conditions:
+            for name, value, *flags in constraints:
+                doc.append_constraint(field, name, value, flags[0] if flags else None)
+        for field in different:
+            doc.append_constraint(field, "cardinality", DISTINCT)
+        for field, most in capped.items():
+            doc.append_constraint(field, "cardinality", most)
+        for field in sorted(present):
+            doc.append_constraint(field)
+        docs.append(doc)
+
+    # what the conditions on the BY fields add is subject to the rules of the query as the rest is
+    for field, _ in by_conditions:
+        positives = positive_constraints(dict(docs[0].items()).get(field))
+        from_kql = sum(1 for c in positives if c[2:] and c[2].get("kql"))
+        if len(positives) > from_kql and len(positives) > 1:
+            raise NotImplementedError(
+                f"Unsupported conflicting constraints on {field}: only one equality or pattern per field is supported"
+            )
+
+    branch = Branch([join_doc.join_fields(doc, join_fields, unique=True) if join_fields else doc for doc in docs])
+    # the time is not a field that the documents can be made to share, a bucket of it is what BY may ask for
+    branch.shared_timestamp = True
+    return branch
+
+
+def cc_kql(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # the expression comes from a KQL string inside an ES|QL query, it keeps the meaning that KQL gives
+    # it (no scalar comparisons for instance), mark its constraints so that ES|QL doesn't claim them
+    if len(node.arguments) != 1:
+        raise NotImplementedError(f"Unsupported number of arguments for {node.name}: {len(node.arguments)}")
+    root = collect_constraints(node.arguments[0], negate, max_branches)
+    for doc in root.constraints():
+        doc.flag_constraints({"kql": True})
+    return root
+
+
+def cc_literal(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # an equality where `*` and `?` are what they are, not wildcards (a quoted value in KQL, any value in ES|QL)
+    field = node.arguments[0].render()
+    doc = Document()
+    doc.append_constraint(field, "==" if not negate else "!=", node.arguments[1].value, {"literal": True})
+    return Root([Branch([doc])])
+
+
+def cc_present(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # a condition that any value of the field satisfies but no null does, as `NOT (x != y)` is null for a null:
+    # asked to be false it is not satisfied by a missing field nor by any value
+    if negate:
+        return Root([])
+    return collect_constraints(eql.ast.IsNotNull(node.arguments[0]), False, max_branches)
+
+
+def cc_rlike(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # a regular expression is not something that the solvers can exclude or combine, a string is generated
+    # for it (one per alternative if it matches, any that doesn't if it must not) and asked for as it is
+    field = node.arguments[0].render()
+    pattern = node.arguments[1].value
+    lower = len(node.arguments) > 2  # for TO_LOWER(field): the field is in lowercase
+    values = [regex_gen.not_matching(pattern, lower)] if negate else regex_gen.matching(pattern, lower=lower)
+    if max_branches and len(values) > max_branches:
+        raise ValueError(f"Root with too many branches (limit: {max_branches})")
+    branches = []
+    for value in values:
+        doc = Document()
+        doc.append_constraint(field, "==", value, {"literal": True})
+        branches.append(Branch([doc]))
+    return Root(branches)
+
+
+def cc_like(node: eql.ast.FunctionCall, negate: bool, max_branches: int) -> Root:
+    # case sensitive wildcard (ES|QL's LIKE), the keyword solver honours the flag
+    field = node.arguments[0].render()
+    pattern = node.arguments[1].value
+    doc = Document()
+    if negate:
+        # excluding the pattern regardless of the case removes more values than needed, which is safe
+        doc.append_constraint(field, "not wildcard", pattern)
+    else:
+        doc.append_constraint(field, "wildcard", pattern, {"case_sensitive": True})
     return Root([Branch([doc])])
 
 

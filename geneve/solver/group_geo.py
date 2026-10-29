@@ -36,4 +36,4 @@ class GeoEntity(Entity):
             "country_iso_code": lol[3],
             "timezone": lol[4],
         }
-        self.emit_group(doc, geo)
+        self.solve_asked(doc, join_doc, env, geo)

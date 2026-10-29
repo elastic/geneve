@@ -12,9 +12,16 @@ Rules version: 8.13.23
       1. [Unsupported rule type: new_terms (82)](#unsupported-rule-type-new_terms-82)
       1. [Unsupported rule type: machine_learning (72)](#unsupported-rule-type-machine_learning-72)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
-      1. [Unsupported rule type: esql (28)](#unsupported-rule-type-esql-28)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
+      1. [Unsupported right operand, it must be a literal (4)](#unsupported-right-operand-it-must-be-a-literal-4)
+      1. [Unsupported WHERE on a field made by DISSECT: policyName (3)](#unsupported-where-on-a-field-made-by-dissect-policyname-3)
+      1. [Unsupported WHERE on a field made by DISSECT: mfa_used (1)](#unsupported-where-on-a-field-made-by-dissect-mfa_used-1)
+      1. [Unsupported WHERE on a field made by DISSECT: object_name (1)](#unsupported-where-on-a-field-made-by-dissect-object_name-1)
+      1. [Unsupported WHERE on a field made by DISSECT: service_code (1)](#unsupported-where-on-a-field-made-by-dissect-service_code-1)
+      1. [Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)](#unsupported-where-on-a-field-made-by-eval-after-stats-risk_factor-1)
+      1. [Unsupported WHERE on a field made by EVAL: policy_violations (1)](#unsupported-where-on-a-field-made-by-eval-policy_violations-1)
+      1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
@@ -303,39 +310,6 @@ Rules version: 8.13.23
 * Sudo Heap-Based Buffer Overflow Attempt
 * Suspicious Proc Pseudo File System Enumeration
 
-### Unsupported rule type: esql (28)
-
-28 rules:
-
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User
-* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User
-* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session
-* AWS Discovery API Calls via CLI from a Single Resource
-* AWS EC2 EBS Snapshot Shared with Another Account
-* AWS EC2 Multi-Region DescribeInstances API Calls
-* AWS IAM AdministratorAccess Policy Attached to Group
-* AWS IAM AdministratorAccess Policy Attached to Role
-* AWS IAM AdministratorAccess Policy Attached to User
-* AWS IAM User Created Access Keys For Another User
-* AWS S3 Bucket Enumeration or Brute Force
-* AWS S3 Object Encryption Using External KMS Key
-* AWS STS Role Chaining
-* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
-* AWS Signin Single Factor Console Login with Federated User
-* Attempts to Brute Force a Microsoft 365 User Account
-* Azure Entra Sign-in Brute Force Microsoft 365 Accounts by Repeat Source
-* Azure Entra Sign-in Brute Force against Microsoft 365 Accounts
-* High Number of Okta Device Token Cookies Generated for Authentication
-* Multiple Device Token Hashes for Single Okta Session
-* Multiple Okta User Authentication Events with Client Address
-* Multiple Okta User Authentication Events with Same Device Token Hash
-* Okta User Sessions Started from Different Geolocations
-* Potential AWS S3 Bucket Ransomware Note Uploaded
-* Potential Abuse of Resources by High Token Count and Large Response Sizes
-* Potential Widespread Malware Infection Across Multiple Hosts
-* Unusual High Confidence Misconduct Blocks Detected
-
 ### Unsupported rule type: threat_match (5)
 
 5 rules:
@@ -354,6 +328,59 @@ Rules version: 8.13.23
 * Halfbaked Command and Control Beacon
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
+
+### Unsupported right operand, it must be a literal (4)
+
+4 rules:
+
+* AWS EC2 EBS Snapshot Shared with Another Account
+* AWS IAM User Created Access Keys For Another User
+* AWS S3 Object Encryption Using External KMS Key
+* AWS STS Role Chaining
+
+### Unsupported WHERE on a field made by DISSECT: policyName (3)
+
+3 rules:
+
+* AWS IAM AdministratorAccess Policy Attached to Group
+* AWS IAM AdministratorAccess Policy Attached to Role
+* AWS IAM AdministratorAccess Policy Attached to User
+
+### Unsupported WHERE on a field made by DISSECT: mfa_used (1)
+
+1 rules:
+
+* AWS Signin Single Factor Console Login with Federated User
+
+### Unsupported WHERE on a field made by DISSECT: object_name (1)
+
+1 rules:
+
+* Potential AWS S3 Bucket Ransomware Note Uploaded
+
+### Unsupported WHERE on a field made by DISSECT: service_code (1)
+
+1 rules:
+
+* AWS Service Quotas Multi-Region `GetServiceQuota` Requests
+
+### Unsupported WHERE on a field made by EVAL after STATS: risk_factor (1)
+
+1 rules:
+
+* Potential Abuse of Resources by High Token Count and Large Response Sizes
+
+### Unsupported WHERE on a field made by EVAL: policy_violations (1)
+
+1 rules:
+
+* AWS Bedrock Guardrails Detected Multiple Policy Violations Within a Single Blocked Request
+
+### Unsupported left operand, it must be a field (1)
+
+1 rules:
+
+* AWS Discovery API Calls via CLI from a Single Resource
 
 ## Generation errors
 

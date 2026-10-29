@@ -19,6 +19,7 @@
 
 import string
 import unittest
+from copy import copy
 
 import tests.utils as tu
 from geneve.utils.solution_space import Strings, product, transpose
@@ -63,6 +64,64 @@ class TestStrings(tu.SeededTestCase, unittest.TestCase):
         self.assertTrue("b" not in Strings({"a"}))
         self.assertTrue("a" not in Strings({}))
         self.assertTrue("a" not in Strings(exclude={"a"}))
+
+    def test_literal(self):
+        # a literal is not a pattern, whatever it looks like
+        ss = Strings(["a*", "b?"], literal=True)
+        self.assertEqual({"a*", "b?"}, {ss.generate(max_attempts=10)[0] for _ in range(40)})
+        self.assertIn("a*", ss)
+        self.assertNotIn("abc", ss)
+        self.assertEqual(Strings(["*"], literal=True).generate(), ["*"])
+        # what has wildcards matches them
+        self.assertEqual(Strings(["a*"], literal=True), Strings(["a*"], literal=True) & ["a*"])
+        self.assertEqual(Strings(["a*"], literal=True) & Strings(["a*b"]), Strings(["a*b"]) & Strings(["a*"], literal=True))
+        self.assertFalse(Strings(["*"], literal=True) & ["a*"])  # "*" does not start with "a"
+        self.assertTrue(Strings(["a*"], literal=True) & ["*"])  # "a*" matches "*"
+        self.assertFalse(Strings(["a*"], literal=True) & Strings(["a?"], literal=True))
+        # and it can be excluded as it is
+        ss = Strings(["x", "*"], literal=True) - Strings(["*"], literal=True)
+        self.assertEqual({"x"}, {ss.generate(max_attempts=10)[0] for _ in range(30)})
+
+    def test_literal_exclusions_stay_literal(self):
+        # a wildcard minus a literal that looks like it is still a wildcard, without that one value
+        ss = Strings(["f*"]) - Strings(["f*"], literal=True)
+        values = {ss.generate(max_attempts=200, alphabet="ab")[0] for _ in range(80)}
+        self.assertNotIn("f*", values)
+        self.assertTrue(all(v.startswith("f") for v in values), values)
+        self.assertGreater(len(values), 1)
+        self.assertIn("fab", ss)
+        self.assertNotIn("f*", ss)
+        # also when the exclusion is the one that is combined with others
+        ss = (Strings(["f*"]) - Strings(["f*", "fa?"], literal=True)) - ["fb"]
+        self.assertNotIn("fa?", ss)
+        self.assertNotIn("fb", ss)
+        self.assertIn("fc", ss)
+        ss = (Strings(["f*"]) - Strings(["f*"], literal=True)) | ["g"]
+        self.assertIn("g", ss)
+
+    def test_case_sensitive(self):
+        ss = Strings(["process", "network"])
+        # by default patterns match regardless of the case
+        self.assertEqual(ss & ["PRO*"], Strings(["process"]))
+        self.assertIn("PROCESS", ss)
+
+        ss.case_sensitive = True
+        self.assertFalse(ss & ["PRO*"])
+        self.assertEqual(ss & ["pro*"], Strings(["process"]))
+        self.assertEqual(ss & ["process"], Strings(["process"]))
+        self.assertFalse(ss & ["PROCESS"])
+        self.assertIn("process", ss)
+        self.assertNotIn("PROCESS", ss)
+
+        # the flag travels with copies and with the results of the operations
+        self.assertFalse(copy(ss) & ["PRO*"])
+        self.assertFalse((ss & ["pro*", "net*"]) & ["PRO*"])
+
+        # wildcards on both sides
+        ss = Strings(["fo*"])
+        ss.case_sensitive = True
+        self.assertFalse(ss & ["FOO*"])
+        self.assertEqual(ss & ["foo*"], Strings(["foo*"]))
 
     def test_everything(self):
         ss = Strings()

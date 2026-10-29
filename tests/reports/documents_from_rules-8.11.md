@@ -14,7 +14,6 @@ Rules version: 8.11.21
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (5)](#unsupported-rule-type-threat_match-5)
       1. [Unsupported query language: lucene (4)](#unsupported-query-language-lucene-4)
-      1. [Unsupported rule type: esql (1)](#unsupported-rule-type-esql-1)
    1. [Generation errors](#generation-errors)
       1. [Root with too many branches (limit: 10000) (15)](#root-with-too-many-branches-limit-10000-15)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
@@ -289,12 +288,6 @@ Rules version: 8.11.21
 * Halfbaked Command and Control Beacon
 * Inbound Connection to an Unsecure Elasticsearch Node
 * Possible FIN7 DGA Command and Control Behavior
-
-### Unsupported rule type: esql (1)
-
-1 rules:
-
-* Attempts to Brute Force a Microsoft 365 User Account
 
 ## Generation errors
 

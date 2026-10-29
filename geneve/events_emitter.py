@@ -17,10 +17,12 @@
 
 """Functions for generating event documents that would trigger a given rule."""
 
+import re
 from collections import namedtuple
 from datetime import datetime, timedelta, timezone
 from itertools import chain
 
+from .constraints import infer_type
 from .events_emitter_eql import collect_constraints as collect_constraints_eql
 from .events_emitter_eql import get_ast_stats  # noqa: F401
 from .solver import emit_field
@@ -48,13 +50,33 @@ def ast_from_eql_query(query):
         return eql.parse_query(query)
 
 
+def ast_from_esql_query(query):
+    from . import esql
+
+    return esql.to_eql(query)
+
+
 def ast_from_kql_query(query):
     from . import kql
 
     return kql.to_eql(query, optimize=False)  # shortcut?
 
 
+# ES|QL starts with a source command (possibly after comments), a KQL query can hardly be mistaken for it (`from:foo` is not)
+_sep = r"(?:\s|//[^\n]*(?:\n|$)|/\*[\s\S]*?\*/)"  # white space or comment
+esql_source_re = re.compile(rf"{_sep}*(?:from|row|show){_sep}+(?!{_sep}*:)", re.IGNORECASE)
+
+
 def guess_from_query(query):
+    if esql_source_re.match(query):
+        # EQL and KQL would take most of these for plain text, the ES|QL error is the right one to report
+        from . import esql
+
+        try:
+            return QueryGuess(query, "esql", "esql", ast_from_esql_query(query))
+        except esql.EsqlParseError as e:
+            raise ValueError(f"ES|QL query error: {e}") from e
+
     exceptions = []
     try:
         return QueryGuess(query, "eql", "eql", ast_from_eql_query(query))
@@ -75,12 +97,16 @@ def guess_from_query(query):
 
 
 def ast_from_rule(rule):
-    if rule.type not in ("query", "eql"):
+    if rule.type not in ("query", "eql", "esql"):
         raise NotImplementedError(f"Unsupported rule type: {rule.type}")
+    elif (rule.type == "esql") != (rule.language == "esql"):
+        raise NotImplementedError(f"Unsupported rule type and query language: {rule.type}, {rule.language}")
     elif rule.language == "eql":
         return ast_from_eql_query(rule.query)
     elif rule.language == "kuery":
         return ast_from_kql_query(rule.query)
+    elif rule.language == "esql":
+        return ast_from_esql_query(rule.query)
     else:
         raise NotImplementedError(f"Unsupported query language: {rule.language}")
 
@@ -91,6 +117,9 @@ def emit_mappings(fields, schema):
         try:
             field_type = schema[field]["type"]
         except KeyError:
+            field_type = "keyword"
+        if field_type == "constant_keyword":
+            # the value is set in the mapping, documents with different values need a plain keyword
             field_type = "keyword"
         value = {"type": field_type}
         if has_wildcards(field):
@@ -113,8 +142,14 @@ def emit_mappings(fields, schema):
 
 def events_from_branch(branch, environment, timestamp, meta, corpus):
     events = []
+    # the documents of a group (of STATS) are written at the same time, any bucket of time that a query makes of it is then one
+    shared = timestamp and getattr(branch, "shared_timestamp", False)
+    stamp = timestamp[0] if shared else None
     for doc in branch.solve(environment):
-        if timestamp:
+        if shared:
+            emit_field(doc, "@timestamp", stamp.isoformat(timespec="milliseconds"))
+            emit_field(doc, "event.ingested", (stamp + timedelta(milliseconds=1)).isoformat(timespec="milliseconds"))
+        elif timestamp:
             emit_field(doc, "@timestamp", timestamp[0].isoformat(timespec="milliseconds"))
             timestamp[0] += timedelta(milliseconds=1)
             emit_field(doc, "event.ingested", timestamp[0].isoformat(timespec="milliseconds"))
@@ -122,6 +157,8 @@ def events_from_branch(branch, environment, timestamp, meta, corpus):
             doc = deep_merge(next(corpus), doc, overwrite=True)
         remove_none_fields(doc)
         events.append(Event(meta, doc))
+    if shared:
+        timestamp[0] = stamp + timedelta(milliseconds=2)
     return events
 
 
@@ -187,7 +224,15 @@ class SourceEvents:
         if extra_fields is None:
             extra_fields = []
         fields = self.fields() if root is None else root.fields()
-        return emit_mappings(fields | set(extra_fields), self.schema)
+        # what the schema does not know, the literals of ES|QL may tell
+        inferred = {}
+        for r in self.__roots if root is None else [root]:
+            for doc in r.constraints():
+                for field, constraints in doc.items():
+                    field_type = infer_type(constraints)
+                    if field_type and not self.schema.get(field, {}).get("type"):
+                        inferred.setdefault(field, {"type": field_type})
+        return emit_mappings(fields | set(extra_fields), {**inferred, **self.schema})
 
     def roots(self):
         return iter(self.__roots)
@@ -195,7 +240,9 @@ class SourceEvents:
     def emit(self, root=None, *, timestamp=True, complete=False, count=1, corpus=None):
         corpus = iter(corpus) if corpus else self.corpus
         if timestamp:
-            timestamp = [datetime.now(timezone.utc).astimezone()]
+            # a datetime is the time of the first document, it makes the output reproducible
+            start = timestamp if isinstance(timestamp, datetime) else datetime.now(timezone.utc).astimezone()
+            timestamp = [start]
         if complete:
             if root:
                 events = (events_from_root(root, self.__environment, timestamp, corpus) for _ in range(count))
