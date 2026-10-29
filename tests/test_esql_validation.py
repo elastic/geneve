@@ -81,8 +81,9 @@ class TestEsqlValidation(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase)
 
         results = [ev.validate_query(self.es, rule.name, rule.query, self.schema, self.stack_version, rule=rule) for rule in rules]
 
-        report = ev.render_report("ES|QL rules validation", f"{self.version} (rules {version or 'unknown'})", results)
-        (tu.root_dir / "tests" / "reports" / f"esql_validation-{major_minor}.md").write_text(report + "\n")
+        # the patch of the version is of no interest, it is not a reason for the report to change
+        report = ev.render_report("ES|QL rules validation", f"{major_minor} (rules {version or 'unknown'})", results)
+        tu.assertTextReportUnchanged(self, report + "\n", f"esql_validation-{major_minor}.md")
         self.assertNothingWrong(results)
 
 

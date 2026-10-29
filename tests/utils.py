@@ -44,6 +44,7 @@ __all__ = (
     "SeededTestCase",
     "SignalsTestCase",
     "assertReportUnchanged",
+    "assertTextReportUnchanged",
 )
 
 root_dir = Path(__file__).parent.parent
@@ -198,6 +199,21 @@ def assertReportUnchanged(tc, nb, report):
         with tc.subTest(os.path.join("tests", "reports", report)):
             assertIdenticalFiles(tc, filename, new_filename)
             os.unlink(new_filename)
+
+
+def assertTextReportUnchanged(tc, text, report):
+    """Like assertReportUnchanged for a report that is plain text: the result is left in `.new` if it differs."""
+    filename = root_dir / "tests" / "reports" / report
+    new_filename = Path("{:s}.new{:s}".format(*os.path.splitext(filename)))
+    if not filename.exists():
+        filename.write_text(text)
+        return
+    if filename.read_text() == text:
+        new_filename.unlink(missing_ok=True)
+        return
+    new_filename.write_text(text)
+    with tc.subTest(os.path.join("tests", "reports", report)):
+        assertIdenticalFiles(tc, filename, new_filename)
 
 
 class SeededTestCase:

@@ -34,12 +34,13 @@ UNKNOWN_COLUMN = re.compile(r"Unknown column \[([^\]]+)\]")
 NO_MATCH = re.compile(r"No matches found for pattern \[([^\]]+)\]")
 MAX_ATTEMPTS = 8
 CHUNK = 500  # documents indexed and checked at once
-MAX_GROUPS = 40  # branches of a query that aggregates that are checked, one by one
+MAX_GROUPS = 1000  # branches of a query that aggregates that are checked, one by one
 MAX_ROWS = 10000  # ES|QL does not return more
 
 # status is one of "validated", "failed" (the query did not return the documents), "error" (the query was
 # refused), "skipped" (no documents can be generated, why is in `detail`)
-Result = namedtuple("Result", ["name", "status", "branches", "detail"])
+# `groups` is how many groups of documents of the query (STATS) were run out of how many there are, `None` if the query has no groups
+Result = namedtuple("Result", ["name", "status", "branches", "detail", "groups"], defaults=(None,))
 
 
 def pick_index(sources):
@@ -146,14 +147,16 @@ def validate_query(es, name, query, schema, stack_version=None, rule=None):
         if parsed.stats is not None:
             # a group of documents is one row of the result: the groups of a branch are checked by themselves,
             # the other branches could add to them (the BY of the query may be the same for all)
-            step = max(1, len(branches) // MAX_GROUPS)
-            for i in range(0, len(branches), step):
+            step = max(1, -(-len(branches) // MAX_GROUPS))
+            checked = range(0, len(branches), step)
+            groups = (len(checked), len(branches))
+            for i in checked:
                 rows, error = run_documents(es, index, mappings, branches[i], query)
                 if error:
-                    return Result(name, "error", len(branches), f"branch {i}: {error[:300]}")
+                    return Result(name, "error", len(branches), f"branch {i}: {error[:300]}", groups)
                 if not rows:
-                    return Result(name, "failed", len(branches), f"branch {i}: no rows for {branches[i]}")
-            return Result(name, "validated", len(branches), "")
+                    return Result(name, "failed", len(branches), f"branch {i}: no rows for {branches[i]}", groups)
+            return Result(name, "validated", len(branches), "", groups)
         # each document is expected to be returned once: all together, only one by one to say which one is not
         documents = [(i, doc) for i, docs in enumerate(branches) for doc in docs]
         for start in range(0, len(documents), CHUNK):
@@ -180,6 +183,14 @@ def validate_query(es, name, query, schema, stack_version=None, rule=None):
     return Result(name, "validated", len(branches), "")
 
 
+def groups_of(result):
+    """Say how many groups of a query that aggregates were run, all of them or only some."""
+    if result.groups is None:
+        return ""
+    checked, total = result.groups
+    return f", all {total} group(s) run" if checked == total else f", {checked} of {total} groups run"
+
+
 def render_report(title, version, results):
     counts = {status: sum(1 for r in results if r.status == status) for status in ("validated", "failed", "error", "skipped")}
     lines = [
@@ -188,6 +199,9 @@ def render_report(title, version, results):
         "Documents generated for ES|QL are indexed and the query itself is run against Elasticsearch, it must return them.",
         "This is what is checked for each branch of the query. Only what Geneve generates documents for is listed",
         "as validated, failed or error; the rest is skipped and the reason is the one of the documents report.",
+        "",
+        "A query that aggregates (STATS) returns a row for each group of documents, which is a branch of the query.",
+        f"Every group is run, unless the query has more than {MAX_GROUPS} of them: then evenly spaced ones are, and how many is said.",
         "",
         f"Elasticsearch version: {version}",
         "",
@@ -202,7 +216,7 @@ def render_report(title, version, results):
             continue
         lines += [f"## {heading} ({len(selected)})", ""]
         for r in selected:
-            suffix = f", {r.branches} branch(es)" if status == "validated" else f": {r.detail}"
+            suffix = f", {r.branches} branch(es){groups_of(r)}" if status == "validated" else f": {r.detail}"
             lines.append(f"* {r.name}{suffix}")
         lines.append("")
     skipped = {}

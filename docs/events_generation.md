@@ -106,13 +106,13 @@ Fields of type `constant_keyword` (such as `data_stream.dataset`) are solved as 
 
 ### Validating the documents against Elasticsearch
 
-For ES|QL the query itself tells whether the documents are right. `tests/test_esql_validation.py` generates the documents of each branch of the supported queries and rules, indexes them in an Elasticsearch (Kibana is not needed) and runs the query, which must return each document once (for the queries that aggregate, a group of documents is a row, and the branches are checked one by one). It is opt-in:
+For ES|QL the query itself tells whether the documents are right. `tests/test_esql_validation.py` generates the documents of each branch of the supported queries and rules, indexes them in an Elasticsearch (Kibana is not needed) and runs the query, which must return each document once (for the queries that aggregate, a group of documents is a row, and every branch is run by itself). It is opt-in, but for the newest stack in the online tests of CI:
 
 ```
 TEST_ESQL_VALIDATION=1 TEST_ESQL_ES_URL=http://127.0.0.1:29650 TEST_STACK_VERSION=9.5.0 python -m pytest tests/test_esql_validation.py
 ```
 
-`TEST_ESQL_ES_URL` defaults to the Elasticsearch of the docker compose file, put the credentials in the URL if it has any. The result for the rules is written to `tests/reports/esql_validation-<version>.md`.
+`TEST_ESQL_ES_URL` defaults to the Elasticsearch of the docker compose file, put the credentials in the URL if it has any. The result for the rules is compared with `tests/reports/esql_validation-<major.minor>.md`: if it differs the new one is left in `.new.md`, the same way the other reports are. The generated documents are reproducible: the same query, schema, stack version and seed give the same documents. The only clock they depend on is the time of the first document, which `emit(timestamp=<datetime>)` takes instead of the current time (`tests/test_esql_determinism.py` checks it).
 
 Unlike the other languages, `LIKE` is case sensitive: it matches `FOO*` against `FOObar`, not against `foobar`.
 

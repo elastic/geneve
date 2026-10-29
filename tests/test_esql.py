@@ -2361,5 +2361,42 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             self.assertTrue(doc["tags"][0].startswith("f"), doc)
 
 
+class TestEsqlValidationReport(unittest.TestCase):
+    """The report of the validation says what was run, so that a smaller coverage shows in the review."""
+
+    def test_groups_run_are_said(self):
+        from tests import esql_validation as ev
+
+        results = [
+            ev.Result("a", "validated", 3, ""),
+            ev.Result("b", "validated", 3, "", (3, 3)),
+            ev.Result("c", "validated", 500, "", (40, 500)),
+            ev.Result("d", "skipped", 0, "NotImplementedError: x"),
+        ]
+        report = ev.render_report("T", "9.5 (rules 9.5.9)", results)
+        self.assertIn("* a, 3 branch(es)\n", report)
+        self.assertIn("* b, 3 branch(es), all 3 group(s) run\n", report)
+        self.assertIn("* c, 500 branch(es), 40 of 500 groups run\n", report)
+        self.assertIn(f"more than {ev.MAX_GROUPS}", report)
+        self.assertIn("| 3 | 0 | 0 | 1 |", report)
+
+    def test_text_report_is_compared(self):
+        import tempfile
+        from pathlib import Path
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(tu, "root_dir", Path(tmp)):
+            (Path(tmp) / "tests" / "reports").mkdir(parents=True)
+            report = Path(tmp) / "tests" / "reports" / "r.md"
+            tu.assertTextReportUnchanged(self, "one\n", "r.md")  # the first time it is written
+            self.assertEqual("one\n", report.read_text())
+            tu.assertTextReportUnchanged(self, "one\n", "r.md")
+            self.assertFalse(report.with_suffix(".new.md").exists())
+            with self.assertRaises(AssertionError):
+                tu.assertTextReportUnchanged(unittest.TestCase(), "two\n", "r.md")
+            self.assertEqual("two\n", report.with_suffix(".new.md").read_text())
+            self.assertEqual("one\n", report.read_text())
+
+
 if __name__ == "__main__":
     unittest.main()

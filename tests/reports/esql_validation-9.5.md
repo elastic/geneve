@@ -4,7 +4,10 @@ Documents generated for ES|QL are indexed and the query itself is run against El
 This is what is checked for each branch of the query. Only what Geneve generates documents for is listed
 as validated, failed or error; the rest is skipped and the reason is the one of the documents report.
 
-Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
+A query that aggregates (STATS) returns a row for each group of documents, which is a branch of the query.
+Every group is run, unless the query has more than 1000 of them: then evenly spaced ones are, and how many is said.
+
+Elasticsearch version: 9.5 (rules 9.5.9)
 
 | validated | failed | error | skipped |
 |---|---|---|---|
@@ -14,84 +17,84 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action, 8 branch(es)
 * AWS Bedrock AgentCore Runtime Prompt Containing Credentials, 5 branch(es)
-* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User, 1 branch(es)
-* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User, 1 branch(es)
-* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session, 1 branch(es)
+* AWS Bedrock Detected Multiple Attempts to use Denied Models by a Single User, 1 branch(es), all 1 group(s) run
+* AWS Bedrock Detected Multiple Validation Exception Errors by a Single User, 1 branch(es), all 1 group(s) run
+* AWS Bedrock Guardrails Detected Multiple Violations by a Single User Over a Session, 1 branch(es), all 1 group(s) run
 * AWS Bedrock High Risk Filesystem or Execution Tool Invocation, 23 branch(es)
-* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session, 1 branch(es)
+* AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session, 1 branch(es), all 1 group(s) run
 * AWS Bedrock Model Prompt or Completion Containing Credentials, 28 branch(es)
-* AWS EC2 Multi-Region DescribeInstances API Calls, 1 branch(es)
+* AWS EC2 Multi-Region DescribeInstances API Calls, 1 branch(es), all 1 group(s) run
 * AWS IAM Credentials Added to a Bedrock API Key Phantom User, 3 branch(es)
-* AWS IAM User Console Login from Multiple Geolocations, 1 branch(es)
-* AWS Lambda Function High-Frequency Invocation by a Single Principal, 1 branch(es)
-* AWS S3 Rapid Bucket Posture API Calls from a Single Principal, 5 branch(es)
-* Agent Spoofing - Multiple Hosts Using Same Agent, 1 branch(es)
-* Alerts in Different ATT&CK Tactics by Host, 1 branch(es)
+* AWS IAM User Console Login from Multiple Geolocations, 1 branch(es), all 1 group(s) run
+* AWS Lambda Function High-Frequency Invocation by a Single Principal, 1 branch(es), all 1 group(s) run
+* AWS S3 Rapid Bucket Posture API Calls from a Single Principal, 5 branch(es), all 5 group(s) run
+* Agent Spoofing - Multiple Hosts Using Same Agent, 1 branch(es), all 1 group(s) run
+* Alerts in Different ATT&CK Tactics by Host, 1 branch(es), all 1 group(s) run
 * Anthropic Admin API Key Created, 1 branch(es)
 * Anthropic Admin API Key Deleted, 1 branch(es)
 * Anthropic Admin Role Assigned to User, 3 branch(es)
 * Anthropic Compliance API Key Created, 2 branch(es)
 * Anthropic Compliance API Logging Disabled, 1 branch(es)
 * Anthropic Compliance Audit Log Export Accessed, 1 branch(es)
-* Anthropic Excessive Chat Access Failures, 1 branch(es)
-* Anthropic Excessive Chat Creation, 1 branch(es)
-* Anthropic Excessive Chat Deletion, 1 branch(es)
-* Anthropic Excessive Chat Snapshot Creation, 1 branch(es)
+* Anthropic Excessive Chat Access Failures, 1 branch(es), all 1 group(s) run
+* Anthropic Excessive Chat Creation, 1 branch(es), all 1 group(s) run
+* Anthropic Excessive Chat Deletion, 1 branch(es), all 1 group(s) run
+* Anthropic Excessive Chat Snapshot Creation, 1 branch(es), all 1 group(s) run
 * Anthropic Extra Usage Spend Limit Deleted, 1 branch(es)
-* Anthropic High File Upload Activity, 1 branch(es)
+* Anthropic High File Upload Activity, 1 branch(es), all 1 group(s) run
 * Anthropic Magic Link Second Factor Disabled, 1 branch(es)
-* Anthropic Multiple Authentication Failures, 1 branch(es)
+* Anthropic Multiple Authentication Failures, 1 branch(es), all 1 group(s) run
 * Anthropic Organization Data Export Accessed, 1 branch(es)
 * Anthropic Organization Deletion, 3 branch(es)
 * Anthropic Organization Domain Boundary Changed, 4 branch(es)
 * Anthropic Organization IP Restriction Deleted, 1 branch(es)
-* Anthropic Organization Member and Group Enumeration, 1 branch(es)
+* Anthropic Organization Member and Group Enumeration, 1 branch(es), all 1 group(s) run
 * Anthropic Organization User Invite Sent, 1 branch(es)
 * Anthropic Primary Owner Transferred, 1 branch(es)
 * Anthropic SSO Disabled or Connection Removed, 3 branch(es)
 * Azure AD Graph Access with Suspicious User-Agent, 13 branch(es)
-* Azure Key Vault Excessive Secret or Key Retrieved, 1 branch(es)
-* Azure OpenAI Insecure Output Handling, 1 branch(es)
+* Azure Key Vault Excessive Secret or Key Retrieved, 1 branch(es), all 1 group(s) run
+* Azure OpenAI Insecure Output Handling, 1 branch(es), all 1 group(s) run
 * Cobalt Strike Command and Control Beacon, 9 branch(es)
 * Entra ID Actor Token User Impersonation Abuse, 5 branch(es)
-* Entra ID MFA TOTP Brute Force Attempted, 2 branch(es)
-* Entra ID Multiple Device Registrations by a Single User, 1 branch(es)
-* File Transfer Utility Launched from Unusual Parent, 186 branch(es)
-* First-Time FortiGate Administrator Login, 1 branch(es)
-* FortiGate Administrator Login from Multiple IP Addresses, 1 branch(es)
-* FortiGate FortiCloud SSO Login from Unusual Source, 2 branch(es)
-* GCP Vertex AI Caller Activity From High Number of Countries, 3 branch(es)
+* Entra ID MFA TOTP Brute Force Attempted, 2 branch(es), all 2 group(s) run
+* Entra ID Multiple Device Registrations by a Single User, 1 branch(es), all 1 group(s) run
+* File Transfer Utility Launched from Unusual Parent, 186 branch(es), all 186 group(s) run
+* First-Time FortiGate Administrator Login, 1 branch(es), all 1 group(s) run
+* FortiGate Administrator Login from Multiple IP Addresses, 1 branch(es), all 1 group(s) run
+* FortiGate FortiCloud SSO Login from Unusual Source, 2 branch(es), all 2 group(s) run
+* GCP Vertex AI Caller Activity From High Number of Countries, 3 branch(es), all 3 group(s) run
 * GCP Vertex AI Elevated Safety Rating on Response, 2 branch(es)
-* GCP Vertex AI High GenerateContent Volume From Single IP, 4 branch(es)
+* GCP Vertex AI High GenerateContent Volume From Single IP, 4 branch(es), all 4 group(s) run
 * GCP Vertex AI Publisher Model Config Modified, 2 branch(es)
 * GCP Vertex AI Response Blocked by Safety Filters, 1 branch(es)
 * GCP Vertex AI Safety Filters Set to BLOCK_NONE, 1 branch(es)
-* GKE Rapid Secret GET Activity Against Multiple Objects, 2 branch(es)
-* GitHub Exfiltration via High Number of Repository Clones by User, 1 branch(es)
+* GKE Rapid Secret GET Activity Against Multiple Objects, 2 branch(es), all 2 group(s) run
+* GitHub Exfiltration via High Number of Repository Clones by User, 1 branch(es), all 1 group(s) run
 * GitHub OAuth Application Authorized, 1 branch(es)
-* Google Workspace Device Registration Burst for Single User, 1 branch(es)
+* Google Workspace Device Registration Burst for Single User, 1 branch(es), all 1 group(s) run
 * Halfbaked Command and Control Beacon, 16 branch(es)
-* High Number of Closed Pull Requests by User, 1 branch(es)
-* High Number of Egress Network Connections from Unusual Executable, 12 branch(es)
-* High Number of Protected Branch Force Pushes by User, 1 branch(es)
+* High Number of Closed Pull Requests by User, 1 branch(es), all 1 group(s) run
+* High Number of Egress Network Connections from Unusual Executable, 12 branch(es), all 12 group(s) run
+* High Number of Protected Branch Force Pushes by User, 1 branch(es), all 1 group(s) run
 * Kubernetes Creation or Modification of Sensitive Role, 9936 branch(es)
-* Kubernetes Multi-Resource Discovery, 2 branch(es)
+* Kubernetes Multi-Resource Discovery, 2 branch(es), all 2 group(s) run
 * Kubernetes RBAC Wildcard Elevation on Existing Role, 4 branch(es)
-* Kubernetes Rapid Secret GET Activity Against Multiple Objects, 1 branch(es)
-* LSASS Process Access via Windows API, 3 branch(es)
-* Lateral Movement Alerts from a Newly Observed User, 2 branch(es)
-* M365 OneDrive/SharePoint Excessive File Downloads, 1 branch(es)
+* Kubernetes Rapid Secret GET Activity Against Multiple Objects, 1 branch(es), all 1 group(s) run
+* LSASS Process Access via Windows API, 3 branch(es), all 3 group(s) run
+* Lateral Movement Alerts from a Newly Observed User, 2 branch(es), all 2 group(s) run
+* M365 OneDrive/SharePoint Excessive File Downloads, 1 branch(es), all 1 group(s) run
 * Microsoft Foundry Jailbreak Detected, 3 branch(es)
-* Multiple Alerts in Same ATT&CK Tactic by Host, 4 branch(es)
-* Multiple DHCP Servers Responding to the Same Transaction, 4 branch(es)
-* Multiple Device Token Hashes for Single Okta Session, 1 branch(es)
-* Multiple Elastic Defend Alerts by Agent, 9 branch(es)
-* Multiple Machine Learning Alerts by Influencer Field, 1 branch(es)
-* Multiple Okta User Authentication Events with Same Device Token Hash, 2 branch(es)
-* Newly Observed Elastic Defend Behavior Alert, 1 branch(es)
-* Newly Observed High Severity Detection Alert, 1 branch(es)
-* Newly Observed High Severity Suricata Alert, 1 branch(es)
-* Okta User Sessions Started from Different Geolocations, 2 branch(es)
+* Multiple Alerts in Same ATT&CK Tactic by Host, 4 branch(es), all 4 group(s) run
+* Multiple DHCP Servers Responding to the Same Transaction, 4 branch(es), all 4 group(s) run
+* Multiple Device Token Hashes for Single Okta Session, 1 branch(es), all 1 group(s) run
+* Multiple Elastic Defend Alerts by Agent, 9 branch(es), all 9 group(s) run
+* Multiple Machine Learning Alerts by Influencer Field, 1 branch(es), all 1 group(s) run
+* Multiple Okta User Authentication Events with Same Device Token Hash, 2 branch(es), all 2 group(s) run
+* Newly Observed Elastic Defend Behavior Alert, 1 branch(es), all 1 group(s) run
+* Newly Observed High Severity Detection Alert, 1 branch(es), all 1 group(s) run
+* Newly Observed High Severity Suricata Alert, 1 branch(es), all 1 group(s) run
+* Okta User Sessions Started from Different Geolocations, 2 branch(es), all 2 group(s) run
 * OpenAI ChatGPT Enterprise Account Owner Role Assigned, 2 branch(es)
 * OpenAI ChatGPT Enterprise App Authentication Linked, 1 branch(es)
 * OpenAI ChatGPT Enterprise Authentication from a Suspicious User Agent, 81 branch(es)
@@ -102,44 +105,44 @@ Elasticsearch version: 9.5.0-SNAPSHOT (rules 9.5.9)
 * OpenAI ChatGPT Enterprise Custom Agent Published, 1 branch(es)
 * OpenAI ChatGPT Enterprise Custom Agent Trigger Changed, 2 branch(es)
 * OpenAI ChatGPT Enterprise Domain Created, 1 branch(es)
-* OpenAI ChatGPT Enterprise Excessive Conversation Deletion, 1 branch(es)
-* OpenAI ChatGPT Enterprise High Codex MCP Tool Diversity, 1 branch(es)
-* OpenAI ChatGPT Enterprise High File Download Activity, 1 branch(es)
+* OpenAI ChatGPT Enterprise Excessive Conversation Deletion, 1 branch(es), all 1 group(s) run
+* OpenAI ChatGPT Enterprise High Codex MCP Tool Diversity, 1 branch(es), all 1 group(s) run
+* OpenAI ChatGPT Enterprise High File Download Activity, 1 branch(es), all 1 group(s) run
 * OpenAI ChatGPT Enterprise Memory Deleted, 1 branch(es)
-* OpenAI ChatGPT Enterprise Multiple Authentication Failures, 1 branch(es)
+* OpenAI ChatGPT Enterprise Multiple Authentication Failures, 1 branch(es), all 1 group(s) run
 * OpenAI ChatGPT Enterprise Resources Sharing Updated, 4 branch(es)
-* OpenAI ChatGPT Enterprise Slack Query Burst, 1 branch(es)
-* OpenAI ChatGPT Enterprise User Activity From High Number of Countries, 1 branch(es)
+* OpenAI ChatGPT Enterprise Slack Query Burst, 1 branch(es), all 1 group(s) run
+* OpenAI ChatGPT Enterprise User Activity From High Number of Countries, 1 branch(es), all 1 group(s) run
 * OpenAI ChatGPT Enterprise User Invite Sent, 1 branch(es)
 * OpenAI ChatGPT Enterprise Workspace Feature Toggled, 1 branch(es)
 * OpenAI ChatGPT Enterprise Workspace Log File Deleted, 1 branch(es)
 * OpenAI ChatGPT Enterprise Workspace Log Files Accessed, 2 branch(es)
 * Possible FIN7 DGA Command and Control Behavior, 48 branch(es)
 * Potential Entra ID PRT Extraction via BrowserCore, 1 branch(es)
-* Potential Linux Local Account Brute Force Detected, 1 branch(es)
-* Potential Malware-Driven SSH Brute Force Attempt, 8 branch(es)
-* Potential Okta Brute Force (Multi-Source), 16 branch(es)
-* Potential Password Spraying Attack via SSH, 2 branch(es)
-* Potential Port Scanning Activity from Compromised Host, 1 branch(es)
-* Potential Ransomware Behavior - Note Files by System, 8 branch(es)
-* Potential SSH Brute Force Detected via macOS Security Events, 4 branch(es)
-* Potential Spike in Web Server Error Logs, 1 branch(es)
-* Potential Subnet Scanning Activity from Compromised Host, 1 branch(es)
-* Potential Widespread Malware Infection Across Multiple Hosts, 3 branch(es)
+* Potential Linux Local Account Brute Force Detected, 1 branch(es), all 1 group(s) run
+* Potential Malware-Driven SSH Brute Force Attempt, 8 branch(es), all 8 group(s) run
+* Potential Okta Brute Force (Multi-Source), 16 branch(es), all 16 group(s) run
+* Potential Password Spraying Attack via SSH, 2 branch(es), all 2 group(s) run
+* Potential Port Scanning Activity from Compromised Host, 1 branch(es), all 1 group(s) run
+* Potential Ransomware Behavior - Note Files by System, 8 branch(es), all 8 group(s) run
+* Potential SSH Brute Force Detected via macOS Security Events, 4 branch(es), all 4 group(s) run
+* Potential Spike in Web Server Error Logs, 1 branch(es), all 1 group(s) run
+* Potential Subnet Scanning Activity from Compromised Host, 1 branch(es), all 1 group(s) run
+* Potential Widespread Malware Infection Across Multiple Hosts, 3 branch(es), all 3 group(s) run
 * Privilege Escalation via Parallels Appliance Extract Argument Injection, 2 branch(es)
 * SSFileCopyReceiver Writing to Common Persistence Locations, 23 branch(es)
 * SSFileCopySender Executed as Root, 1 branch(es)
-* Several Failed Protected Branch Force Pushes by User, 1 branch(es)
-* Successful AMQP Multi-Queue Purge Burst, 1 branch(es)
-* Suspicious AWS S3 Connection via Script Interpreter, 9 branch(es)
-* Suspicious TCC Access Granted for User Folders, 11 branch(es)
-* Unusual Azure VM Extension Detected, 4 branch(es)
-* Unusual File Creation by Web Server, 44 branch(es)
-* Unusual High Denied Sensitive Information Policy Blocks Detected, 1 branch(es)
-* Unusual High Denied Topic Blocks Detected, 1 branch(es)
-* Unusual High Word Policy Blocks Detected, 1 branch(es)
+* Several Failed Protected Branch Force Pushes by User, 1 branch(es), all 1 group(s) run
+* Successful AMQP Multi-Queue Purge Burst, 1 branch(es), all 1 group(s) run
+* Suspicious AWS S3 Connection via Script Interpreter, 9 branch(es), all 9 group(s) run
+* Suspicious TCC Access Granted for User Folders, 11 branch(es), all 11 group(s) run
+* Unusual Azure VM Extension Detected, 4 branch(es), all 4 group(s) run
+* Unusual File Creation by Web Server, 44 branch(es), all 44 group(s) run
+* Unusual High Denied Sensitive Information Policy Blocks Detected, 1 branch(es), all 1 group(s) run
+* Unusual High Denied Topic Blocks Detected, 1 branch(es), all 1 group(s) run
+* Unusual High Word Policy Blocks Detected, 1 branch(es), all 1 group(s) run
 * Unusual Process Resolving AWS ECS Agent Communication Service Endpoint, 4 branch(es)
-* Web Server Potential Spike in Error Response Codes, 4 branch(es)
+* Web Server Potential Spike in Error Response Codes, 4 branch(es), all 4 group(s) run
 
 ## Skipped (192)
 
