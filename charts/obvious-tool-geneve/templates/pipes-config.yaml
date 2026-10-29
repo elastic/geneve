@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: geneve-obvious-tool-{{ required "obvious.execution.id is required" .Values.obvious.execution.id }}-pipes
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: geneve-obvious-tool
+    obvious.io/execution-id: {{ .Values.obvious.execution.id | quote }}
+data:
+  geneve-obvious-tool.yaml: |
+    # The caller selects the explicit rule set for this execution. The tool does
+    # not generate data for every enabled rule on a target stack.
+    pipes:
+      - elastic.pipes:
+          logging:
+            level: info
+
+      - elastic.pipes.geneve.generate:
+          schema-uri: "https://github.com/elastic/ecs/archive/refs/heads/main.tar.gz"
+          triggers-per-second@: runtime.arguments.triggers-per-second
+          stats-file: /var/run/geneve-stats/generator.json
+          destinations:
+            process: logs-endpoint.events.process-default
+            file: logs-endpoint.events.file-default
+            network: logs-endpoint.events.network-default
+            registry: logs-endpoint.events.registry-default
+            library: logs-endpoint.events.library-default
+            device: logs-endpoint.events.device-default
+            api: logs-endpoint.events.api-default
+            security: logs-endpoint.events.security-default
+          # The caller supplies a JSON array of detection-rule IDs through the
+          # rule_ids input. It is rendered only as pipe configuration, never as
+          # a generated target-stack credential or source document.
+          {{ $ruleIDs := mustFromJson (required "geneve.ruleIds is required" .Values.geneve.ruleIds) }}
+          {{ if not (kindIs "slice" $ruleIDs) }}{{ fail "geneve.ruleIds must be a JSON array" }}{{ end }}
+          {{ if eq (len $ruleIDs) 0 }}{{ fail "geneve.ruleIds must not be empty" }}{{ end }}
+          rule-ids:
+          {{ range $ruleID := $ruleIDs }}
+          {{ if not (kindIs "string" $ruleID) }}{{ fail "geneve.ruleIds entries must be strings" }}{{ end }}
+            - {{ $ruleID | quote }}
+          {{ end }}
+
+      - elastic.pipes.es.bulk:
+          batch-size: 25
+          flush-interval: 1.0
+          request-timeout: 120
+          stats-file: /var/run/geneve-stats/bulk.json
+
+    # The execution supplies target URLs as regular inputs. The controller
+    # materializes the caller-referenced GSM API key per execution, and the
+    # Deployment injects all three values as environment variables.
+    stack:
+      shell-expand: true
+      elasticsearch:
+        url: "$GENEVE_TARGET_ES_URL"
+      kibana:
+        url: "$GENEVE_TARGET_KIBANA_URL"
+      credentials:
+        api-key: "$GENEVE_TARGET_API_KEY"
+
+    documents: []
+    bulk-stats: {}

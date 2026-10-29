@@ -19,9 +19,9 @@ prereq:
 	$(PYTHON) -m pip install --user -r requirements.txt
 
 lint:
-	$(PYTHON) -m ruff check geneve tests
-	$(PYTHON) -m black -q --check geneve tests || ($(PYTHON) -m black geneve tests; false)
-	$(PYTHON) -m isort -q --check geneve tests || ($(PYTHON) -m isort geneve tests; false)
+	$(PYTHON) -m ruff check geneve pipes tests
+	$(PYTHON) -m black -q --check geneve pipes tests || ($(PYTHON) -m black geneve pipes tests; false)
+	$(PYTHON) -m isort -q --check geneve pipes tests || ($(PYTHON) -m isort geneve pipes tests; false)
 
 license-check:
 	bash scripts/license_check.sh
