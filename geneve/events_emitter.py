@@ -240,7 +240,9 @@ class SourceEvents:
     def emit(self, root=None, *, timestamp=True, complete=False, count=1, corpus=None):
         corpus = iter(corpus) if corpus else self.corpus
         if timestamp:
-            timestamp = [datetime.now(timezone.utc).astimezone()]
+            # a datetime is the time of the first document, it makes the output reproducible
+            start = timestamp if isinstance(timestamp, datetime) else datetime.now(timezone.utc).astimezone()
+            timestamp = [start]
         if complete:
             if root:
                 events = (events_from_root(root, self.__environment, timestamp, corpus) for _ in range(count))
