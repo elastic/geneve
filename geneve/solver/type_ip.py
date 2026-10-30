@@ -21,7 +21,7 @@ import ipaddress
 from typing import ClassVar
 
 from ..constraints import ConflictError
-from ..utils import random
+from ..utils import random as shared_random
 from . import Field, solver
 
 
@@ -113,6 +113,7 @@ class IPField(Field):
         value = self.value
         history_addrs = self.get_history(environment)
         exclude_addrs = self.exclude_addrs | set(history_addrs)
+        random = environment.get("random", shared_random)
         while left_attempts and (
             value in (None, [])
             or set(value if self.is_array else [value]) & exclude_addrs  # noqa: W503
