@@ -156,7 +156,7 @@ class Entity:
                 solver.solve_field(doc, join_doc, environment)
             elif doc is not None:
                 if has_wildcards(field):
-                    field = expand_wildcards(field, string.ascii_letters, 1, 3)
+                    field = expand_wildcards(field, string.ascii_letters, 1, 3, environment.get("random", random))
                 self.emit_group(doc, {field: None})
 
     def emit_group(self, doc, values):
@@ -170,6 +170,7 @@ class Field:
 
     def __init__(self, field, constraints, field_constraints, is_array):
         self.field = field
+        self._init = (list(constraints), list(field_constraints))
         self.value = [] if is_array else None
         self.is_array = is_array
         self.has_wildcards = has_wildcards(field)
@@ -205,6 +206,16 @@ class Field:
             return {}
         return environment.setdefault("fields_history", {}).setdefault(self.field, {})
 
+    def pinned(self, value):
+        """Return a solver for the same field with its value fixed to *value*.
+
+        The fixed value goes through the regular constructor as one more `==`
+        constraint, so it is validated against every other constraint of the
+        field and a conflict is reported as usual.
+        """
+        constraints, field_constraints = self._init
+        return type(self)(self.field, constraints + [("==", value)], field_constraints, self.is_array)
+
     def __call__(self, join_doc, environment):
         history = self.get_history(environment)
 
@@ -216,6 +227,15 @@ class Field:
                 history[value] = None
             return {"value": value}
 
+        # an attack backpack pre-assigns the value of the fields it carries
+        backpack = environment.get("backpack")
+        if backpack is not None and not self.has_wildcards and self.field in backpack:
+            value = self.pinned(backpack[self.field]).solve(self.max_attempts + 1, environment)
+            if not value["left_attempts"]:
+                raise ConflictError(f"attempts exausted: {self.max_attempts}", self.field)
+            del value["left_attempts"]
+            return value
+
         if not self.cardinality or len(history) < self.cardinality:
             value = self.solve(self.max_attempts + 1, environment)
             if not value["left_attempts"]:
@@ -224,7 +244,7 @@ class Field:
             if self.cardinality:
                 history[value["value"]] = None
         else:
-            value = {"value": random.choice(list(history)[: self.cardinality])}
+            value = {"value": environment.get("random", random).choice(list(history)[: self.cardinality])}
 
         return value
 
@@ -234,7 +254,11 @@ class Field:
     def solve_field(self, doc, join_doc, environment):
         value = self(join_doc, environment)["value"]
         if doc is not None:
-            field = expand_wildcards(self.field, string.ascii_letters, 1, 3) if self.has_wildcards else self.field
+            field = (
+                expand_wildcards(self.field, string.ascii_letters, 1, 3, environment.get("random", random))
+                if self.has_wildcards
+                else self.field
+            )
             emit_field(doc, field, value)
         return value
 
@@ -250,7 +274,7 @@ class CombinedFields:
             raise ConflictError("empty intersection", f"{a.field} & {b.field}")
 
     def solve_field(self, doc, join_doc, environment):
-        values = random.choice(self.solutions)
+        values = environment.get("random", random).choice(self.solutions)
         if doc is not None:
             for field, value in zip(self.fields, values):
                 if field.is_array:

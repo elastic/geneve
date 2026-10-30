@@ -22,6 +22,7 @@ from copy import copy
 from typing import ClassVar
 
 from ..constraints import ConflictError
+from ..utils import random
 from ..utils.solution_space import Strings
 from . import Field, solver
 
@@ -93,7 +94,10 @@ class KeywordField(Field):
     def solve(self, left_attempts, environment):
         value = self.value
         hist = self.get_history(environment)
-        value = [(v - hist).generate(alphabet=self.alphabet, max_attempts=left_attempts - 1)[0] for v in value]
+        value = [
+            (v - hist).generate(alphabet=self.alphabet, max_attempts=left_attempts - 1, random=environment.get("random", random))[0]
+            for v in value
+        ]
         if not self.is_array:
             value = value[0]
         return {"value": value, "left_attempts": left_attempts}
