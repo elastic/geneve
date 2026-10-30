@@ -90,6 +90,6 @@ class LongField(Field):
         history_values = self.get_history(environment)
         exclude_values = self.exclude_values | set(history_values)
         while left_attempts and (value is None or value in exclude_values):
-            value = random.randint(self.min_value, self.max_value)
+            value = environment.get("random", random).randint(self.min_value, self.max_value)
             left_attempts -= 1
         return {"value": value, "left_attempts": left_attempts}

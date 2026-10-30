@@ -137,7 +137,7 @@ class SourceEvents:
 
     def __init__(self, schema=None, *, corpus=None):
         self.__roots = []
-        self.__environment = {}
+        self.__environment = {"fields_history": {}}
 
         if schema is not None:
             self.schema = schema
@@ -192,21 +192,25 @@ class SourceEvents:
     def roots(self):
         return iter(self.__roots)
 
-    def emit(self, root=None, *, timestamp=True, complete=False, count=1, corpus=None):
+    def emit(self, root=None, *, timestamp=True, complete=False, count=1, corpus=None, backpack=None):
         corpus = iter(corpus) if corpus else self.corpus
         if timestamp:
             timestamp = [datetime.now(timezone.utc).astimezone()]
+        environment = self.__environment
+        if backpack is not None:
+            # a shallow copy still shares the fields history, the backpack is private to this call
+            environment = dict(environment, backpack=backpack.values)
         if complete:
             if root:
-                events = (events_from_root(root, self.__environment, timestamp, corpus) for _ in range(count))
+                events = (events_from_root(root, environment, timestamp, corpus) for _ in range(count))
             else:
-                events = (events_from_root(root, self.__environment, timestamp, corpus) for _ in range(count) for root in self.__roots)
+                events = (events_from_root(root, environment, timestamp, corpus) for _ in range(count) for root in self.__roots)
         else:
             if root:
-                events = (events_from_branch(random.choice(root), self.__environment, timestamp, root.meta, corpus) for _ in range(count))
+                events = (events_from_branch(random.choice(root), environment, timestamp, root.meta, corpus) for _ in range(count))
             else:
                 events = (
-                    events_from_branch(random.choice(root), self.__environment, timestamp, root.meta, corpus)
+                    events_from_branch(random.choice(root), environment, timestamp, root.meta, corpus)
                     for root in random.choices(self.__roots, k=count)
                 )
         return chain(*events)
