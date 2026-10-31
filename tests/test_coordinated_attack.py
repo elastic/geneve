@@ -29,6 +29,7 @@ import os
 import subprocess
 import sys
 import threading
+import time
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -49,7 +50,7 @@ from geneve.coordinated_attack import (
     schedule,
 )
 from geneve.events_emitter import SourceEvents
-from geneve.utils import load_rules, random
+from geneve.utils import deep_merge, load_rules, random
 
 # mono_branch / mono_doc members from tests/test_emitter_queries.py
 REGSVR32 = """process where process.name == "regsvr32.exe" and host.id != null
@@ -631,6 +632,123 @@ class TestStoryDrafts(tu.SeededTestCase, unittest.TestCase):
                 random.seed("two")
                 _, ledger_b = AttackEmitter(attack, schema=self.schema).emit(instance_id="i", start=START, coordination_seed="lab")
                 self.assertEqual(ledger_a, ledger_b)
+
+
+@unittest.skipIf(os.getenv("TEST_SIGNALS_ATTACKS", "0").lower() in ("0", "false", "no", ""), "Slow online test")
+class TestOnlineStoryDrafts(tu.OnlineTestCase, tu.SeededTestCase, unittest.TestCase):
+    """Instances of the story drafts, indexed into a stack, trigger exactly the alerts of their ledgers.
+
+    Opt in with TEST_SIGNALS_ATTACKS=1; the stack comes from TEST_ELASTICSEARCH_URL,
+    TEST_KIBANA_URL and the credentials, see `tests.utils.OnlineTestCase`.
+    """
+
+    rules_version = "9.5.9"
+    index_template = "geneve-ut-ca"
+    instances = ("story-1", "story-2")
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.base = Path(tu.root_dir) / "etc" / "coordinated_attacks" / cls.rules_version
+        _, cls.rules = load_rules(tu.get_test_rules_uri(cls.rules_version), basedir=tu.root_dir)
+        cls.rules_by_id = {rule.rule_id: rule for rule in cls.rules}
+        cls.schema = tu.load_test_schema()
+
+    def stories(self):
+        for path in sorted(self.base.glob("stories/*.yaml")):
+            with open(path) as f:
+                yield YAML(typ="safe").load(f)
+
+    def kibana_rule(self, story, member, index):
+        rule = self.rules_by_id[member.rule_id]
+        return {
+            "rule_id": member.rule_id,
+            "name": f"Geneve: {member.name}",
+            "description": story["id"],
+            "risk_score": rule.risk_score,
+            "severity": rule.severity,
+            "type": rule.type,
+            "query": member.query,
+            "language": member.language,
+            "index": [index],
+            "interval": "60s",
+            "from": "now-2h",
+            "max_signals": 1000,
+            "version": rule.version,
+            "tags": ["Geneve", "coordinated attack"],
+            "enabled": True,
+        }
+
+    def load(self, mappings, operations, kibana_rules):
+        for index in self.es.indices.get(index=f"{self.index_template}-*", ignore_unavailable=True):
+            self.es.indices.delete(index=index)
+        self.es.cluster.put_component_template(name=self.index_template, template={"mappings": mappings})
+        kwargs = {"name": self.index_template, "index_patterns": [f"{self.index_template}-*"], "composed_of": [self.index_template]}
+        if not self.serverless:
+            kwargs["template"] = {"settings": {"number_of_shards": 1, "number_of_replicas": 0}}
+        self.es.indices.put_index_template(**kwargs)
+        ret = self.es.options(request_timeout=60).bulk(operations="\n".join(operations), refresh=True)
+        self.assertFalse(ret["errors"], [item for item in ret["items"] if item["create"]["status"] != 201])
+        self.kb.create_detection_engine_rules(kibana_rules)
+
+    def wait_for_alerts(self, expected, timeout=300, sleep=5):
+        """Alerts of the detection rules, building blocks (the events of a sequence) excluded."""
+        body = {"size": 10000, "query": {"bool": {"must_not": [{"exists": {"field": "kibana.alert.building_block_type"}}]}}}
+        deadline = time.time() + timeout
+        while True:
+            alerts = [hit["_source"] for hit in self.kb.search_detection_engine_signals(body)["hits"]["hits"]]
+            if len(alerts) >= expected or time.time() > deadline:
+                return alerts
+            time.sleep(sleep)
+
+    def test_alerts_match_the_ledgers(self):
+        start = datetime.now(timezone.utc) - timedelta(hours=1)
+        kibana_rules, operations, mappings, instances = [], [], {}, {}
+        for story in self.stories():
+            attack = load_story(story, self.rules)
+            emitter = AttackEmitter(attack, schema=self.schema)
+            emitter.source_events.stack_version = self.get_version()
+            deep_merge(mappings, emitter.source_events.mappings())
+            indices = {m.name: f"{self.index_template}-{story['id']}-{i:02d}" for i, m in enumerate(attack.members)}
+            kibana_rules.extend(self.kibana_rule(story, m, indices[m.name]) for m in attack.members)
+            for instance_id in self.instances:
+                events, ledger = emitter.emit(instance_id=instance_id, start=start, coordination_seed="online")
+                backpack = fill_backpack(attack, coordination_seed="online", instance_id=instance_id, schema=self.schema)
+                instances[story["id"], instance_id] = (attack, backpack, ledger)
+                docs = iter(event.doc for event in events)
+                for entry in ledger.members:
+                    for _ in range(entry.documents):
+                        operations.append(json.dumps({"create": {"_index": indices[entry.member]}}))
+                        operations.append(json.dumps(next(docs)))
+
+        self.load(mappings, operations, kibana_rules)
+        expected = sum(ledger.expected_alerts for _, _, ledger in instances.values())
+        alerts = self.wait_for_alerts(expected)
+        self.assertEqual(len(alerts), expected)
+
+        def plays(alert, member, backpack):
+            """Is the alert about this member of this instance? Rule and role values tell."""
+            if alert["kibana.alert.rule.rule_id"] != member.rule_id:
+                return False
+            for fld, binding in member.bindings.items():
+                try:
+                    value = get_field(alert, fld)
+                except KeyError:
+                    return False
+                if value not in (backpack.values[binding], [backpack.values[binding]]):
+                    return False
+            return True
+
+        # every alert belongs to one member of one instance, every member of every instance gets one alert
+        seen = {key: [] for key in instances}
+        for alert in alerts:
+            matches = [
+                (key, m.name) for key, (attack, backpack, _) in instances.items() for m in attack.members if plays(alert, m, backpack)
+            ]
+            self.assertEqual(len(matches), 1, f"alert of rule {alert['kibana.alert.rule.rule_id']} matches {matches}")
+            seen[matches[0][0]].append(matches[0][1])
+        for key, (_, _, ledger) in instances.items():
+            self.assertEqual(sorted(seen[key]), sorted(entry.member for entry in ledger.members), key)
 
 
 if __name__ == "__main__":
