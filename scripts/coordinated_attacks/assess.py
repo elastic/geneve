@@ -169,7 +169,7 @@ def main():
         with open(path) as f:
             stories.append(yaml.load(f))
 
-    _, rules = load_rules(tu.get_test_rules_uri(rules_version), basedir=tu.root_dir)
+    _, rules = load_rules(tu.get_rules_package_uri(rules_version), basedir=tu.root_dir)
     schema = tu.load_test_schema()
 
     out = [f"# Attack stories feasibility, rules {rules_version}\n"]

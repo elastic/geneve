@@ -43,7 +43,7 @@ from geneve.utils import load_rules
 
 
 def inventory(rules_version, *, verbose=False):
-    version, rules = load_rules(tu.get_test_rules_uri(rules_version), basedir=tu.root_dir)
+    version, rules = load_rules(tu.get_rules_package_uri(rules_version), basedir=tu.root_dir)
     schema = tu.load_test_schema()
     records = []
     t0 = time.time()

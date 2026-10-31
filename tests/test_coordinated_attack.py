@@ -577,7 +577,7 @@ class TestStoryDrafts(tu.SeededTestCase, unittest.TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.base = Path(tu.root_dir) / "etc" / "coordinated_attacks" / cls.rules_version
-        _, cls.rules = load_rules(tu.get_test_rules_uri(cls.rules_version), basedir=tu.root_dir)
+        _, cls.rules = load_rules(tu.get_rules_package_uri(cls.rules_version), basedir=tu.root_dir)
         cls.schema = tu.load_test_schema()
 
     def stories(self):
@@ -650,7 +650,7 @@ class TestOnlineStoryDrafts(tu.OnlineTestCase, tu.SeededTestCase, unittest.TestC
     def setUpClass(cls):
         super().setUpClass()
         cls.base = Path(tu.root_dir) / "etc" / "coordinated_attacks" / cls.rules_version
-        _, cls.rules = load_rules(tu.get_test_rules_uri(cls.rules_version), basedir=tu.root_dir)
+        _, cls.rules = load_rules(tu.get_rules_package_uri(cls.rules_version), basedir=tu.root_dir)
         cls.rules_by_id = {rule.rule_id: rule for rule in cls.rules}
         cls.schema = tu.load_test_schema()
 
