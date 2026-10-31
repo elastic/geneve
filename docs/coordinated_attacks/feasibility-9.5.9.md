@@ -6,8 +6,8 @@ Inventory: 854 rules emit out of 2394.
 
 | Story | Tier |
 |---|---|
-| java-exploit-to-cryptominer | T1 |
-| office-macro-to-ransomware | T1 |
+| java-exploit-to-cryptominer | T0 |
+| office-macro-to-ransomware | T0 |
 
 ## Java exploit to cryptominer (`java-exploit-to-cryptominer`)
 
@@ -28,34 +28,36 @@ Platform: linux; size: medium; expected alerts: 5
 
 ### Bindings
 
-`pinnable`: the member constrains the field, the backpack pins it today. `glue`: the member does not constrain the field, a attack-level glue constraint is needed (T1).
+`constrained`: the member constrains the field itself. `glued`: the member does not mention the field, the glue constraint adds it. The backpack pins both.
 
 | Member | Field | Role | State |
 |---|---|---|---|
-| Potential External Linux SSH Brute Force Detected | `host.id` | web | n/a |
-| Potential Java Service Exploitation via Suspicious Child Process | `host.id` | web | pinnable |
-| Potential Java Service Exploitation via Suspicious Child Process | `user.id` | svc | glue |
-| Potential Reverse Shell | `host.id` | web | pinnable |
-| Potential Reverse Shell | `user.id` | svc | glue |
-| Potential Reverse Shell | `destination.ip` | c2 | pinnable |
-| Potential Privilege Escalation via PKEXEC | `host.id` | web | glue |
-| Potential Privilege Escalation via PKEXEC | `user.id` | svc | glue |
-| Cron Job Created or Modified | `host.id` | web | glue |
-| Suspicious Mining Process Creation Event | `host.id` | web | glue |
+| Potential External Linux SSH Brute Force Detected | `host.id` | web.id | n/a |
+| Potential Java Service Exploitation via Suspicious Child Process | `host.id` | web.id | constrained |
+| Potential Java Service Exploitation via Suspicious Child Process | `user.id` | svc.id | glued |
+| Potential Reverse Shell | `host.id` | web.id | constrained |
+| Potential Reverse Shell | `user.id` | svc.id | glued |
+| Potential Reverse Shell | `destination.ip` | c2.ip | constrained |
+| Potential Privilege Escalation via PKEXEC | `host.id` | web.id | glued |
+| Potential Privilege Escalation via PKEXEC | `user.id` | svc.id | glued |
+| Cron Job Created or Modified | `host.id` | web.id | glued |
+| Suspicious Mining Process Creation Event | `host.id` | web.id | glued |
 
-### Emission with a backpack
+### Emission
 
-Backpack: `{'host.id': 'gfOEWcjg', 'user.id': 'qxMdRnrmnHlD'}`
+Backpack: `{'c2.ip': '125.170.56.188', 'svc.id': 'JDdkXte', 'web.id': 'jorrjHycmeJ'}`
 
-| Member | Docs | Carried |
-|---|---|---|
-| Potential Java Service Exploitation via Suspicious Child Process | 2 | {'host.id': 'pinned', 'user.id': 'pinned'} |
-| Potential Reverse Shell | 2 | {'host.id': 'pinned', 'user.id': 'pinned'} |
-| Potential Privilege Escalation via PKEXEC | 1 | {'host.id': 'pinned', 'user.id': 'pinned'} |
-| Cron Job Created or Modified | 1 | {'host.id': 'pinned'} |
-| Suspicious Mining Process Creation Event | 1 | {'host.id': 'pinned'} |
+Ledger of instance `story-1`, 5 alerts expected:
 
-**Story tier: T1 (incremental)**, from the required members and bindings.
+| Member | Rule | Offset | Docs | Bound fields |
+|---|---|---|---|---|
+| Potential Java Service Exploitation via Suspicious Child Process | `c3f5e1d8-910e-43b4-8d44-d748e498ca86` | +0:00:00 | 2 | `host.id`: pinned, `user.id`: pinned |
+| Potential Reverse Shell | `48b3d2e3-f4e8-41e6-95e6-9b2091228db3` | +0:00:24.942021 | 2 | `host.id`: pinned, `user.id`: pinned, `destination.ip`: pinned |
+| Potential Privilege Escalation via PKEXEC | `8da41fc9-7735-4b24-9cc6-c78dfc9fc9c9` | +0:04:45.073440 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Cron Job Created or Modified | `ff10d4d8-fea7-422d-afb1-e5a2702369a9` | +0:06:14.962919 | 1 | `host.id`: pinned |
+| Suspicious Mining Process Creation Event | `e2258f48-ba75-4248-951b-7c885edf18c2` | +0:07:21.816154 | 1 | `host.id`: pinned |
+
+**Story tier: T0 (trivial)**, from the required members and the emission.
 
 ## Office macro to ransomware (`office-macro-to-ransomware`)
 
@@ -76,35 +78,37 @@ Platform: windows; size: medium; expected alerts: 5
 
 ### Bindings
 
-`pinnable`: the member constrains the field, the backpack pins it today. `glue`: the member does not constrain the field, a attack-level glue constraint is needed (T1).
+`constrained`: the member constrains the field itself. `glued`: the member does not mention the field, the glue constraint adds it. The backpack pins both.
 
 | Member | Field | Role | State |
 |---|---|---|---|
-| Suspicious MS Office Child Process | `host.id` | ws | n/a |
-| Suspicious MS Office Child Process | `user.id` | clerk | n/a |
-| Execution of File Written or Modified by Microsoft Office | `host.id` | ws | pinnable |
-| Execution of File Written or Modified by Microsoft Office | `user.id` | clerk | glue |
-| Remote File Download via Script Interpreter | `host.id` | ws | glue |
-| Remote File Download via Script Interpreter | `user.id` | clerk | glue |
-| Remote File Download via Script Interpreter | `destination.ip` | c2 | pinnable |
-| LSASS Memory Dump Creation | `host.id` | ws | glue |
-| LSASS Memory Dump Creation | `user.id` | clerk | glue |
-| Remote Scheduled Task Creation | `host.id` | fs | pinnable |
-| Remote Scheduled Task Creation | `user.id` | clerk | glue |
-| Remote Scheduled Task Creation | `source.ip` | ws | pinnable |
-| Volume Shadow Copy Deletion via WMIC | `host.id` | fs | glue |
-| Volume Shadow Copy Deletion via WMIC | `user.id` | clerk | glue |
+| Suspicious MS Office Child Process | `host.id` | ws.id | n/a |
+| Suspicious MS Office Child Process | `user.id` | clerk.id | n/a |
+| Execution of File Written or Modified by Microsoft Office | `host.id` | ws.id | constrained |
+| Execution of File Written or Modified by Microsoft Office | `user.id` | clerk.id | glued |
+| Remote File Download via Script Interpreter | `host.id` | ws.id | glued |
+| Remote File Download via Script Interpreter | `user.id` | clerk.id | glued |
+| Remote File Download via Script Interpreter | `destination.ip` | c2.ip | constrained |
+| LSASS Memory Dump Creation | `host.id` | ws.id | glued |
+| LSASS Memory Dump Creation | `user.id` | clerk.id | glued |
+| Remote Scheduled Task Creation | `host.id` | fs.id | constrained |
+| Remote Scheduled Task Creation | `user.id` | clerk.id | glued |
+| Remote Scheduled Task Creation | `source.ip` | ws.ip | constrained |
+| Volume Shadow Copy Deletion via WMIC | `host.id` | fs.id | glued |
+| Volume Shadow Copy Deletion via WMIC | `user.id` | clerk.id | glued |
 
-### Emission with a backpack
+### Emission
 
-Backpack: `{'host.id': 'zyiK', 'user.id': 'vJXvXXbxUVM'}`
+Backpack: `{'c2.ip': '50.86.106.250', 'clerk.id': 'lKwrHvN', 'fs.id': 'swYgW', 'ws.id': 'rTloRy', 'ws.ip': '38.252.132.255'}`
 
-| Member | Docs | Carried |
-|---|---|---|
-| Execution of File Written or Modified by Microsoft Office | 2 | {'host.id': 'pinned', 'user.id': 'pinned'} |
-| Remote File Download via Script Interpreter | 2 | {'host.id': 'pinned', 'user.id': 'pinned'} |
-| LSASS Memory Dump Creation | 1 | {'host.id': 'pinned', 'user.id': 'pinned'} |
-| Remote Scheduled Task Creation | 2 | {'host.id': 'pinned', 'user.id': 'pinned'} |
-| Volume Shadow Copy Deletion via WMIC | 1 | {'host.id': 'pinned', 'user.id': 'pinned'} |
+Ledger of instance `story-1`, 5 alerts expected:
 
-**Story tier: T1 (incremental)**, from the required members and bindings.
+| Member | Rule | Offset | Docs | Bound fields |
+|---|---|---|---|---|
+| Execution of File Written or Modified by Microsoft Office | `0d8ad79f-9025-45d8-80c1-4f0cd3c5e8e5` | +0:00:00 | 2 | `host.id`: pinned, `user.id`: pinned |
+| Remote File Download via Script Interpreter | `1d276579-3380-4095-ad38-e596a01bc64f` | +0:01:36.439058 | 2 | `host.id`: pinned, `user.id`: pinned, `destination.ip`: pinned |
+| LSASS Memory Dump Creation | `f2f46686-6f3c-4724-bd7d-24e31c70f98f` | +0:05:25.637635 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Remote Scheduled Task Creation | `954ee7c8-5437-49ae-b2d6-2960883898e9` | +0:34:40.919925 | 2 | `host.id`: pinned, `user.id`: pinned, `source.ip`: pinned |
+| Volume Shadow Copy Deletion via WMIC | `dc9c1f74-dac3-48e3-b47f-eb79db358f57` | +0:43:19.395078 | 1 | `host.id`: pinned, `user.id`: pinned |
+
+**Story tier: T0 (trivial)**, from the required members and the emission.

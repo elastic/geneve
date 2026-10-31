@@ -22,20 +22,22 @@
 Joins the story drafts of a rules version with its inventory and grades each
 member and each story on the tier ladder:
 
-  T0  works today: the rule emits and every bound field is one it constrains
-  T1  needs a small known step (glue constraint so the member carries the
-      field, entity roles, relative timing)
+  T0  works today: the rule emits, the story is loaded and emitted offline
+  T1  needs a small known step in Geneve
   T2  needs a Geneve feature or fix that does not exist yet
   T3  no generated document can trigger the rule
 
-The grading is static, from the inventory. In addition the T0/T1 members are
-emitted once with a backpack to confirm which bound fields are really pinned.
+The grading is static, from the inventory. In addition every story whose
+required members all emit is compiled with `load_story()` and emitted once
+with `AttackEmitter`: the report shows the ledger, the backpack, and whether
+each document carries the role values its member binds.
 
 Usage: assess.py <rules-version> <output.md>
 """
 
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from ruamel.yaml import YAML
@@ -43,11 +45,11 @@ from ruamel.yaml import YAML
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import tests.utils as tu
-from geneve.coordinated_attack import CoordinatedAttack, Member, fill_backpack
-from geneve.events_emitter import SourceEvents
+from geneve.coordinated_attack import AttackEmitter, fill_backpack, load_story
 from geneve.utils import load_rules
 
 TIERS = {"T0": "trivial", "T1": "incremental", "T2": "major", "T3": "impossible"}
+START = datetime(2026, 1, 1, tzinfo=timezone.utc)
 
 
 def member_tier(record):
@@ -65,32 +67,37 @@ def member_tier(record):
 def binding_state(record, field):
     if record["status"] != "ok":
         return "n/a"
-    return "pinnable" if field in record["fields"] else "glue"
+    return "constrained" if field in record["fields"] else "glued"
 
 
-def emit_with_backpack(rules, schema, story, members):
-    """Emit the feasible members once with one backpack, report what each carries."""
-    # until the drafts are loaded into real attacks, one host and one user role stand for the whole story
-    fields = sorted({f for m in story["members"] for f in m["bindings"] if f in ("host.id", "user.id")})
-    probe = Member("", {f: f.split(".")[0] + ".id" for f in fields})
-    attack = CoordinatedAttack(story["id"], roles={"host": "host", "user": "user"}, members=(probe,))
+def get_field(doc, field):
+    for part in field.split("."):
+        doc = doc[part]
+    return doc
+
+
+def emit_story(story, rules, schema):
+    """Compile the story with its required members and emit one instance of it."""
+    attack = load_story(story, rules)
     backpack = fill_backpack(attack, coordination_seed="assess", instance_id="story-1", schema=schema)
-    view = backpack.view(probe)
-    se = SourceEvents(schema)
-    results = {}
-    for member, record in members:
-        if record["status"] != "ok":
-            continue
-        root = se.add_rule(rules[member["rule"]], glue=[f for f in member["bindings"] if f in fields])
-        docs = [event.doc for event in se.emit(root, complete=False, count=1, timestamp=False, backpack=view)]
-        carried = {}
-        for field in fields:
-            a, b = field.split(".")
-            values = {doc[a][b] for doc in docs if a in doc and b in doc[a]}
-            if values:
-                carried[field] = "pinned" if values == {view[field]} else f"unpinned {sorted(values)}"
-        results[member["rule"]] = (len(docs), carried)
-    return view, results
+    events, ledger = AttackEmitter(attack, schema=schema).emit(instance_id="story-1", start=START, coordination_seed="assess")
+    docs = iter(event.doc for event in events)
+    carried = {}
+    for member, entry in zip(attack.members, ledger.members):
+        member_docs = [next(docs) for _ in range(entry.documents)]
+        states = []
+        for field, binding in member.bindings.items():
+            values = []
+            for doc in member_docs:
+                try:
+                    values.append(get_field(doc, field))
+                except KeyError:
+                    values.append(None)
+            expected = backpack.values[binding]
+            ok = all(v == expected or v == [expected] for v in values)
+            states.append(f"`{field}`: {'pinned' if ok else f'NOT pinned {values}'}")
+        carried[member.name] = ", ".join(states)
+    return backpack, ledger, carried
 
 
 def assess_story(story, inventory, rules, schema, out):
@@ -112,30 +119,39 @@ def assess_story(story, inventory, rules, schema, out):
 
     out.append("\n### Bindings\n")
     out.append(
-        "`pinnable`: the member constrains the field, the backpack pins it today. "
-        "`glue`: the member does not constrain the field, a attack-level glue constraint is needed (T1).\n"
+        "`constrained`: the member constrains the field itself. "
+        "`glued`: the member does not mention the field, the glue constraint adds it. "
+        "The backpack pins both.\n"
     )
     out.append("| Member | Field | Role | State |")
     out.append("|---|---|---|---|")
-    glue = 0
     for member, record in members:
         for field, role in member["bindings"].items():
-            state = binding_state(record, field)
-            glue += state == "glue"
-            out.append(f"| {member['rule']} | `{field}` | {role} | {state} |")
-    if glue:
-        required_tiers.append("T1")
+            out.append(f"| {member['rule']} | `{field}` | {role} | {binding_state(record, field)} |")
 
-    out.append("\n### Emission with a backpack\n")
-    values, results = emit_with_backpack(rules, schema, story, members)
-    out.append(f"Backpack: `{values}`\n")
-    out.append("| Member | Docs | Carried |")
-    out.append("|---|---|---|")
-    for name, (count, carried) in results.items():
-        out.append(f"| {name} | {count} | {carried or 'none of the backpack fields'} |")
-
+    out.append("\n### Emission\n")
     story_tier = max(required_tiers, default="T0")
-    out.append(f"\n**Story tier: {story_tier} ({TIERS[story_tier]})**, from the required members and bindings.\n")
+    if story_tier == "T0":
+        try:
+            backpack, ledger, carried = emit_story(story, rules, schema)
+        except Exception as e:  # noqa: BLE001
+            story_tier = "T1"
+            out.append(f"Loading or emitting the story failed: `{e}`\n")
+        else:
+            out.append(f"Backpack: `{backpack.values}`\n")
+            out.append(f"Ledger of instance `{ledger.instance_id}`, {ledger.expected_alerts} alerts expected:\n")
+            out.append("| Member | Rule | Offset | Docs | Bound fields |")
+            out.append("|---|---|---|---|---|")
+            for entry in ledger.members:
+                offset = entry.timestamp - ledger.start
+                out.append(f"| {entry.member} | `{entry.rule_id}` | +{offset} | {entry.documents} | {carried[entry.member]} |")
+            if ledger.expected_alerts != story["expected_alerts"]:
+                story_tier = "T1"
+                out.append(f"\nThe draft expects {story['expected_alerts']} alerts, the ledger {ledger.expected_alerts}.\n")
+    else:
+        out.append("Not attempted: a required member does not emit.\n")
+
+    out.append(f"\n**Story tier: {story_tier} ({TIERS[story_tier]})**, from the required members and the emission.\n")
     return story_tier
 
 
@@ -154,7 +170,6 @@ def main():
             stories.append(yaml.load(f))
 
     _, rules = load_rules(tu.get_test_rules_uri(rules_version), basedir=tu.root_dir)
-    rules = {r.name: r for r in rules}
     schema = tu.load_test_schema()
 
     out = [f"# Attack stories feasibility, rules {rules_version}\n"]
