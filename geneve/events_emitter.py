@@ -206,7 +206,9 @@ class SourceEvents:
 
     def emit(self, root=None, *, timestamp=True, complete=False, count=1, corpus=None, backpack=None):
         corpus = iter(corpus) if corpus else self.corpus
-        if timestamp:
+        if isinstance(timestamp, datetime):
+            timestamp = [timestamp]
+        elif timestamp:
             timestamp = [datetime.now(timezone.utc).astimezone()]
         environment = self.__environment
         if backpack is not None:

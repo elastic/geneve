@@ -36,18 +36,23 @@ the other constraints of the field like any other `==` constraint.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from random import Random
 from typing import Mapping
 
+from .events_emitter import SourceEvents
 from .solver import Entity
 from .utils import random
 
 __all__ = (
     "ROLE_KINDS",
     "AttackBackpack",
+    "AttackEmitter",
+    "AttackLedger",
     "CoordinatedAttack",
     "Member",
     "fill_backpack",
+    "schedule",
 )
 
 # role kind -> attribute -> canonical ECS field, which gives the attribute its type and constraints
@@ -60,10 +65,25 @@ ROLE_KINDS = {
 
 @dataclass(frozen=True)
 class Member:
-    """One query of the story and how it sees the roles: field -> ``role.attr``."""
+    """One query of the story and how it sees the roles: field -> ``role.attr``.
+
+    `after` names the member this one follows, `within` how long after it at
+    most. A member without `after` happens at the start of the attack.
+    """
 
     query: str
     bindings: Mapping[str, str] = field(default_factory=dict)
+    name: str | None = None
+    after: str | None = None
+    within: timedelta | None = None
+
+    def __post_init__(self):
+        if self.name is None:
+            object.__setattr__(self, "name", self.query.strip())
+        if (self.after is None) != (self.within is None):
+            raise ValueError(f"member '{self.name}': `after` and `within` go together")
+        if self.within is not None and self.within <= timedelta(0):
+            raise ValueError(f"member '{self.name}': `within` must be positive")
 
 
 @dataclass(frozen=True)
@@ -78,9 +98,21 @@ class CoordinatedAttack:
         for role, kind in self.roles.items():
             if kind not in ROLE_KINDS:
                 raise ValueError(f"role '{role}': unknown kind '{kind}'")
+        seen = set()
         for member in self.members:
+            if member.name in seen:
+                raise ValueError(f"member '{member.name}': duplicate name")
+            if member.after is not None and member.after not in seen:
+                raise ValueError(f"member '{member.name}': `after` must name an earlier member, not '{member.after}'")
+            seen.add(member.name)
             for binding in member.bindings.values():
                 self.canonical_field(binding)
+
+    def member(self, name):
+        for member in self.members:
+            if member.name == name:
+                return member
+        raise KeyError(name)
 
     def canonical_field(self, binding):
         """ECS field that gives a ``role.attr`` binding its type."""
@@ -155,3 +187,90 @@ def fill_backpack(
         # a private generator per attribute: nothing shared is seeded, consumed or locked
         values[binding] = solver(None, {"random": Random(seed)})["value"]
     return AttackBackpack(attack=attack.name, instance_id=instance_id, values=values)
+
+
+def schedule(
+    attack: CoordinatedAttack,
+    *,
+    coordination_seed: str | int | None = None,
+    instance_id: str,
+) -> Mapping[str, timedelta]:
+    """Offset of every member from the start of an attack instance.
+
+    A member that follows another happens after it, within the window the
+    story gives, at an offset drawn from a private generator seeded like the
+    backpack. Emitters that agree on the backpack agree on the timeline too,
+    whichever members each of them emits.
+    """
+    if coordination_seed is None:
+        coordination_seed = derive_seed()
+    offsets = {}
+    for member in attack.members:
+        if member.after is None:
+            offsets[member.name] = timedelta(0)
+        else:
+            seed = f"{coordination_seed}\0{instance_id}\0{attack.name}\0{member.name}\0after"
+            # in (0, within]: never at the same instant as the member it follows
+            offsets[member.name] = offsets[member.after] + member.within * (1 - Random(seed).random())
+    return offsets
+
+
+@dataclass(frozen=True)
+class LedgerEntry:
+    member: str
+    timestamp: datetime
+    documents: int
+
+
+@dataclass(frozen=True)
+class AttackLedger:
+    """Ground truth of one emission: what was emitted for an attack instance, and when.
+
+    Each member emitted is meant to trigger one alert, so `expected_alerts` is
+    the count to check the detections against. Emitters that emit different
+    members of the same instance each produce their own ledger, the ground
+    truth of the instance is the union.
+    """
+
+    attack: str
+    instance_id: str
+    start: datetime
+    members: tuple[LedgerEntry, ...]
+
+    @property
+    def expected_alerts(self):
+        return len(self.members)
+
+
+class AttackEmitter:
+    """Prepare the members of a coordinated attack once, then emit instances of it."""
+
+    def __init__(self, attack: CoordinatedAttack, *, schema=None, source_events: SourceEvents | None = None):
+        self.attack = attack
+        self.source_events = source_events or SourceEvents(schema)
+        self.roots = {m.name: self.source_events.add_query(m.query, glue=m.bindings) for m in attack.members}
+
+    def emit(self, *, instance_id: str, start: datetime, coordination_seed: str | int | None = None, members=None):
+        """Emit one instance of the attack, or only the `members` named, from `start`.
+
+        Returns the events and the ledger. Which members this emitter plays
+        does not change what the others see: backpack and timeline are the
+        same for every emitter of the instance.
+        """
+        if coordination_seed is None:
+            coordination_seed = derive_seed()
+        se = self.source_events
+        backpack = fill_backpack(
+            self.attack, coordination_seed=coordination_seed, instance_id=instance_id, schema=se.schema, stack_version=se.stack_version
+        )
+        offsets = schedule(self.attack, coordination_seed=coordination_seed, instance_id=instance_id)
+        events = []
+        entries = []
+        for member in self.attack.members:
+            if members is not None and member.name not in members:
+                continue
+            timestamp = start + offsets[member.name]
+            emitted = list(se.emit(self.roots[member.name], timestamp=timestamp, backpack=backpack.view(member)))
+            events.extend(emitted)
+            entries.append(LedgerEntry(member.name, timestamp, len(emitted)))
+        return events, AttackLedger(self.attack.name, instance_id, start, tuple(entries))

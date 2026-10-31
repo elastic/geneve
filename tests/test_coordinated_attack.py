@@ -30,14 +30,17 @@ import subprocess
 import sys
 import threading
 import unittest
+from datetime import datetime, timedelta, timezone
 
 import tests.utils as tu
 from geneve.constraints import ConflictError
 from geneve.coordinated_attack import (
     AttackBackpack,
+    AttackEmitter,
     CoordinatedAttack,
     Member,
     fill_backpack,
+    schedule,
 )
 from geneve.events_emitter import SourceEvents
 from geneve.utils import random
@@ -400,6 +403,100 @@ class TestIndependentEmitters(tu.SeededTestCase, unittest.TestCase):
         self.assertEqual(len(outputs), 1)
         in_process = fill_backpack(REGSVR_THEN_NETWORK, coordination_seed="lab", instance_id="story-1").values
         self.assertEqual(json.loads(outputs.pop()), in_process)
+
+
+# a story with a timeline: download on the workstation, then two things on the file server
+TIMED = CoordinatedAttack(
+    name="timed",
+    roles={"ws": "host", "fs": "host", "clerk": "user"},
+    members=(
+        Member(REGSVR32, {"host.id": "ws.id", "user.id": "clerk.id"}, name="regsvr"),
+        Member(NETWORK_LOOPBACK, {"host.id": "ws.id", "user.id": "clerk.id"}, name="network", after="regsvr", within=timedelta(minutes=2)),
+        Member(CMD_SEQUENCE, {"host.id": "fs.id", "user.id": "clerk.id"}, name="cmd", after="network", within=timedelta(minutes=30)),
+        Member(NONZERO_PID, {"host.id": "fs.id"}, name="pid", after="cmd", within=timedelta(minutes=10)),
+    ),
+)
+START = datetime(2026, 10, 31, 12, 0, tzinfo=timezone.utc)
+
+
+class TestSchedule(tu.SeededTestCase, unittest.TestCase):
+    def test_members_are_validated(self):
+        with self.assertRaisesRegex(ValueError, "go together"):
+            Member(REGSVR32, name="a", after="b")
+        with self.assertRaisesRegex(ValueError, "must be positive"):
+            Member(REGSVR32, name="a", after="b", within=timedelta(0))
+        with self.assertRaisesRegex(ValueError, "earlier member"):
+            CoordinatedAttack(
+                "bad", roles={}, members=(Member(REGSVR32, name="a", after="b", within=timedelta(1)), Member(NONZERO_PID, name="b"))
+            )
+        with self.assertRaisesRegex(ValueError, "duplicate name"):
+            CoordinatedAttack("bad", roles={}, members=(Member(REGSVR32, name="a"), Member(NONZERO_PID, name="a")))
+
+    def test_offsets_respect_the_windows(self):
+        offsets = schedule(TIMED, coordination_seed="lab", instance_id="story-1")
+        self.assertEqual(offsets["regsvr"], timedelta(0))
+        self.assertLess(offsets["regsvr"], offsets["network"])
+        self.assertLessEqual(offsets["network"], timedelta(minutes=2))
+        self.assertLess(offsets["network"], offsets["cmd"])
+        self.assertLessEqual(offsets["cmd"] - offsets["network"], timedelta(minutes=30))
+        self.assertLess(offsets["cmd"], offsets["pid"])
+        self.assertLessEqual(offsets["pid"] - offsets["cmd"], timedelta(minutes=10))
+
+    def test_deterministic_and_private(self):
+        a = schedule(TIMED, coordination_seed="lab", instance_id="story-1")
+        state = random.getstate()
+        random.seed("elsewhere")
+        b = schedule(TIMED, coordination_seed="lab", instance_id="story-1")
+        self.assertEqual(a, b)
+        random.setstate(state)
+        self.assertNotEqual(a, schedule(TIMED, coordination_seed="lab", instance_id="story-2"))
+
+
+class TestAttackEmitter(tu.SeededTestCase, unittest.TestCase):
+    def test_one_instance_end_to_end(self):
+        events, ledger = AttackEmitter(TIMED).emit(instance_id="story-1", start=START, coordination_seed="lab")
+        backpack = fill_backpack(TIMED, coordination_seed="lab", instance_id="story-1")
+        offsets = schedule(TIMED, coordination_seed="lab", instance_id="story-1")
+
+        # one entry per member, in story order, with the timeline and the document counts
+        self.assertEqual([e.member for e in ledger.members], ["regsvr", "network", "cmd", "pid"])
+        self.assertEqual([e.timestamp for e in ledger.members], [START + offsets[m.name] for m in TIMED.members])
+        self.assertEqual([e.documents for e in ledger.members], [1, 1, 2, 1])
+        self.assertEqual(ledger.expected_alerts, 4)
+        self.assertEqual(len(events), 5)
+
+        # the documents carry the roles and the timestamps of the ledger
+        docs = [event.doc for event in events]
+        self.assertEqual([d["host"]["id"] for d in docs], [backpack.values[r] for r in ("ws.id", "ws.id", "fs.id", "fs.id", "fs.id")])
+        self.assertEqual({d["user"]["id"] for d in docs[:4]}, {backpack.values["clerk.id"]})
+        self.assertEqual(docs[0]["@timestamp"], ledger.members[0].timestamp.isoformat(timespec="milliseconds"))
+        self.assertEqual(docs[2]["@timestamp"], ledger.members[2].timestamp.isoformat(timespec="milliseconds"))
+        self.assertLess(docs[2]["@timestamp"], docs[3]["@timestamp"])  # the two events of the sequence are 1ms apart
+        self.assertEqual(docs[4]["@timestamp"], ledger.members[3].timestamp.isoformat(timespec="milliseconds"))
+
+    def test_emitters_playing_different_members_tell_one_story(self):
+        """The workstation and the file server are emitted by different emitters: same roles, same timeline."""
+
+        def emitter(name, members):
+            random.seed(f"emitter {name}")
+            return AttackEmitter(TIMED).emit(instance_id="story-1", start=START, coordination_seed="lab", members=members)
+
+        events_a, ledger_a = emitter("A", {"regsvr", "network"})
+        events_b, ledger_b = emitter("B", {"cmd", "pid"})
+        whole, ledger = emitter("C", None)
+
+        self.assertEqual([e.member for e in ledger_a.members], ["regsvr", "network"])
+        self.assertEqual([e.member for e in ledger_b.members], ["cmd", "pid"])
+        self.assertEqual(ledger_a.members + ledger_b.members, ledger.members)  # the union is the whole ground truth
+        self.assertEqual(ledger_a.expected_alerts + ledger_b.expected_alerts, ledger.expected_alerts)
+        self.assertEqual({e.doc["user"]["id"] for e in events_a}, {e.doc["user"]["id"] for e in events_b if "user" in e.doc})
+        self.assertEqual([e.doc["@timestamp"] for e in events_a + events_b], [e.doc["@timestamp"] for e in whole])
+
+    def test_instances_do_not_share_roles_or_timeline(self):
+        emitter = AttackEmitter(TIMED)
+        _, ledger_1 = emitter.emit(instance_id="story-1", start=START, coordination_seed="lab")
+        _, ledger_2 = emitter.emit(instance_id="story-2", start=START, coordination_seed="lab")
+        self.assertNotEqual([e.timestamp for e in ledger_1.members][1:], [e.timestamp for e in ledger_2.members][1:])
 
 
 if __name__ == "__main__":
