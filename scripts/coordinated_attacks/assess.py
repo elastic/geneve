@@ -43,7 +43,7 @@ from ruamel.yaml import YAML
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import tests.utils as tu
-from geneve.coordinated_attack import CoordinatedAttack, fill_backpack
+from geneve.coordinated_attack import CoordinatedAttack, Member, fill_backpack
 from geneve.events_emitter import SourceEvents
 from geneve.utils import load_rules
 
@@ -70,24 +70,27 @@ def binding_state(record, field):
 
 def emit_with_backpack(rules, schema, story, members):
     """Emit the feasible members once with one backpack, report what each carries."""
+    # until the drafts are loaded into real attacks, one host and one user role stand for the whole story
     fields = sorted({f for m in story["members"] for f in m["bindings"] if f in ("host.id", "user.id")})
-    attack = CoordinatedAttack(story["id"], members=(), entities=tuple(fields))
+    probe = Member("", {f: f.split(".")[0] + ".id" for f in fields})
+    attack = CoordinatedAttack(story["id"], roles={"host": "host", "user": "user"}, members=(probe,))
     backpack = fill_backpack(attack, coordination_seed="assess", instance_id="story-1", schema=schema)
+    view = backpack.view(probe)
     se = SourceEvents(schema)
     results = {}
     for member, record in members:
         if record["status"] != "ok":
             continue
         root = se.add_rule(rules[member["rule"]])
-        docs = [event.doc for event in se.emit(root, complete=False, count=1, timestamp=False, backpack=backpack)]
+        docs = [event.doc for event in se.emit(root, complete=False, count=1, timestamp=False, backpack=view)]
         carried = {}
         for field in fields:
             a, b = field.split(".")
             values = {doc[a][b] for doc in docs if a in doc and b in doc[a]}
             if values:
-                carried[field] = "pinned" if values == {backpack.values[field]} else f"unpinned {sorted(values)}"
+                carried[field] = "pinned" if values == {view[field]} else f"unpinned {sorted(values)}"
         results[member["rule"]] = (len(docs), carried)
-    return backpack.values, results
+    return view, results
 
 
 def assess_story(story, inventory, rules, schema, out):

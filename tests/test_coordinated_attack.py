@@ -19,8 +19,7 @@
 
 Members are taken from the mono_branch_* fixtures in test_emitter_queries
 (not pre-built rules). The backpack goes down to the field solvers: only the
-fields that a member actually constrains are solved, therefore only those
-are taken from the backpack.
+fields that a member binds and actually constrains are solved from it.
 """
 
 from __future__ import annotations
@@ -34,7 +33,12 @@ import unittest
 
 import tests.utils as tu
 from geneve.constraints import ConflictError
-from geneve.coordinated_attack import CoordinatedAttack, fill_backpack
+from geneve.coordinated_attack import (
+    AttackBackpack,
+    CoordinatedAttack,
+    Member,
+    fill_backpack,
+)
 from geneve.events_emitter import SourceEvents
 from geneve.utils import random
 
@@ -52,17 +56,38 @@ CMD_SEQUENCE = """sequence by user.id
     [process where process.name : "cmd.exe"]
     [process where process.parent.name : "cmd.exe"]
 """
+# the same workstation seen from itself (host.ip) and from the server it reaches (source.ip)
+OUTBOUND = """network where host.ip != null and host.id != null
+"""
+INBOUND = """network where source.ip != null and host.id != null
+"""
 
 REGSVR_THEN_NETWORK = CoordinatedAttack(
     name="regsvr-then-network",
-    members=(REGSVR32, NETWORK_LOOPBACK),
-    entities=("host.id", "user.id"),
+    roles={"ws": "host", "clerk": "user"},
+    members=(
+        Member(REGSVR32, {"host.id": "ws.id"}),
+        Member(NETWORK_LOOPBACK, {"host.id": "ws.id", "user.id": "clerk.id"}),
+    ),
 )
 
 CMD_FAMILY = CoordinatedAttack(
     name="cmd-family",
-    members=(REGSVR32_UNDER_CMD, NONZERO_PID, CMD_SEQUENCE),
-    entities=("host.id", "user.id"),
+    roles={"ws": "host", "clerk": "user"},
+    members=(
+        Member(REGSVR32_UNDER_CMD),
+        Member(NONZERO_PID, {"host.id": "ws.id"}),
+        Member(CMD_SEQUENCE, {"user.id": "clerk.id"}),
+    ),
+)
+
+TWO_HOSTS = CoordinatedAttack(
+    name="two-hosts",
+    roles={"ws": "host", "fs": "host"},
+    members=(
+        Member(OUTBOUND, {"host.id": "ws.id", "host.ip": "ws.ip"}),
+        Member(INBOUND, {"host.id": "fs.id", "source.ip": "ws.ip"}),
+    ),
 )
 
 
@@ -74,11 +99,23 @@ def emit_docs(se, root, backpack=None):
 def emit_attack(attack, backpack, schema=None):
     """Emit every member of a attack, one list of documents per member."""
     se = SourceEvents(schema)
-    roots = [se.add_query(query) for query in attack.members]
-    return [
-        [event.doc for branch in se.emit(root, complete=True, count=1, timestamp=False, backpack=backpack) for event in branch]
-        for root in roots
-    ]
+    roots = [se.add_query(member.query) for member in attack.members]
+    return [emit_docs(se, root, backpack.view(member) if backpack else None) for member, root in zip(attack.members, roots)]
+
+
+class TestCoordinatedAttack(unittest.TestCase):
+    def test_bindings_are_validated(self):
+        with self.assertRaisesRegex(ValueError, "unknown kind 'printer'"):
+            CoordinatedAttack("bad", roles={"p": "printer"}, members=())
+        with self.assertRaisesRegex(ValueError, "unknown role 'fs'"):
+            CoordinatedAttack("bad", roles={"ws": "host"}, members=(Member(REGSVR32, {"host.id": "fs.id"}),))
+        with self.assertRaisesRegex(ValueError, "host has no attribute 'pid'"):
+            CoordinatedAttack("bad", roles={"ws": "host"}, members=(Member(REGSVR32, {"process.pid": "ws.pid"}),))
+
+    def test_bindings_and_canonical_fields(self):
+        self.assertEqual(TWO_HOSTS.bindings(), ["fs.id", "ws.id", "ws.ip"])
+        self.assertEqual(TWO_HOSTS.canonical_field("ws.ip"), "host.ip")
+        self.assertEqual(REGSVR_THEN_NETWORK.canonical_field("clerk.id"), "user.id")
 
 
 class TestBackpack(tu.SeededTestCase, unittest.TestCase):
@@ -88,7 +125,7 @@ class TestBackpack(tu.SeededTestCase, unittest.TestCase):
         random.seed("some other emitter")
         b = fill_backpack(REGSVR_THEN_NETWORK, coordination_seed="lab", instance_id="story-1")
         self.assertEqual(a, b)
-        self.assertEqual(set(a.values), {"host.id", "user.id"})
+        self.assertEqual(set(a.values), {"ws.id", "clerk.id"})
 
     def test_does_not_disturb_the_global_random_state(self):
         state = random.getstate()
@@ -119,16 +156,20 @@ class TestBackpack(tu.SeededTestCase, unittest.TestCase):
         b = fill_backpack(REGSVR_THEN_NETWORK, coordination_seed="lab", instance_id="story-2")
         self.assertNotEqual(a.values, b.values)
 
-    def test_values_follow_the_schema(self):
-        schema = {"process.pid": {"type": "long"}, "source.ip": {"type": "ip"}}
-        attack = CoordinatedAttack("typed", members=(), entities=("process.pid", "source.ip", "host.id"))
-        a = fill_backpack(attack, coordination_seed="lab", instance_id="story-1", schema=schema)
-        b = fill_backpack(attack, coordination_seed="lab", instance_id="story-1", schema=schema)
+    def test_values_follow_the_schema_of_the_canonical_field(self):
+        schema = {"host.ip": {"type": "ip"}}
+        a = fill_backpack(TWO_HOSTS, coordination_seed="lab", instance_id="story-1", schema=schema)
+        b = fill_backpack(TWO_HOSTS, coordination_seed="lab", instance_id="story-1", schema=schema)
         self.assertEqual(a, b)
-        self.assertIsInstance(a.values["process.pid"], int)
-        self.assertTrue(0 < a.values["process.pid"] < 2**32)  # ECS bounds are honored
-        self.assertIn(".", a.values["source.ip"])
-        self.assertIsInstance(a.values["host.id"], str)
+        self.assertIn(".", a.values["ws.ip"])  # an address, from the ip solver of host.ip
+        self.assertIsInstance(a.values["ws.id"], str)
+        self.assertNotEqual(a.values["ws.id"], a.values["fs.id"])  # two hosts, two identities
+
+    def test_view_gives_each_member_its_own_fields(self):
+        backpack = AttackBackpack("two-hosts", "story-1", {"ws.id": "W", "fs.id": "F", "ws.ip": "10.0.0.7"})
+        outbound, inbound = TWO_HOSTS.members
+        self.assertEqual(backpack.view(outbound), {"host.id": "W", "host.ip": "10.0.0.7"})
+        self.assertEqual(backpack.view(inbound), {"host.id": "F", "source.ip": "10.0.0.7"})
 
 
 class TestBackpackInSolvers(tu.SeededTestCase, unittest.TestCase):
@@ -137,55 +178,66 @@ class TestBackpackInSolvers(tu.SeededTestCase, unittest.TestCase):
         regsvr, network = emit_attack(REGSVR_THEN_NETWORK, backpack)
         self.assertEqual(len(regsvr), 1)
         self.assertEqual(len(network), 1)
-        self.assertEqual(regsvr[0]["host"]["id"], backpack.values["host.id"])
-        self.assertEqual(network[0]["host"]["id"], backpack.values["host.id"])
-        self.assertEqual(network[0]["user"]["id"], backpack.values["user.id"])
+        self.assertEqual(regsvr[0]["host"]["id"], backpack.values["ws.id"])
+        self.assertEqual(network[0]["host"]["id"], backpack.values["ws.id"])
+        self.assertEqual(network[0]["user"]["id"], backpack.values["clerk.id"])
         # what the members constrain themselves still comes from their queries
         self.assertEqual(regsvr[0]["process"]["name"], "regsvr32.exe")
         self.assertEqual(network[0]["destination"]["ip"], "127.0.0.1")
 
-    def test_only_the_fields_of_the_document_are_taken(self):
-        """The backpack carries host.id and user.id, a member that does not solve them does not get them."""
+    def test_one_role_seen_through_different_fields(self):
+        """The workstation is host.ip in its own events and source.ip in the server's: same address."""
+        schema = {"host.ip": {"type": "ip"}, "source.ip": {"type": "ip"}}
+        backpack = fill_backpack(TWO_HOSTS, coordination_seed="lab", instance_id="story-1", schema=schema)
+        (outbound,), (inbound,) = emit_attack(TWO_HOSTS, backpack, schema)
+        self.assertEqual(outbound["host"]["ip"], backpack.values["ws.ip"])
+        self.assertEqual(inbound["source"]["ip"], backpack.values["ws.ip"])
+        self.assertEqual(outbound["host"]["id"], backpack.values["ws.id"])
+        self.assertEqual(inbound["host"]["id"], backpack.values["fs.id"])
+        self.assertNotEqual(outbound["host"]["id"], inbound["host"]["id"])
+
+    def test_only_bound_fields_are_taken(self):
+        """REGSVR32 binds host.id only: it does not get a user.id from the backpack."""
         backpack = fill_backpack(REGSVR_THEN_NETWORK, coordination_seed="lab", instance_id="story-1")
         regsvr, _ = emit_attack(REGSVR_THEN_NETWORK, backpack)
-        self.assertNotIn("user", regsvr[0])  # REGSVR32 has no user.id
+        self.assertNotIn("user", regsvr[0])
         (cmd,), *_ = emit_attack(CMD_FAMILY, fill_backpack(CMD_FAMILY, coordination_seed="lab", instance_id="story-2"))
-        self.assertNotIn("host", cmd)  # REGSVR32_UNDER_CMD has no host.id
+        self.assertNotIn("host", cmd)  # REGSVR32_UNDER_CMD has no bindings at all
         self.assertNotIn("user", cmd)
 
     def test_without_a_backpack_nothing_changes(self):
         backpack = fill_backpack(REGSVR_THEN_NETWORK, coordination_seed="lab", instance_id="story-1")
         free, _ = emit_attack(REGSVR_THEN_NETWORK, None)
-        self.assertNotEqual(free[0]["host"]["id"], backpack.values["host.id"])
+        self.assertNotEqual(free[0]["host"]["id"], backpack.values["ws.id"])
 
     def test_sequence_join_value_comes_from_the_backpack(self):
         """`sequence by user.id` joins on a value that the backpack pre-assigns, so the join survives."""
         backpack = fill_backpack(CMD_FAMILY, coordination_seed="lab", instance_id="story-9")
         *_, seq = emit_attack(CMD_FAMILY, backpack)
         self.assertEqual(len(seq), 2)
-        self.assertEqual(seq[0]["user"]["id"], backpack.values["user.id"])
-        self.assertEqual(seq[1]["user"]["id"], backpack.values["user.id"])
+        self.assertEqual(seq[0]["user"]["id"], backpack.values["clerk.id"])
+        self.assertEqual(seq[1]["user"]["id"], backpack.values["clerk.id"])
         # without the backpack the sequence still joins, on a value of its own
         *_, free = emit_attack(CMD_FAMILY, None)
         self.assertEqual(free[0]["user"]["id"], free[1]["user"]["id"])
-        self.assertNotEqual(free[0]["user"]["id"], backpack.values["user.id"])
+        self.assertNotEqual(free[0]["user"]["id"], backpack.values["clerk.id"])
 
     def test_one_emitter_serves_multiple_backpacks(self):
         """One SourceEvents, two stories in flight, the IR is prepared once."""
         se = SourceEvents()
-        roots = [se.add_query(query) for query in REGSVR_THEN_NETWORK.members]
+        roots = [se.add_query(member.query) for member in REGSVR_THEN_NETWORK.members]
         story_1 = fill_backpack(REGSVR_THEN_NETWORK, coordination_seed="lab", instance_id="story-1")
         story_2 = fill_backpack(REGSVR_THEN_NETWORK, coordination_seed="lab", instance_id="story-2")
         for backpack in (story_1, story_2, story_1):
-            for root in roots:
-                for doc in emit_docs(se, root, backpack):
-                    self.assertEqual(doc["host"]["id"], backpack.values["host.id"])
+            for member, root in zip(REGSVR_THEN_NETWORK.members, roots):
+                for doc in emit_docs(se, root, backpack.view(member)):
+                    self.assertEqual(doc["host"]["id"], backpack.values["ws.id"])
 
     def test_backpack_value_must_satisfy_the_constraints(self):
         """A pre-assigned value that contradicts the member constraints is reported, not silently emitted."""
-        attack = CoordinatedAttack("conflict", members=(REGSVR32,), entities=("process.name",))
+        attack = CoordinatedAttack("conflict", roles={"clerk": "user"}, members=(Member(REGSVR32, {"process.name": "clerk.name"}),))
         backpack = fill_backpack(attack, coordination_seed="lab", instance_id="story-1")
-        self.assertNotEqual(backpack.values["process.name"], "regsvr32.exe")
+        self.assertNotEqual(backpack.values["clerk.name"], "regsvr32.exe")
         with self.assertRaises(ConflictError):
             emit_attack(attack, backpack)
 
@@ -200,12 +252,12 @@ class TestIndependentEmitters(tu.SeededTestCase, unittest.TestCase):
         """Play one emitter: own random state, own SourceEvents, own backpack, one member of the attack."""
         random.seed(f"emitter {name}")  # an unrelated random state per emitter
         se = SourceEvents()
-        roots = [se.add_query(query) for query in attack.members]
+        roots = [se.add_query(m.query) for m in attack.members]
         for _ in range(noise):  # unrelated traffic that this emitter emitted before
             for root in roots:
                 emit_docs(se, root)
         backpack = fill_backpack(attack, coordination_seed="lab", instance_id=instance_id)
-        return backpack, emit_docs(se, roots[member], backpack)
+        return backpack, emit_docs(se, roots[member], backpack.view(attack.members[member]))
 
     def test_emitters_agree_on_the_attack_entities(self):
         backpack_a, (doc_a,) = self.emitter("A", REGSVR_THEN_NETWORK, member=0, instance_id="story-1")
@@ -217,17 +269,17 @@ class TestIndependentEmitters(tu.SeededTestCase, unittest.TestCase):
         self.assertEqual(doc_a["process"]["name"], "regsvr32.exe")
         self.assertEqual(doc_b["destination"]["ip"], "127.0.0.1")
         self.assertEqual(doc_a["host"]["id"], doc_b["host"]["id"])
-        self.assertEqual(doc_a["host"]["id"], backpack_a.values["host.id"])
+        self.assertEqual(doc_a["host"]["id"], backpack_a.values["ws.id"])
 
     def test_emitters_sharing_the_harness_seed_agree_without_a_coordination_seed(self):
         """Two emitters that started from the same harness seed need no coordination seed to agree."""
 
-        def emitter(member):
+        def emitter(index):
             random.seed("harness")
             se = SourceEvents()
-            roots = [se.add_query(query) for query in REGSVR_THEN_NETWORK.members]
+            roots = [se.add_query(m.query) for m in REGSVR_THEN_NETWORK.members]
             backpack = fill_backpack(REGSVR_THEN_NETWORK, instance_id="story-1")
-            (doc,) = emit_docs(se, roots[member], backpack)
+            (doc,) = emit_docs(se, roots[index], backpack.view(REGSVR_THEN_NETWORK.members[index]))
             return backpack, doc
 
         backpack_a, doc_a = emitter(0)
@@ -246,8 +298,8 @@ class TestIndependentEmitters(tu.SeededTestCase, unittest.TestCase):
         backpack_b, (nonzero_pid,) = self.emitter("B", CMD_FAMILY, member=1, instance_id="story-3", noise=3)
         self.assertEqual(backpack_a, backpack_b)
         self.assertEqual(len(seq), 2)
-        self.assertEqual({doc["user"]["id"] for doc in seq}, {backpack_b.values["user.id"]})
-        self.assertEqual(nonzero_pid["host"]["id"], backpack_a.values["host.id"])
+        self.assertEqual({doc["user"]["id"] for doc in seq}, {backpack_b.values["clerk.id"]})
+        self.assertEqual(nonzero_pid["host"]["id"], backpack_a.values["ws.id"])
 
     def test_emitters_in_threads_do_not_disturb_each_other(self):
         """Backpacks come from private generators, whatever happens to the shared one meanwhile."""

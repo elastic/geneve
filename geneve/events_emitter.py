@@ -204,7 +204,7 @@ class SourceEvents:
         environment = self.__environment
         if backpack is not None:
             # a shallow copy still shares the fields history, the backpack is private to this call
-            environment = dict(environment, backpack=backpack.values)
+            environment = dict(environment, backpack=dict(backpack))
         if complete:
             if root:
                 events = (events_from_root(root, environment, timestamp, corpus) for _ in range(count))
