@@ -74,15 +74,21 @@ def guess_from_query(query):
     raise ValueError(f"{lang} query error: {error}") from error
 
 
+def ast_from_query(query, language=None):
+    if language is None:
+        return guess_from_query(query).ast
+    elif language == "eql":
+        return ast_from_eql_query(query)
+    elif language == "kuery":
+        return ast_from_kql_query(query)
+    else:
+        raise NotImplementedError(f"Unsupported query language: {language}")
+
+
 def ast_from_rule(rule):
     if rule.type not in ("query", "eql"):
         raise NotImplementedError(f"Unsupported rule type: {rule.type}")
-    elif rule.language == "eql":
-        return ast_from_eql_query(rule.query)
-    elif rule.language == "kuery":
-        return ast_from_kql_query(rule.query)
-    else:
-        raise NotImplementedError(f"Unsupported query language: {rule.language}")
+    return ast_from_query(rule.query, rule.language)
 
 
 def emit_mappings(fields, schema):
@@ -184,8 +190,8 @@ class SourceEvents:
         self.__roots.append(root)
         return root
 
-    def add_query(self, query, *, meta=None, glue=None):
-        ast = guess_from_query(query).ast
+    def add_query(self, query, *, language=None, meta=None, glue=None):
+        ast = ast_from_query(query, language)
         return self.add_ast(ast, meta=meta, glue=glue)
 
     def add_rule(self, rule, *, meta=None, glue=None):

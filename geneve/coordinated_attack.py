@@ -35,10 +35,11 @@ the other constraints of the field like any other `==` constraint.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from random import Random
-from typing import Mapping
+from typing import Iterable, Mapping
 
 from .events_emitter import SourceEvents
 from .solver import Entity
@@ -52,6 +53,8 @@ __all__ = (
     "CoordinatedAttack",
     "Member",
     "fill_backpack",
+    "load_story",
+    "parse_duration",
     "schedule",
 )
 
@@ -69,6 +72,8 @@ class Member:
 
     `after` names the member this one follows, `within` how long after it at
     most. A member without `after` happens at the start of the attack.
+    `language` is that of the query (guessed if omitted), `rule_id` the rule
+    the member comes from, if any: it is reported in the ledger.
     """
 
     query: str
@@ -76,6 +81,8 @@ class Member:
     name: str | None = None
     after: str | None = None
     within: timedelta | None = None
+    language: str | None = None
+    rule_id: str | None = None
 
     def __post_init__(self):
         if self.name is None:
@@ -185,7 +192,11 @@ def fill_backpack(
         solver = Entity("", {canonical: []}, schema, stack_version).fields[canonical]
         seed = f"{coordination_seed}\0{instance_id}\0{attack.name}\0{binding}"
         # a private generator per attribute: nothing shared is seeded, consumed or locked
-        values[binding] = solver(None, {"random": Random(seed)})["value"]
+        value = solver(None, {"random": Random(seed)})["value"]
+        if solver.is_array:
+            # role attributes are scalars: `host.ip` is an array in ECS, the role has one address
+            (value,) = value
+        values[binding] = value
     return AttackBackpack(attack=attack.name, instance_id=instance_id, values=values)
 
 
@@ -218,6 +229,7 @@ def schedule(
 @dataclass(frozen=True)
 class LedgerEntry:
     member: str
+    rule_id: str | None
     timestamp: datetime
     documents: int
 
@@ -248,7 +260,7 @@ class AttackEmitter:
     def __init__(self, attack: CoordinatedAttack, *, schema=None, source_events: SourceEvents | None = None):
         self.attack = attack
         self.source_events = source_events or SourceEvents(schema)
-        self.roots = {m.name: self.source_events.add_query(m.query, glue=m.bindings) for m in attack.members}
+        self.roots = {m.name: self.source_events.add_query(m.query, language=m.language, glue=m.bindings) for m in attack.members}
 
     def emit(self, *, instance_id: str, start: datetime, coordination_seed: str | int | None = None, members=None):
         """Emit one instance of the attack, or only the `members` named, from `start`.
@@ -272,5 +284,51 @@ class AttackEmitter:
             timestamp = start + offsets[member.name]
             emitted = list(se.emit(self.roots[member.name], timestamp=timestamp, backpack=backpack.view(member)))
             events.extend(emitted)
-            entries.append(LedgerEntry(member.name, timestamp, len(emitted)))
+            entries.append(LedgerEntry(member.name, member.rule_id, timestamp, len(emitted)))
         return events, AttackLedger(self.attack.name, instance_id, start, tuple(entries))
+
+
+DURATION_UNITS = {"s": "seconds", "m": "minutes", "h": "hours", "d": "days"}
+
+
+def parse_duration(text: str) -> timedelta:
+    """Duration as written in the story drafts: `30s`, `2m`, `1h`, `3d`."""
+    m = re.fullmatch(r"\s*(\d+)\s*([smhd])\s*", str(text))
+    if not m:
+        raise ValueError(f"invalid duration: '{text}'")
+    return timedelta(**{DURATION_UNITS[m[2]]: int(m[1])})
+
+
+def load_story(story: Mapping, rules: Iterable, *, optional: bool = False) -> CoordinatedAttack:
+    """Compile a story draft (the parsed YAML mapping) into a coordinated attack.
+
+    Members are looked up by rule name in `rules`, the loaded rules package.
+    Optional members are left out unless `optional` is set. Member names are
+    the rule names, as `after` refers to them.
+    """
+    by_name = {}
+    for rule in rules:
+        by_name.setdefault(rule.name, []).append(rule)
+
+    members = []
+    for draft in story["members"]:
+        if draft.get("optional") and not optional:
+            continue
+        candidates = by_name.get(draft["rule"], [])
+        if len(candidates) != 1:
+            raise ValueError(f"story '{story['id']}': {len(candidates)} rules named '{draft['rule']}'")
+        (rule,) = candidates
+        after = draft.get("after")
+        members.append(
+            Member(
+                query=rule.query,
+                bindings=dict(draft.get("bindings", {})),
+                name=rule.name,
+                after=after["member"] if after else None,
+                within=parse_duration(after["within"]) if after else None,
+                language=rule.language,
+                rule_id=rule.rule_id,
+            )
+        )
+    roles = {name: spec["kind"] for name, spec in story["roles"].items()}
+    return CoordinatedAttack(name=story["id"], roles=roles, members=tuple(members))

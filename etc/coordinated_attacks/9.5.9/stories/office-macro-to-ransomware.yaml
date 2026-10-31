@@ -30,7 +30,7 @@ narrative: >
   server, and shadow copies are deleted there before encryption starts.
 
 # Roles: the entities of the story. Members refer to them, each with the field
-# under which that member sees the entity.
+# under which that member sees the entity, as `role.attr` (id, name, ip).
 roles:
   ws: { kind: host, description: the clerk's workstation }
   fs: { kind: host, description: the file server reached with the stolen credentials }
@@ -42,30 +42,30 @@ members:
     stage: initial access
     host: ws
     optional: true  # alternative entry, see `Execution of File Written or Modified by Microsoft Office`
-    bindings: { host.id: ws, user.id: clerk }
+    bindings: { host.id: ws.id, user.id: clerk.id }
   - rule: Execution of File Written or Modified by Microsoft Office
     stage: execution
     host: ws
-    bindings: { host.id: ws, user.id: clerk }
+    bindings: { host.id: ws.id, user.id: clerk.id }
   - rule: Remote File Download via Script Interpreter
     stage: command and control
     host: ws
-    bindings: { host.id: ws, user.id: clerk, destination.ip: c2 }
+    bindings: { host.id: ws.id, user.id: clerk.id, destination.ip: c2.ip }
     after: { member: Execution of File Written or Modified by Microsoft Office, within: 2m }
   - rule: LSASS Memory Dump Creation
     stage: credential access
     host: ws
-    bindings: { host.id: ws, user.id: clerk }
+    bindings: { host.id: ws.id, user.id: clerk.id }
     after: { member: Remote File Download via Script Interpreter, within: 5m }
   - rule: Remote Scheduled Task Creation
     stage: lateral movement
     host: fs
-    bindings: { host.id: fs, user.id: clerk, source.ip: ws }
+    bindings: { host.id: fs.id, user.id: clerk.id, source.ip: ws.ip }
     after: { member: LSASS Memory Dump Creation, within: 30m }
   - rule: Volume Shadow Copy Deletion via WMIC
     stage: impact
     host: fs
-    bindings: { host.id: fs, user.id: clerk }
+    bindings: { host.id: fs.id, user.id: clerk.id }
     after: { member: Remote Scheduled Task Creation, within: 10m }
 
 expected_alerts: 5  # 6 with the optional member

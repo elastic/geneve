@@ -31,6 +31,10 @@ import sys
 import threading
 import unittest
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from types import SimpleNamespace
+
+from ruamel.yaml import YAML
 
 import tests.utils as tu
 from geneve.constraints import ConflictError
@@ -40,10 +44,12 @@ from geneve.coordinated_attack import (
     CoordinatedAttack,
     Member,
     fill_backpack,
+    load_story,
+    parse_duration,
     schedule,
 )
 from geneve.events_emitter import SourceEvents
-from geneve.utils import random
+from geneve.utils import load_rules, random
 
 # mono_branch / mono_doc members from tests/test_emitter_queries.py
 REGSVR32 = """process where process.name == "regsvr32.exe" and host.id != null
@@ -497,6 +503,134 @@ class TestAttackEmitter(tu.SeededTestCase, unittest.TestCase):
         _, ledger_1 = emitter.emit(instance_id="story-1", start=START, coordination_seed="lab")
         _, ledger_2 = emitter.emit(instance_id="story-2", start=START, coordination_seed="lab")
         self.assertNotEqual([e.timestamp for e in ledger_1.members][1:], [e.timestamp for e in ledger_2.members][1:])
+
+
+def get_field(doc, field):
+    for part in field.split("."):
+        doc = doc[part]
+    return doc
+
+
+FAKE_RULES = [
+    SimpleNamespace(rule_id="r1", name="Regsvr", type="eql", language="eql", query=REGSVR32),
+    SimpleNamespace(rule_id="r2", name="Loopback", type="eql", language="eql", query=NETWORK_LOOPBACK),
+    SimpleNamespace(rule_id="r3", name="Cmd sequence", type="eql", language="eql", query=CMD_SEQUENCE),
+    SimpleNamespace(rule_id="r4", name="Twin", type="eql", language="eql", query=NONZERO_PID),
+    SimpleNamespace(rule_id="r5", name="Twin", type="eql", language="eql", query=NONZERO_PID),
+]
+STORY = {
+    "id": "fake-story",
+    "roles": {"ws": {"kind": "host"}, "fs": {"kind": "host"}, "clerk": {"kind": "user"}},
+    "members": [
+        {"rule": "Regsvr", "bindings": {"host.id": "ws.id", "user.id": "clerk.id"}},
+        {"rule": "Loopback", "optional": True, "bindings": {"host.id": "ws.id"}, "after": {"member": "Regsvr", "within": "2m"}},
+        {"rule": "Cmd sequence", "bindings": {"host.id": "fs.id", "user.id": "clerk.id"}, "after": {"member": "Regsvr", "within": "1h"}},
+    ],
+}
+
+
+class TestLoadStory(unittest.TestCase):
+    def test_durations(self):
+        self.assertEqual(parse_duration("30s"), timedelta(seconds=30))
+        self.assertEqual(parse_duration("2m"), timedelta(minutes=2))
+        self.assertEqual(parse_duration("1h"), timedelta(hours=1))
+        self.assertEqual(parse_duration("3d"), timedelta(days=3))
+        for bad in ("", "2", "m", "2 weeks", "1.5h"):
+            with self.assertRaisesRegex(ValueError, "invalid duration"):
+                parse_duration(bad)
+
+    def test_required_members(self):
+        attack = load_story(STORY, FAKE_RULES)
+        self.assertEqual(attack.name, "fake-story")
+        self.assertEqual(attack.roles, {"ws": "host", "fs": "host", "clerk": "user"})
+        self.assertEqual([m.name for m in attack.members], ["Regsvr", "Cmd sequence"])
+        self.assertEqual([m.rule_id for m in attack.members], ["r1", "r3"])
+        self.assertEqual([m.language for m in attack.members], ["eql", "eql"])
+        self.assertEqual(attack.members[1].after, "Regsvr")
+        self.assertEqual(attack.members[1].within, timedelta(hours=1))
+        self.assertEqual(attack.bindings(), ["clerk.id", "fs.id", "ws.id"])
+
+    def test_optional_members(self):
+        attack = load_story(STORY, FAKE_RULES, optional=True)
+        self.assertEqual([m.name for m in attack.members], ["Regsvr", "Loopback", "Cmd sequence"])
+
+    def test_unknown_or_ambiguous_rule(self):
+        story = dict(STORY, members=[{"rule": "Nope"}])
+        with self.assertRaisesRegex(ValueError, "0 rules named 'Nope'"):
+            load_story(story, FAKE_RULES)
+        story = dict(STORY, members=[{"rule": "Twin"}])
+        with self.assertRaisesRegex(ValueError, "2 rules named 'Twin'"):
+            load_story(story, FAKE_RULES)
+
+    def test_loaded_story_emits(self):
+        _, ledger = AttackEmitter(load_story(STORY, FAKE_RULES)).emit(instance_id="i", start=START, coordination_seed="lab")
+        self.assertEqual([(e.member, e.rule_id, e.documents) for e in ledger.members], [("Regsvr", "r1", 1), ("Cmd sequence", "r3", 2)])
+
+
+class TestStoryDrafts(tu.SeededTestCase, unittest.TestCase):
+    """The story drafts of a rules version compile and emit with the actual pre-built rules."""
+
+    rules_version = "9.5.9"
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.base = Path(tu.root_dir) / "etc" / "coordinated_attacks" / cls.rules_version
+        _, cls.rules = load_rules(tu.get_test_rules_uri(cls.rules_version), basedir=tu.root_dir)
+        cls.schema = tu.load_test_schema()
+
+    def stories(self):
+        for path in sorted(self.base.glob("stories/*.yaml")):
+            with open(path) as f:
+                yield YAML(typ="safe").load(f)
+
+    def test_drafts_emit_their_stories(self):
+        count = 0
+        for story in self.stories():
+            count += 1
+            with self.subTest(story=story["id"]):
+                attack = load_story(story, self.rules)
+                offsets = schedule(attack, coordination_seed="lab", instance_id="i")
+                events, ledger = AttackEmitter(attack, schema=self.schema).emit(instance_id="i", start=START, coordination_seed="lab")
+                backpack = fill_backpack(attack, coordination_seed="lab", instance_id="i", schema=self.schema)
+
+                # ground truth: one alert per required member, as the draft expects, in story order
+                self.assertEqual(ledger.expected_alerts, story["expected_alerts"])
+                self.assertEqual([e.member for e in ledger.members], [m["rule"] for m in story["members"] if not m.get("optional")])
+                self.assertEqual([e.timestamp for e in ledger.members], [START + offsets[m.name] for m in attack.members])
+                self.assertTrue(all(e.documents >= 1 for e in ledger.members))
+
+                # every document carries the roles its member binds, with the values of the backpack
+                docs = iter(events)
+                for member, entry in zip(attack.members, ledger.members):
+                    for _ in range(entry.documents):
+                        doc = next(docs).doc
+                        for fld, binding in member.bindings.items():
+                            self.assertEqual(get_field(doc, fld), backpack.values[binding], f"{member.name}: {fld}")
+                        self.assertGreaterEqual(doc["@timestamp"], entry.timestamp.isoformat(timespec="milliseconds"))
+        self.assertEqual(count, 2)
+
+    def test_array_field_role_attribute(self):
+        """`host.ip` is an array in ECS: the role attribute is a scalar, it pins array and scalar fields alike."""
+        query = "network where host.ip != null and source.ip != null"
+        attack = CoordinatedAttack(
+            "t", roles={"ws": "host"}, members=(Member(query, {"host.ip": "ws.ip", "source.ip": "ws.ip"}, name="m"),)
+        )
+        backpack = fill_backpack(attack, coordination_seed="lab", instance_id="i", schema=self.schema)
+        self.assertIsInstance(backpack.values["ws.ip"], str)
+        events, _ = AttackEmitter(attack, schema=self.schema).emit(instance_id="i", start=START, coordination_seed="lab")
+        self.assertEqual(events[0].doc["host"]["ip"], [backpack.values["ws.ip"]])
+        self.assertEqual(events[0].doc["source"]["ip"], backpack.values["ws.ip"])
+
+    def test_two_emitters_agree_on_the_drafts(self):
+        for story in self.stories():
+            with self.subTest(story=story["id"]):
+                attack = load_story(story, self.rules)
+                random.seed("one")
+                _, ledger_a = AttackEmitter(attack, schema=self.schema).emit(instance_id="i", start=START, coordination_seed="lab")
+                random.seed("two")
+                _, ledger_b = AttackEmitter(attack, schema=self.schema).emit(instance_id="i", start=START, coordination_seed="lab")
+                self.assertEqual(ledger_a, ledger_b)
 
 
 if __name__ == "__main__":
