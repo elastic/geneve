@@ -244,7 +244,7 @@ constraint, not an afterthought of “run Geneve under a process pool.”
 | `SourceEvents` | Add many queries/rules; keep roots; emit repeatedly | Natural place to attach attack composition |
 | Constraints IR (`Root` / `Branch` / `Document`) | Generation IR | Join surface across rules |
 | Sequence → `join_value` | Intra-rule related documents | Pattern to scale across rules |
-| `__environment` | Thin shared state (e.g. cardinality history) | Insufficient as entity store; attacks need richer bindings |
+| `__environment` | Thin shared state (e.g. cardinality history) | Carries the backpack view per `emit()` call; not an entity store |
 | Versioned `documents_from_rules-*` / `alerts_from_rules-*` | Per-rule prepare and signal quality | Story-level ledger is additive |
 | Optional corpus merge on emit | Overlay / enrichment | Possible noise or realism aid; not the join mechanism |
 
@@ -282,21 +282,107 @@ constraint, not an afterthought of “run Geneve under a process pool.”
 7. Prefer unsynchronized emitters bound by artifact + seed over emit-time
    coordination between generators.
 
+## What is implemented
+
+The first cycle built the thinnest path from a story draft to alerts on a
+stack. Module `geneve/coordinated_attack.py`, tests in
+`tests/test_coordinated_attack.py`, artifacts under `etc/coordinated_attacks/`.
+
+### Roles and backpack
+
+A `CoordinatedAttack` names **roles** (`ws: host`, `clerk: user`, `c2: ip`)
+and **members**, each a query plus **bindings** from its fields to role
+attributes: `host.id: ws.id`, `source.ip: ws.ip`, `destination.ip: c2.ip`.
+Role kinds give each attribute a canonical ECS field, which gives it a type
+and the solver that generates it.
+
+The **backpack** of an attack instance holds one value per role attribute.
+`fill_backpack()` draws each value from the canonical field's solver with a
+private generator seeded by
+`(coordination seed, instance id, attack name, role.attr)`: nothing shared
+is seeded, consumed or locked, and any emitter with the same inputs gets
+the same values. That is the unsynchronized coordination of the sketch
+above, proven by tests with threads, subprocesses and perturbed global
+state. Role attributes are scalars even where ECS makes the field an
+array (`host.ip`).
+
+The backpack goes down to the field solvers: when a member is emitted with
+its view of the backpack (`field -> value`), the solver of each bound field
+adds the value as one more `==` constraint, so it is checked against the
+member's own constraints and a contradiction is a `ConflictError`, not a
+silently wrong document.
+
+### Glue constraints
+
+The glue of this cycle is a constraint, not a query. A member that does
+not mention a bound field (most rules say nothing about `user.id`) gets a
+`field != null` constraint appended to every document of every branch
+before solving, so the field exists and the backpack can pin it. The glue
+queries of the design (connective documents of their own) are still
+future work; both are "glue" because both make the story hold together
+without the detection engine knowing.
+
+### Timeline and ledger
+
+A member may follow another (`after`) within a window (`within`).
+`schedule()` places the members of an instance on a timeline, drawing the
+offset inside the window from a private generator seeded like the
+backpack, so the timeline is shared across emitters as the roles are.
+
+`AttackEmitter.emit()` emits one instance, or a subset of its members, from
+a start instant and returns the documents and an `AttackLedger`: for every
+member emitted, its name, rule id, timestamp and document count. One alert
+is expected per entry. Emitters playing different members of the same
+instance produce partial ledgers whose union is the ground truth.
+
+### Story drafts, loader, pipeline
+
+Stories are drafted offline as YAML under
+`etc/coordinated_attacks/<rules version>/stories/`, with the prompt and the
+response that produced them under `traces/`: the AI-assisted authoring of
+the design, reviewable in the repository. `load_story()` compiles a draft
+into a `CoordinatedAttack` backed by the actual rules of the package
+(members looked up by name, language and rule id kept), leaving optional
+members out unless asked for.
+
+`scripts/coordinated_attacks/inventory.py` records, for a rules version,
+which rules Geneve emits and what each constrains.
+`scripts/coordinated_attacks/assess.py` grades the drafts on the tier
+ladder (T0 works, T1 small known step, T2 missing Geneve feature, T3
+impossible) and emits each story once, reporting the ledger and whether
+every bound field is pinned: `docs/coordinated_attacks/feasibility-*.md`.
+
+### Verified
+
+On rules 9.5.9, two drafts (`office-macro-to-ransomware`, two hosts and a
+user; `java-exploit-to-cryptominer`, one host and a user) grade T0. Two
+instances of each, indexed into a 9.6.0 stack with their ten member rules,
+produced exactly twenty alerts: every alert belonged to one member of one
+instance (rule id plus role values), every ledger entry got its alert.
+
+### Not there yet
+
+- Glue queries, selection and rates, noise interleaving.
+- Group solvers (`geo`, `as`) draw from faker on shared state: not
+  pinnable, not deterministic across emitters.
+- Role values are typed but not realistic (`host.id` of one letter).
+- Pre-built rules Geneve cannot emit yet: see the inventory and the T2
+  notes of the assessment (branch limit, a negated-conjunction solver gap,
+  `constant_keyword`, ES|QL, `new_terms`, threshold).
+- Story grading against late, partial or extra alerts.
+
 ## Suggested follow-on work (not a plan yet)
 
 Order of depth, not a commitment:
 
-1. Artifact sketch (fields, versioning, membership, bindings, glue).
-2. Inventory of detection-rules metadata useful for grouping (ATT&CK,
-   tags, navigator layers, RTA links).
-3. IR composition API (join several prepared roots with shared entities).
-4. Emission policy (interleave, rates, seeds) and story-level ledger
-   format.
-5. Authoring / maintenance workflow (human and/or AI / LLM), still offline.
-6. Multi-host identity bindings as an extension of the same join model.
-7. Seeded / content-addressable entity binding so multiple Geneve emitters
-   can emit related docs without runtime sync.
-8. Evaluation harness that compares ledger to observed alerts.
+1. Glue queries as members of their own, in the same IR join graph.
+2. Emission policy: many instances, interleaving with unrelated
+   generation, rates; the ledger as an output format.
+3. Realistic role values (names, ids, addresses) without losing
+   determinism.
+4. Automate the propose step of the pipeline (API backend, traces kept).
+5. Widen Geneve coverage along the T2 notes, starting with the solver gaps.
+6. Evaluation harness that grades ledgers against observed alerts.
 
 ## Open questions
 
@@ -308,11 +394,11 @@ Order of depth, not a commitment:
   is human or AI / LLM judgment still required?
 - How do RTAs and coordinated attacks relate — complementary verification vs
   overlapping goals?
-- Minimum viable join set (which entity fields must always align)?
+- Minimum viable join set (which entity fields must always align)? Today:
+  whatever the drafts bind, `host.id` and `user.id` at least.
 - How do attacks version when pre-built rules churn between releases?
+  Today: drafts are per rules version, members looked up by name.
 - How much noise is allowed to trip extra rules before the ledger’s
   “almost” becomes “weak”?
 - Should glue ever be optional exports for labs that *do* want custom
   rules installed, or always stay generator-local?
-- What is the minimal entity-id / seed schema so cross-emitter joins stay
-  stable without reintroducing shared mutable environment?
