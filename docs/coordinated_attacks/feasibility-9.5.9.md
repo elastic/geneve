@@ -49,11 +49,11 @@ Backpack: `{'host.id': 'gfOEWcjg', 'user.id': 'qxMdRnrmnHlD'}`
 
 | Member | Docs | Carried |
 |---|---|---|
-| Potential Java Service Exploitation via Suspicious Child Process | 2 | {'host.id': 'pinned'} |
-| Potential Reverse Shell | 2 | {'host.id': 'pinned'} |
-| Potential Privilege Escalation via PKEXEC | 1 | none of the backpack fields |
-| Cron Job Created or Modified | 1 | none of the backpack fields |
-| Suspicious Mining Process Creation Event | 1 | none of the backpack fields |
+| Potential Java Service Exploitation via Suspicious Child Process | 2 | {'host.id': 'pinned', 'user.id': 'pinned'} |
+| Potential Reverse Shell | 2 | {'host.id': 'pinned', 'user.id': 'pinned'} |
+| Potential Privilege Escalation via PKEXEC | 1 | {'host.id': 'pinned', 'user.id': 'pinned'} |
+| Cron Job Created or Modified | 1 | {'host.id': 'pinned'} |
+| Suspicious Mining Process Creation Event | 1 | {'host.id': 'pinned'} |
 
 **Story tier: T1 (incremental)**, from the required members and bindings.
 
@@ -101,10 +101,10 @@ Backpack: `{'host.id': 'zyiK', 'user.id': 'vJXvXXbxUVM'}`
 
 | Member | Docs | Carried |
 |---|---|---|
-| Execution of File Written or Modified by Microsoft Office | 2 | {'host.id': 'pinned'} |
-| Remote File Download via Script Interpreter | 2 | none of the backpack fields |
-| LSASS Memory Dump Creation | 1 | none of the backpack fields |
-| Remote Scheduled Task Creation | 2 | {'host.id': 'pinned'} |
-| Volume Shadow Copy Deletion via WMIC | 1 | none of the backpack fields |
+| Execution of File Written or Modified by Microsoft Office | 2 | {'host.id': 'pinned', 'user.id': 'pinned'} |
+| Remote File Download via Script Interpreter | 2 | {'host.id': 'pinned', 'user.id': 'pinned'} |
+| LSASS Memory Dump Creation | 1 | {'host.id': 'pinned', 'user.id': 'pinned'} |
+| Remote Scheduled Task Creation | 2 | {'host.id': 'pinned', 'user.id': 'pinned'} |
+| Volume Shadow Copy Deletion via WMIC | 1 | {'host.id': 'pinned', 'user.id': 'pinned'} |
 
 **Story tier: T1 (incremental)**, from the required members and bindings.

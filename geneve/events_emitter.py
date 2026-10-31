@@ -167,23 +167,30 @@ class SourceEvents:
         se.add_rule(rule, meta=meta)
         return se
 
-    def add_ast(self, ast, *, meta=None):
+    def add_ast(self, ast, *, meta=None, glue=None):
+        """Prepare the IR of a query.
+
+        `glue` names fields that every document must carry even if the query
+        does not mention them, so that an attack backpack can pin them.
+        """
         root = collect_constraints_eql(ast, max_branches=self.max_branches)
         if len(root) == 0:
             raise ValueError("Root without branches")
+        if glue:
+            root.glue(glue)
         root.meta = meta
         root.optimize(self.schema, self.stack_version, strict=self.strict)
         self.try_emit(root)
         self.__roots.append(root)
         return root
 
-    def add_query(self, query, *, meta=None):
+    def add_query(self, query, *, meta=None, glue=None):
         ast = guess_from_query(query).ast
-        return self.add_ast(ast, meta=meta)
+        return self.add_ast(ast, meta=meta, glue=glue)
 
-    def add_rule(self, rule, *, meta=None):
+    def add_rule(self, rule, *, meta=None, glue=None):
         ast = ast_from_rule(rule)
-        return self.add_ast(ast, meta=meta)
+        return self.add_ast(ast, meta=meta, glue=glue)
 
     def fields(self):
         return set(chain(*(root.fields() for root in self.__roots)))

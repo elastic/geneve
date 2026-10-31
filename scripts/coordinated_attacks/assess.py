@@ -81,7 +81,7 @@ def emit_with_backpack(rules, schema, story, members):
     for member, record in members:
         if record["status"] != "ok":
             continue
-        root = se.add_rule(rules[member["rule"]])
+        root = se.add_rule(rules[member["rule"]], glue=[f for f in member["bindings"] if f in fields])
         docs = [event.doc for event in se.emit(root, complete=False, count=1, timestamp=False, backpack=view)]
         carried = {}
         for field in fields:

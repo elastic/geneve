@@ -99,7 +99,7 @@ def emit_docs(se, root, backpack=None):
 def emit_attack(attack, backpack, schema=None):
     """Emit every member of a attack, one list of documents per member."""
     se = SourceEvents(schema)
-    roots = [se.add_query(member.query) for member in attack.members]
+    roots = [se.add_query(member.query, glue=member.bindings) for member in attack.members]
     return [emit_docs(se, root, backpack.view(member) if backpack else None) for member, root in zip(attack.members, roots)]
 
 
@@ -204,6 +204,52 @@ class TestBackpackInSolvers(tu.SeededTestCase, unittest.TestCase):
         (cmd,), *_ = emit_attack(CMD_FAMILY, fill_backpack(CMD_FAMILY, coordination_seed="lab", instance_id="story-2"))
         self.assertNotIn("host", cmd)  # REGSVR32_UNDER_CMD has no bindings at all
         self.assertNotIn("user", cmd)
+
+    def test_bound_fields_are_glued_to_members_that_do_not_mention_them(self):
+        """REGSVR32_UNDER_CMD says nothing about host.id or user.id, binding them makes it carry them."""
+        attack = CoordinatedAttack(
+            "glued",
+            roles={"ws": "host", "clerk": "user"},
+            members=(Member(REGSVR32_UNDER_CMD, {"host.id": "ws.id", "user.id": "clerk.id"}),),
+        )
+        backpack = fill_backpack(attack, coordination_seed="lab", instance_id="story-1")
+        ((cmd,),) = emit_attack(attack, backpack)
+        self.assertEqual(cmd["host"]["id"], backpack.values["ws.id"])
+        self.assertEqual(cmd["user"]["id"], backpack.values["clerk.id"])
+        self.assertEqual(cmd["process"]["parent"]["name"], "cmd.exe")  # the query itself is untouched
+        # glue is part of the IR: without a backpack the field is still there, with a value of its own
+        ((free,),) = emit_attack(attack, None)
+        self.assertIn("id", free["host"])
+        self.assertNotEqual(free["host"]["id"], backpack.values["ws.id"])
+
+    def test_glue_reaches_every_event_of_a_sequence(self):
+        """`sequence by user.id` bound to a host too: both events carry the host, and still join on the user."""
+        attack = CoordinatedAttack(
+            "glued-sequence",
+            roles={"ws": "host", "clerk": "user"},
+            members=(Member(CMD_SEQUENCE, {"host.id": "ws.id", "user.id": "clerk.id"}),),
+        )
+        backpack = fill_backpack(attack, coordination_seed="lab", instance_id="story-1")
+        (seq,) = emit_attack(attack, backpack)
+        self.assertEqual(len(seq), 2)
+        self.assertEqual({doc["host"]["id"] for doc in seq}, {backpack.values["ws.id"]})
+        self.assertEqual({doc["user"]["id"] for doc in seq}, {backpack.values["clerk.id"]})
+
+    def test_glue_on_a_field_the_query_wants_null_is_a_conflict(self):
+        attack = CoordinatedAttack(
+            "null-user",
+            roles={"clerk": "user"},
+            members=(Member('process where process.name == "regsvr32.exe" and user.id == null', {"user.id": "clerk.id"}),),
+        )
+        with self.assertRaises(ConflictError):
+            emit_attack(attack, fill_backpack(attack, coordination_seed="lab", instance_id="story-1"))
+
+    def test_glue_leaves_constrained_fields_alone(self):
+        """Gluing host.id on REGSVR32, which already has `host.id != null`, changes nothing."""
+        se = SourceEvents()
+        plain = se.add_query(REGSVR32)
+        glued = se.add_query(REGSVR32, glue=["host.id"])
+        self.assertEqual([list(branch) for branch in plain], [list(branch) for branch in glued])
 
     def test_without_a_backpack_nothing_changes(self):
         backpack = fill_backpack(REGSVR_THEN_NETWORK, coordination_seed="lab", instance_id="story-1")
