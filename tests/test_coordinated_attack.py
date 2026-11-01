@@ -24,8 +24,10 @@ fields that a member binds and actually constrains are solved from it.
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import os
+import re
 import subprocess
 import sys
 import threading
@@ -35,6 +37,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
+from faker import Faker
 from ruamel.yaml import YAML
 
 import tests.utils as tu
@@ -180,6 +183,87 @@ class TestBackpack(tu.SeededTestCase, unittest.TestCase):
         outbound, inbound = TWO_HOSTS.members
         self.assertEqual(backpack.view(outbound), {"host.id": "W", "host.ip": "10.0.0.7"})
         self.assertEqual(backpack.view(inbound), {"host.id": "F", "source.ip": "10.0.0.7"})
+
+
+# every role attribute there is, each bound by a member that constrains the field
+EVERY_ATTRIBUTE = CoordinatedAttack(
+    name="every-attribute",
+    roles={"ws": "host", "clerk": "user", "c2": "ip"},
+    members=(
+        Member(
+            "network where host.id != null and host.name != null and host.ip != null and user.id != null and user.name != null and source.ip != null",
+            {
+                "host.id": "ws.id",
+                "host.name": "ws.name",
+                "host.ip": "ws.ip",
+                "user.id": "clerk.id",
+                "user.name": "clerk.name",
+                "source.ip": "c2.ip",
+            },
+        ),
+    ),
+)
+UUID4 = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+
+
+class TestRealisticValues(tu.SeededTestCase, unittest.TestCase):
+    """Role attributes look like what they stand for, deterministically, and the solver still validates them."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.schema = tu.load_test_schema()
+
+    def test_shapes(self):
+        values = fill_backpack(EVERY_ATTRIBUTE, coordination_seed="lab", instance_id="story-1", schema=self.schema).values
+        self.assertEqual(set(values), {"ws.id", "ws.name", "ws.ip", "clerk.id", "clerk.name", "c2.ip"})
+        self.assertRegex(values["ws.id"], UUID4)
+        self.assertRegex(values["ws.name"], r"^[a-z]+-\d+$")  # a bare hostname, no domain
+        self.assertTrue(ipaddress.ip_address(values["ws.ip"]).is_private)  # a host of the organization
+        self.assertRegex(values["clerk.id"], r"^\d{4,5}$")
+        self.assertRegex(values["clerk.name"], r"^[a-z][a-z0-9._]*$")
+        c2 = ipaddress.ip_address(values["c2.ip"])  # out on the internet
+        self.assertTrue(c2.is_global, c2)
+        self.assertFalse(c2.is_private, c2)
+        for value in values.values():
+            self.assertIsInstance(value, str)  # scalars, `host.ip` included
+
+    def test_deterministic_whatever_the_global_state(self):
+        a = fill_backpack(EVERY_ATTRIBUTE, coordination_seed="lab", instance_id="story-1", schema=self.schema)
+        random.seed("perturbed")
+        random.random()
+        Faker().name()  # the global faker generator is consumed too
+        b = fill_backpack(EVERY_ATTRIBUTE, coordination_seed="lab", instance_id="story-1", schema=self.schema)
+        self.assertEqual(a, b)
+
+    def test_does_not_disturb_the_global_state(self):
+        state = random.getstate()
+        fill_backpack(EVERY_ATTRIBUTE, coordination_seed="lab", instance_id="story-1", schema=self.schema)
+        self.assertEqual(random.getstate(), state)
+
+    def test_instances_and_roles_get_different_values(self):
+        a = fill_backpack(EVERY_ATTRIBUTE, coordination_seed="lab", instance_id="story-1", schema=self.schema).values
+        b = fill_backpack(EVERY_ATTRIBUTE, coordination_seed="lab", instance_id="story-2", schema=self.schema).values
+        for binding in a:
+            self.assertNotEqual(a[binding], b[binding], binding)
+        c = fill_backpack(EVERY_ATTRIBUTE, coordination_seed="other lab", instance_id="story-1", schema=self.schema).values
+        for binding in a:
+            self.assertNotEqual(a[binding], c[binding], binding)
+        two_hosts = fill_backpack(TWO_HOSTS, coordination_seed="lab", instance_id="story-1", schema=self.schema).values
+        self.assertNotEqual(two_hosts["ws.id"], two_hosts["fs.id"])
+
+    def test_values_go_through_the_solver(self):
+        """The realistic value is pinned into the canonical field's solver, which emits it as is."""
+        backpack = fill_backpack(EVERY_ATTRIBUTE, coordination_seed="lab", instance_id="story-1", schema=self.schema)
+        ((doc,),) = emit_attack(EVERY_ATTRIBUTE, backpack, self.schema)
+        self.assertEqual(doc["host"]["id"], backpack.values["ws.id"])
+        self.assertEqual(doc["host"]["name"], backpack.values["ws.name"])
+        self.assertEqual(doc["host"]["ip"], [backpack.values["ws.ip"]])  # array field in ECS
+        self.assertEqual(doc["user"]["id"], backpack.values["clerk.id"])
+        self.assertEqual(doc["user"]["name"], backpack.values["clerk.name"])
+        self.assertEqual(doc["source"]["ip"], backpack.values["c2.ip"])
+        # without a schema the fields are plain keywords: same realistic values, still validated
+        self.assertEqual(fill_backpack(EVERY_ATTRIBUTE, coordination_seed="lab", instance_id="story-1").values, backpack.values)
 
 
 class TestBackpackInSolvers(tu.SeededTestCase, unittest.TestCase):

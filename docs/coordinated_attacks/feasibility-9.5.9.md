@@ -45,7 +45,7 @@ Platform: linux; size: medium; expected alerts: 5
 
 ### Emission
 
-Backpack: `{'c2.ip': '125.170.56.188', 'svc.id': 'JDdkXte', 'web.id': 'jorrjHycmeJ'}`
+Backpack: `{'c2.ip': '136.218.181.74', 'svc.id': '53515', 'web.id': '7556625a-2fb6-406e-ad4c-05c0c76bf32e'}`
 
 Ledger of instance `story-1`, 5 alerts expected:
 
@@ -99,7 +99,7 @@ Platform: windows; size: medium; expected alerts: 5
 
 ### Emission
 
-Backpack: `{'c2.ip': '50.86.106.250', 'clerk.id': 'lKwrHvN', 'fs.id': 'swYgW', 'ws.id': 'rTloRy', 'ws.ip': '38.252.132.255'}`
+Backpack: `{'c2.ip': '222.150.86.37', 'clerk.id': '25922', 'fs.id': '6c527b27-d400-4ab2-98b8-5dc540ddef46', 'ws.id': 'ddfaaac1-6dfa-4fad-970c-dcd1557244ed', 'ws.ip': '192.168.77.249'}`
 
 Ledger of instance `story-1`, 5 alerts expected:
 

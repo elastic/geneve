@@ -41,6 +41,8 @@ from datetime import datetime, timedelta
 from random import Random
 from typing import Iterable, Mapping
 
+from faker import Faker
+
 from .events_emitter import SourceEvents
 from .solver import Entity
 from .utils import random
@@ -63,6 +65,17 @@ ROLE_KINDS = {
     "host": {"id": "host.id", "name": "host.name", "ip": "host.ip"},
     "user": {"id": "user.id", "name": "user.name"},
     "ip": {"ip": "source.ip"},
+}
+
+# role kind, attribute -> realistic value from a seeded Faker: hosts live on private networks,
+# bare `ip` roles (a C2 server, a scanner) are out on the internet
+ROLE_VALUES = {
+    ("host", "id"): lambda fake: fake.uuid4(),
+    ("host", "name"): lambda fake: fake.hostname(0),
+    ("host", "ip"): lambda fake: fake.ipv4_private(),
+    ("user", "id"): lambda fake: str(fake.random_int(1000, 59999)),
+    ("user", "name"): lambda fake: fake.user_name(),
+    ("ip", "ip"): lambda fake: fake.ipv4_public(),
 }
 
 
@@ -171,11 +184,13 @@ def fill_backpack(
 ) -> AttackBackpack:
     """Pre-generate the backpack of an attack instance.
 
-    Every ``role.attr`` the members refer to gets a value from the regular
-    field solver of its canonical field, so it has the type and the ECS bounds
-    that the schema gives to that field. Same inputs always yield the same
-    backpack, from private random generators: the shared one is left untouched
-    and the call is safe to run concurrently with any other user of it.
+    Every ``role.attr`` the members refer to gets a realistic value, from
+    `ROLE_VALUES`, checked by the regular field solver of its canonical field
+    so it has the type and the ECS bounds that the schema gives to that field
+    (attributes without a realistic generator take the solver's own value).
+    Same inputs always yield the same backpack, from private random
+    generators: the shared one is left untouched and the call is safe to run
+    concurrently with any other user of it.
 
     Without a `coordination_seed` one is derived from the current state of the
     shared generator (see `derive_seed`), so whoever controls that state, for
@@ -188,10 +203,17 @@ def fill_backpack(
     schema = {} if schema is None else schema
     values = {}
     for binding in attack.bindings():
+        role, _, attr = binding.partition(".")
         canonical = attack.canonical_field(binding)
         solver = Entity("", {canonical: []}, schema, stack_version).fields[canonical]
         seed = f"{coordination_seed}\0{instance_id}\0{attack.name}\0{binding}"
-        # a private generator per attribute: nothing shared is seeded, consumed or locked
+        # private generators per attribute: nothing shared is seeded, consumed or locked
+        # (`seed_instance` gives the Faker instance a generator of its own, the global one is left alone)
+        realistic = ROLE_VALUES.get((attack.roles[role], attr))
+        if realistic:
+            fake = Faker()
+            fake.seed_instance(seed)
+            solver = solver.pinned(realistic(fake))
         value = solver(None, {"random": Random(seed)})["value"]
         if solver.is_array:
             # role attributes are scalars: `host.ip` is an array in ECS, the role has one address

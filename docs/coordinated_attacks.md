@@ -304,7 +304,11 @@ is seeded, consumed or locked, and any emitter with the same inputs gets
 the same values. That is the unsynchronized coordination of the sketch
 above, proven by tests with threads, subprocesses and perturbed global
 state. Role attributes are scalars even where ECS makes the field an
-array (`host.ip`).
+array (`host.ip`). The values are realistic: a Faker instance seeded the
+same way produces a UUID for `host.id`, a bare hostname for `host.name`,
+a private address for `host.ip`, a numeric `user.id`, a login for
+`user.name` and a public address for `ip` roles, and the canonical field's
+solver validates the value before it enters the backpack.
 
 The backpack goes down to the field solvers: when a member is emitted with
 its view of the backpack (`field -> value`), the solver of each bound field
@@ -365,7 +369,6 @@ instance (rule id plus role values), every ledger entry got its alert.
 - Glue queries, selection and rates, noise interleaving.
 - Group solvers (`geo`, `as`) draw from faker on shared state: not
   pinnable, not deterministic across emitters.
-- Role values are typed but not realistic (`host.id` of one letter).
 - Pre-built rules Geneve cannot emit yet: see the inventory and the T2
   notes of the assessment (branch limit, a negated-conjunction solver gap,
   `constant_keyword`, ES|QL, `new_terms`, threshold).
