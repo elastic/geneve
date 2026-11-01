@@ -55,6 +55,7 @@ __all__ = (
     "CoordinatedAttack",
     "Member",
     "fill_backpack",
+    "instance_start",
     "load_story",
     "parse_duration",
     "schedule",
@@ -248,12 +249,39 @@ def schedule(
     return offsets
 
 
+def instance_start(
+    attack: CoordinatedAttack,
+    *,
+    coordination_seed: str | int | None = None,
+    instance_id: str,
+    window_start: datetime,
+    window: timedelta,
+) -> datetime:
+    """Start of an attack instance placed inside a time window.
+
+    The start is drawn from a private generator seeded like the backpack and
+    the schedule, so emitters that agree on those agree on when the instance
+    happens too. It is drawn so that the whole timeline of the instance fits
+    in the window: from `window_start` to the latest start that leaves room
+    for the longest scheduled offset. A timeline longer than the window
+    starts with the window and overflows it.
+    """
+    if coordination_seed is None:
+        coordination_seed = derive_seed()
+    span = max(schedule(attack, coordination_seed=coordination_seed, instance_id=instance_id).values(), default=timedelta(0))
+    seed = f"{coordination_seed}\0{instance_id}\0{attack.name}\0start"
+    return window_start + max(window - span, timedelta(0)) * Random(seed).random()
+
+
 @dataclass(frozen=True)
 class LedgerEntry:
+    """What was emitted for one member: when, how many documents, with which role values."""
+
     member: str
     rule_id: str | None
     timestamp: datetime
     documents: int
+    roles: Mapping[str, object] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -274,6 +302,22 @@ class AttackLedger:
     @property
     def expected_alerts(self):
         return len(self.members)
+
+    def records(self) -> list[dict]:
+        """One JSON-ready record per entry, the instance repeated on each: lines of a ledger file."""
+        return [
+            {
+                "attack": self.attack,
+                "instance_id": self.instance_id,
+                "start": self.start.isoformat(),
+                "member": entry.member,
+                "rule_id": entry.rule_id,
+                "timestamp": entry.timestamp.isoformat(),
+                "documents": entry.documents,
+                "roles": dict(entry.roles),
+            }
+            for entry in self.members
+        ]
 
 
 class AttackEmitter:
@@ -306,7 +350,8 @@ class AttackEmitter:
             timestamp = start + offsets[member.name]
             emitted = list(se.emit(self.roots[member.name], timestamp=timestamp, backpack=backpack.view(member)))
             events.extend(emitted)
-            entries.append(LedgerEntry(member.name, member.rule_id, timestamp, len(emitted)))
+            roles = {binding: backpack.values[binding] for binding in member.bindings.values()}
+            entries.append(LedgerEntry(member.name, member.rule_id, timestamp, len(emitted), roles))
         return events, AttackLedger(self.attack.name, instance_id, start, tuple(entries))
 
 

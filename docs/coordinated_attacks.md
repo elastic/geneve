@@ -335,9 +335,11 @@ backpack, so the timeline is shared across emitters as the roles are.
 
 `AttackEmitter.emit()` emits one instance, or a subset of its members, from
 a start instant and returns the documents and an `AttackLedger`: for every
-member emitted, its name, rule id, timestamp and document count. One alert
-is expected per entry. Emitters playing different members of the same
-instance produce partial ledgers whose union is the ground truth.
+member emitted, its name, rule id, timestamp, document count and the
+values of the roles it binds, so the ledger is self-contained ground
+truth. One alert is expected per entry. Emitters playing different members
+of the same instance produce partial ledgers whose union is the ground
+truth; `AttackLedger.records()` gives the entries as JSON-ready lines.
 
 ### Story drafts, loader, pipeline
 
@@ -356,6 +358,28 @@ ladder (T0 works, T1 small known step, T2 missing Geneve feature, T3
 impossible) and emits each story once, reporting the ledger and whether
 every bound field is pinned: `docs/coordinated_attacks/feasibility-*.md`.
 
+### Emission policy
+
+`scripts/coordinated_attacks/emit.py` is the first policy on top of the
+emitter: for the selected drafts of a rules version it emits N instances
+per story (`<story id>-<k>`) over a time window, interleaved with noise.
+`instance_start()` places each instance inside the window, from a private
+generator seeded by (coordination seed, story id, instance id), so that
+the whole timeline fits; emitters that agree on the seed agree on the
+starts too. Noise is `--noise` documents per member rule, emitted without a
+backpack at random instants of the window: the same rules fire on
+unrelated entities, and these documents are not in the ledger, unknown
+signal by design.
+
+Two NDJSON files come out. The documents, sorted by `@timestamp`, each
+line `{"_index": "<prefix>-<rule id>", "_source": {...}}` so a loader
+puts every rule's documents under their own index; and the ledger, one
+line per member of every instance with attack, instance id, start,
+member, rule id, timestamp, document count and role values. Given an
+explicit `--start`, the same arguments yield byte-identical files: the
+shared generator is seeded from the coordination seed, all the rest comes
+from private generators.
+
 ### Verified
 
 On rules 9.5.9, two drafts (`office-macro-to-ransomware`, two hosts and a
@@ -364,9 +388,15 @@ instances of each, indexed into a 9.6.0 stack with their ten member rules,
 produced exactly twenty alerts: every alert belonged to one member of one
 instance (rule id plus role values), every ledger entry got its alert.
 
+The files of `emit.py` for the seven drafts (one instance each, two noise
+documents per member rule), loaded as they are into a 9.7.0 serverless
+stack with the forty member rules, produced 120 alerts: the 40 ledger
+lines each matched exactly one alert, the other 80 were the noise, one
+alert per noise emission, all from member rules.
+
 ### Not there yet
 
-- Glue queries, selection and rates, noise interleaving.
+- Glue queries.
 - Group solvers (`geo`, `as`) draw from faker on shared state: not
   pinnable, not deterministic across emitters.
 - Pre-built rules Geneve cannot emit yet: see the inventory and the T2
@@ -379,13 +409,11 @@ instance (rule id plus role values), every ledger entry got its alert.
 Order of depth, not a commitment:
 
 1. Glue queries as members of their own, in the same IR join graph.
-2. Emission policy: many instances, interleaving with unrelated
-   generation, rates; the ledger as an output format.
-3. Realistic role values (names, ids, addresses) without losing
+2. Realistic role values (names, ids, addresses) without losing
    determinism.
-4. Automate the propose step of the pipeline (API backend, traces kept).
-5. Widen Geneve coverage along the T2 notes, starting with the solver gaps.
-6. Evaluation harness that grades ledgers against observed alerts.
+3. Automate the propose step of the pipeline (API backend, traces kept).
+4. Widen Geneve coverage along the T2 notes, starting with the solver gaps.
+5. Evaluation harness that grades ledgers against observed alerts.
 
 ## Open questions
 

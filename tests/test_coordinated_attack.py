@@ -30,6 +30,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import unittest
@@ -48,6 +49,7 @@ from geneve.coordinated_attack import (
     CoordinatedAttack,
     Member,
     fill_backpack,
+    instance_start,
     load_story,
     parse_duration,
     schedule,
@@ -543,6 +545,45 @@ class TestSchedule(tu.SeededTestCase, unittest.TestCase):
         self.assertNotEqual(a, schedule(TIMED, coordination_seed="lab", instance_id="story-2"))
 
 
+class TestInstanceStart(tu.SeededTestCase, unittest.TestCase):
+    window = timedelta(hours=6)
+
+    def test_the_whole_timeline_fits_in_the_window(self):
+        for k in range(50):
+            instance_id = f"story-{k}"
+            start = instance_start(TIMED, coordination_seed="lab", instance_id=instance_id, window_start=START, window=self.window)
+            span = max(schedule(TIMED, coordination_seed="lab", instance_id=instance_id).values())
+            self.assertGreaterEqual(start, START)
+            self.assertLessEqual(start + span, START + self.window)
+
+    def test_instances_spread_over_the_window(self):
+        starts = [
+            instance_start(TIMED, coordination_seed="lab", instance_id=f"story-{k}", window_start=START, window=self.window)
+            for k in range(50)
+        ]
+        self.assertEqual(len(set(starts)), 50)
+        self.assertLess(min(starts) - START, timedelta(hours=1))
+        self.assertGreater(max(starts) - START, timedelta(hours=4))
+
+    def test_a_timeline_longer_than_the_window_starts_with_it(self):
+        start = instance_start(TIMED, coordination_seed="lab", instance_id="story-1", window_start=START, window=timedelta(minutes=1))
+        self.assertEqual(start, START)
+
+    def test_deterministic_and_private(self):
+        a = instance_start(TIMED, coordination_seed="lab", instance_id="story-1", window_start=START, window=self.window)
+        state = random.getstate()
+        random.seed("elsewhere")
+        b = instance_start(TIMED, coordination_seed="lab", instance_id="story-1", window_start=START, window=self.window)
+        self.assertEqual(a, b)
+        random.setstate(state)
+        self.assertNotEqual(
+            a, instance_start(TIMED, coordination_seed="lab", instance_id="story-2", window_start=START, window=self.window)
+        )
+        self.assertNotEqual(
+            a, instance_start(TIMED, coordination_seed="other", instance_id="story-1", window_start=START, window=self.window)
+        )
+
+
 class TestAttackEmitter(tu.SeededTestCase, unittest.TestCase):
     def test_one_instance_end_to_end(self):
         events, ledger = AttackEmitter(TIMED).emit(instance_id="story-1", start=START, coordination_seed="lab")
@@ -564,6 +605,22 @@ class TestAttackEmitter(tu.SeededTestCase, unittest.TestCase):
         self.assertEqual(docs[2]["@timestamp"], ledger.members[2].timestamp.isoformat(timespec="milliseconds"))
         self.assertLess(docs[2]["@timestamp"], docs[3]["@timestamp"])  # the two events of the sequence are 1ms apart
         self.assertEqual(docs[4]["@timestamp"], ledger.members[3].timestamp.isoformat(timespec="milliseconds"))
+
+        # every entry carries the values of the roles its member binds: the ledger is self-contained ground truth
+        self.assertEqual(ledger.members[0].roles, {"ws.id": backpack.values["ws.id"], "clerk.id": backpack.values["clerk.id"]})
+        self.assertEqual(ledger.members[3].roles, {"fs.id": backpack.values["fs.id"]})
+
+    def test_records_are_json_ready_lines_of_a_ledger_file(self):
+        _, ledger = AttackEmitter(TIMED).emit(instance_id="story-1", start=START, coordination_seed="lab")
+        records = ledger.records()
+        self.assertEqual(len(records), ledger.expected_alerts)
+        self.assertEqual([json.loads(json.dumps(r)) for r in records], records)  # round-trips as JSON
+        self.assertEqual([r["member"] for r in records], ["regsvr", "network", "cmd", "pid"])
+        self.assertEqual({(r["attack"], r["instance_id"], r["start"]) for r in records}, {("timed", "story-1", START.isoformat())})
+        self.assertEqual([datetime.fromisoformat(r["timestamp"]) for r in records], [e.timestamp for e in ledger.members])
+        self.assertEqual([r["documents"] for r in records], [1, 1, 2, 1])
+        self.assertEqual([r["roles"] for r in records], [e.roles for e in ledger.members])
+        self.assertIsNone(records[0]["rule_id"])
 
     def test_emitters_playing_different_members_tell_one_story(self):
         """The workstation and the file server are emitted by different emitters: same roles, same timeline."""
@@ -594,6 +651,33 @@ def get_field(doc, field):
     for part in field.split("."):
         doc = doc[part]
     return doc
+
+
+def plays(alert, rule_id, bindings, roles):
+    """Is the alert about this member (rule and `field -> role.attr` bindings) of the instance with these role values?"""
+    if alert["kibana.alert.rule.rule_id"] != rule_id:
+        return False
+    for fld, binding in bindings.items():
+        try:
+            value = get_field(alert, fld)
+        except KeyError:
+            return False
+        if value not in (roles[binding], [roles[binding]]):
+            return False
+    return True
+
+
+EMIT_SCRIPT = Path(tu.root_dir) / "scripts" / "coordinated_attacks" / "emit.py"
+
+
+def run_emit(*args):
+    """Run `emit.py` with the arguments given, return its summary (stderr)."""
+    return subprocess.run([sys.executable, str(EMIT_SCRIPT), *map(str, args)], capture_output=True, text=True, check=True).stderr
+
+
+def read_ndjson(path):
+    with open(path) as f:
+        return [json.loads(line) for line in f]
 
 
 FAKE_RULES = [
@@ -717,6 +801,67 @@ class TestStoryDrafts(tu.SeededTestCase, unittest.TestCase):
                 _, ledger_b = AttackEmitter(attack, schema=self.schema).emit(instance_id="i", start=START, coordination_seed="lab")
                 self.assertEqual(ledger_a, ledger_b)
 
+    def test_emit_script(self):
+        """Same arguments, same files; the ledger accounts for every instance; the documents are where the ledger says."""
+        story = next(s for s in self.stories() if s["id"] == "clickfix-to-cmd-callback")
+        attack = load_story(story, self.rules)
+        args = (
+            self.rules_version,
+            "--stories",
+            story["id"],
+            "--instances",
+            2,
+            "--noise",
+            1,
+            "--start",
+            START.isoformat(),
+            "--window",
+            "2h",
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            outputs = []
+            for run in ("a", "b"):
+                out, ledger = Path(tmp) / f"docs-{run}.ndjson", Path(tmp) / f"ledger-{run}.ndjson"
+                summary = run_emit(*args, "--out", out, "--ledger", ledger)
+                outputs.append((out.read_bytes(), ledger.read_bytes()))
+            self.assertEqual(outputs[0], outputs[1])
+            docs, ledger = read_ndjson(out), read_ndjson(ledger)
+
+        # the summary tells the story from the noise
+        self.assertIn("stories: 1, instances: 2", summary)
+        self.assertIn(f"expected alerts: {2 * story['expected_alerts']}", summary)
+        noise_docs = len(docs) - sum(entry["documents"] for entry in ledger)
+        self.assertIn(f"documents: {len(docs)} ({len(docs) - noise_docs} story, {noise_docs} noise)", summary)
+        self.assertGreaterEqual(noise_docs, len(attack.members))  # one noise emission per member rule, one document at least
+
+        # one ledger line per member of every instance, in instance and member order, with the roles the member binds
+        self.assertEqual(len(ledger), 2 * story["expected_alerts"])
+        self.assertEqual([e["instance_id"] for e in ledger], [f"{story['id']}-{k}" for k in (1, 2) for _ in attack.members])
+        self.assertEqual([e["member"] for e in ledger], [m.name for _ in (1, 2) for m in attack.members])
+        for entry, member in zip(ledger, attack.members * 2):
+            self.assertEqual(entry["rule_id"], member.rule_id)
+            self.assertEqual(set(entry["roles"]), set(member.bindings.values()))
+            self.assertLessEqual(START, datetime.fromisoformat(entry["start"]))
+            self.assertLessEqual(datetime.fromisoformat(entry["timestamp"]), START + timedelta(hours=2))
+
+        # the documents file is a timeline, routed per rule, with the documents of every entry at its timestamp
+        timestamps = [datetime.fromisoformat(doc["_source"]["@timestamp"]) for doc in docs]
+        self.assertEqual(timestamps, sorted(timestamps))
+        self.assertEqual({doc["_index"] for doc in docs}, {f"geneve-ca-{m.rule_id}" for m in attack.members})
+        for entry in ledger:
+            first = datetime.fromisoformat(entry["timestamp"]).isoformat(timespec="milliseconds")  # emitted at ms precision, 1ms apart
+            last = (datetime.fromisoformat(first) + timedelta(milliseconds=entry["documents"] - 1)).isoformat(timespec="milliseconds")
+            mine = [
+                doc["_source"]
+                for doc in docs
+                if doc["_index"] == f"geneve-ca-{entry['rule_id']}" and first <= doc["_source"]["@timestamp"] <= last
+            ]
+            self.assertEqual(len(mine), entry["documents"], entry)
+            member = attack.member(entry["member"])
+            for doc in mine:
+                for fld, binding in member.bindings.items():
+                    self.assertIn(get_field(doc, fld), (entry["roles"][binding], [entry["roles"][binding]]), f"{entry['member']}: {fld}")
+
 
 @unittest.skipIf(os.getenv("TEST_SIGNALS_ATTACKS", "0").lower() in ("0", "false", "no", ""), "Slow online test")
 class TestOnlineStoryDrafts(tu.OnlineTestCase, tu.SeededTestCase, unittest.TestCase):
@@ -818,29 +963,74 @@ class TestOnlineStoryDrafts(tu.OnlineTestCase, tu.SeededTestCase, unittest.TestC
         alerts = self.wait_for_alerts(expected)
         self.assertEqual(len(alerts), expected)
 
-        def plays(alert, member, backpack):
-            """Is the alert about this member of this instance? Rule and role values tell."""
-            if alert["kibana.alert.rule.rule_id"] != member.rule_id:
-                return False
-            for fld, binding in member.bindings.items():
-                try:
-                    value = get_field(alert, fld)
-                except KeyError:
-                    return False
-                if value not in (backpack.values[binding], [backpack.values[binding]]):
-                    return False
-            return True
-
         # every alert belongs to one member of one instance, every member of every instance gets one alert
         seen = {key: [] for key in instances}
         for alert in alerts:
             matches = [
-                (key, m.name) for key, (attack, backpack, _) in instances.items() for m in attack.members if plays(alert, m, backpack)
+                (key, m.name)
+                for key, (attack, backpack, _) in instances.items()
+                for m in attack.members
+                if plays(alert, m.rule_id, m.bindings, backpack.values)
             ]
             self.assertEqual(len(matches), 1, f"alert of rule {alert['kibana.alert.rule.rule_id']} matches {matches}")
             seen[matches[0][0]].append(matches[0][1])
         for key, (_, _, ledger) in instances.items():
             self.assertEqual(sorted(seen[key]), sorted(entry.member for entry in ledger.members), key)
+
+    def test_alerts_match_the_ledger_file(self):
+        """The files of `emit.py`, loaded as they are: every ledger line gets its alert, the noise gets alerts of its own."""
+        noise = 2
+        attacks = {story["id"]: (story, load_story(story, self.rules)) for story in self.stories()}
+        # the window is long enough for the longest timeline and ends an hour ago, the rules look back over all of it
+        span = max(max(schedule(attack, coordination_seed="online", instance_id=f"{id}-1").values()) for id, (_, attack) in attacks.items())
+        window = span + timedelta(hours=1)
+        start = datetime.now(timezone.utc) - timedelta(hours=1) - window
+        lookback = f"now-{int((window + timedelta(hours=2)).total_seconds())}s"
+        with tempfile.TemporaryDirectory() as tmp:
+            out, ledger = Path(tmp) / "docs.ndjson", Path(tmp) / "ledger.ndjson"
+            args = (self.rules_version, "--instances", 1, "--noise", noise, "--start", start.isoformat(), "--coordination-seed", "online")
+            run_emit(
+                *args,
+                "--window",
+                f"{int(window.total_seconds())}s",
+                "--index-prefix",
+                self.index_template,
+                "--out",
+                out,
+                "--ledger",
+                ledger,
+            )
+            docs, ledger = read_ndjson(out), read_ndjson(ledger)
+
+        kibana_rules, mappings = [], {}
+        for story, attack in attacks.values():
+            emitter = AttackEmitter(attack, schema=self.schema)
+            emitter.source_events.stack_version = self.get_version()
+            deep_merge(mappings, emitter.source_events.mappings())
+            kibana_rules.extend(self.kibana_rule(story, m, f"{self.index_template}-{m.rule_id}", lookback) for m in attack.members)
+        operations = [json.dumps(op) for doc in docs for op in ({"create": {"_index": doc["_index"]}}, doc["_source"])]
+        self.load(mappings, operations, kibana_rules)
+
+        # one alert per ledger line, plus one per noise emission (a sequence rule alerts once for its documents)
+        rule_ids = {rule["rule_id"] for rule in kibana_rules}
+        alerts = self.wait_for_alerts(len(ledger) + noise * len(rule_ids))
+
+        # every ledger line matches exactly one alert, no alert matches two lines
+        matched = {}
+        for i, entry in enumerate(ledger):
+            bindings = attacks[entry["attack"]][1].member(entry["member"]).bindings
+            matches = [j for j, alert in enumerate(alerts) if plays(alert, entry["rule_id"], bindings, entry["roles"])]
+            self.assertEqual(len(matches), 1, f"ledger line {entry} matches alerts {matches}")
+            self.assertNotIn(matches[0], matched, f"alert {matches[0]} matches ledger lines {matched.get(matches[0])} and {i}")
+            matched[matches[0]] = i
+        self.assertEqual(len(matched), len(ledger))
+
+        # what is left is the noise: unrelated entities, but the rules of the stories
+        unmatched = [alert for j, alert in enumerate(alerts) if j not in matched]
+        self.assertGreaterEqual(len(unmatched), 1)
+        self.assertEqual({alert["kibana.alert.rule.rule_id"] for alert in unmatched} - rule_ids, set())
+        if tu.verbose:
+            sys.stderr.write(f"\n  ledger lines: {len(ledger)}, alerts: {len(alerts)} ({len(matched)} matched, {len(unmatched)} noise)\n")
 
 
 if __name__ == "__main__":
