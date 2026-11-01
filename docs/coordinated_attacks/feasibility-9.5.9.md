@@ -6,8 +6,99 @@ Inventory: 854 rules emit out of 2394.
 
 | Story | Tier |
 |---|---|
+| clickfix-to-cmd-callback | T0 |
+| exposed-server-brute-force | T0 |
 | java-exploit-to-cryptominer | T0 |
 | office-macro-to-ransomware | T0 |
+| outlook-phish-to-ransomware | T0 |
+| wordpress-to-winrm-pivot | T0 |
+| workstation-to-domain-controller | T0 |
+
+## ClickFix lure to command prompt callback (`clickfix-to-cmd-callback`)
+
+A sales representative lands on a fake "verify you are human" page and pastes the proposed command in the Run dialog. The command prompt it opens fetches the next stage from the operator's server.
+
+Platform: windows; size: small; expected alerts: 2
+
+### Members
+
+| Member | Stage | Host | Tier | Note |
+|---|---|---|---|---|
+| Potential Fake CAPTCHA Phishing Attack | initial access | ws | T0 |  |
+| Suspicious Command Prompt Network Connection | command and control | ws | T0 |  |
+
+### Bindings
+
+`constrained`: the member constrains the field itself. `glued`: the member does not mention the field, the glue constraint adds it. The backpack pins both.
+
+| Member | Field | Role | State |
+|---|---|---|---|
+| Potential Fake CAPTCHA Phishing Attack | `host.id` | ws.id | glued |
+| Potential Fake CAPTCHA Phishing Attack | `user.id` | rep.id | glued |
+| Suspicious Command Prompt Network Connection | `host.id` | ws.id | glued |
+| Suspicious Command Prompt Network Connection | `user.id` | rep.id | glued |
+| Suspicious Command Prompt Network Connection | `destination.ip` | c2.ip | constrained |
+
+### Emission
+
+Backpack: `{'c2.ip': '221.148.132.183', 'rep.id': '17820', 'ws.id': '3f4fe85b-93d0-4367-b232-4b73d4afce4a'}`
+
+Ledger of instance `story-1`, 2 alerts expected:
+
+| Member | Rule | Offset | Docs | Bound fields |
+|---|---|---|---|---|
+| Potential Fake CAPTCHA Phishing Attack | `fbad57ec-4442-48db-a34f-5ee907b44a22` | +0:00:00 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Suspicious Command Prompt Network Connection | `89f9a4b0-9f8f-4ee0-8823-c4751a6d6696` | +0:00:25.297730 | 2 | `host.id`: pinned, `user.id`: pinned, `destination.ip`: pinned |
+
+**Story tier: T0 (trivial)**, from the required members and the emission.
+
+## Exposed server brute force to shadow copy deletion (`exposed-server-brute-force`)
+
+A file server with SMB exposed to the internet is brute-forced from a single address until a local administrator's password gives in. The same address logs in over the network and installs a service that runs the payload; the payload turns Windows Defender off in the registry and deletes the shadow copies before encrypting the shares.
+
+Platform: windows; size: medium; expected alerts: 4
+
+### Members
+
+| Member | Stage | Host | Tier | Note |
+|---|---|---|---|---|
+| Multiple Logon Failure Followed by Logon Success | initial access | srv | T0 |  |
+| Remote Windows Service Installed | execution | srv | T0 |  |
+| Windows Defender Disabled via Registry Modification | defense evasion | srv | T0 |  |
+| Volume Shadow Copy Deletion via PowerShell | impact | srv | T0 |  |
+
+### Bindings
+
+`constrained`: the member constrains the field itself. `glued`: the member does not mention the field, the glue constraint adds it. The backpack pins both.
+
+| Member | Field | Role | State |
+|---|---|---|---|
+| Multiple Logon Failure Followed by Logon Success | `host.id` | srv.id | glued |
+| Multiple Logon Failure Followed by Logon Success | `source.ip` | attacker.ip | constrained |
+| Multiple Logon Failure Followed by Logon Success | `user.name` | admin.name | constrained |
+| Multiple Logon Failure Followed by Logon Success | `user.id` | admin.id | constrained |
+| Remote Windows Service Installed | `host.id` | srv.id | glued |
+| Remote Windows Service Installed | `source.ip` | attacker.ip | constrained |
+| Remote Windows Service Installed | `user.name` | admin.name | glued |
+| Windows Defender Disabled via Registry Modification | `host.id` | srv.id | glued |
+| Windows Defender Disabled via Registry Modification | `user.id` | admin.id | constrained |
+| Volume Shadow Copy Deletion via PowerShell | `host.id` | srv.id | glued |
+| Volume Shadow Copy Deletion via PowerShell | `user.id` | admin.id | glued |
+
+### Emission
+
+Backpack: `{'admin.id': '10720', 'admin.name': 'gbrady', 'attacker.ip': '184.95.190.87', 'srv.id': 'cbe358b8-3b03-4015-b979-b9026ef2ffba'}`
+
+Ledger of instance `story-1`, 4 alerts expected:
+
+| Member | Rule | Offset | Docs | Bound fields |
+|---|---|---|---|---|
+| Multiple Logon Failure Followed by Logon Success | `4e85dc8a-3e41-40d8-bc28-91af7ac6cf60` | +0:00:00 | 6 | `host.id`: pinned, `source.ip`: pinned, `user.name`: pinned, `user.id`: pinned |
+| Remote Windows Service Installed | `d33ea3bf-9a11-463e-bd46-f648f2a0f4b1` | +0:01:15.315242 | 2 | `host.id`: pinned, `source.ip`: pinned, `user.name`: pinned |
+| Windows Defender Disabled via Registry Modification | `2ffa1f1e-b6db-47fa-994b-1512743847eb` | +0:02:10.103818 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Volume Shadow Copy Deletion via PowerShell | `d99a037b-c8e2-47a5-97b9-170d076827c4` | +0:15:08.527177 | 1 | `host.id`: pinned, `user.id`: pinned |
+
+**Story tier: T0 (trivial)**, from the required members and the emission.
 
 ## Java exploit to cryptominer (`java-exploit-to-cryptominer`)
 
@@ -110,5 +201,202 @@ Ledger of instance `story-1`, 5 alerts expected:
 | LSASS Memory Dump Creation | `f2f46686-6f3c-4724-bd7d-24e31c70f98f` | +0:05:25.637635 | 1 | `host.id`: pinned, `user.id`: pinned |
 | Remote Scheduled Task Creation | `954ee7c8-5437-49ae-b2d6-2960883898e9` | +0:34:40.919925 | 2 | `host.id`: pinned, `user.id`: pinned, `source.ip`: pinned |
 | Volume Shadow Copy Deletion via WMIC | `dc9c1f74-dac3-48e3-b47f-eb79db358f57` | +0:43:19.395078 | 1 | `host.id`: pinned, `user.id`: pinned |
+
+**Story tier: T0 (trivial)**, from the required members and the emission.
+
+## Outlook phish to ransomware (`outlook-phish-to-ransomware`)
+
+An accountant opens an attachment from Outlook; the dropper runs from the browser cache and registers a DLL with regsvr32, which calls the operator's server. The operator excludes their working directory from Defender, plants a Run key, maps the domain with AdFind and lists the saved credentials. A service created remotely with sc.exe moves them to the file server, where the shares are archived with a password, pushed out with rclone, and the shadow copies are deleted before the encryptor runs.
+
+Platform: windows; size: large; expected alerts: 11
+
+### Members
+
+| Member | Stage | Host | Tier | Note |
+|---|---|---|---|---|
+| Suspicious MS Outlook Child Process | initial access | ws | T0 |  |
+| Suspicious Execution from INET Cache | execution | ws | T0 |  |
+| Network Connection via Registration Utility | command and control | ws | T0 |  |
+| Windows Defender Exclusions Added via PowerShell | defense evasion | ws | T0 |  |
+| Startup or Run Key Registry Modification | persistence | ws | T0 |  |
+| AdFind Command Activity | discovery | ws | T0 |  |
+| Searching for Saved Credentials via VaultCmd | credential access | ws | T0 |  |
+| Service Command Lateral Movement | lateral movement | ws | T0 |  |
+| Encrypting Files with WinRar or 7z | collection | fs | T0 |  |
+| Potential Data Exfiltration via Rclone | exfiltration | fs | T0 |  |
+| Volume Shadow Copy Deleted or Resized via VssAdmin | impact | fs | T0 |  |
+| Potential Ransomware Note File Dropped via SMB (optional) | impact | fs | T2 | Root with too many branches (limit: 10000) |
+
+### Bindings
+
+`constrained`: the member constrains the field itself. `glued`: the member does not mention the field, the glue constraint adds it. The backpack pins both.
+
+| Member | Field | Role | State |
+|---|---|---|---|
+| Suspicious MS Outlook Child Process | `host.id` | ws.id | glued |
+| Suspicious MS Outlook Child Process | `user.id` | acct.id | glued |
+| Suspicious Execution from INET Cache | `host.id` | ws.id | glued |
+| Suspicious Execution from INET Cache | `user.id` | acct.id | glued |
+| Network Connection via Registration Utility | `host.id` | ws.id | glued |
+| Network Connection via Registration Utility | `user.id` | acct.id | glued |
+| Network Connection via Registration Utility | `destination.ip` | c2.ip | constrained |
+| Windows Defender Exclusions Added via PowerShell | `host.id` | ws.id | glued |
+| Windows Defender Exclusions Added via PowerShell | `user.id` | acct.id | glued |
+| Startup or Run Key Registry Modification | `host.id` | ws.id | glued |
+| Startup or Run Key Registry Modification | `user.id` | acct.id | constrained |
+| AdFind Command Activity | `host.id` | ws.id | glued |
+| AdFind Command Activity | `user.id` | acct.id | glued |
+| Searching for Saved Credentials via VaultCmd | `host.id` | ws.id | glued |
+| Searching for Saved Credentials via VaultCmd | `user.id` | acct.id | glued |
+| Service Command Lateral Movement | `host.id` | ws.id | glued |
+| Service Command Lateral Movement | `user.id` | acct.id | glued |
+| Service Command Lateral Movement | `destination.ip` | fs.ip | constrained |
+| Encrypting Files with WinRar or 7z | `host.id` | fs.id | glued |
+| Encrypting Files with WinRar or 7z | `user.id` | acct.id | glued |
+| Potential Data Exfiltration via Rclone | `host.id` | fs.id | glued |
+| Potential Data Exfiltration via Rclone | `user.id` | acct.id | glued |
+| Volume Shadow Copy Deleted or Resized via VssAdmin | `host.id` | fs.id | glued |
+| Volume Shadow Copy Deleted or Resized via VssAdmin | `user.id` | acct.id | glued |
+| Potential Ransomware Note File Dropped via SMB | `host.id` | fs.id | n/a |
+
+### Emission
+
+Backpack: `{'acct.id': '17744', 'c2.ip': '195.152.130.89', 'fs.id': 'eb3e1b65-d7a2-4687-8668-ead0addf93e8', 'fs.ip': '10.55.178.45', 'ws.id': '58ac9be3-3f37-47a5-8531-d3d7749205f2'}`
+
+Ledger of instance `story-1`, 11 alerts expected:
+
+| Member | Rule | Offset | Docs | Bound fields |
+|---|---|---|---|---|
+| Suspicious MS Outlook Child Process | `32f4675e-6c49-4ace-80f9-97c9259dca2e` | +0:00:00 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Suspicious Execution from INET Cache | `dca6b4b0-ae70-44eb-bb7a-ce6db502ee78` | +0:00:30.161041 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Network Connection via Registration Utility | `fb02b8d3-71ee-4af1-bacd-215d23f17efa` | +0:00:34.545535 | 2 | `host.id`: pinned, `user.id`: pinned, `destination.ip`: pinned |
+| Windows Defender Exclusions Added via PowerShell | `2c17e5d7-08b9-43b2-b58a-0270d65ac85b` | +0:04:49.323211 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Startup or Run Key Registry Modification | `97fc44d3-8dae-4019-ae83-298c3015600f` | +0:05:49.213121 | 1 | `host.id`: pinned, `user.id`: pinned |
+| AdFind Command Activity | `eda499b8-a073-4e35-9733-22ec71f57f3a` | +0:20:27.176547 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Searching for Saved Credentials via VaultCmd | `be8afaed-4bcd-4e0a-b5f9-5562003dde81` | +0:24:04.692917 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Service Command Lateral Movement | `d61cbcf8-1bc1-4cff-85ba-e7b21c5beedc` | +1:21:25.621815 | 2 | `host.id`: pinned, `user.id`: pinned, `destination.ip`: pinned |
+| Encrypting Files with WinRar or 7z | `45d273fb-1dca-457d-9855-bcb302180c21` | +1:32:17.590133 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Potential Data Exfiltration via Rclone | `3f4c2b18-9d2e-4b7a-a3c1-8e6d9f2b5c7e` | +2:08:14.560066 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Volume Shadow Copy Deleted or Resized via VssAdmin | `b5ea4bfe-a1b2-421f-9d47-22a75a6f2921` | +5:07:54.486002 | 1 | `host.id`: pinned, `user.id`: pinned |
+
+**Story tier: T0 (trivial)**, from the required members and the emission.
+
+## WordPress web shell to WinRM pivot (`wordpress-to-winrm-pivot`)
+
+A vulnerable WordPress plugin lets the operator drop a PHP web shell on the Linux web server. The web shell spawns a reverse shell; the operator scrapes process memory for credentials and finds the operations account that backs up the site to a Windows file server. With it they open a WinRM shell on the file server from the web server, make a symbolic link to a shadow copy to lift the SAM database, and clear the event logs on the way out.
+
+Platform: linux+windows; size: medium; expected alerts: 6
+
+### Members
+
+| Member | Stage | Host | Tier | Note |
+|---|---|---|---|---|
+| PHP File Creation in WordPress Plugin Directory | initial access | web | T0 |  |
+| Potential Reverse Shell via Child | command and control | web | T0 |  |
+| Potential Linux Credential Dumping via Proc Filesystem | credential access | web | T0 |  |
+| Incoming Execution via WinRM Remote Shell | lateral movement | fs | T0 |  |
+| Symbolic Link to Shadow Copy Created | credential access | fs | T0 |  |
+| Clearing Windows Event Logs | defense evasion | fs | T0 |  |
+
+### Bindings
+
+`constrained`: the member constrains the field itself. `glued`: the member does not mention the field, the glue constraint adds it. The backpack pins both.
+
+| Member | Field | Role | State |
+|---|---|---|---|
+| PHP File Creation in WordPress Plugin Directory | `host.id` | web.id | glued |
+| PHP File Creation in WordPress Plugin Directory | `user.id` | www.id | glued |
+| Potential Reverse Shell via Child | `host.id` | web.id | constrained |
+| Potential Reverse Shell via Child | `user.id` | www.id | glued |
+| Potential Reverse Shell via Child | `destination.ip` | c2.ip | constrained |
+| Potential Linux Credential Dumping via Proc Filesystem | `host.id` | web.id | constrained |
+| Potential Linux Credential Dumping via Proc Filesystem | `user.id` | www.id | glued |
+| Incoming Execution via WinRM Remote Shell | `host.id` | fs.id | constrained |
+| Incoming Execution via WinRM Remote Shell | `source.ip` | web.ip | constrained |
+| Incoming Execution via WinRM Remote Shell | `user.id` | ops.id | glued |
+| Symbolic Link to Shadow Copy Created | `host.id` | fs.id | glued |
+| Symbolic Link to Shadow Copy Created | `user.id` | ops.id | glued |
+| Clearing Windows Event Logs | `host.id` | fs.id | glued |
+| Clearing Windows Event Logs | `user.id` | ops.id | glued |
+
+### Emission
+
+Backpack: `{'c2.ip': '177.221.128.164', 'fs.id': '4ffc7242-2154-46bb-9515-5f19f2d1ba5e', 'ops.id': '41286', 'web.id': '25fac429-0346-4286-87a3-fbef010f2722', 'web.ip': '10.217.207.44', 'www.id': '6333'}`
+
+Ledger of instance `story-1`, 6 alerts expected:
+
+| Member | Rule | Offset | Docs | Bound fields |
+|---|---|---|---|---|
+| PHP File Creation in WordPress Plugin Directory | `fb76c80b-3eb2-4c56-9ed1-e4c529425d0f` | +0:00:00 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Potential Reverse Shell via Child | `2138bb70-5a5e-42fd-be5e-b38edf6a6777` | +0:00:36.010044 | 2 | `host.id`: pinned, `user.id`: pinned, `destination.ip`: pinned |
+| Potential Linux Credential Dumping via Proc Filesystem | `ef100a2e-ecd4-4f72-9d1e-2f779ff3c311` | +0:07:30.745979 | 2 | `host.id`: pinned, `user.id`: pinned |
+| Incoming Execution via WinRM Remote Shell | `1cd01db9-be24-4bef-8e7c-e923f0ff78ab` | +0:56:43.027143 | 2 | `host.id`: pinned, `source.ip`: pinned, `user.id`: pinned |
+| Symbolic Link to Shadow Copy Created | `d117cbb4-7d56-41b4-b999-bdf8c25648a0` | +1:01:28.385661 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Clearing Windows Event Logs | `d331bbe2-6db4-4941-80a5-8270db72eb61` | +1:13:30.933041 | 1 | `host.id`: pinned, `user.id`: pinned |
+
+**Story tier: T0 (trivial)**, from the required members and the emission.
+
+## Workstation to domain controller in three hops (`workstation-to-domain-controller`)
+
+An IT administrator opens a booby-trapped PDF; the reader spawns a signed utility that fetches a second stage from the operator's server, and the operator enumerates the administrator groups. With the administrator's own credentials they open a PowerShell Remoting session on the jump host and dump the registry hives, where a domain admin's credentials are cached. With those they start a service remotely on the domain controller and copy ntds.dit out of a shadow copy.
+
+Platform: windows; size: large; expected alerts: 7
+
+### Members
+
+| Member | Stage | Host | Tier | Note |
+|---|---|---|---|---|
+| Suspicious PDF Reader Child Process | initial access | ws | T0 |  |
+| Network Connection via Signed Binary | command and control | ws | T0 |  |
+| Enumeration of Administrator Accounts | discovery | ws | T0 |  |
+| Incoming Execution via PowerShell Remoting | lateral movement | jump | T0 |  |
+| Credential Acquisition via Registry Hive Dumping | credential access | jump | T0 |  |
+| LSASS Memory Dump Handle Access (optional) | credential access | jump | T2 | Unsupported rule type: new_terms |
+| Remotely Started Services via RPC | lateral movement | dc | T0 |  |
+| NTDS or SAM Database File Copied | credential access | dc | T0 |  |
+
+### Bindings
+
+`constrained`: the member constrains the field itself. `glued`: the member does not mention the field, the glue constraint adds it. The backpack pins both.
+
+| Member | Field | Role | State |
+|---|---|---|---|
+| Suspicious PDF Reader Child Process | `host.id` | ws.id | glued |
+| Suspicious PDF Reader Child Process | `host.name` | ws.name | glued |
+| Suspicious PDF Reader Child Process | `user.id` | it.id | glued |
+| Network Connection via Signed Binary | `host.id` | ws.id | glued |
+| Network Connection via Signed Binary | `user.id` | it.id | glued |
+| Network Connection via Signed Binary | `destination.ip` | c2.ip | constrained |
+| Enumeration of Administrator Accounts | `host.id` | ws.id | glued |
+| Enumeration of Administrator Accounts | `user.id` | it.id | constrained |
+| Incoming Execution via PowerShell Remoting | `host.id` | jump.id | constrained |
+| Incoming Execution via PowerShell Remoting | `host.name` | jump.name | glued |
+| Incoming Execution via PowerShell Remoting | `source.ip` | ws.ip | constrained |
+| Incoming Execution via PowerShell Remoting | `user.id` | it.id | glued |
+| Credential Acquisition via Registry Hive Dumping | `host.id` | jump.id | glued |
+| Credential Acquisition via Registry Hive Dumping | `user.id` | it.id | glued |
+| LSASS Memory Dump Handle Access | `host.id` | jump.id | n/a |
+| Remotely Started Services via RPC | `host.id` | dc.id | constrained |
+| Remotely Started Services via RPC | `host.name` | dc.name | glued |
+| Remotely Started Services via RPC | `source.ip` | jump.ip | constrained |
+| Remotely Started Services via RPC | `user.id` | da.id | glued |
+| NTDS or SAM Database File Copied | `host.id` | dc.id | glued |
+| NTDS or SAM Database File Copied | `user.id` | da.id | glued |
+
+### Emission
+
+Backpack: `{'c2.ip': '125.122.23.142', 'da.id': '14526', 'dc.id': '78d76758-22dc-41a8-b70a-f7e5de6091b5', 'dc.name': 'laptop-13', 'it.id': '45538', 'jump.id': 'bf13e4ca-dc55-4bd6-8539-dc21052ccaf9', 'jump.ip': '172.28.164.9', 'jump.name': 'desktop-33', 'ws.id': '00e0d62c-b438-440a-8921-d69e7b272783', 'ws.ip': '172.16.28.237', 'ws.name': 'srv-42'}`
+
+Ledger of instance `story-1`, 7 alerts expected:
+
+| Member | Rule | Offset | Docs | Bound fields |
+|---|---|---|---|---|
+| Suspicious PDF Reader Child Process | `53a26770-9cbd-40c5-8b57-61d01a325e14` | +0:00:00 | 1 | `host.id`: pinned, `host.name`: pinned, `user.id`: pinned |
+| Network Connection via Signed Binary | `63e65ec3-43b1-45b0-8f2d-45b34291dc44` | +0:00:01.611366 | 2 | `host.id`: pinned, `user.id`: pinned, `destination.ip`: pinned |
+| Enumeration of Administrator Accounts | `871ea072-1b71-4def-b016-6278b505138d` | +0:14:13.529223 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Incoming Execution via PowerShell Remoting | `2772264c-6fb9-4d9d-9014-b416eed21254` | +0:37:05.733661 | 2 | `host.id`: pinned, `host.name`: pinned, `source.ip`: pinned, `user.id`: pinned |
+| Credential Acquisition via Registry Hive Dumping | `a7e7bfa3-088e-4f13-b29e-3986e0e756b8` | +0:37:59.534596 | 1 | `host.id`: pinned, `user.id`: pinned |
+| Remotely Started Services via RPC | `aa9a274d-6b53-424d-ac5e-cb8ca4251650` | +0:50:15.942657 | 2 | `host.id`: pinned, `host.name`: pinned, `source.ip`: pinned, `user.id`: pinned |
+| NTDS or SAM Database File Copied | `3bc6deaa-fbd4-433a-ae21-3e892f95624f` | +0:52:38.294803 | 1 | `host.id`: pinned, `user.id`: pinned |
 
 **Story tier: T0 (trivial)**, from the required members and the emission.

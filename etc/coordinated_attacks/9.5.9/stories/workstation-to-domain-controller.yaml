@@ -1,0 +1,93 @@
+# Licensed to Elasticsearch B.V. under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Elasticsearch B.V. licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# 	http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# Attack story draft: the intermediate artifact between the AI proposal and
+# the runtime coordinated attack. Reviewed by a human before it is compiled.
+id: workstation-to-domain-controller
+title: Workstation to domain controller in three hops
+rules_version: 9.5.9
+platform: windows
+size: large
+
+narrative: >
+  An IT administrator opens a booby-trapped PDF; the reader spawns a signed
+  utility that fetches a second stage from the operator's server, and the
+  operator enumerates the administrator groups. With the administrator's own
+  credentials they open a PowerShell Remoting session on the jump host and
+  dump the registry hives, where a domain admin's credentials are cached. With
+  those they start a service remotely on the domain controller and copy
+  ntds.dit out of a shadow copy.
+
+# Three hosts: each hop binds the previous host's address as `source.ip` of
+# the rule that fires on the next host. `host.name` is glued next to `host.id`
+# on the first member of every host.
+roles:
+  ws: { kind: host, description: the IT administrator's workstation }
+  jump: { kind: host, description: the jump host the administrators manage servers from }
+  dc: { kind: host, description: the domain controller }
+  it: { kind: user, description: the IT administrator who opened the PDF }
+  da: { kind: user, description: the domain admin whose credentials were cached on the jump host }
+  c2: { kind: ip, description: the operator's download server }
+
+members:
+  - rule: Suspicious PDF Reader Child Process
+    stage: initial access
+    host: ws
+    bindings: { host.id: ws.id, host.name: ws.name, user.id: it.id }
+  - rule: Network Connection via Signed Binary
+    stage: command and control
+    host: ws
+    bindings: { host.id: ws.id, user.id: it.id, destination.ip: c2.ip }
+    after: { member: Suspicious PDF Reader Child Process, within: 2m }
+  - rule: Enumeration of Administrator Accounts
+    stage: discovery
+    host: ws
+    bindings: { host.id: ws.id, user.id: it.id }
+    after: { member: Network Connection via Signed Binary, within: 15m }
+  - rule: Incoming Execution via PowerShell Remoting
+    stage: lateral movement
+    host: jump
+    bindings: { host.id: jump.id, host.name: jump.name, source.ip: ws.ip, user.id: it.id }
+    after: { member: Enumeration of Administrator Accounts, within: 30m }
+  - rule: Credential Acquisition via Registry Hive Dumping
+    stage: credential access
+    host: jump
+    bindings: { host.id: jump.id, user.id: it.id }
+    after: { member: Incoming Execution via PowerShell Remoting, within: 5m }
+  - rule: LSASS Memory Dump Handle Access
+    stage: credential access
+    host: jump
+    optional: true  # alternative credential theft on the jump host, measures the new_terms gap
+    bindings: { host.id: jump.id }
+    after: { member: Incoming Execution via PowerShell Remoting, within: 5m }
+  - rule: Remotely Started Services via RPC
+    stage: lateral movement
+    host: dc
+    bindings: { host.id: dc.id, host.name: dc.name, source.ip: jump.ip, user.id: da.id }
+    after: { member: Credential Acquisition via Registry Hive Dumping, within: 1h }
+  - rule: NTDS or SAM Database File Copied
+    stage: credential access
+    host: dc
+    bindings: { host.id: dc.id, user.id: da.id }
+    after: { member: Remotely Started Services via RPC, within: 10m }
+
+expected_alerts: 7  # 8 with the optional member
+
+provenance:
+  proposed_by: { backend: file, model: claude (cursor session), prompt: traces/workstation-to-domain-controller/prompt.md }
+  response: traces/workstation-to-domain-controller/response.md
+  reviewed_by: null

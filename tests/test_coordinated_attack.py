@@ -693,7 +693,7 @@ class TestStoryDrafts(tu.SeededTestCase, unittest.TestCase):
                         for fld, binding in member.bindings.items():
                             self.assertEqual(get_field(doc, fld), backpack.values[binding], f"{member.name}: {fld}")
                         self.assertGreaterEqual(doc["@timestamp"], entry.timestamp.isoformat(timespec="milliseconds"))
-        self.assertEqual(count, 2)
+        self.assertEqual(count, 7)
 
     def test_array_field_role_attribute(self):
         """`host.ip` is an array in ECS: the role attribute is a scalar, it pins array and scalar fields alike."""
@@ -743,7 +743,7 @@ class TestOnlineStoryDrafts(tu.OnlineTestCase, tu.SeededTestCase, unittest.TestC
             with open(path) as f:
                 yield YAML(typ="safe").load(f)
 
-    def kibana_rule(self, story, member, index):
+    def kibana_rule(self, story, member, index, lookback):
         rule = self.rules_by_id[member.rule_id]
         return {
             "rule_id": member.rule_id,
@@ -756,7 +756,7 @@ class TestOnlineStoryDrafts(tu.OnlineTestCase, tu.SeededTestCase, unittest.TestC
             "language": member.language,
             "index": [index],
             "interval": "60s",
-            "from": "now-2h",
+            "from": lookback,
             "max_signals": 1000,
             "version": rule.version,
             "tags": ["Geneve", "coordinated attack"],
@@ -786,15 +786,23 @@ class TestOnlineStoryDrafts(tu.OnlineTestCase, tu.SeededTestCase, unittest.TestC
             time.sleep(sleep)
 
     def test_alerts_match_the_ledgers(self):
-        start = datetime.now(timezone.utc) - timedelta(hours=1)
+        attacks = {story["id"]: (story, load_story(story, self.rules)) for story in self.stories()}
+        # every document must be in the past, inside the lookback of the rules: the stories start early enough
+        # for the longest timeline to end an hour ago, and the rules look back to an hour before that start
+        span = max(
+            max(schedule(attack, coordination_seed="online", instance_id=instance_id).values())
+            for _, attack in attacks.values()
+            for instance_id in self.instances
+        )
+        start = datetime.now(timezone.utc) - timedelta(hours=1) - span
+        lookback = f"now-{int((span + timedelta(hours=2)).total_seconds())}s"
         kibana_rules, operations, mappings, instances = [], [], {}, {}
-        for story in self.stories():
-            attack = load_story(story, self.rules)
+        for story, attack in attacks.values():
             emitter = AttackEmitter(attack, schema=self.schema)
             emitter.source_events.stack_version = self.get_version()
             deep_merge(mappings, emitter.source_events.mappings())
             indices = {m.name: f"{self.index_template}-{story['id']}-{i:02d}" for i, m in enumerate(attack.members)}
-            kibana_rules.extend(self.kibana_rule(story, m, indices[m.name]) for m in attack.members)
+            kibana_rules.extend(self.kibana_rule(story, m, indices[m.name], lookback) for m in attack.members)
             for instance_id in self.instances:
                 events, ledger = emitter.emit(instance_id=instance_id, start=start, coordination_seed="online")
                 backpack = fill_backpack(attack, coordination_seed="online", instance_id=instance_id, schema=self.schema)
