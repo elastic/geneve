@@ -592,8 +592,18 @@
     "T1071"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: destination.as.number (out of boundary, 0 <= 202412 <= 65535)"
+   "branches": 855,
+   "fields": [
+    "@timestamp",
+    "destination.as.number",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.executable",
+    "process.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "01e244f0-fef9-4102-903f-9788052b2c91",
@@ -2197,8 +2207,17 @@
     "T1059"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe'))"
+   "branches": 23,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.name",
+    "process.parent.args",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "05b8a893-4683-450f-984d-7b52ca2aa4dd",
@@ -2371,8 +2390,19 @@
     "T1069"
    ],
    "building_block": true,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe'))"
+   "branches": 23,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.name",
+    "process.parent.executable",
+    "process.parent.name",
+    "process.pe.original_file_name"
+   ],
+   "status": "ok"
   },
   {
    "id": "064a2e08-25da-11f0-b1f1-f661ea17fbcd",
@@ -4323,8 +4353,20 @@
     "T1204"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.command_line (not in Strings({'*fromhex*'}): ('*decode*'))"
+   "branches": 24,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.name",
+    "process.parent.args",
+    "process.working_directory"
+   ],
+   "status": "ok"
   },
   {
    "id": "0c3c80de-08c2-11f0-bd11-f661ea17fbcc",
@@ -6339,8 +6381,17 @@
     "T1134"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute'))"
+   "branches": 36,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "file.directory",
+    "file.path",
+    "host.os.type",
+    "powershell.file.script_block_text",
+    "user.id"
+   ],
+   "status": "ok"
   },
   {
    "id": "11ea6bec-ebde-4d71-a8e9-784948f8e3e9",
@@ -7590,8 +7641,16 @@
     "T1570"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*'))"
+   "branches": 2,
+   "fields": [
+    "@timestamp",
+    "event.code",
+    "host.os.type",
+    "winlog.event_data.AccessList",
+    "winlog.event_data.RelativeTargetName",
+    "winlog.event_data.ShareName"
+   ],
+   "status": "ok"
   },
   {
    "id": "15c0b7a7-9c34-4869-b25b-fa6518414899",
@@ -7931,8 +7990,16 @@
     "T1574"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'bash'}): ('bash'))"
+   "branches": 14,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "file.path",
+    "host.os.type",
+    "process.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "166727ab-6768-4e26-b80c-948b228ffc06",
@@ -8240,8 +8307,16 @@
     "T1547"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*'))"
+   "branches": 4,
+   "fields": [
+    "@timestamp",
+    "event.code",
+    "host.os.type",
+    "winlog.event_data.AccessList",
+    "winlog.event_data.RelativeTargetName",
+    "winlog.event_data.ShareName"
+   ],
+   "status": "ok"
   },
   {
    "id": "1719ee47-89b8-4407-9d55-6dff2629dd4c",
@@ -8761,8 +8836,19 @@
     "T1218"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (not in Strings({'rundll32.exe'}): ('mshta.exe'))"
+   "branches": 58,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.args_count",
+    "process.command_line",
+    "process.name",
+    "process.parent.executable"
+   ],
+   "status": "ok"
   },
   {
    "id": "183f3cd2-4cc6-44c0-917c-c5d29ecdcf74",
@@ -9391,8 +9477,18 @@
     "T1595"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'nc.traditional'}): ('nc.traditional'))"
+   "branches": 1032,
+   "fields": [
+    "@timestamp",
+    "container.id",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "1a2bb7a5-6172-4649-bb1e-bcd423cace52",
@@ -11080,8 +11176,15 @@
     "T1615"
    ],
    "building_block": true,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-WmiObject'}): ('AntiVirusProduct'))"
+   "branches": 114,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "host.os.type",
+    "powershell.file.script_block_text",
+    "user.id"
+   ],
+   "status": "ok"
   },
   {
    "id": "1e0b832e-957e-43ae-b319-db82d228c908",
@@ -11404,8 +11507,14 @@
     "T1685"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[Ref].Assembly.GetType(('System.Management.Automation'}): ('.SetValue('))"
+   "branches": 32,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "host.os.type",
+    "powershell.file.script_block_text"
+   ],
+   "status": "ok"
   },
   {
    "id": "1f45720e-5ea8-11ef-90d2-f661ea17fbce",
@@ -12770,8 +12879,21 @@
     "T1547"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'modprobe'}): ('modprobe'))"
+   "branches": 30,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.name",
+    "process.parent.args",
+    "process.parent.executable",
+    "process.parent.name",
+    "process.working_directory"
+   ],
+   "status": "ok"
   },
   {
    "id": "2377946d-0f01-4957-8812-6878985f515d",
@@ -14026,8 +14148,16 @@
     "T1560"
    ],
    "building_block": true,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'IO.Compression.ZipFile'}): ('CompressionLevel'))"
+   "branches": 2,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "file.directory",
+    "host.os.type",
+    "powershell.file.script_block_text",
+    "user.id"
+   ],
+   "status": "ok"
   },
   {
    "id": "2724808c-ba5d-48b2-86d2-0002103df753",
@@ -14551,8 +14681,22 @@
     "T1087"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'net1.exe'}): ('net1.exe'))"
+   "branches": 24,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.Ext.token.integrity_level_name",
+    "process.args",
+    "process.name",
+    "process.parent.args",
+    "process.parent.executable",
+    "process.parent.name",
+    "process.working_directory",
+    "winlog.event_data.IntegrityLevel"
+   ],
+   "status": "ok"
   },
   {
    "id": "2863ffeb-bf77-44dd-b7a5-93ef94b72036",
@@ -14852,8 +14996,26 @@
     "T1548"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'sysctl'}): ('sysctl'))"
+   "branches": 890,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.args_count",
+    "process.executable",
+    "process.group.id",
+    "process.name",
+    "process.parent.command_line",
+    "process.parent.executable",
+    "process.parent.name",
+    "process.real_group.id",
+    "process.real_user.id",
+    "process.user.id"
+   ],
+   "status": "ok"
   },
   {
    "id": "28f6f34b-8e16-487a-b5fd-9d22eb903db8",
@@ -15890,8 +16052,19 @@
     "T1218"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe'))"
+   "branches": 139,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.executable",
+    "process.name",
+    "process.parent.name",
+    "process.pe.original_file_name"
+   ],
+   "status": "ok"
   },
   {
    "id": "2c40dfe2-c13e-48a8-8eff-fb9bfb2a7854",
@@ -17083,8 +17256,14 @@
     "T1123"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-AudioDevice'}): ('Recording'))"
+   "branches": 6,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "host.os.type",
+    "powershell.file.script_block_text"
+   ],
+   "status": "ok"
   },
   {
    "id": "2f8a1226-5720-437d-9c20-e0029deb6194",
@@ -20758,8 +20937,23 @@
     "T1685"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*'))"
+   "branches": 1680,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.args_count",
+    "process.command_line",
+    "process.name",
+    "process.parent.args",
+    "process.parent.command_line",
+    "process.parent.executable",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "3b15d24d-03e8-422c-b260-e0834e5fec83",
@@ -20855,8 +21049,17 @@
     "T1059"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.parent.name (excluded by Strings({'dllhost.exe'}): ('dllhost.exe'))"
+   "branches": 47,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.name",
+    "process.parent.args",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "3bc6deaa-fbd4-433a-ae21-3e892f95624f",
@@ -21567,8 +21770,15 @@
     "T1070"
    ],
    "building_block": true,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Eventing.Reader.EventLogSession'}): ('.ClearLog'))"
+   "branches": 2,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "file.directory",
+    "host.os.type",
+    "powershell.file.script_block_text"
+   ],
+   "status": "ok"
   },
   {
    "id": "3d753eb2-68c4-404a-9279-91a3ad490765",
@@ -22221,8 +22431,23 @@
     "T1055"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.parent.name (excluded by Strings({'winword.exe'}): ('winword.exe'))"
+   "branches": 592,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.code",
+    "host.id",
+    "host.os.type",
+    "process.args",
+    "process.entity_id",
+    "process.executable",
+    "process.parent.args",
+    "process.parent.entity_id",
+    "process.parent.name",
+    "winlog.event_data.CallTrace",
+    "winlog.event_data.TargetProcessGUID"
+   ],
+   "status": "ok"
   },
   {
    "id": "3ee526ce-1f26-45dd-9358-c23100d1121f",
@@ -25878,8 +26103,19 @@
     "T1218"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe'))"
+   "branches": 23,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.command_line",
+    "process.executable",
+    "process.name",
+    "process.parent.command_line",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "48ec9452-e1fd-4513-a376-10a1a26d2c83",
@@ -26712,8 +26948,22 @@
     "T1613"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'kubectl'}): ('kubectl'))"
+   "branches": 13,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.entry_leader.entry_meta.type",
+    "process.interactive",
+    "process.name",
+    "process.parent.command_line",
+    "process.parent.executable",
+    "process.parent.name",
+    "process.working_directory"
+   ],
+   "status": "ok"
   },
   {
    "id": "4b77d382-b78e-4aae-85a0-8841b80e4fc4",
@@ -27054,8 +27304,15 @@
     "T1135"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark'))"
+   "branches": 2,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "host.os.type",
+    "powershell.file.script_block_text",
+    "user.id"
+   ],
+   "status": "ok"
   },
   {
    "id": "4c5a4e8b-3f2d-4a6e-9b5c-7d8f9e0a1b2c",
@@ -31277,8 +31534,19 @@
     "T1574"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe'))"
+   "branches": 13,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.Ext.token.integrity_level_name",
+    "process.code_signature.trusted",
+    "process.name",
+    "process.parent.name",
+    "process.pe.original_file_name"
+   ],
+   "status": "ok"
   },
   {
    "id": "590b6961-e9d5-4ca9-ade0-978c1755a944",
@@ -31575,8 +31843,21 @@
     "T1572"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.command_line (not in Strings({'*net.ipv4.ip_forward*'}): ('*echo *'))"
+   "branches": 48,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.name",
+    "process.parent.args",
+    "process.parent.executable",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "5a14d01d-7ac8-4545-914c-b687c2cf66b3",
@@ -32125,8 +32406,20 @@
     "T1554"
    ],
    "building_block": true,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe'))"
+   "branches": 1360,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.code_signature.subject_name",
+    "process.code_signature.trusted",
+    "process.executable",
+    "process.hash.sha256",
+    "process.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "5bb27863-2da6-4d0d-879a-1efb10479c39",
@@ -32220,8 +32513,22 @@
     "T1574"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'cp'}): ('cp'))"
+   "branches": 20,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.name",
+    "process.parent.args",
+    "process.parent.executable",
+    "process.parent.name",
+    "process.working_directory"
+   ],
+   "status": "ok"
   },
   {
    "id": "5bdad1d5-5001-4a13-ae99-fa8619500f1a",
@@ -32259,8 +32566,24 @@
     "T1204"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'python*'}): ('python*'))"
+   "branches": 2000,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.id",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.name",
+    "process.parent.command_line",
+    "process.parent.entity_id",
+    "process.parent.executable",
+    "process.parent.name",
+    "process.working_directory"
+   ],
+   "status": "ok"
   },
   {
    "id": "5beaebc1-cc13-4bfc-9949-776f9e0dc318",
@@ -32422,8 +32745,14 @@
     "T1555"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[dbo].[Credentials]'}): ('Veeam'))"
+   "branches": 1,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "host.os.type",
+    "powershell.file.script_block_text"
+   ],
+   "status": "ok"
   },
   {
    "id": "5c6f4c58-b381-452a-8976-f1b1c6aa0def",
@@ -32967,8 +33296,18 @@
     "T1505"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: event.category & event.type (empty intersection)"
+   "branches": 6,
+   "fields": [
+    "@timestamp",
+    "dll.code_signature.trusted",
+    "event.action",
+    "event.category",
+    "event.type",
+    "file.code_signature.status",
+    "host.os.type",
+    "process.executable"
+   ],
+   "status": "ok"
   },
   {
    "id": "5d9a3c71-2b84-4e58-f693-1c7f0a4e8b26",
@@ -33251,8 +33590,20 @@
     "T1496"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.command_line (not in Strings({'*vm.swappiness*'}): ('*echo *'))"
+   "branches": 32,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.name",
+    "process.parent.executable",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "5e552599-ddec-4e14-bad1-28aa42404388",
@@ -34218,8 +34569,15 @@
     "T1482"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (excluded by Strings({'DsGetSiteName'}): ('DsGetSiteName'))"
+   "branches": 639,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "file.directory",
+    "host.os.type",
+    "powershell.file.script_block_text"
+   ],
+   "status": "ok"
   },
   {
    "id": "61c31c14-507f-4627-8c31-072556b89a9c",
@@ -36077,8 +36435,20 @@
     "T1566"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'bash'}): ('bash'))"
+   "branches": 540,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "host.os.type",
+    "process.Ext.effective_parent.executable",
+    "process.args",
+    "process.command_line",
+    "process.name",
+    "process.parent.executable",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "670b3b5a-35e5-42db-bd36-6c5b9b4b7313",
@@ -37231,8 +37601,19 @@
     "T1055"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost'))"
+   "branches": 320,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.executable",
+    "process.name",
+    "process.parent.args",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "6a9de6a3-fc25-4e94-a735-dd147ffb0067",
@@ -39692,8 +40073,18 @@
     "T1595"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'nc.traditional'}): ('nc.traditional'))"
+   "branches": 24,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.entry_leader.entry_meta.type",
+    "process.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "729aa18d-06a6-41c7-b175-b65b739b1181",
@@ -39917,8 +40308,17 @@
     "T1482"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe'))"
+   "branches": 2280,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.name",
+    "process.parent.executable"
+   ],
+   "status": "ok"
   },
   {
    "id": "7318affb-bfe8-4d50-a425-f617833be160",
@@ -41006,8 +41406,17 @@
     "T1564"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: file.name (not in Strings({'*.so.*'}): ('.*.so'))"
+   "branches": 1,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "file.extension",
+    "file.name",
+    "host.os.type",
+    "process.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "769a2e72-11bd-437b-9503-e51e7790d273",
@@ -41255,8 +41664,18 @@
     "T1615"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe'))"
+   "branches": 87,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.name",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "77122db4-5876-4127-b91b-6c179eb21f88",
@@ -43063,8 +43482,18 @@
     "T1566"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe'))"
+   "branches": 40,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.executable",
+    "process.name",
+    "process.parent.args"
+   ],
+   "status": "ok"
   },
   {
    "id": "7dc921db-4cd3-48ef-88bf-2bfa91f29f5c",
@@ -43498,8 +43927,16 @@
     "T1204"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: event.category & event.type (empty intersection)"
+   "branches": 2,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "file.path",
+    "host.os.type",
+    "process.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "7eb54028-ca72-4eb7-8185-b6864572347db",
@@ -45525,8 +45962,21 @@
     "T1203"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh'))"
+   "branches": 162,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.executable",
+    "process.name",
+    "process.parent.executable",
+    "process.parent.name",
+    "process.previous.executable"
+   ],
+   "status": "ok"
   },
   {
    "id": "84d1f8db-207f-45ab-a578-921d91c23eb2",
@@ -50211,8 +50661,17 @@
     "T1115"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText'))"
+   "branches": 6,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "file.name",
+    "file.path",
+    "host.os.type",
+    "powershell.file.script_block_text",
+    "user.id"
+   ],
+   "status": "ok"
   },
   {
    "id": "929d0766-204b-11f0-9c1f-f661ea17fbcd",
@@ -51056,8 +51515,15 @@
     "T1557"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NTLMSSPNegotiate'}): ('NegotiateSMB'))"
+   "branches": 5,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "file.directory",
+    "host.os.type",
+    "powershell.file.script_block_text"
+   ],
+   "status": "ok"
   },
   {
    "id": "952c92af-d67f-4f01-8a9c-725efefa7e07",
@@ -53410,8 +53876,21 @@
     "T1613"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.parent.name (excluded by Strings({'fish'}): ('fish'))"
+   "branches": 1144,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.executable",
+    "process.name",
+    "process.parent.executable",
+    "process.parent.name",
+    "process.working_directory"
+   ],
+   "status": "ok"
   },
   {
    "id": "9a944f66-417d-4dee-83a2-afd3f7980212",
@@ -53617,8 +54096,18 @@
     "T1219"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe'))"
+   "branches": 156,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.name",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "9b343b62-d173-4cfd-bd8b-e6379f964ca4",
@@ -57449,8 +57938,17 @@
     "T1566"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe'))"
+   "branches": 1759,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.name",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "a640ef5b-e1da-4b17-8391-468fdbd1b517",
@@ -59501,8 +59999,23 @@
     "T1555"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe'))"
+   "branches": 30,
+   "fields": [
+    "@timestamp",
+    "dll.name",
+    "dll.pe.original_file_name",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.code_signature.exists",
+    "process.code_signature.trusted",
+    "process.entity_id",
+    "process.name",
+    "process.parent.executable",
+    "process.pe.original_file_name"
+   ],
+   "status": "ok"
   },
   {
    "id": "aab184d3-72b3-4639-b242-6597c99d8bca",
@@ -60342,8 +60855,14 @@
     "T1649"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts'))"
+   "branches": 11,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "host.os.type",
+    "powershell.file.script_block_text"
+   ],
+   "status": "ok"
   },
   {
    "id": "acbc8bb9-2486-49a8-8779-45fb5f9a93ee",
@@ -61016,8 +61535,21 @@
     "T1554"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.parent.name (not in Strings({'slack.exe'}): ('CiscoCollabHost.exe'))"
+   "branches": 104,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.code_signature.subject_name",
+    "process.code_signature.trusted",
+    "process.command_line",
+    "process.executable",
+    "process.name",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "ae32268b-bfd0-4c35-b002-13461b5830ca",
@@ -61558,8 +62090,24 @@
     "T1053"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe'))"
+   "branches": 5376,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.Ext.token.integrity_level_name",
+    "process.args",
+    "process.code_signature.trusted",
+    "process.command_line",
+    "process.entity_id",
+    "process.name",
+    "process.parent.entity_id",
+    "process.parent.executable",
+    "process.pe.original_file_name",
+    "winlog.event_data.IntegrityLevel"
+   ],
+   "status": "ok"
   },
   {
    "id": "afd04601-12fc-4149-9b78-9c3f8fe45d39",
@@ -62432,8 +62980,15 @@
     "T1572"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.command_line (not in Strings({'*connect=*'}): ('*restrict=off*'))"
+   "branches": 1,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "process.args",
+    "process.command_line"
+   ],
+   "status": "ok"
   },
   {
    "id": "b29ee2be-bf99-446c-ab1a-2dc0183394b8",
@@ -62669,8 +63224,18 @@
     "T1587"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *'))"
+   "branches": 1176,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "process.args",
+    "process.command_line",
+    "process.name",
+    "process.parent.command_line",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
@@ -63631,8 +64196,17 @@
     "T1070"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.command_line (not in Strings({'*Remove-Item*'}): ('*ConsoleHost_history.txt*'))"
+   "branches": 6,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.command_line",
+    "process.name",
+    "process.pe.original_file_name"
+   ],
+   "status": "ok"
   },
   {
    "id": "b5974c88-d584-451c-8ce3-6b19d7456199",
@@ -63863,8 +64437,22 @@
     "T1685"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'elastic-agent.exe'}): ('elastic-agent.exe'))"
+   "branches": 573,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.executable",
+    "process.name",
+    "process.parent.args",
+    "process.parent.code_signature.subject_name",
+    "process.parent.code_signature.trusted",
+    "process.parent.executable",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "b64b183e-1a76-422d-9179-7b389513e74d",
@@ -65190,8 +65778,15 @@
     "T1190"
    ],
    "building_block": true,
-   "status": "error",
-   "error": "Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*'))"
+   "branches": 13,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "http.request.body.content",
+    "http.request.method",
+    "http.response.status_code"
+   ],
+   "status": "ok"
   },
   {
    "id": "b9e509ba-ca0f-450a-8577-0b0a1098d598",
@@ -66258,8 +66853,15 @@
     "T1106"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookEx'}): ('GetForegroundWindow'))"
+   "branches": 8,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "host.os.type",
+    "powershell.file.script_block_text",
+    "user.id"
+   ],
+   "status": "ok"
   },
   {
    "id": "bd3d058d-5405-4cee-b890-337f09366ba2",
@@ -66943,8 +67545,18 @@
     "T1555"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: file.name (excluded by Strings({'Local State'}): ('Local State'))"
+   "branches": 9702,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.outcome",
+    "file.name",
+    "file.path",
+    "host.os.type",
+    "process.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "c02c8b9f-5e1d-463c-a1b0-04edcdfe1a3d",
@@ -68239,7 +68851,7 @@
    ],
    "building_block": false,
    "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe'))"
+   "error": "Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <="
   },
   {
    "id": "c3d4e5f6-a7b8-9012-cdef-123456789abc",
@@ -70242,8 +70854,24 @@
     "T1021"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe'))"
+   "branches": 83,
+   "fields": [
+    "@timestamp",
+    "destination.port",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.code_signature.exists",
+    "process.code_signature.subject_name",
+    "process.code_signature.trusted",
+    "process.entity_id",
+    "process.name",
+    "process.pe.original_file_name",
+    "process.pid",
+    "user.id"
+   ],
+   "status": "ok"
   },
   {
    "id": "c85eb82c-d2c8-485c-a36f-534f914b7663",
@@ -70567,8 +71195,17 @@
     "T1685"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.command_line (not in Strings({'*-e *'}): ('*RABpAHMAYQBiAGwAZQBSAGUAYQBsAHQAaQBtAGUATQBvAG4AaQB0AG8AcgBpAG4AZwAgA*'))"
+   "branches": 48,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.name",
+    "process.pe.original_file_name"
+   ],
+   "status": "ok"
   },
   {
    "id": "c8e4f1a2-9b3d-4c5e-a6f7-8b9c0d1e2f3a",
@@ -72449,8 +73086,19 @@
     "T1651"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.parent.name (excluded by Strings({'ssm-document-worker.exe'}): ('ssm-document-worker.exe'))"
+   "branches": 2064,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "process.args",
+    "process.command_line",
+    "process.executable",
+    "process.name",
+    "process.parent.args",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "cf307a5a-d503-44a4-8158-db196d99c9df",
@@ -72703,8 +73351,18 @@
     "T1036"
    ],
    "building_block": true,
-   "status": "error",
-   "error": "Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*'))"
+   "branches": 364,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "file.Ext.header_bytes",
+    "file.extension",
+    "file.path",
+    "host.os.type",
+    "process.executable"
+   ],
+   "status": "ok"
   },
   {
    "id": "d0088204-675b-4175-bf07-1665da2d4810",
@@ -73279,8 +73937,26 @@
     "T1218"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'nohup'}): ('nohup'))"
+   "branches": 956,
+   "fields": [
+    "@timestamp",
+    "destination.ip",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.entity_id",
+    "process.executable",
+    "process.name",
+    "process.parent.args",
+    "process.parent.command_line",
+    "process.parent.entity_id",
+    "process.parent.executable",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "d1f310cb-5921-4d37-bbdf-cfdab7a6df9c",
@@ -76267,7 +76943,7 @@
    ],
    "building_block": false,
    "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe'))"
+   "error": "Field type solver: constant_keyword"
   },
   {
    "id": "da0d4bae-33ee-11f0-a59f-f661ea17fbcd",
@@ -78442,8 +79118,26 @@
     "T1497"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe'))"
+   "branches": 1664,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "host.os.type",
+    "process.args",
+    "process.code_signature.trusted",
+    "process.command_line",
+    "process.executable",
+    "process.name",
+    "process.parent.args",
+    "process.parent.command_line",
+    "process.parent.entity_id",
+    "process.parent.name",
+    "process.pe.original_file_name",
+    "process.working_directory",
+    "user.id"
+   ],
+   "status": "ok"
   },
   {
    "id": "e00c7862-43f1-48fd-aa30-950db838eded",
@@ -82112,8 +82806,17 @@
     "T1211"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'smss.exe'}): ('smss.exe'))"
+   "branches": 64,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "file.extension",
+    "file.path",
+    "host.os.type",
+    "process.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "e953db0d-89ea-4696-b233-612250ee2a11",
@@ -82679,8 +83382,14 @@
     "T1125"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll'))"
+   "branches": 5,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "host.os.type",
+    "powershell.file.script_block_text"
+   ],
+   "status": "ok"
   },
   {
    "id": "eb4de742-3183-55a9-942f-c3d3d93d806b",
@@ -83144,8 +83853,20 @@
     "T1574"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'python*'}): ('python*'))"
+   "branches": 318,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.name",
+    "process.parent.executable",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "ebfe1448-7fac-4d59-acea-181bd89b1f7f",
@@ -83233,8 +83954,17 @@
     "T1548"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: event.category & event.type (empty intersection)"
+   "branches": 5920,
+   "fields": [
+    "@timestamp",
+    "container.id",
+    "event.category",
+    "event.type",
+    "process.args",
+    "process.name",
+    "process.parent.args"
+   ],
+   "status": "ok"
   },
   {
    "id": "ec65644d-c9b9-4e4b-a89f-457c75b1dad8",
@@ -84046,8 +84776,17 @@
     "T1570"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe'))"
+   "branches": 136,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "eea82229-b002-470e-a9e1-00be38b14d32",
@@ -86677,8 +87416,17 @@
     "T1566"
    ],
    "building_block": false,
-   "status": "error",
-   "error": "Unsolvable constraints: process.parent.name (excluded by Strings({'wscript.exe'}): ('wscript.exe'))"
+   "branches": 5,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "event.type",
+    "host.os.type",
+    "process.name",
+    "process.parent.args",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "f5488ac1-099e-4008-a6cb-fb638a0f0828",
@@ -90429,8 +91177,16 @@
     "T1552"
    ],
    "building_block": true,
-   "status": "error",
-   "error": "Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword'))"
+   "branches": 54,
+   "fields": [
+    "@timestamp",
+    "event.category",
+    "file.directory",
+    "host.os.type",
+    "powershell.file.script_block_text",
+    "user.id"
+   ],
+   "status": "ok"
   },
   {
    "id": "fe794edd-487f-4a90-b285-3ee54f2af2d3",
@@ -90672,8 +91428,21 @@
     "T1127"
    ],
    "building_block": true,
-   "status": "error",
-   "error": "Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe'))"
+   "branches": 39,
+   "fields": [
+    "@timestamp",
+    "event.action",
+    "event.category",
+    "host.os.type",
+    "process.args",
+    "process.command_line",
+    "process.entity_id",
+    "process.executable",
+    "process.name",
+    "process.parent.entity_id",
+    "process.parent.name"
+   ],
+   "status": "ok"
   },
   {
    "id": "feeed87c-5e95-4339-aef1-47fd79bcfbe3",
