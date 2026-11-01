@@ -97,11 +97,21 @@ def http_server(directory, timeout=10):
         thread.join(timeout=timeout)
 
 
+def get_default_stack_version():
+    """Highest stack version known to the test config, as `major.minor.0`."""
+    versions = load_config()["emitter_rules"]["rules_versions"]
+    major_minor = max((v for v in versions if v != "serverless"), key=lambda v: tuple(int(x) for x in v.split(".")))
+    return f"{major_minor}.0"
+
+
 def get_stack_version():
     version = os.getenv("TEST_STACK_VERSION", None)
 
-    if version in ("serverless", None):
+    if version == "serverless":
         return version
+
+    if version is None:
+        version = get_default_stack_version()
 
     import semver
 
