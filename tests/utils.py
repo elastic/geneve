@@ -536,18 +536,19 @@ class SignalsTestCase:
                     break
         return pending
 
-    def wait_for_rules(self, pending, max_rules, timeout=300, sleep=5):
-        start = time.time()
+    def wait_for_rules(self, pending, max_rules, timeout=300, sleep=5, margin=60):
+        deadline = time.time() + timeout
         successful = {}
         failed = {}
+        timed_out = set()
         if verbose:
             sys.stderr.write("\n  Waiting for rules execution: ")
             sys.stderr.flush()
-        while (time.time() - start) < timeout:
+        while time.time() < deadline:
             if verbose:
                 sys.stderr.write(f"{len(pending)} ")
                 sys.stderr.flush()
-            self.check_rules(pending, successful, failed, max_rules)
+            deadline = max(deadline, self.check_rules(pending, successful, failed, max_rules, timed_out, margin))
             if pending:
                 time.sleep(sleep)
             else:
@@ -557,7 +558,13 @@ class SignalsTestCase:
             sys.stderr.flush()
         return successful, failed
 
-    def check_rules(self, pending, successful, failed, max_rules):
+    def check_rules(self, pending, successful, failed, max_rules, timed_out=None, margin=60):
+        """Check the pending rules, tell until when it is worth waiting for them.
+
+        A rule whose execution was cancelled by the rule type timeout gets a second
+        chance: its next execution comes one `interval` later and may well succeed.
+        """
+        deadline = 0
         for rule_id, rule in self.kb.find_detection_engine_rules(max_rules).items():
             if "execution_summary" not in rule:
                 continue
@@ -569,6 +576,12 @@ class SignalsTestCase:
                 self.handle_rule_success(rule_id, pending, successful, failed)
             elif last_execution["status"] in ("failed", "partial failure"):
                 self.handle_rule_failure(rule_id, failed, last_execution["message"])
+                if timed_out is None or rule_id in timed_out or "interval" not in rule:
+                    continue
+                if "execution cancelled due to timeout" in last_execution["message"]:
+                    timed_out.add(rule_id)
+                    deadline = max(deadline, time.time() + parse_interval(rule["interval"]) + margin)
+        return deadline
 
     def handle_rule_success(self, rule_id, pending, successful, failed):
         del pending[rule_id]
