@@ -446,21 +446,81 @@ class SignalsTestCase:
 
         return (bulk(), num_docs, se.mappings(extra_fields=corpus_fields))
 
-    def load_bulk_chunk(self, operations):
+    def load_bulk_chunk(self, operations, attempts=5):
+        """Send one bulk request, tell if it had to be replayed.
+
+        Replaying is safe: the operations are `create` with deterministic ids, the
+        documents indexed by a timed out attempt are rejected with status 409.
+        """
         from elasticsearch import exceptions
 
-        for attempt in range(3):
+        for attempt in range(attempts):
             try:
-                return self.es.options(request_timeout=30).bulk(operations=operations), attempt > 0
+                ret = self.es.options(request_timeout=30).bulk(operations=operations)
             except exceptions.ConnectionTimeout:
-                if attempt == 2:
+                if attempt == attempts - 1:
                     raise
+                continue
+            except exceptions.ApiError as e:
+                if e.status_code != 429 or attempt == attempts - 1:
+                    raise
+                retry_after = e.meta.headers.get("Retry-After")
+                time.sleep(float(retry_after) if retry_after else 1 + attempt)
+                continue
+            # the request may be accepted but its items rejected under indexing pressure
+            if attempt < attempts - 1 and any(item["create"]["status"] == 429 for item in ret["items"]):
+                time.sleep(1 + attempt)
+                continue
+            return ret, attempt > 0
 
-    def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=100, rules_chunk_size=50):
-        bulk, docs_to_go, mappings = self.generate_docs_and_mappings(rules, asts)
+    def load_bulk(self, bulk, docs_to_go, cells, *, docs_chunk_size, workers=8):
+        """Send the bulk in chunks, with up to `workers` requests in flight.
+
+        The generation goes on in this thread, with at most `2 * workers` chunks
+        waiting to be sent: memory stays bounded, the workers never starve. The
+        results are processed in generation order, so the report is deterministic.
+        """
+        from collections import deque
+        from concurrent.futures import ThreadPoolExecutor
 
         # for each doc there are two lines in the bulk: the operation and the doc itself
         bulk_chunk_size = docs_chunk_size * 2
+
+        num_chunks = math.ceil(docs_to_go / docs_chunk_size)
+        prev_report_chunk = 0
+
+        def handle(i, future):
+            nonlocal docs_to_go, prev_report_chunk
+            ret, replayed = future.result()
+            for item in ret["items"]:
+                if item["create"]["status"] != 201 and not (replayed and item["create"]["status"] == 409):
+                    cells.append(jupyter.Markdown(str(item["create"])))
+                    if verbose > 1:
+                        sys.stderr.write(f"{item['create']!s}\n")
+                        sys.stderr.flush()
+            if verbose:
+                docs_to_go -= len(ret["items"])
+                nth_chunk = int(i / num_chunks * 14)  # 14 is just an arbitray number to give enough updates
+                if nth_chunk != prev_report_chunk or i == num_chunks - 1:
+                    prev_report_chunk = nth_chunk
+                    sys.stderr.write(f"{docs_to_go} ")
+                    sys.stderr.flush()
+
+        in_flight = deque()
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            try:
+                for i, chunk in enumerate(batched(bulk, bulk_chunk_size)):
+                    if len(in_flight) >= 2 * workers:
+                        handle(*in_flight.popleft())
+                    in_flight.append((i, pool.submit(self.load_bulk_chunk, "\n".join(chunk))))
+                while in_flight:
+                    handle(*in_flight.popleft())
+            finally:
+                for _, future in in_flight:
+                    future.cancel()
+
+    def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=500, rules_chunk_size=50):
+        bulk, docs_to_go, mappings = self.generate_docs_and_mappings(rules, asts)
 
         if verbose:
             sys.stderr.write("\n  Deleting any unit-test indices: ")
@@ -507,23 +567,7 @@ class SignalsTestCase:
             if verbose:
                 sys.stderr.write(f"\n  Loading documents: {docs_to_go} ")
                 sys.stderr.flush()
-                num_chunks = math.ceil(docs_to_go / docs_chunk_size)
-                prev_report_chunk = 0
-            for i, chunk in enumerate(batched(bulk, bulk_chunk_size)):
-                ret, replayed = self.load_bulk_chunk("\n".join(chunk))
-                for item in ret["items"]:
-                    if item["create"]["status"] != 201 and not (replayed and item["create"]["status"] == 409):
-                        cells.append(jupyter.Markdown(str(item["create"])))
-                        if verbose > 1:
-                            sys.stderr.write(f"{item['create']!s}\n")
-                            sys.stderr.flush()
-                if verbose:
-                    docs_to_go -= len(chunk) // 2  # bulk: op + doc
-                    nth_chunk = int(i / num_chunks * 14)  # 14 is just an arbitray number to give enough updates
-                    if nth_chunk != prev_report_chunk or i == num_chunks - 1:
-                        prev_report_chunk = nth_chunk
-                        sys.stderr.write(f"{docs_to_go} ")
-                        sys.stderr.flush()
+            self.load_bulk(bulk, docs_to_go, cells, docs_chunk_size=docs_chunk_size)
 
         if verbose:
             rules_to_go = len(rules)
