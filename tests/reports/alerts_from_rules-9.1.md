@@ -12,7 +12,7 @@ Rules version: 9.1.20
    1. [Unsuccessful rules with signals (23)](#unsuccessful-rules-with-signals-23)
    1. [Rules with no signals (8)](#rules-with-no-signals-8)
    1. [Rules with too few signals (25)](#rules-with-too-few-signals-25)
-   1. [Rules with the correct signals (1041)](#rules-with-the-correct-signals-1041)
+   1. [Rules with the correct signals (1060)](#rules-with-the-correct-signals-1060)
 
 ## Failed rules (24)
 
@@ -3740,7 +3740,7 @@ network where host.os.type == "windows" and dns.question.name != null and proces
 
 
 
-## Rules with the correct signals (1041)
+## Rules with the correct signals (1060)
 
 ### A scheduled task was created
 
@@ -7046,6 +7046,18 @@ file where host.os.type == "linux" and event.action in ("rename", "creation") an
 
 
 
+### CrowdStrike External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0295
+
+```python
+event.kind: alert and data_stream.dataset: crowdstrike.alert
+```
+
+
+
 ### Cupsd or Foomatic-rip Shell Execution
 
 Branch count: 32  
@@ -8141,6 +8153,18 @@ process where event.type == "start" and
   /* Unload Elastic Defend extension on MacOS */
   (process.name : "kextunload" and process.args : "com.apple.iokit.EndpointSecurity")
 )
+```
+
+
+
+### Elastic Security External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0365
+
+```python
+event.kind: alert and data_stream.dataset: elastic_security.alert
 ```
 
 
@@ -10206,6 +10230,18 @@ event.dataset:"google_workspace.admin" and event.action:"CREATE_DATA_TRANSFER_RE
 
 
 
+### Google SecOps External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0568
+
+```python
+event.kind: alert and data_stream.dataset: google_secops.alert
+```
+
+
+
 ### Google Workspace 2SV Policy Disabled
 
 Branch count: 1  
@@ -10552,6 +10588,18 @@ Index: geneve-ut-0603
 process where host.os.type == "linux" and event.type == "start" and
  event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
  process.name in ("hping", "hping2", "hping3")
+```
+
+
+
+### IBM QRadar External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0604
+
+```python
+event.kind: alert and data_stream.dataset: ibm_qradar.offense
 ```
 
 
@@ -12980,6 +13028,18 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Microsoft Sentinel External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0794
+
+```python
+event.kind: alert and data_stream.dataset: microsoft_sentinel.alert
+```
+
+
+
 ### Microsoft Windows Defender Tampering
 
 Branch count: 28  
@@ -15177,6 +15237,55 @@ sequence by process.entity_id
  [process where host.os.type == "windows" and event.type == "start" and (process.name : "MSBuild.exe" or process.pe.original_file_name == "MSBuild.exe")]
  [any where host.os.type == "windows" and (event.category == "library" or (event.category == "process" and event.action : "Image loaded*")) and
   (?dll.name : ("vaultcli.dll", "SAMLib.DLL") or file.name : ("vaultcli.dll", "SAMLib.DLL"))]
+```
+
+
+
+### Potential DLL Side-Loading via Trusted Microsoft Programs
+
+Branch count: 16  
+Document count: 16  
+Index: geneve-ut-0959
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  (
+    process.name : ("WinWord.exe", "EXPLORER.EXE", "w3wp.exe", "DISM.EXE") or
+    ?process.pe.original_file_name : ("WinWord.exe", "EXPLORER.EXE", "w3wp.exe", "DISM.EXE")
+  ) and
+  not process.executable : (
+          "\\\\?\\Volume{????????-????-????-????-????????????}\\Windows\\System32\\inetsrv\\w3wp.exe",
+          "?:\\PROGRA~?\\MICROS~?\\Office??\\winword.exe",
+          "?:\\Program Files\\Microsoft Office\\*\\winword.exe",
+          "?:\\Program Files\\Microsoft Office ??\\*\\winword.exe",
+          "?:\\Program Files\\WindowsApps\\Microsoft.Office.Desktop.*\\Office??\\winword.exe",
+          "?:\\Program Files (x86)\\Microsoft Office\\*\\winword.exe",
+          "?:\\Program Files (x86)\\Windows Kits\\*Assessment and Deployment Kit\\Deployment Tools\\amd64\\DISM\\dism.exe",
+          "?:\\Windows\\explorer.exe",
+          "?:\\Windows\\System32\\Dism.exe",
+          "?:\\Windows\\System32\\inetsrv\\w3wp.exe",
+          "?:\\Windows\\SysWOW64\\Dism.exe",
+          "?:\\Windows\\SysWOW64\\explorer.exe",
+          "?:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe"
+  ) and
+  /* Crowdstrike specific exclusion as it uses NT Object paths */
+  not
+  (
+    data_stream.dataset == "crowdstrike.fdr" and
+    process.executable : (
+        "\\Device\\HarddiskVolume*\\Program Files\\Microsoft Office\\*\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files\\Microsoft Office ??\\*\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files\\WindowsApps\\Microsoft.Office.Desktop.*\\Office??\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files (x86)\\Microsoft Office\\*\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files (x86)\\Windows Kits\\10\\Assessment and Deployment Kit\\Deployment Tools\\amd64\\DISM\\dism.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\explorer.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\System32\\Dism.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\System32\\inetsrv\\w3wp.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\Dism.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\explorer.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\inetsrv\\w3wp.exe"
+    )
+  )
 ```
 
 
@@ -17823,6 +17932,24 @@ not process.parent.command_line like ("linode-longview", "*bootstrap*", "*homebr
 
 
 
+### Potential VIEWSTATE RCE Attempt on SharePoint/IIS
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1141
+
+```python
+data_stream.dataset : "network_traffic.http" and
+    network.direction: "ingress" and
+    http.request.method: "POST" and
+    http.request.referrer: *SignOut.aspx and
+    http.request.body.content: *__VIEWSTATE=* and
+    http.request.body.bytes >= 500 and
+    http.response.headers.server: Microsoft-IIS*
+```
+
+
+
 ### Potential Veeam Credential Access Command
 
 Branch count: 6  
@@ -17883,6 +18010,31 @@ file where host.os.type == "windows" and event.type != "deletion" and
         "?:\\Windows\\System32\\msiexec.exe",
         "?:\\Program Files\\Common Files\\Microsoft Shared\\Web Server Extensions\\16\\BIN\\psconfigui.exe"
   )
+```
+
+
+
+### Potential Webshell Deployed via Apache Struts CVE-2023-50164 Exploitation
+
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-1146
+
+```python
+sequence by agent.id with maxspan=10s
+  [network where data_stream.dataset == "network_traffic.http" and
+      http.request.method == "POST" and
+      http.request.body.content like "*WebKitFormBoundary*" and
+      url.path like~ "*upload*.action"]
+  [file where event.dataset == "endpoint.events.file" and
+      host.os.type == "linux" and
+      event.action == "creation" and
+      process.name == "java" and
+      file.extension == "jsp" and
+      file.path like "*/webapps/*" and
+      not file.path like "*/WEB-INF/*" and
+      not file.path like "*/META-INF/*" and
+      not process.parent.name in ("apk", "apt", "apt-get", "dpkg", "yum", "rpm", "dnf", "systemd", "init")]
 ```
 
 
@@ -18979,6 +19131,19 @@ not (
 
 
 
+### Process Started with Executable Stack
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1207
+
+```python
+host.os.type:"linux" and event.dataset:"system.syslog" and process.name:"kernel" and
+message:"started with executable stack"
+```
+
+
+
 ### Processes with Trailing Spaces
 
 Branch count: 4  
@@ -19455,6 +19620,21 @@ Index: geneve-ut-1229
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:prevention and (event.action:ransomware_event or endgame.event_subtype_full:ransomware_event)
+```
+
+
+
+### React2Shell Network Security Alert
+
+Branch count: 5  
+Document count: 5  
+Index: geneve-ut-1236
+
+```python
+(event.dataset:"cisco_ftd.log" and message:"SERVER-WEBAPP React Server Components remote code execution attempt") or
+(event.dataset:"fortinet_fortigate.log" and message:"applications3: React.Server.Components.react-flight.Remote.Code.Execution") or
+(event.dataset:"panw.panos" and event.action:"exploit_detected" and event.original :*React*Server*) or
+(event.dataset:("suricata_corelight" or "suricata.eve") and rule.name:*CVE-2025-55182*)
 ```
 
 
@@ -20508,6 +20688,18 @@ process.name : ("grep", "egrep", "pgrep") and user.id != "0" and
 
 
 
+### Segfault Detected
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1288
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and message:segfault
+```
+
+
+
 ### Sensitive Audit Policy Sub-Category Disabled
 
 Branch count: 6  
@@ -20614,6 +20806,30 @@ file where host.os.type == "windows" and
     user.id == "S-1-5-18" and process.executable : (
         "?:\\Windows\\system32\\taskhostw.exe", "?:\\Windows\\system32\\taskhost.exe"
     ))
+```
+
+
+
+### SentinelOne Alert External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1296
+
+```python
+event.kind: event and data_stream.dataset: sentinel_one.alert
+```
+
+
+
+### SentinelOne Threat External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1297
+
+```python
+event.kind: alert and data_stream.dataset: sentinel_one.threat
 ```
 
 
@@ -20908,6 +21124,18 @@ registry where host.os.type == "windows" and event.type == "change" and registry
   ) and
   registry.path : "*\\SYSTEM\\*ControlSet*\\Services\\*\\Start" and
   registry.data.strings : ("4", "0x00000004")
+```
+
+
+
+### Splunk External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1341
+
+```python
+event.kind: alert and data_stream.dataset: splunk.alert
 ```
 
 
@@ -23183,6 +23411,18 @@ process where host.os.type == "windows" and event.action == "start" and
 
 
 
+### Suspicious Usage of bpf_probe_write_user Helper
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1467
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and message:"bpf_probe_write_user"
+```
+
+
+
 ### Suspicious Utility Launched via ProxyChains
 
 Branch count: 204  
@@ -23529,6 +23769,19 @@ Index: geneve-ut-1479
 ```python
 sequence by host.hostname, host.id with maxspan=1m
 [process where host.os.type == "macos" and event.type == "start" and event.action == "exec" and process.name: "pbpaste"] with runs = 5
+```
+
+
+
+### Suspicious rc.local Error Message
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-1480
+
+```python
+host.os.type:linux and event.dataset:system.syslog and process.name:rc.local and
+message:("Connection refused" or "No such file or directory" or "command not found")
 ```
 
 
@@ -24070,6 +24323,32 @@ Index: geneve-ut-1507
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and process.name == "mount_apfs" and
  process.args like~ "/System/Volumes/Data" and process.args like~ "noowners"
+```
+
+
+
+### Tainted Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1508
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and
+message:"module verification failed: signature and/or required key missing - tainting kernel"
+```
+
+
+
+### Tainted Out-Of-Tree Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1509
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and
+message:"loading out-of-tree module taints kernel."
 ```
 
 
@@ -25801,6 +26080,18 @@ process where host.os.type == "windows" and event.type == "start" and
   )
 ) and not process.parent.args: "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\Content\\DetectionScripts\\*.ps1"
 and not process.parent.name : "LTSVC.exe" and not user.id : "S-1-5-18"
+```
+
+
+
+### Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1683
+
+```python
+event.provider:"Microsoft-Windows-Audit-CVE" and message:"[CVE-2020-0601]" and host.os.type:windows
 ```
 
 

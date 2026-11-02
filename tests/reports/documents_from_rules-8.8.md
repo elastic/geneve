@@ -18,7 +18,6 @@ Rules version: 8.8.15
       1. [Root with too many branches (limit: 10000) (11)](#root-with-too-many-branches-limit-10000-11)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (9)](#unsupported-lhs-type-class-eqlastfunctioncall-9)
       1. [Unsupported function: match (8)](#unsupported-function-match-8)
-      1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Root without branches (3)](#root-without-branches-3)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (3)](#unsupported-keyword-fileextwindowszone_identifier-constraint--3)
       1. [<class 'eql.ast.Sample'> (2)](#class-eqlastsample-2)
@@ -232,17 +231,6 @@ Rules version: 8.8.15
 * Process Started from Process ID (PID) File
 * Suspicious Execution via Microsoft Office Add-Ins
 * Suspicious Service was Installed in the System
-
-### Field type solver: match_only_text (7)
-
-7 rules:
-* Account Configured with Never-Expiring Password
-* Kerberos Pre-authentication Disabled for User
-* Scheduled Task Execution at Scale via GPO
-* Segfault Detected
-* Startup/Logon Script added to Group Policy Object
-* Tainted Kernel Module Load
-* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Root without branches (3)
 

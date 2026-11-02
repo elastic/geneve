@@ -8,11 +8,11 @@ Curious about the inner workings? Read [here](signals_generation.md).
 Rules version: 8.7.13
 
 ## Table of contents
-   1. [Rules with no signals (4)](#rules-with-no-signals-4)
+   1. [Rules with no signals (5)](#rules-with-no-signals-5)
    1. [Rules with too few signals (12)](#rules-with-too-few-signals-12)
-   1. [Rules with the correct signals (755)](#rules-with-the-correct-signals-755)
+   1. [Rules with the correct signals (759)](#rules-with-the-correct-signals-759)
 
-## Rules with no signals (4)
+## Rules with no signals (5)
 
 ### Azure External Guest User Invitation
 
@@ -64,6 +64,22 @@ Index: geneve-ut-0369
 ```python
 iam where host.os.type == "linux" and (event.type == "user" and event.type == "creation") and
 process.name in ("useradd", "adduser") and user.name != null
+```
+
+
+
+### Scheduled Task Execution at Scale via GPO
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0683
+
+```python
+(event.code: "5136" and winlog.event_data.AttributeLDAPDisplayName:("gPCMachineExtensionNames" or "gPCUserExtensionNames") and
+   winlog.event_data.AttributeValue:(*CAB54552-DEEA-4691-817E-ED4A4D1AFC72* and *AADCED64-746C-4633-A97C-D61349046527*))
+or
+(event.code: "5145" and winlog.event_data.ShareName: "\\\\*\\SYSVOL" and winlog.event_data.RelativeTargetName: *ScheduledTasks.xml and
+  (message: WriteData or winlog.event_data.AccessList: *%%4417*))
 ```
 
 
@@ -471,7 +487,7 @@ sequence by host.id, process.entity_id with maxspan=1s
 
 
 
-## Rules with the correct signals (755)
+## Rules with the correct signals (759)
 
 ### A scheduled task was created
 
@@ -1313,6 +1329,19 @@ Index: geneve-ut-0062
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.args : ("*.ost", "*.pst") and
   not process.name : "outlook.exe"
+```
+
+
+
+### Account Configured with Never-Expiring Password
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0063
+
+```python
+event.action:"modified-user-account" and winlog.api:"wineventlog" and event.code:"4738" and
+  message:"'Don't Expire Password' - Enabled" and not user.id:"S-1-5-18"
 ```
 
 
@@ -5140,6 +5169,18 @@ Index: geneve-ut-0339
 event.category:process and host.os.type:macos and event.type:(start or process_started) and
   process.name:kcc and
   process.args:copy_cred_cache
+```
+
+
+
+### Kerberos Pre-authentication Disabled for User
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0340
+
+```python
+event.code:4738 and winlog.api:"wineventlog" and message:"'Don't Require Preauth' - Enabled"
 ```
 
 
@@ -11446,6 +11487,28 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 
 
+### Startup/Logon Script added to Group Policy Object
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0716
+
+```python
+(
+ event.code:5136 and winlog.event_data.AttributeLDAPDisplayName:(gPCMachineExtensionNames or gPCUserExtensionNames) and
+   winlog.event_data.AttributeValue:(*42B5FAAE-6536-11D2-AE5A-0000F87571E3* and
+                                      (*40B66650-4972-11D1-A7CA-0000F87571E3* or *40B6664F-4972-11D1-A7CA-0000F87571E3*))
+)
+or
+(
+ event.code:5145 and winlog.event_data.ShareName:\\\\*\\SYSVOL and
+   winlog.event_data.RelativeTargetName:(*\\scripts.ini or *\\psscripts.ini) and
+   (message:WriteData or winlog.event_data.AccessList:*%%4417*)
+)
+```
+
+
+
 ### Sublime Plugin or Application Script Modification
 
 Branch count: 4  
@@ -14558,6 +14621,18 @@ process where host.os.type == "windows" and event.type == "start" and
     )
   )
 ) and not user.id : "S-1-5-18"
+```
+
+
+
+### Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0908
+
+```python
+event.provider:"Microsoft-Windows-Audit-CVE" and message:"[CVE-2020-0601]" and host.os.type:windows
 ```
 
 

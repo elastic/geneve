@@ -19,9 +19,7 @@ Rules version: 9.0.19
       1. [Unsupported function: match (26)](#unsupported-function-match-26)
       1. [Unsupported function: stringContains (21)](#unsupported-function-stringcontains-21)
       1. [Root with too many branches (limit: 10000) (14)](#root-with-too-many-branches-limit-10000-14)
-      1. [Field type solver: constant_keyword (13)](#field-type-solver-constant_keyword-13)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
-      1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (7)](#unsupported-argument-types-class-eqlastfield-7)
       1. [Root without branches (6)](#root-without-branches-6)
       1. [Unsupported function: startsWith (4)](#unsupported-function-startswith-4)
@@ -38,6 +36,7 @@ Rules version: 9.0.19
       1. [Unsolvable constraints: aws.cloudtrail.request_parameters (not in Strings({'*lambda:InvokeFunction*'}): ('*principal=**')) (1)](#unsolvable-constraints-awscloudtrailrequest_parameters-not-in-stringslambdainvokefunction-principal-1)
       1. [Unsolvable constraints: file.extension (cannot be non-null) (1)](#unsolvable-constraints-fileextension-cannot-be-non-null-1)
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringsswipuploadashx-post-1)
+      1. [Unsolvable constraints: http.request.body.content (not in Strings({'*Content-Disposition: form-data*'}): ('*filename=*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringscontent-disposition-form-data-filename-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
@@ -53,6 +52,7 @@ Rules version: 9.0.19
       1. [Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsdrivegooglecom-exportdownload-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*id_dsa*'}): ('*/home/*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsid_dsa-home-1)
       1. [Unsolvable constraints: process.pid (out of boundary, 1 <= 0 <= 4294967295) (1)](#unsolvable-constraints-processpid-out-of-boundary-1--0--4294967295-1)
+      1. [Unsolvable constraints: request (not in Strings({'*MSOTlPn_Uri*'}): ('*DisplayMode*')) (1)](#unsolvable-constraints-request-not-in-stringsmsotlpn_uri-displaymode-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings1131f6ad-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1131f6aa-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: < (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
@@ -543,23 +543,6 @@ Rules version: 9.0.19
 * Potential Reverse Shell via Suspicious Child Process
 * Suspicious React Server Child Process
 
-### Field type solver: constant_keyword (13)
-
-13 rules:
-* CrowdStrike External Alerts
-* Elastic Security External Alerts
-* External Alerts
-* Google SecOps External Alerts
-* Initial Access via File Upload Followed by GET Request
-* Microsoft Sentinel External Alerts
-* Potential DLL Side-Loading via Trusted Microsoft Programs
-* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
-* Potential VIEWSTATE RCE Attempt on SharePoint/IIS
-* Potential Webshell Deployed via Apache Struts CVE-2023-50164 Exploitation
-* SentinelOne Alert External Alerts
-* SentinelOne Threat External Alerts
-* Splunk External Alerts
-
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)
 
 13 rules:
@@ -576,17 +559,6 @@ Rules version: 9.0.19
 * Suspicious Execution via MSIEXEC
 * Suspicious Process Access via Direct System Call
 * Uncommon Registry Persistence Change
-
-### Field type solver: match_only_text (7)
-
-7 rules:
-* Process Started with Executable Stack
-* Segfault Detected
-* Suspicious Usage of bpf_probe_write_user Helper
-* Suspicious rc.local Error Message
-* Tainted Kernel Module Load
-* Tainted Out-Of-Tree Kernel Module Load
-* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Unsupported argument type(s): <class 'eql.ast.Field'> (7)
 
@@ -693,6 +665,11 @@ Rules version: 9.0.19
 1 rules:
 * SUNBURST Command and Control Activity
 
+### Unsolvable constraints: http.request.body.content (not in Strings({'*Content-Disposition: form-data*'}): ('*filename=*')) (1)
+
+1 rules:
+* Initial Access via File Upload Followed by GET Request
+
 ### Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)
 
 1 rules:
@@ -767,6 +744,11 @@ Rules version: 9.0.19
 
 1 rules:
 * Service Creation via Local Kerberos Authentication
+
+### Unsolvable constraints: request (not in Strings({'*MSOTlPn_Uri*'}): ('*DisplayMode*')) (1)
+
+1 rules:
+* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
 
 ### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)
 
