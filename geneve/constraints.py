@@ -178,8 +178,24 @@ class Root(List[Branch]):
         return chain(*self)
 
     def optimize(self, *args, **kwargs):
+        """Prepare the solvers of every branch, dropping the branches that cannot be solved.
+
+        The IR is a disjunction of branches, `A and not (A and B)` expands to
+        `(A and not A) or (A and not B)`: the first branch is a contradiction
+        but the query is satisfied by the second. Only when no branch at all
+        can be solved is the conflict reported, the one of the first branch.
+        """
+        solvable, errors = [], []
         for branch in self:
-            branch.optimize(*args, **kwargs)
+            try:
+                branch.optimize(*args, **kwargs)
+            except ConflictError as e:
+                errors.append(e)
+            else:
+                solvable.append(branch)
+        if errors and not solvable:
+            raise errors[0]
+        self[:] = solvable
 
     @classmethod
     def chain(cls, roots):

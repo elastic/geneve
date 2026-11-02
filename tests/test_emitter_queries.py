@@ -834,6 +834,35 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                 self.assertEqual(msg, str(cm.exception))
                 cells.append(self.query_cell(query, str(cm.exception), output_type="stream"))
 
+    def test_unsolvable_branches_are_pruned(self):
+        """A conjunction with a negated conjunction expands to a disjunction with some contradictory branches.
+
+        `A and not (A and B)` is `(A and not A) or (A and not B)`: the first branch is dropped,
+        the query still emits. Only when every branch is contradictory the error is reported.
+        """
+        query = """process where process.name : ("cmd.exe", "rundll32.exe") and
+            not (process.name : "rundll32.exe" and process.args : "srchadmin.dll")
+        """
+        docs = [
+            [{"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "cmd.exe", "args": ["DoDualyo"]}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "rundll32.exe", "args": ["juDneHkVnkwd"]}}],
+        ]
+        with self.subTest(query):
+            se = SourceEvents(self.schema)
+            se.stack_version = self.stack_version
+            root = se.add_query(query)
+            # the IR has four branches, the `rundll32.exe and not rundll32.exe` one is gone
+            self.assertEqual(len(root), 3)
+            self.assertQuery(query, docs)
+
+        query = """process where process.name : ("cmd.exe", "powershell.exe") and process.name : "rundll32.exe"
+        """
+        with self.subTest(query):
+            with self.assertRaises(ValueError) as cm:
+                self.assertQuery(query, None)
+            self.assertEqual("Unsolvable constraints: process.name (not in Strings({'cmd.exe'}): ('rundll32.exe'))", str(cm.exception))
+
     @nb.chapter("## Cardinality")
     def test_cardinality(self, cells):
         cells.append(jupyter.Markdown("""

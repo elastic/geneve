@@ -17,31 +17,16 @@ Rules version: 8.4.5
    1. [Generation errors](#generation-errors)
       1. [Unsupported function: match (9)](#unsupported-function-match-9)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)](#unsupported-lhs-type-class-eqlastfunctioncall-6)
-      1. [Field type solver: match_only_text (3)](#field-type-solver-match_only_text-3)
+      1. [Field type solver: match_only_text (5)](#field-type-solver-match_only_text-5)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Root with too many branches (limit: 10000) (1)](#root-with-too-many-branches-limit-10000-1)
-      1. [Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)](#unsolvable-constraints-dnsquestionname-excluded-by-stringscdndiscordappcom-cdndiscordappcom-1)
       1. [Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringsswipuploadashx-post-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdumpcreds-dumpcerts-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstartupinfoex-updateprocthreadattribute-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookA'}): ('GetForegroundWindow')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssetwindowshooka-getforegroundwindow-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'System.IO.Compression.DeflateStream'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemiocompressiondeflatestream-frombase64string-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'VirtualAlloc'}): ('WriteProcessMemory')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsvirtualalloc-writeprocessmemory-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswindowsclipboard-gettext-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Runtime.InteropServices.Marshal]::Copy'}): ('VirtualProtect')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemruntimeinteropservicesmarshalcopy-virtualprotect-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswaveingetnumdevs-mcisendstringa-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
-      1. [Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)](#unsolvable-constraints-processparentargs-excluded-by-stringswdisystemhost-wdisystemhost-1)
-      1. [Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsrundll32exe-rundll32exe-1)
-      1. [Unsolvable constraints: process.parent.name (excluded by Strings({'winword.exe'}): ('winword.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringswinwordexe-winwordexe-1)
-      1. [Unsolvable constraints: registry.path (excluded by Strings({'HKLM\SOFTWARE\Microsoft\Internet Explorer\Extensions\*\Script'}): ('*\Software\Microsoft\Internet Explorer\Extensions\*\Script')) (1)](#unsolvable-constraints-registrypath-excluded-by-stringshklmsoftwaremicrosoftinternet-explorerextensionsscript-softwaremicrosoftinternet-explorerextensionsscript-1)
-      1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings42b5faae-6536-11d2-ae5a-0000f87571e3-40b66650-4972-11d1-a7ca-0000f87571e3-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
-      1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-stringscab54552-deea-4691-817e-ed4a4d1afc72-aadced64-746c-4633-a97c-d61349046527-1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (1)](#unsupported-keyword-fileextentropy-constraint--1)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (1)](#unsupported-argument-types-class-eqlastfield-1)
@@ -174,11 +159,13 @@ Rules version: 8.4.5
 * Suspicious Execution - Short Program Name
 * Suspicious Process Access via Direct System Call
 
-### Field type solver: match_only_text (3)
+### Field type solver: match_only_text (5)
 
-3 rules:
+5 rules:
 * Account Configured with Never-Expiring Password
 * Kerberos Pre-authentication Disabled for User
+* Scheduled Task Execution at Scale via GPO
+* Startup/Logon Script added to Group Policy Object
 * Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)
@@ -191,11 +178,6 @@ Rules version: 8.4.5
 
 1 rules:
 * Execution from Unusual Directory - Command Line
-
-### Unsolvable constraints: dns.question.name (excluded by Strings({'cdn.discordapp.com'}): ('cdn.discordapp.com')) (1)
-
-1 rules:
-* Connection to Commonly Abused Web Services
 
 ### Unsolvable constraints: http.request.body.content (not in Strings({'*/swip/Upload.ashx*'}): ('POST*')) (1)
 
@@ -217,21 +199,6 @@ Rules version: 8.4.5
 1 rules:
 * PowerShell Script with Encryption/Decryption Capabilities
 
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)
-
-1 rules:
-* Potential Invoke-Mimikatz PowerShell Script
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)
-
-1 rules:
-* PowerShell Script with Token Impersonation Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookA'}): ('GetForegroundWindow')) (1)
-
-1 rules:
-* PowerShell Keylogging Script
-
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'System.IO.Compression.DeflateStream'}): ('FromBase64String')) (1)
 
 1 rules:
@@ -242,65 +209,10 @@ Rules version: 8.4.5
 1 rules:
 * Potential Process Injection via PowerShell
 
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)
-
-1 rules:
-* PowerShell Suspicious Script with Clipboard Retrieval Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Runtime.InteropServices.Marshal]::Copy'}): ('VirtualProtect')) (1)
-
-1 rules:
-* Potential Antimalware Scan Interface Bypass via PowerShell
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)
-
-1 rules:
-* PowerShell Share Enumeration Script
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'waveInGetNumDevs'}): ('mciSendStringA')) (1)
-
-1 rules:
-* PowerShell Suspicious Script with Audio Capture Capabilities
-
-### Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)
-
-1 rules:
-* Suspicious Microsoft Diagnostics Wizard Execution
-
-### Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)
-
-1 rules:
-* Unusual Service Host Child Process - Childless Service
-
-### Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)
-
-1 rules:
-* Conhost Spawned By Suspicious Parent Process
-
-### Unsolvable constraints: process.parent.name (excluded by Strings({'winword.exe'}): ('winword.exe')) (1)
-
-1 rules:
-* Suspicious Process Creation CallTrace
-
-### Unsolvable constraints: registry.path (excluded by Strings({'HKLM\SOFTWARE\Microsoft\Internet Explorer\Extensions\*\Script'}): ('*\Software\Microsoft\Internet Explorer\Extensions\*\Script')) (1)
-
-1 rules:
-* Uncommon Registry Persistence Change
-
-### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)
-
-1 rules:
-* Startup/Logon Script added to Group Policy Object
-
 ### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)
 
 1 rules:
 * Group Policy Abuse for Privilege Addition
-
-### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*')) (1)
-
-1 rules:
-* Scheduled Task Execution at Scale via GPO
 
 ### Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)
 
