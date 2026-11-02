@@ -25,7 +25,7 @@ steps:
     artifact_paths:
       - tests/reports/*.new.md
     agents:
-      memory: "4G"
+      memory: "8G"
 
   - label: ":pipeline: Delete environment `serverless-geneve-test-environment`"
     key: delete_geneve_environment

@@ -157,6 +157,12 @@ def get_rule_by_id(rules, rule_id):
     raise KeyError(f"cannot to find rule by id: {rule_id}")
 
 
+def parse_interval(interval):
+    """Convert a Kibana schedule interval such as `180s`, `5m` or `1h` to seconds."""
+    units = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+    return int(interval[:-1]) * units[interval[-1]]
+
+
 def get_rule_test_data(rules, rule_id):
     return get_rule_by_id(rules, rule_id)[".test_private"]
 
@@ -540,18 +546,19 @@ class SignalsTestCase:
                     break
         return pending
 
-    def wait_for_rules(self, pending, max_rules, timeout=300, sleep=5):
-        start = time.time()
+    def wait_for_rules(self, pending, max_rules, timeout=300, sleep=5, margin=60):
+        deadline = time.time() + timeout
         successful = {}
         failed = {}
+        timed_out = set()
         if verbose:
             sys.stderr.write("\n  Waiting for rules execution: ")
             sys.stderr.flush()
-        while (time.time() - start) < timeout:
+        while time.time() < deadline:
             if verbose:
                 sys.stderr.write(f"{len(pending)} ")
                 sys.stderr.flush()
-            self.check_rules(pending, successful, failed, max_rules)
+            deadline = max(deadline, self.check_rules(pending, successful, failed, max_rules, timed_out, margin))
             if pending:
                 time.sleep(sleep)
             else:
@@ -561,7 +568,13 @@ class SignalsTestCase:
             sys.stderr.flush()
         return successful, failed
 
-    def check_rules(self, pending, successful, failed, max_rules):
+    def check_rules(self, pending, successful, failed, max_rules, timed_out=None, margin=60):
+        """Check the pending rules, tell until when it is worth waiting for them.
+
+        A rule whose execution was cancelled by the rule type timeout gets a second
+        chance: its next execution comes one `interval` later and may well succeed.
+        """
+        deadline = 0
         for rule_id, rule in self.kb.find_detection_engine_rules(max_rules).items():
             if "execution_summary" not in rule:
                 continue
@@ -573,6 +586,12 @@ class SignalsTestCase:
                 self.handle_rule_success(rule_id, pending, successful, failed)
             elif last_execution["status"] in ("failed", "partial failure"):
                 self.handle_rule_failure(rule_id, failed, last_execution["message"])
+                if timed_out is None or rule_id in timed_out or "interval" not in rule:
+                    continue
+                if "execution cancelled due to timeout" in last_execution["message"]:
+                    timed_out.add(rule_id)
+                    deadline = max(deadline, time.time() + parse_interval(rule["interval"]) + margin)
+        return deadline
 
     def handle_rule_success(self, rule_id, pending, successful, failed):
         del pending[rule_id]
@@ -623,7 +642,25 @@ class SignalsTestCase:
             signals[bucket["key"]] = (bucket["doc_count"], branch_count)
         return signals
 
-    def wait_for_signals(self, rules, timeout=90, sleep=5):
+    @staticmethod
+    def get_idle_timeout(rules, signals, timeout, margin):
+        """Tell how long the signals can stall before giving up.
+
+        A rule emits at most `max_signals` alerts per execution. If it stopped
+        exactly at a multiple of it with signals still missing, the rest comes
+        with the next executions, one `interval` away, so stalling for less than
+        that does not mean anything.
+        """
+        idle_timeout = timeout
+        for rule in rules:
+            if not rule["enabled"] or "interval" not in rule or "max_signals" not in rule:
+                continue
+            got, expected = signals.get(rule["id"], (0, 0))
+            if 0 < got < expected and got % rule["max_signals"] == 0:
+                idle_timeout = max(idle_timeout, parse_interval(rule["interval"]) + margin)
+        return idle_timeout
+
+    def wait_for_signals(self, rules, timeout=90, sleep=5, margin=60):
         if verbose:
             sys.stderr.write("\n  Waiting for signals generation: ")
             sys.stderr.flush()
@@ -631,7 +668,8 @@ class SignalsTestCase:
         partial_count = 0
         partial_count_prev = 0
         partial_time = time.time()
-        while (time.time() - partial_time) < timeout:
+        idle_timeout = timeout
+        while (time.time() - partial_time) < idle_timeout:
             if verbose:
                 sys.stderr.write(f"{total_count - partial_count} ")
                 sys.stderr.flush()
@@ -640,6 +678,7 @@ class SignalsTestCase:
             if partial_count != partial_count_prev:
                 partial_count_prev = partial_count
                 partial_time = time.time()
+            idle_timeout = self.get_idle_timeout(rules, signals, timeout, margin)
             if total_count - partial_count > 0:
                 time.sleep(sleep)
             else:
