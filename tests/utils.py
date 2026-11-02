@@ -525,10 +525,11 @@ class SignalsTestCase:
         if verbose:
             sys.stderr.write("\n  Deleting any unit-test indices: ")
             sys.stderr.flush()
-        indices = []
-        for i, rule in enumerate(rules):
-            # this expands all the wildcards
-            indices.extend(self.es.indices.get(index=rule["index"], ignore_unavailable=True))
+        # one request for all the rules' indices, other tests may own indices under the same prefix
+        prefix = f"{self.index_template}-"
+        rules_indices = {index for rule in rules for index in rule["index"]}
+        patterns = [f"{prefix}*"] + sorted(index for index in rules_indices if not index.startswith(prefix))
+        indices = [index for index in self.es.indices.get(index=patterns, ignore_unavailable=True) if index in rules_indices]
         indices_to_go = len(indices)
         if verbose:
             sys.stderr.write(f"{indices_to_go} ")
