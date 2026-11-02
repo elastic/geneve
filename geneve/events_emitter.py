@@ -134,8 +134,9 @@ class SourceEvents:
     corpus = None
     stack_version = None
     max_branches = 10000
+    strict = False  # reject the queries with unsolvable branches instead of dropping them
 
-    def __init__(self, schema=None, *, corpus=None):
+    def __init__(self, schema=None, *, corpus=None, strict=None):
         self.__roots = []
         self.__environment = {}
 
@@ -143,6 +144,8 @@ class SourceEvents:
             self.schema = schema
         if corpus:
             self.corpus = iter(corpus)
+        if strict is not None:
+            self.strict = strict
 
     @classmethod
     def from_ast(cls, ast, *, meta=None):
@@ -167,7 +170,7 @@ class SourceEvents:
         if len(root) == 0:
             raise ValueError("Root without branches")
         root.meta = meta
-        root.optimize(self.schema, self.stack_version)
+        root.optimize(self.schema, self.stack_version, strict=self.strict)
         self.try_emit(root)
         self.__roots.append(root)
         return root
