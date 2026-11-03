@@ -794,9 +794,26 @@ class SignalsTestCase:
             msg = None if verbose < 3 else self.debug_rules(rules, rule_ids)
             self.assertEqual(len(rule_ids), value, msg=msg)
 
+    @staticmethod
+    def forgive_max_signals(signals, successful, failed):
+        """Do not fail rules that got all their signals despite max_signals.
+
+        Reaching the maximum alert limit is only informational if the rule
+        eventually delivered exactly the expected signals (the rest comes with
+        later executions): whether its last execution looks failed is timing.
+        """
+        for rule_id, messages in list(failed.items()):
+            if rule_id not in signals:
+                continue
+            got, expected = signals[rule_id]
+            if got == expected and all("reached the maximum alert limit" in message for message in messages):
+                del failed[rule_id]
+                successful[rule_id] = None
+
     def check_signals(self, rules, pending):
         successful, failed = self.wait_for_rules(pending, len(rules))
         signals = self.wait_for_signals(rules)
+        self.forgive_max_signals(signals, successful, failed)
 
         unsuccessful = set(signals) - set(successful)
         no_signals = set(successful) - set(signals)
