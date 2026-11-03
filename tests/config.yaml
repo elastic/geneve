@@ -163,12 +163,12 @@ emitter_rules:
       ack_no_signals: 4
       ack_too_few_signals: 44
     "9.6":
-      ack_failed: 41
-      ack_unsuccessful_with_signals: 41
+      ack_failed: 40
+      ack_unsuccessful_with_signals: 40
       ack_no_signals: 4
       ack_too_few_signals: 44
     "serverless":
-      ack_failed: 41
-      ack_unsuccessful_with_signals: 41
+      ack_failed: 40
+      ack_unsuccessful_with_signals: 40
       ack_no_signals: 4
       ack_too_few_signals: 44

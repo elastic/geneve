@@ -8,44 +8,13 @@ Curious about the inner workings? Read [here](signals_generation.md).
 Rules version: 9.5.9
 
 ## Table of contents
-   1. [Failed rules (41)](#failed-rules-41)
-   1. [Unsuccessful rules with signals (41)](#unsuccessful-rules-with-signals-41)
+   1. [Failed rules (40)](#failed-rules-40)
+   1. [Unsuccessful rules with signals (40)](#unsuccessful-rules-with-signals-40)
    1. [Rules with no signals (4)](#rules-with-no-signals-4)
    1. [Rules with too few signals (44)](#rules-with-too-few-signals-44)
    1. [Rules with the correct signals (879)](#rules-with-the-correct-signals-879)
 
-## Failed rules (41)
-
-### AWS SSM Session Manager Child Process Execution
-
-Branch count: 2064  
-Document count: 2064  
-Index: geneve-ut-0202  
-Failure message(s):  
-  SDE says:
-> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
-
-```python
-event.category: "process" and event.action : ("exec" or "exec_event" or "start" or "ProcessRollup2" or "executed" or "process_started") and
-(
- process.parent.name:("ssm-session-worker.exe" or "ssm-session-worker" or "ssm-document-worker.exe" or "ssm-document-worker") or 
- (process.name : "powershell.exe" and process.args : *awsrunPowerShellScript*) or
- (process.name : ("dash" or "sh" or "bash") and process.args : *awsrunShellScript*) or 
- (process.parent.name : "powershell.exe" and process.parent.args : *awsrunPowerShellScript*) or
- (process.parent.name : ("dash" or "sh" or "bash") and process.parent.args : *awsrunShellScript*)
- ) and 
- not (process.name : "powershell.exe" and process.args :("$str.Substring($str.length" or *Convert-GuidToCompressedGuid* or get-wmiobject* or $wmi_proc* or *win32_quickfixengineering* or Get-wmiobject* or *Get-Service* or *Get-WmiObject* or *System32\\ntoskrnl.exe* or *GET-WMIOBJECT*)) and 
- not process.executable : ("/usr/bin/lscpu" or "/usr/bin/snap" or "/usr/bin/rpm" or "/usr/bin/dpkg-query" or /snap/snapd/*/usr/bin/snap or "/usr/bin/id" or "C:\\Program Files\\Amazon\\SSM\\Plugins\\SessionManagerShell\\winpty-agent.exe" or /var/lib/amazon/ssm/update/amazon-ssm-agent-updater/*/updater or C\:\\ProgramData\\Amazon\\SSM\\Update\\amazon-ssm-agent-updater\\*\\updater.exe or *\\ProgramData\\Amazon\\SSM\\Update\\amazon-ssm-agent-updater\\*\\updater.exe) and 
- not (process.parent.name : ("ssm-document-worker.exe" or "ssm-document-worker") and (
-   (process.name : ("WMIC.exe" or "wmic.exe") and process.args : ("OS" and "get" and "/format:list")) or
-   (process.name : "powershell.exe" and process.args : (*Servermanagercmd* or *OC*Manager*Subcomponents*)) or
-   process.executable : ("/opt/util-linux/bin/lscpu" or /snap/snapd/*/usr/lib/snapd/snapd or /snap/core/*/usr/bin/snap or "/snap/core/current/usr/bin/snap")
- )) and 
- not (process.name : (dash or bash or sh or _script.sh) and process.args : /var/lib/amazon/ssm/*/document/orchestration/*/_script.sh) and 
- process.command_line :(* and not (*ssm-user or */invokeInspectorSsmPluginLinux/_script.sh or */checkExclusionPreference/_script.sh or *\\createUpdateFolder\\_script.ps1 or */checkProvisioningEligibility/_script.sh or */install/_script.sh or */uninstall/_script.sh or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\CollectWindowsCustomInventory\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\PatchWindows\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\createDownloadFolder\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\invokeOVALEvaluatorWindows\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\ControlCloudWatchAgentWindows\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\configurePackage\\*\\install\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\configurePackage\\*\\uninstall\\_script.ps1))
-```
-
-
+## Failed rules (40)
 
 ### Base64 Decoded Payload Piped to Interpreter
 
@@ -1984,35 +1953,7 @@ container.id like "*"
 
 
 
-## Unsuccessful rules with signals (41)
-
-### AWS SSM Session Manager Child Process Execution
-
-Branch count: 2064  
-Document count: 2064  
-Index: geneve-ut-0202
-
-```python
-event.category: "process" and event.action : ("exec" or "exec_event" or "start" or "ProcessRollup2" or "executed" or "process_started") and
-(
- process.parent.name:("ssm-session-worker.exe" or "ssm-session-worker" or "ssm-document-worker.exe" or "ssm-document-worker") or 
- (process.name : "powershell.exe" and process.args : *awsrunPowerShellScript*) or
- (process.name : ("dash" or "sh" or "bash") and process.args : *awsrunShellScript*) or 
- (process.parent.name : "powershell.exe" and process.parent.args : *awsrunPowerShellScript*) or
- (process.parent.name : ("dash" or "sh" or "bash") and process.parent.args : *awsrunShellScript*)
- ) and 
- not (process.name : "powershell.exe" and process.args :("$str.Substring($str.length" or *Convert-GuidToCompressedGuid* or get-wmiobject* or $wmi_proc* or *win32_quickfixengineering* or Get-wmiobject* or *Get-Service* or *Get-WmiObject* or *System32\\ntoskrnl.exe* or *GET-WMIOBJECT*)) and 
- not process.executable : ("/usr/bin/lscpu" or "/usr/bin/snap" or "/usr/bin/rpm" or "/usr/bin/dpkg-query" or /snap/snapd/*/usr/bin/snap or "/usr/bin/id" or "C:\\Program Files\\Amazon\\SSM\\Plugins\\SessionManagerShell\\winpty-agent.exe" or /var/lib/amazon/ssm/update/amazon-ssm-agent-updater/*/updater or C\:\\ProgramData\\Amazon\\SSM\\Update\\amazon-ssm-agent-updater\\*\\updater.exe or *\\ProgramData\\Amazon\\SSM\\Update\\amazon-ssm-agent-updater\\*\\updater.exe) and 
- not (process.parent.name : ("ssm-document-worker.exe" or "ssm-document-worker") and (
-   (process.name : ("WMIC.exe" or "wmic.exe") and process.args : ("OS" and "get" and "/format:list")) or
-   (process.name : "powershell.exe" and process.args : (*Servermanagercmd* or *OC*Manager*Subcomponents*)) or
-   process.executable : ("/opt/util-linux/bin/lscpu" or /snap/snapd/*/usr/lib/snapd/snapd or /snap/core/*/usr/bin/snap or "/snap/core/current/usr/bin/snap")
- )) and 
- not (process.name : (dash or bash or sh or _script.sh) and process.args : /var/lib/amazon/ssm/*/document/orchestration/*/_script.sh) and 
- process.command_line :(* and not (*ssm-user or */invokeInspectorSsmPluginLinux/_script.sh or */checkExclusionPreference/_script.sh or *\\createUpdateFolder\\_script.ps1 or */checkProvisioningEligibility/_script.sh or */install/_script.sh or */uninstall/_script.sh or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\CollectWindowsCustomInventory\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\PatchWindows\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\createDownloadFolder\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\invokeOVALEvaluatorWindows\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\ControlCloudWatchAgentWindows\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\configurePackage\\*\\install\\_script.ps1 or *\\Amazon\\SSM\\InstanceData\\*\\document\\orchestration\\*\\configurePackage\\*\\uninstall\\_script.ps1))
-```
-
-
+## Unsuccessful rules with signals (40)
 
 ### Base64 Decoded Payload Piped to Interpreter
 
