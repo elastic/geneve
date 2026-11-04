@@ -62,6 +62,8 @@ def get_templ(field, constraints):
 
 @solver.type("keyword")
 @solver.type("wildcard")
+@solver.type("constant_keyword")
+@solver.type("match_only_text")
 class KeywordField(Field):
     valid_constraints: ClassVar[list] = ["==", "!=", "wildcard", "not wildcard", "min_length", "allowed_chars"]
     alphabet = string.ascii_letters
@@ -114,17 +116,3 @@ class KeywordField(Field):
         if not self.is_array:
             value = value[0]
         return {"value": value, "left_attempts": left_attempts}
-
-
-@solver.type("constant_keyword")
-class ConstantKeywordField(KeywordField):
-    """A keyword that is the same for all the documents of an index.
-
-    For the time being it is solved as any other keyword, but only for the queries that come from ES|QL
-    (or from a KQL string in it): the other languages keep rejecting the field type as they always did.
-    """
-
-    def __init__(self, field, constraints, field_constraints, schema):
-        if not any(flags[0].get("esql") or flags[0].get("kql") for _, _, *flags in constraints if flags):
-            raise NotImplementedError(f"Field type solver: {self.type[1:]}")
-        super().__init__(field, constraints, field_constraints, schema)

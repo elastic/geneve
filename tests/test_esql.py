@@ -2155,18 +2155,6 @@ class TestEsqlEmission(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
             se.mappings()["properties"],
         )
 
-    def test_constant_keyword_is_unsupported_for_the_other_languages(self):
-        for query in ('any where data_stream.dataset == "x"', "data_stream.dataset: x", 'any where wildcard(data_stream.dataset, "x*")'):
-            with self.subTest(query), self.assertRaisesRegex(NotImplementedError, "^Field type solver: constant_keyword$"):
-                SourceEvents(self.schema).add_query(query)
-        for rule_type, language, query in (
-            ("query", "kuery", "data_stream.dataset: x"),
-            ("eql", "eql", 'any where data_stream.dataset == "x"'),
-        ):
-            rule = SimpleNamespace(type=rule_type, language=language, query=query)
-            with self.subTest(rule_type), self.assertRaisesRegex(NotImplementedError, "^Field type solver: constant_keyword$"):
-                SourceEvents(self.schema).add_rule(rule)
-
     def test_unknown_fields_take_the_type_of_the_literals(self):
         # ES|QL has typed literals, what the schema does not know is what they say
         schema = {}

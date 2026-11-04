@@ -15,7 +15,6 @@ Rules version: 8.3.4
       1. [Unsupported rule type: threat_match (2)](#unsupported-rule-type-threat_match-2)
    1. [Generation errors](#generation-errors)
       1. [Unsupported function: match (8)](#unsupported-function-match-8)
-      1. [Field type solver: match_only_text (5)](#field-type-solver-match_only_text-5)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (5)](#unsupported-lhs-type-class-eqlastfunctioncall-5)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Root with too many branches (limit: 10000) (1)](#root-with-too-many-branches-limit-10000-1)
@@ -134,15 +133,6 @@ Rules version: 8.3.4
 * Process Started from Process ID (PID) File
 * Suspicious PowerShell Engine ImageLoad
 * Suspicious service was installed in the system
-
-### Field type solver: match_only_text (5)
-
-5 rules:
-* Account Configured with Never-Expiring Password
-* Kerberos Pre-authentication Disabled for User
-* Scheduled Task Execution at Scale via GPO
-* Startup/Logon Script added to Group Policy Object
-* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Unsupported LHS type: <class 'eql.ast.FunctionCall'> (5)
 

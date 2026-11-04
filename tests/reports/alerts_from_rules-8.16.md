@@ -12,7 +12,7 @@ Rules version: 8.16.16
    1. [Unsuccessful rules with signals (12)](#unsuccessful-rules-with-signals-12)
    1. [Rules with no signals (5)](#rules-with-no-signals-5)
    1. [Rules with too few signals (15)](#rules-with-too-few-signals-15)
-   1. [Rules with the correct signals (966)](#rules-with-the-correct-signals-966)
+   1. [Rules with the correct signals (973)](#rules-with-the-correct-signals-973)
 
 ## Failed rules (12)
 
@@ -1693,7 +1693,7 @@ sequence by host.id with maxspan=5s
 
 
 
-## Rules with the correct signals (966)
+## Rules with the correct signals (973)
 
 ### A scheduled task was created
 
@@ -14848,6 +14848,19 @@ process where event.type == "start" and host.os.type == "linux" and event.action
 
 
 
+### Process Started with Executable Stack
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0974
+
+```python
+host.os.type:"linux" and event.dataset:"system.syslog" and process.name:"kernel" and
+message:"started with executable stack"
+```
+
+
+
 ### Process Termination followed by Deletion
 
 Branch count: 72  
@@ -16279,6 +16292,18 @@ process.name : "grep" and user.id != "0" and
        )
      )
     )
+```
+
+
+
+### Segfault Detected
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1052
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and message:segfault
 ```
 
 
@@ -18530,6 +18555,18 @@ process where host.os.type == "windows" and event.action == "start" and
 
 
 
+### Suspicious Usage of bpf_probe_write_user Helper
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1196
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and message:"bpf_probe_write_user"
+```
+
+
+
 ### Suspicious Utility Launched via ProxyChains
 
 Branch count: 204  
@@ -18885,6 +18922,19 @@ Index: geneve-ut-1207
 ```python
 sequence by host.hostname, host.id with maxspan=1m
 [process where host.os.type == "macos" and event.type == "start" and event.action == "exec" and process.name: "pbpaste"] with runs = 5
+```
+
+
+
+### Suspicious rc.local Error Message
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-1208
+
+```python
+host.os.type:linux and event.dataset:system.syslog and process.name:rc.local and
+message:("Connection refused" or "No such file or directory" or "command not found")
 ```
 
 
@@ -19377,6 +19427,32 @@ Index: geneve-ut-1231
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and process.name == "mount_apfs" and
  process.args like~ "/System/Volumes/Data" and process.args like~ "noowners"
+```
+
+
+
+### Tainted Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1232
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and
+message:"module verification failed: signature and/or required key missing - tainting kernel"
+```
+
+
+
+### Tainted Out-Of-Tree Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1233
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and
+message:"loading out-of-tree module taints kernel."
 ```
 
 
@@ -21024,6 +21100,18 @@ process where host.os.type == "windows" and event.type == "start" and
   )
 ) and not process.parent.args: "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\Content\\DetectionScripts\\*.ps1"
 and not process.parent.name : "LTSVC.exe" and not user.id : "S-1-5-18"
+```
+
+
+
+### Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1387
+
+```python
+event.provider:"Microsoft-Windows-Audit-CVE" and message:"[CVE-2020-0601]" and host.os.type:windows
 ```
 
 

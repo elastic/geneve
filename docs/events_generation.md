@@ -102,7 +102,7 @@ Queries that expand to more than 10,000 branches, for instance by chaining many 
 
 What the schema does not know of a field (the fields of the integrations) is what the literals of the query say, as ES|QL has typed literals: `flag != true` is a boolean, `n > 5` a long, `s == "a"` a keyword. It is the type of the solver and of the mapping that is generated. The other languages keep taking such a field for a keyword.
 
-Fields of type `constant_keyword` (such as `data_stream.dataset`) are solved as plain keywords for ES|QL only, the other languages still reject them, and they are mapped as `keyword` so that the documents of different branches can share an index.
+Fields of type `constant_keyword` (such as `data_stream.dataset`) are solved as plain keywords, like in the other languages, and they are mapped as `keyword` so that the documents of different branches can share an index.
 
 ### Validating the documents against Elasticsearch
 

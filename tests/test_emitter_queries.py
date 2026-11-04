@@ -57,6 +57,14 @@ event_docs_mappings = {
             },
         },
     },
+    """data_stream.dataset : "okta.system" and message : "some message"
+    """: {
+        "properties": {
+            "@timestamp": {"type": "date"},
+            "data_stream": {"properties": {"dataset": {"type": "keyword"}}},
+            "message": {"type": "match_only_text"},
+        },
+    },
     """azure.auditlogs.properties.target_resources.*.display_name:guest and azure.activitylogs.level:*
     """: {
         "dynamic_templates": [
@@ -152,6 +160,10 @@ mono_branch_mono_doc = {
     """any where network.protocol == "some protocol"
     """: [
         [{"network": {"protocol": "some protocol"}}],
+    ],
+    """data_stream.dataset : "okta.system" and message : "some message"
+    """: [
+        [{"data_stream": {"dataset": "okta.system"}, "message": "some message"}],
     ],
     """any where process.pid == null
     """: [

@@ -8,13 +8,13 @@ Curious about the inner workings? Read [here](signals_generation.md).
 Rules version: 9.2.19
 
 ## Table of contents
-   1. [Failed rules (26)](#failed-rules-26)
-   1. [Unsuccessful rules with signals (26)](#unsuccessful-rules-with-signals-26)
-   1. [Rules with no signals (5)](#rules-with-no-signals-5)
-   1. [Rules with too few signals (30)](#rules-with-too-few-signals-30)
-   1. [Rules with the correct signals (824)](#rules-with-the-correct-signals-824)
+   1. [Failed rules (28)](#failed-rules-28)
+   1. [Unsuccessful rules with signals (27)](#unsuccessful-rules-with-signals-27)
+   1. [Rules with no signals (9)](#rules-with-no-signals-9)
+   1. [Rules with too few signals (31)](#rules-with-too-few-signals-31)
+   1. [Rules with the correct signals (1153)](#rules-with-the-correct-signals-1153)
 
-## Failed rules (26)
+## Failed rules (28)
 
 ### Base64 Decoded Payload Piped to Interpreter
 
@@ -104,6 +104,41 @@ sequence by process.parent.entity_id with maxspan=1m
                      "?:\\Users\\*\\AppData\\Local\\Temp\\BackupBootstrapper\\Logs\\",
                      "?:\\Users\\*\\AppData\\Local\\Temp\\QBTools\\"))
     ]
+```
+
+
+
+### Entra ID Unusual Cloud Device Registration
+
+Branch count: 3  
+Document count: 9  
+Index: geneve-ut-0501  
+Failure message(s):  
+  SDE says:
+> verification_exception
+	Root causes:
+		verification_exception: Found 3 problems
+line 10:5: Unknown column [azure.auditlogs.properties.target_resources.0.modified_properties.1.display_name]
+line 11:5: Unknown column [azure.auditlogs.properties.target_resources.0.modified_properties.1.new_value], did you mean [azure.auditlogs.properties.additional_details.value]?
+line 14:5: Unknown column [azure.auditlogs.properties.target_resources.0.modified_properties.2.new_value], did you mean [azure.auditlogs.properties.additional_details.value]?  
+
+```python
+sequence by azure.correlation_id with maxspan=5m
+[any where data_stream.dataset == "azure.auditlogs" and
+    azure.auditlogs.identity == "Device Registration Service" and
+    azure.auditlogs.operation_name == "Add device" and
+    (
+        azure.auditlogs.properties.additional_details.value like "Microsoft.OData.Client/*" or
+        azure.auditlogs.properties.additional_details.value like "Dsreg/*" or
+        azure.auditlogs.properties.additional_details.value == "DeviceRegistrationClient"
+    ) and
+    `azure.auditlogs.properties.target_resources.0.modified_properties.1.display_name` == "CloudAccountEnabled" and
+    `azure.auditlogs.properties.target_resources.0.modified_properties.1.new_value` == "[true]"]
+[any where data_stream.dataset == "azure.auditlogs" and
+    azure.auditlogs.operation_name == "Add registered users to device" and
+    `azure.auditlogs.properties.target_resources.0.modified_properties.2.new_value` like "*urn:ms-drs:enterpriseregistration.windows.net*"]
+[any where data_stream.dataset == "azure.auditlogs" and
+    azure.auditlogs.operation_name == "Add registered owner to device"]
 ```
 
 
@@ -1198,6 +1233,97 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 
 
+### Suspicious Windows Command Shell Arguments
+
+Branch count: 1888  
+Document count: 1888  
+Index: geneve-ut-1654  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.name : "cmd.exe" and
+  (
+    process.command_line : (
+        "*).Run(*", "*GetObject*", "* curl*regsvr32*", "*echo*wscript*", "*echo*ZONE.identifier*",
+        "*ActiveXObject*", "*dir /s /b *echo*", "*unescape(*",  "*findstr*TVNDRgAAAA*", "*findstr*passw*", "*start*\\\\*\\DavWWWRoot\\*",
+        "* explorer*%CD%*", "*%cd%\\*.js*", "*attrib*%CD%*", "*/?cMD<*", "*/AutoIt3ExecuteScript*..*", "*&cls&cls&cls&cls&cls&*",
+        "*&#*;&#*;&#*;&#*;*", "* &&s^eT*", "*& ChrW(*", "*&explorer /root*", "*start __ & __\\*", "*findstr /V /L *forfiles*",
+        "*=wscri& set *", "*http*!COmpUternaME!*", "*start *.pdf * start /min cmd.exe /c *\\\\*", "*pip install*System.Net.WebClient*",
+        "*Invoke-WebReques*Start-Process*", "*-command (Invoke-webrequest*", "*copy /b *\\\\* ping *-n*", "*echo*.ToCharArray*"
+    ) or
+
+    (process.args : "echo" and process.parent.name : ("wscript.exe", "mshta.exe")) or
+
+    process.args : ("1>?:\\*.vbs", "1>?:\\*.js") or
+
+    (process.args : "explorer.exe" and process.args : "type" and process.args : ">" and process.args : "start") or
+
+    (
+      process.parent.name : "explorer.exe" and
+      process.command_line : (
+        "*&&S^eT *",
+        "*&& set *&& set *&& set *&& set *&& set *&& call*",
+        "**\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??*"
+      )
+    ) or
+
+    (process.parent.name : "explorer.exe" and process.args : "copy" and process.args : "&&" and process.args : "\\\\*@*\\*")
+  ) and
+
+  /* false positives */
+  not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe") and
+  not ?process.parent.executable : (
+        "?:\\Perl64\\bin\\perl.exe",
+        "?:\\Program Files\\nodejs\\node.exe",
+        "?:\\Program Files\\HP\\RS\\pgsql\\bin\\pg_dumpall.exe",
+        "?:\\Program Files (x86)\\PRTG Network Monitor\\64 bit\\PRTG Server.exe",
+        "?:\\Program Files (x86)\\Spiceworks\\bin\\spiceworks-finder.exe",
+        "?:\\Program Files (x86)\\Zuercher Suite\\production\\leds\\leds.exe",
+        "?:\\Program Files\\Tripwire\\Agent\\Plugins\\twexec\\twexec.exe",
+        "D:\\Agents\\?\\_work\\_tasks\\*\\SonarScanner.MSBuild.exe",
+        "?:\\Program Files\\Microsoft VS Code\\Code.exe",
+        "?:\\programmiweb\\NetBeans-*\\netbeans\\bin\\netbeans64.exe",
+        "?:\\Program Files (x86)\\Public Safety Suite Professional\\production\\leds\\leds.exe",
+        "?:\\Program Files (x86)\\Tier2Tickets\\button_gui.exe",
+        "?:\\Program Files\\NetBeans-*\\netbeans\\bin\\netbeans*.exe",
+        "?:\\Program Files (x86)\\Public Safety Suite Professional\\production\\leds\\leds.exe",
+        "?:\\Program Files (x86)\\Tier2Tickets\\button_gui.exe",
+        "?:\\Program Files (x86)\\Helpdesk Button\\button_gui.exe",
+        "?:\\VTSPortable\\VTS\\jre\\bin\\javaw.exe",
+        "?:\\Program Files\\Bot Framework Composer\\Bot Framework Composer.exe",
+        "?:\\Program Files\\KMSYS Worldwide\\eQuate\\*\\SessionMgr.exe",
+        "?:\\Program Files (x86)\\Craneware\\Pricing Analyzer\\Craneware.Pricing.Shell.exe",
+        "?:\\Program Files (x86)\\jumpcloud-agent-app\\jumpcloud-agent-app.exe",
+        "?:\\Program Files\\PostgreSQL\\*\\bin\\pg_dumpall.exe",
+        "?:\\Program Files (x86)\\Vim\\vim*\\vimrun.exe") and
+  not (
+        /* Crowdstrike doesn't populate process.parent.executable */
+        data_stream.dataset == "crowdstrike.fdr" and
+        process.parent.name : (
+          "perl.exe", "node.exe", "pg_dumpall.exe", "PRTG Server.exe", "spiceworks-finder.exe", "leds.exe", "twexec.exe",
+          "SonarScanner.MSBuild.exe", "Code.exe", "netbeans64.exe", "javaw.exe", "Bot Framework Composer.exe", "SessionMgr.exe",
+          "Craneware.Pricing.Shell.exe", "jumpcloud-agent-app.exe", "vimrun.exe"
+        )
+      ) and
+  not (process.args :  "?:\\Program Files\\Citrix\\Secure Access Client\\nsauto.exe" and process.parent.name : "userinit.exe") and
+  not process.args : (
+        "?:\\Program Files (x86)\\PCMatic\\PCPitstopScheduleService.exe",
+        "?:\\Program Files (x86)\\AllesTechnologyAgent\\*",
+        "https://auth.axis.com/oauth2/oauth-authorize*"
+  ) and
+  not process.command_line : (
+    "\"cmd\" /c %NETBEANS_MAVEN_COMMAND_LINE%",
+    "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\""
+  ) and
+  not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\*" and process.args : "http*/dataloader/persist_netstat_data") and
+  not (process.args == "echo" and process.args == "GEQ" and process.args == "1073741824")
+```
+
+
+
 ### System Public IP Discovery via DNS Query
 
 Branch count: 2442  
@@ -1273,7 +1399,7 @@ not (
 
 
 
-## Unsuccessful rules with signals (26)
+## Unsuccessful rules with signals (27)
 
 ### Base64 Decoded Payload Piped to Interpreter
 
@@ -2382,6 +2508,94 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 
 
+### Suspicious Windows Command Shell Arguments
+
+Branch count: 1888  
+Document count: 1888  
+Index: geneve-ut-1654
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.name : "cmd.exe" and
+  (
+    process.command_line : (
+        "*).Run(*", "*GetObject*", "* curl*regsvr32*", "*echo*wscript*", "*echo*ZONE.identifier*",
+        "*ActiveXObject*", "*dir /s /b *echo*", "*unescape(*",  "*findstr*TVNDRgAAAA*", "*findstr*passw*", "*start*\\\\*\\DavWWWRoot\\*",
+        "* explorer*%CD%*", "*%cd%\\*.js*", "*attrib*%CD%*", "*/?cMD<*", "*/AutoIt3ExecuteScript*..*", "*&cls&cls&cls&cls&cls&*",
+        "*&#*;&#*;&#*;&#*;*", "* &&s^eT*", "*& ChrW(*", "*&explorer /root*", "*start __ & __\\*", "*findstr /V /L *forfiles*",
+        "*=wscri& set *", "*http*!COmpUternaME!*", "*start *.pdf * start /min cmd.exe /c *\\\\*", "*pip install*System.Net.WebClient*",
+        "*Invoke-WebReques*Start-Process*", "*-command (Invoke-webrequest*", "*copy /b *\\\\* ping *-n*", "*echo*.ToCharArray*"
+    ) or
+
+    (process.args : "echo" and process.parent.name : ("wscript.exe", "mshta.exe")) or
+
+    process.args : ("1>?:\\*.vbs", "1>?:\\*.js") or
+
+    (process.args : "explorer.exe" and process.args : "type" and process.args : ">" and process.args : "start") or
+
+    (
+      process.parent.name : "explorer.exe" and
+      process.command_line : (
+        "*&&S^eT *",
+        "*&& set *&& set *&& set *&& set *&& set *&& call*",
+        "**\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??*"
+      )
+    ) or
+
+    (process.parent.name : "explorer.exe" and process.args : "copy" and process.args : "&&" and process.args : "\\\\*@*\\*")
+  ) and
+
+  /* false positives */
+  not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe") and
+  not ?process.parent.executable : (
+        "?:\\Perl64\\bin\\perl.exe",
+        "?:\\Program Files\\nodejs\\node.exe",
+        "?:\\Program Files\\HP\\RS\\pgsql\\bin\\pg_dumpall.exe",
+        "?:\\Program Files (x86)\\PRTG Network Monitor\\64 bit\\PRTG Server.exe",
+        "?:\\Program Files (x86)\\Spiceworks\\bin\\spiceworks-finder.exe",
+        "?:\\Program Files (x86)\\Zuercher Suite\\production\\leds\\leds.exe",
+        "?:\\Program Files\\Tripwire\\Agent\\Plugins\\twexec\\twexec.exe",
+        "D:\\Agents\\?\\_work\\_tasks\\*\\SonarScanner.MSBuild.exe",
+        "?:\\Program Files\\Microsoft VS Code\\Code.exe",
+        "?:\\programmiweb\\NetBeans-*\\netbeans\\bin\\netbeans64.exe",
+        "?:\\Program Files (x86)\\Public Safety Suite Professional\\production\\leds\\leds.exe",
+        "?:\\Program Files (x86)\\Tier2Tickets\\button_gui.exe",
+        "?:\\Program Files\\NetBeans-*\\netbeans\\bin\\netbeans*.exe",
+        "?:\\Program Files (x86)\\Public Safety Suite Professional\\production\\leds\\leds.exe",
+        "?:\\Program Files (x86)\\Tier2Tickets\\button_gui.exe",
+        "?:\\Program Files (x86)\\Helpdesk Button\\button_gui.exe",
+        "?:\\VTSPortable\\VTS\\jre\\bin\\javaw.exe",
+        "?:\\Program Files\\Bot Framework Composer\\Bot Framework Composer.exe",
+        "?:\\Program Files\\KMSYS Worldwide\\eQuate\\*\\SessionMgr.exe",
+        "?:\\Program Files (x86)\\Craneware\\Pricing Analyzer\\Craneware.Pricing.Shell.exe",
+        "?:\\Program Files (x86)\\jumpcloud-agent-app\\jumpcloud-agent-app.exe",
+        "?:\\Program Files\\PostgreSQL\\*\\bin\\pg_dumpall.exe",
+        "?:\\Program Files (x86)\\Vim\\vim*\\vimrun.exe") and
+  not (
+        /* Crowdstrike doesn't populate process.parent.executable */
+        data_stream.dataset == "crowdstrike.fdr" and
+        process.parent.name : (
+          "perl.exe", "node.exe", "pg_dumpall.exe", "PRTG Server.exe", "spiceworks-finder.exe", "leds.exe", "twexec.exe",
+          "SonarScanner.MSBuild.exe", "Code.exe", "netbeans64.exe", "javaw.exe", "Bot Framework Composer.exe", "SessionMgr.exe",
+          "Craneware.Pricing.Shell.exe", "jumpcloud-agent-app.exe", "vimrun.exe"
+        )
+      ) and
+  not (process.args :  "?:\\Program Files\\Citrix\\Secure Access Client\\nsauto.exe" and process.parent.name : "userinit.exe") and
+  not process.args : (
+        "?:\\Program Files (x86)\\PCMatic\\PCPitstopScheduleService.exe",
+        "?:\\Program Files (x86)\\AllesTechnologyAgent\\*",
+        "https://auth.axis.com/oauth2/oauth-authorize*"
+  ) and
+  not process.command_line : (
+    "\"cmd\" /c %NETBEANS_MAVEN_COMMAND_LINE%",
+    "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\""
+  ) and
+  not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\*" and process.args : "http*/dataloader/persist_netstat_data") and
+  not (process.args == "echo" and process.args == "GEQ" and process.args == "1073741824")
+```
+
+
+
 ### System Public IP Discovery via DNS Query
 
 Branch count: 2442  
@@ -2454,7 +2668,7 @@ not (
 
 
 
-## Rules with no signals (5)
+## Rules with no signals (9)
 
 ### AppArmor Profile Compilation via apparmor_parser
 
@@ -2466,6 +2680,75 @@ Index: geneve-ut-0217
 process where host.os.type == "linux" and event.type == "start" and
 event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
 process.name == "apparmor_parser" and process.args in ("--ofile*", "-o*", "--output*")
+```
+
+
+
+### Kubernetes Forbidden Creation Request
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0783
+
+```python
+any where data_stream.dataset == "kubernetes.audit_logs" and kubernetes.audit.verb == "create" and
+kubernetes.audit.stage == "ResponseComplete" and `kubernetes.audit.annotations.authorization_k8s_io/decision` == "forbid"
+```
+
+
+
+### Kubernetes Sensitive RBAC Change Followed by Workload Modification
+
+Branch count: 36  
+Document count: 72  
+Index: geneve-ut-0806
+
+```python
+sequence by user.name with maxspan=5m
+  [any where data_stream.dataset == "kubernetes.audit_logs" and
+   `kubernetes.audit.annotations.authorization_k8s_io/decision` == "allow" and
+    kubernetes.audit.objectRef.resource in ("roles", "clusterroles") and
+    kubernetes.audit.verb in ("create", "update", "patch")]
+  [any where data_stream.dataset == "kubernetes.audit_logs" and
+   `kubernetes.audit.annotations.authorization_k8s_io/decision` == "allow" and
+    kubernetes.audit.objectRef.resource in ("daemonsets", "deployments", "cronjobs") and
+    kubernetes.audit.verb in ("create", "patch") and
+    /* reduce control-plane / bootstrap noise */
+    not kubernetes.audit.user.groups == "system:masters"
+  ]
+```
+
+
+
+### Kubernetes User Exec into Pod
+
+Branch count: 128  
+Document count: 128  
+Index: geneve-ut-0814
+
+```python
+any where data_stream.dataset == "kubernetes.audit_logs" and kubernetes.audit.verb in ("get", "create") and
+kubernetes.audit.objectRef.subresource == "exec" and kubernetes.audit.stage in ("ResponseComplete", "ResponseStarted") and
+kubernetes.audit.level == "Request" and `kubernetes.audit.annotations.authorization_k8s_io/decision` == "allow" and
+not (
+  (kubernetes.audit.objectRef.namespace == "trident" and kubernetes.audit.objectRef.name like "trident-controller-*") or
+  (kubernetes.audit.objectRef.namespace == "vuls" and kubernetes.audit.requestURI like "/api/v1/namespaces/vuls/pods/vuls-*/exec?command=sh&command=-c&command=*+%2Fvuls%2Fresults*") or
+  (kubernetes.audit.objectRef.namespace == "git-runners" and kubernetes.audit.requestURI like (
+     "/api/v1/namespaces/git-runners/pods/runner-*/exec?command=sh&command=-c&command=if+%5B+-x+%2Fusr%2Flocal%2Fbin%2Fbash+%5D%3B+then%0A%09exec+%2Fusr%2Flocal%2Fbin%2Fbash+%0Aelif+%5B+-x+%2Fusr%2Fbin%2Fbash+%5D%3B+then%0A%09exec+%2Fusr%2Fbin%2Fbash+%0Aelif+%5B+-x+%2Fbin%2Fbash+%5D%3B+then%0A%09exec+%2Fbin%2Fbash+%0Aelif+%5B+-x+%2Fusr%2Flocal%2Fbin%2Fsh+%5D%3B+then%0A%09exec+%2Fusr%2Flocal%2Fbin%2Fsh+%0Aelif+%5B+-x+%2Fusr%2Fbin%2Fsh+%5D%3B+then%0A%09exec+%2Fusr%2Fbin%2Fsh+%0Aelif+%5B+-x+%2Fbin%2Fsh+%5D%3B+then%0A%09exec+%2Fbin%2Fsh+%0Aelif+%5B+-x+%2Fbusybox%2Fsh+%5D%3B+then%0A%09exec+%2Fbusybox%2Fsh+%0Aelse%0A%09echo+shell+not+found%0A%09exit+1%0Afi%0A%0A&container=*&container=*&stderr=true&stdin=true&stdout=true",
+     "/api/v1/namespaces/git-runners/pods/runner-*/exec?command=gitlab-runner-helper&command=read-logs&command=--path&command=%2Flogs-*%2Foutput.log&command=--offset&command=0&command=--wait-file-timeout&command=1m0s&container=*&container=*&stderr=true&stdout=true"
+  )) or
+  (kubernetes.audit.objectRef.namespace == "elasticsearch-cluster" and kubernetes.audit.requestURI like (
+    "/api/v1/namespaces/elasticsearch-cluster/pods/*/exec?command=df&command=-h&container=elasticsearch&stdin=true&stdout=true&tty=true",
+    "/api/v1/namespaces/elasticsearch-cluster/pods/*/exec?command=df&command=-h&container=elasticsearch&stderr=true&stdout=true",
+    "/api/v1/namespaces/elasticsearch-cluster/pods/*/exec?command=df&command=-h&container=kibana&stderr=true&stdout=true"
+  )) or
+  (kubernetes.audit.objectRef.namespace == "kube-system" and kubernetes.audit.requestURI like (
+    "/api/v1/namespaces/kube-system/pods/*/exec?command=%2Fproxy-agent&command=--help&container=konnectivity-agent&stderr=true&stdout=true",
+    "api/v1/namespaces/kube-system/pods/*/exec?command=cilium&command=endpoint&command=list&command=-o&command=json&container=cilium-agent&stderr=true&stdout=true",
+    "/api/v1/namespaces/kube-system/pods/*/exec?command=cilium&command=status&command=-o&command=json&container=cilium-agent&stderr=true&stdout=true",
+    "/api/v1/namespaces/kube-system/pods/*/exec?command=sh&command=-c&command=clear%3B+%28bash+%7C%7C+ash+%7C%7C+sh%29&container=*&stdin=true&stdout=true&tty=true"
+  ))
+)
 ```
 
 
@@ -2527,7 +2810,54 @@ host.os.type:windows and event.category:file and event.code:5145 and
 
 
 
-## Rules with too few signals (30)
+### Splunk Enterprise PostgreSQL Recovery Endpoint Injection Artifacts
+
+Branch count: 64  
+Document count: 64  
+Index: geneve-ut-1514
+
+```python
+http.request.method:POST and
+url.path:("*splunkd/__raw/v1/postgres/recovery/*" or "/v1/postgres/recovery/*") and
+(
+  http.request.body.content:(
+    "*\"backupFile\"*../*" or
+    "*\"backupFile\"*/dev/shm/*" or
+    "*\"backupFile\"*/etc/cron*" or
+    "*\"backupFile\"*/home/*/.ssh/*" or
+    "*\"backupFile\"*/opt/splunk/bin/scripts/*" or
+    "*\"backupFile\"*/opt/splunk/etc/apps/*" or
+    "*\"backupFile\"*/root/*" or
+    "*\"backupFile\"*/tmp/*" or
+    "*\"backupFile\"*/var/tmp/*" or
+    "*\"backupFile\"*authorized_keys*" or
+    "*\"database\"*dbname=*" or
+    "*\"database\"*host=*" or
+    "*\"database\"*hostaddr=*" or
+    "*\"database\"*passfile=*" or
+    "*\"database\"*password=*" or
+    "*\"database\"*port=*" or
+    "*\"database\"*service=*" or
+    "*\"database\"*sslmode=*" or
+    "*\"database\"*user=*" or
+    "*/opt/splunk/etc/apps/*" or
+    "*/opt/splunk/var/packages/data/postgres/.pgpass*"
+  ) or
+  data_stream.dataset:zeek.http and url.password:"" or
+  data_stream.dataset:(azure.application_gateway or gcp.loadbalancing_logs or network_traffic.http or suricata.eve or zeek.http) and
+  url.path:(
+    "*splunkd/__raw/v1/postgres/recovery/backup" or
+    "*splunkd/__raw/v1/postgres/recovery/restore" or
+    /v1/postgres/recovery/backup or
+    /v1/postgres/recovery/restore
+  ) and
+  http.response.status_code:400
+)
+```
+
+
+
+## Rules with too few signals (31)
 
 ### Base64 Decoded Payload Piped to Interpreter
 
@@ -3767,6 +4097,96 @@ process where host.os.type == "linux" and event.type == "start" and event.action
 
 
 
+### Suspicious Windows Command Shell Arguments
+
+Branch count: 1888  
+Document count: 1888  
+Index: geneve-ut-1654  
+Failure message(s):  
+  got 1000 signals, expected 1888  
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.name : "cmd.exe" and
+  (
+    process.command_line : (
+        "*).Run(*", "*GetObject*", "* curl*regsvr32*", "*echo*wscript*", "*echo*ZONE.identifier*",
+        "*ActiveXObject*", "*dir /s /b *echo*", "*unescape(*",  "*findstr*TVNDRgAAAA*", "*findstr*passw*", "*start*\\\\*\\DavWWWRoot\\*",
+        "* explorer*%CD%*", "*%cd%\\*.js*", "*attrib*%CD%*", "*/?cMD<*", "*/AutoIt3ExecuteScript*..*", "*&cls&cls&cls&cls&cls&*",
+        "*&#*;&#*;&#*;&#*;*", "* &&s^eT*", "*& ChrW(*", "*&explorer /root*", "*start __ & __\\*", "*findstr /V /L *forfiles*",
+        "*=wscri& set *", "*http*!COmpUternaME!*", "*start *.pdf * start /min cmd.exe /c *\\\\*", "*pip install*System.Net.WebClient*",
+        "*Invoke-WebReques*Start-Process*", "*-command (Invoke-webrequest*", "*copy /b *\\\\* ping *-n*", "*echo*.ToCharArray*"
+    ) or
+
+    (process.args : "echo" and process.parent.name : ("wscript.exe", "mshta.exe")) or
+
+    process.args : ("1>?:\\*.vbs", "1>?:\\*.js") or
+
+    (process.args : "explorer.exe" and process.args : "type" and process.args : ">" and process.args : "start") or
+
+    (
+      process.parent.name : "explorer.exe" and
+      process.command_line : (
+        "*&&S^eT *",
+        "*&& set *&& set *&& set *&& set *&& set *&& call*",
+        "**\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??*"
+      )
+    ) or
+
+    (process.parent.name : "explorer.exe" and process.args : "copy" and process.args : "&&" and process.args : "\\\\*@*\\*")
+  ) and
+
+  /* false positives */
+  not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe") and
+  not ?process.parent.executable : (
+        "?:\\Perl64\\bin\\perl.exe",
+        "?:\\Program Files\\nodejs\\node.exe",
+        "?:\\Program Files\\HP\\RS\\pgsql\\bin\\pg_dumpall.exe",
+        "?:\\Program Files (x86)\\PRTG Network Monitor\\64 bit\\PRTG Server.exe",
+        "?:\\Program Files (x86)\\Spiceworks\\bin\\spiceworks-finder.exe",
+        "?:\\Program Files (x86)\\Zuercher Suite\\production\\leds\\leds.exe",
+        "?:\\Program Files\\Tripwire\\Agent\\Plugins\\twexec\\twexec.exe",
+        "D:\\Agents\\?\\_work\\_tasks\\*\\SonarScanner.MSBuild.exe",
+        "?:\\Program Files\\Microsoft VS Code\\Code.exe",
+        "?:\\programmiweb\\NetBeans-*\\netbeans\\bin\\netbeans64.exe",
+        "?:\\Program Files (x86)\\Public Safety Suite Professional\\production\\leds\\leds.exe",
+        "?:\\Program Files (x86)\\Tier2Tickets\\button_gui.exe",
+        "?:\\Program Files\\NetBeans-*\\netbeans\\bin\\netbeans*.exe",
+        "?:\\Program Files (x86)\\Public Safety Suite Professional\\production\\leds\\leds.exe",
+        "?:\\Program Files (x86)\\Tier2Tickets\\button_gui.exe",
+        "?:\\Program Files (x86)\\Helpdesk Button\\button_gui.exe",
+        "?:\\VTSPortable\\VTS\\jre\\bin\\javaw.exe",
+        "?:\\Program Files\\Bot Framework Composer\\Bot Framework Composer.exe",
+        "?:\\Program Files\\KMSYS Worldwide\\eQuate\\*\\SessionMgr.exe",
+        "?:\\Program Files (x86)\\Craneware\\Pricing Analyzer\\Craneware.Pricing.Shell.exe",
+        "?:\\Program Files (x86)\\jumpcloud-agent-app\\jumpcloud-agent-app.exe",
+        "?:\\Program Files\\PostgreSQL\\*\\bin\\pg_dumpall.exe",
+        "?:\\Program Files (x86)\\Vim\\vim*\\vimrun.exe") and
+  not (
+        /* Crowdstrike doesn't populate process.parent.executable */
+        data_stream.dataset == "crowdstrike.fdr" and
+        process.parent.name : (
+          "perl.exe", "node.exe", "pg_dumpall.exe", "PRTG Server.exe", "spiceworks-finder.exe", "leds.exe", "twexec.exe",
+          "SonarScanner.MSBuild.exe", "Code.exe", "netbeans64.exe", "javaw.exe", "Bot Framework Composer.exe", "SessionMgr.exe",
+          "Craneware.Pricing.Shell.exe", "jumpcloud-agent-app.exe", "vimrun.exe"
+        )
+      ) and
+  not (process.args :  "?:\\Program Files\\Citrix\\Secure Access Client\\nsauto.exe" and process.parent.name : "userinit.exe") and
+  not process.args : (
+        "?:\\Program Files (x86)\\PCMatic\\PCPitstopScheduleService.exe",
+        "?:\\Program Files (x86)\\AllesTechnologyAgent\\*",
+        "https://auth.axis.com/oauth2/oauth-authorize*"
+  ) and
+  not process.command_line : (
+    "\"cmd\" /c %NETBEANS_MAVEN_COMMAND_LINE%",
+    "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\""
+  ) and
+  not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\*" and process.args : "http*/dataloader/persist_netstat_data") and
+  not (process.args == "echo" and process.args == "GEQ" and process.args == "1073741824")
+```
+
+
+
 ### System Public IP Discovery via DNS Query
 
 Branch count: 2442  
@@ -3841,7 +4261,7 @@ not (
 
 
 
-## Rules with the correct signals (824)
+## Rules with the correct signals (1153)
 
 ### A scheduled task was created
 
@@ -3930,6 +4350,414 @@ file.path : "/etc/apt/apt.conf.d/*" and not (
 
 
 
+### AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0005
+
+```python
+data_stream.dataset:aws.cloudtrail and 
+ event.provider:sts.amazonaws.com and 
+ event.action:AssumeRoleWithWebIdentity and 
+ event.outcome:success and user.name:(system\:serviceaccount\:* and not system\:serviceaccount\:kube-system\:aws-load-balancer-controller) and 
+ source.as.organization.name:(* and not (Amazon* or AMAZON*))
+```
+
+
+
+### AWS Backup Recovery Point Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0006
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "backup.amazonaws.com"
+    and event.action: "DeleteRecoveryPoint"
+    and event.outcome: "success"
+    and not aws.cloudtrail.user_identity.type: "AWSService"
+```
+
+
+
+### AWS Backup Vault Deleted or Vault Lock Removed
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0007
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "backup.amazonaws.com"
+    and event.action: ("DeleteBackupVault" or "DeleteBackupVaultLockConfiguration")
+    and event.outcome: "success"
+    and not aws.cloudtrail.user_identity.type: "AWSService"
+```
+
+
+
+### AWS Bedrock Agent Created by IAM User or Root
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0008
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "bedrock.amazonaws.com"
+    and event.action: "CreateAgent"
+    and event.outcome: "success"
+    and aws.cloudtrail.user_identity.type: ("IAMUser" or "Root")
+```
+
+
+
+### AWS Bedrock Automated Reasoning Safety Policy Tampering
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0010
+
+```python
+data_stream.dataset: "aws.cloudtrail" and
+    event.provider: "bedrock.amazonaws.com" and
+    event.action: (
+        "DeleteAutomatedReasoningPolicy" or
+        "UpdateAutomatedReasoningPolicy" or
+        "UpdateAutomatedReasoningPolicyAnnotations"
+    ) and event.outcome:success
+```
+
+
+
+### AWS Bedrock Foundation Model Access Enabled or Entitlement Granted
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0013
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "bedrock.amazonaws.com"
+    and event.action: (
+        "PutFoundationModelEntitlement" or
+        "PutUseCaseForModelAccess" or
+        "CreateFoundationModelAgreement"
+    )
+    and event.outcome: "success"
+```
+
+
+
+### AWS Bedrock Foundation Model Enumeration Followed by Invocation via Long-Term Key
+
+Branch count: 4  
+Document count: 8  
+Index: geneve-ut-0014
+
+```python
+sequence by aws.cloudtrail.user_identity.access_key_id with maxspan=15m
+  [any where data_stream.dataset == "aws.cloudtrail"
+    and event.provider == "bedrock.amazonaws.com"
+    and event.action == "ListFoundationModels"
+    and event.outcome == "success"
+    and aws.cloudtrail.user_identity.access_key_id like "AKIA*"]
+  [any where data_stream.dataset == "aws.cloudtrail"
+    and event.provider == "bedrock.amazonaws.com"
+    and event.action : ("InvokeModel", "InvokeModelWithResponseStream", "Converse", "ConverseStream")
+    and event.outcome == "success"]
+```
+
+
+
+### AWS Bedrock Guardrail Deleted or Weakened
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0015
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "bedrock.amazonaws.com"
+    and event.action: (
+        "DeleteGuardrail" or
+        "UpdateGuardrail" or
+        "DeleteEnforcedGuardrailConfiguration" or
+        "PutEnforcedGuardrailConfiguration"
+    ) and event.outcome: "success"
+```
+
+
+
+### AWS Bedrock Model Invocation Logging Disabled or Modified
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0021
+
+```python
+data_stream.dataset: "aws.cloudtrail" and
+    event.provider: "bedrock.amazonaws.com" and
+    event.action: ("DeleteModelInvocationLoggingConfiguration" or "PutModelInvocationLoggingConfiguration") and 
+    event.outcome: "success"
+```
+
+
+
+### AWS Bedrock Provisioned Model Throughput Tampering
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0022
+
+```python
+data_stream.dataset: "aws.cloudtrail" and
+    event.provider: "bedrock.amazonaws.com" and
+    event.action: (
+        "CreateProvisionedModelThroughput" or
+        "UpdateProvisionedModelThroughput" or
+        "DeleteProvisionedModelThroughput"
+    ) and
+    event.outcome: "success"
+```
+
+
+
+### AWS Bedrock Unauthorized Foundation Model Access Attempt
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0025
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "bedrock.amazonaws.com"
+    and event.action: (
+        "PutFoundationModelEntitlement" or
+        "PutUseCaseForModelAccess" or
+        "CreateFoundationModelAgreement"
+    )
+    and event.outcome: "failure"
+    and aws.cloudtrail.error_code: (
+        "AccessDenied" or
+        "AccessDeniedException"
+    )
+```
+
+
+
+### AWS Bedrock Unauthorized Resource-Based Policy Modification Attempt
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0026
+
+```python
+data_stream.dataset: "aws.cloudtrail" and
+    event.provider: "bedrock.amazonaws.com" and
+    event.action: ("PutResourcePolicy" or "DeleteResourcePolicy") and
+    event.outcome: "failure" and
+    aws.cloudtrail.error_code: (
+        "AccessDenied" or
+        "AccessDeniedException"
+    )
+```
+
+
+
+### AWS Bedrock Untrusted Model Imported or Marketplace Endpoint Registered
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0027
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "bedrock.amazonaws.com"
+    and event.action: (
+        "CreateModelImportJob" or
+        "CreateCustomModelDeployment" or
+        "CreateMarketplaceModelEndpoint" or
+        "RegisterMarketplaceModelEndpoint"
+    )
+    and event.outcome: "success"
+```
+
+
+
+### AWS CloudShell Environment Created
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0029
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "cloudshell.amazonaws.com"
+    and event.action: "CreateEnvironment"
+    and event.outcome: "success"
+```
+
+
+
+### AWS CloudTrail Log Created
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0030
+
+```python
+data_stream.dataset: "aws.cloudtrail" 
+    and event.provider: "cloudtrail.amazonaws.com" 
+    and event.action: "CreateTrail" 
+    and event.outcome: "success"
+```
+
+
+
+### AWS CloudTrail Log Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0031
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "cloudtrail.amazonaws.com"
+    and event.action: "DeleteTrail"
+    and event.outcome: "success"
+```
+
+
+
+### AWS CloudTrail Log Evasion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0032
+
+```python
+data_stream.dataset: aws.cloudtrail and event.provider: iam.amazonaws.com and aws.cloudtrail.flattened.request_parameters.reason: "requestParameters too large" and aws.cloudtrail.flattened.request_parameters.omitted : true and event.outcome: success
+```
+
+
+
+### AWS CloudTrail Log Suspended
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0033
+
+```python
+data_stream.dataset: "aws.cloudtrail" 
+    and event.provider: "cloudtrail.amazonaws.com" 
+    and event.action: "StopLogging" 
+    and event.outcome: "success"
+```
+
+
+
+### AWS CloudTrail Log Updated
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0034
+
+```python
+data_stream.dataset: "aws.cloudtrail" 
+    and event.provider: "cloudtrail.amazonaws.com" 
+    and event.action: "UpdateTrail" 
+    and event.outcome: "success"
+```
+
+
+
+### AWS CloudWatch Alarm Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0035
+
+```python
+data_stream.dataset: "aws.cloudtrail" 
+  and event.provider: "monitoring.amazonaws.com" 
+  and event.action: "DeleteAlarms"
+  and event.outcome: "success"
+  and source.ip: *
+  and not user_agent.original : "AWS Internal"
+```
+
+
+
+### AWS CloudWatch Log Group Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0036
+
+```python
+data_stream.dataset: "aws.cloudtrail" 
+  and event.provider: "logs.amazonaws.com" 
+  and event.action: "DeleteLogGroup" 
+  and event.outcome: "success"
+  and source.ip: * 
+  and not user_agent.original : "AWS Internal"
+```
+
+
+
+### AWS CloudWatch Log Stream Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0037
+
+```python
+data_stream.dataset: "aws.cloudtrail" 
+  and event.provider: "logs.amazonaws.com" 
+  and event.action: "DeleteLogStream" 
+  and event.outcome: "success"
+  and source.ip: * 
+  and not user_agent.original : "AWS Internal"
+```
+
+
+
+### AWS Config Resource Deletion
+
+Branch count: 9  
+Document count: 9  
+Index: geneve-ut-0038
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: config.amazonaws.com 
+    and event.outcome: success
+    and event.action: (DeleteConfigRule or DeleteOrganizationConfigRule or DeleteConfigurationAggregator or
+    DeleteConfigurationRecorder or DeleteConformancePack or DeleteOrganizationConformancePack or
+    DeleteDeliveryChannel or DeleteRemediationConfiguration or DeleteRetentionConfiguration)
+    and not aws.cloudtrail.user_identity.invoked_by: (securityhub.amazonaws.com or fms.amazonaws.com or controltower.amazonaws.com or config-conforms.amazonaws.com)
+```
+
+
+
+### AWS Configuration Recorder Stopped
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0039
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: config.amazonaws.com 
+    and event.action: StopConfigurationRecorder 
+    and event.outcome: success
+```
+
+
+
 ### AWS Credentials Searched For Inside A Container
 
 Branch count: 63  
@@ -3948,6 +4776,94 @@ process.command_line like~ (
 
 
 
+### AWS EC2 AMI Shared with Another Account
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0046
+
+```python
+data_stream.dataset: "aws.cloudtrail" and event.provider: "ec2.amazonaws.com"
+    and event.action: ModifyImageAttribute and event.outcome: success
+    and aws.cloudtrail.request_parameters: *add=*
+    and not aws.cloudtrail.user_identity.invoked_by: "assets.marketplace.amazonaws.com"
+```
+
+
+
+### AWS EC2 Deprecated AMI Discovery
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0048
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "ec2.amazonaws.com"
+    and event.action: "DescribeImages"
+    and event.outcome: "success"
+    and aws.cloudtrail.flattened.request_parameters.includeDeprecated: "true"
+```
+
+
+
+### AWS EC2 Encryption Disabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0051
+
+```python
+data_stream.dataset:aws.cloudtrail and event.provider:ec2.amazonaws.com and event.action:DisableEbsEncryptionByDefault and event.outcome:success
+```
+
+
+
+### AWS EC2 Export Task
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0052
+
+```python
+data_stream.dataset: "aws.cloudtrail" and 
+    event.provider: "ec2.amazonaws.com" and 
+    event.action: ("CreateInstanceExportTask" or "ExportImage" or "CreateStoreImageTask") and 
+    event.outcome: "success"
+```
+
+
+
+### AWS EC2 Full Network Packet Capture Detected
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0053
+
+```python
+data_stream.dataset: "aws.cloudtrail" and 
+    event.provider: "ec2.amazonaws.com" and
+    event.action: "CreateTrafficMirrorSession" and
+    event.outcome: "success"
+```
+
+
+
+### AWS EC2 Instance Connect SSH Public Key Uploaded
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0054
+
+```python
+data_stream.dataset: aws.cloudtrail
+    and event.provider: ec2-instance-connect.amazonaws.com
+    and event.action: (SendSSHPublicKey or SendSerialConsoleSSHPublicKey)
+    and event.outcome: success
+```
+
+
+
 ### AWS EC2 Instance Profile Associated with Running Instance
 
 Branch count: 2  
@@ -3961,6 +4877,198 @@ event.dataset: "aws.cloudtrail"
     and event.outcome: "success"
     and not aws.cloudtrail.user_identity.type: "AWSService" 
     and not aws.cloudtrail.user_identity.invoked_by: "ssm.amazonaws.com"
+```
+
+
+
+### AWS EC2 Network Access Control List Creation
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0060
+
+```python
+data_stream.dataset:aws.cloudtrail and event.provider:ec2.amazonaws.com and event.action:(CreateNetworkAcl or CreateNetworkAclEntry) and event.outcome:success
+```
+
+
+
+### AWS EC2 Network Access Control List Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0061
+
+```python
+data_stream.dataset:aws.cloudtrail and event.provider:ec2.amazonaws.com and event.action:(DeleteNetworkAcl or DeleteNetworkAclEntry) and event.outcome:success
+```
+
+
+
+### AWS EC2 Security Group Configuration Change
+
+Branch count: 7  
+Document count: 7  
+Index: geneve-ut-0065
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "ec2.amazonaws.com"  and event.outcome: "success"
+    and (event.action:(
+            "AuthorizeSecurityGroupIngress" or
+            "AuthorizeSecurityGroupEgress" or
+            "CreateSecurityGroup" or
+            "ModifySecurityGroupRules" or
+            "RevokeSecurityGroupEgress" or
+            "RevokeSecurityGroupIngress") or 
+            (event.action: "ModifyInstanceAttribute" and aws.cloudtrail.flattened.request_parameters.groupSet.items.groupId:*))
+```
+
+
+
+### AWS EC2 Serial Console Access Enabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0066
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "ec2.amazonaws.com"
+    and event.action: "EnableSerialConsoleAccess"
+    and event.outcome: "success"
+```
+
+
+
+### AWS EFS File System Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0071
+
+```python
+data_stream.dataset: "aws.cloudtrail" 
+    and event.provider: "elasticfilesystem.amazonaws.com" 
+    and event.action: "DeleteFileSystem" 
+    and event.outcome: "success"
+```
+
+
+
+### AWS EKS Access Entry Granted Cluster Admin Policy
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0072
+
+```python
+data_stream.dataset:"aws.cloudtrail" and
+event.provider:"eks.amazonaws.com" and
+event.action:"AssociateAccessPolicy" and
+event.outcome:"success" and
+aws.cloudtrail.request_parameters:(*AmazonEKSClusterAdminPolicy* or *AmazonEKSAdminPolicy*)
+```
+
+
+
+### AWS EKS Access Entry Modified
+
+Branch count: 5  
+Document count: 5  
+Index: geneve-ut-0073
+
+```python
+data_stream.dataset:"aws.cloudtrail" and event.provider:"eks.amazonaws.com" and
+event.action:("CreateAccessEntry" or "AssociateAccessPolicy" or "UpdateAccessEntry" or "DisassociateAccessPolicy" or "DeleteAccessEntry") and
+event.outcome:"success" and
+not aws.cloudtrail.user_identity.arn:(*AWSServiceRoleForAmazonEKS* or *eksctl* or *terraform* or *AWSCloudFormation*)
+```
+
+
+
+### AWS EKS Control Plane Logging Disabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0074
+
+```python
+data_stream.dataset:"aws.cloudtrail" and
+event.provider:"eks.amazonaws.com" and
+event.action:"UpdateClusterConfig" and
+event.outcome:"success" and
+aws.cloudtrail.request_parameters:*logging*enabled=false*
+```
+
+
+
+### AWS EventBridge Rule Disabled or Deleted
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0075
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: events.amazonaws.com 
+    and event.action: (DeleteRule or DisableRule) 
+    and event.outcome: success
+```
+
+
+
+### AWS GuardDuty Detector Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0077
+
+```python
+data_stream.dataset: aws.cloudtrail 
+  and event.provider: guardduty.amazonaws.com 
+  and event.action: DeleteDetector 
+  and event.outcome: success
+```
+
+
+
+### AWS GuardDuty Member Account Manipulation
+
+Branch count: 5  
+Document count: 5  
+Index: geneve-ut-0078
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "guardduty.amazonaws.com"
+    and event.action: (
+        "DisassociateFromAdministratorAccount" or
+        "DeleteMembers" or
+        "StopMonitoringMembers" or
+        "DeleteInvitations" or
+        "DisassociateMembers"
+    )
+    and event.outcome: "success"
+```
+
+
+
+### AWS IAM Account Password Policy Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0080
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "iam.amazonaws.com"
+    and event.action: "DeleteAccountPasswordPolicy"
+    and event.outcome: "success"
+    and not aws.cloudtrail.user_identity.type: "AWSService"
+    and not user_agent.original: (*terraform* or *pulumi* or *ansible*)
+    and not aws.cloudtrail.user_identity.arn: (*terraform* or *pulumi* or *ansible*)
+    and not source.address: ("cloudformation.amazonaws.com" or "servicecatalog.amazonaws.com")
 ```
 
 
@@ -3984,6 +5092,71 @@ event.dataset: "aws.cloudtrail"
 
 
 
+### AWS IAM Deactivation of MFA Device
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0089
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: iam.amazonaws.com 
+    and event.action: DeactivateMFADevice 
+    and event.outcome: success
+```
+
+
+
+### AWS IAM Group Creation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0090
+
+```python
+data_stream.dataset: aws.cloudtrail and 
+    event.provider: iam.amazonaws.com and 
+    event.action: CreateGroup and 
+    event.outcome: success
+```
+
+
+
+### AWS IAM Group Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0091
+
+```python
+data_stream.dataset: aws.cloudtrail and 
+    event.provider: iam.amazonaws.com and 
+    event.action: DeleteGroup and 
+    event.outcome: success
+```
+
+
+
+### AWS IAM Inline Policy Added to a Group
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0092
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "iam.amazonaws.com"
+    and event.action: "PutGroupPolicy"
+    and event.outcome: "success"
+    and not aws.cloudtrail.user_identity.type: "AWSService"
+    and not user_agent.original: (*terraform* or *pulumi* or *ansible*)
+    and not aws.cloudtrail.user_identity.arn: (*terraform* or *pulumi* or *ansible*)
+    and not source.as.organization.name: (Amazon* or AMAZON* or Google*)
+    and not source.address: ("cloudformation.amazonaws.com" or "servicecatalog.amazonaws.com")
+```
+
+
+
 ### AWS IAM Login Profile Added to User
 
 Branch count: 1  
@@ -3993,6 +5166,97 @@ Index: geneve-ut-0094
 ```python
 event.dataset: aws.cloudtrail and event.provider: "iam.amazonaws.com"
     and event.action: "CreateLoginProfile" and event.outcome: success
+```
+
+
+
+### AWS IAM Login Profile Created or Modified for an IAM User
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0095
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "iam.amazonaws.com"
+    and event.action: ("CreateLoginProfile" or "UpdateLoginProfile")
+    and event.outcome: "success"
+    and not aws.cloudtrail.user_identity.type: "AWSService"
+    and not user_agent.original: (*terraform* or *pulumi* or *ansible*)
+    and not aws.cloudtrail.user_identity.arn: (*terraform* or *pulumi* or *ansible*)
+    and not source.as.organization.name: (Amazon* or AMAZON* or Google*)
+    and not source.address: ("cloudformation.amazonaws.com" or "servicecatalog.amazonaws.com")
+```
+
+
+
+### AWS IAM Permissions Boundary Modified or Removed
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0099
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "iam.amazonaws.com"
+    and event.action: (
+        "PutUserPermissionsBoundary" or
+        "PutRolePermissionsBoundary" or
+        "DeleteUserPermissionsBoundary" or
+        "DeleteRolePermissionsBoundary"
+    )
+    and event.outcome: "success"
+    and not aws.cloudtrail.user_identity.type: "AWSService"
+    and not user_agent.original: (*terraform* or *pulumi* or *ansible*)
+    and not aws.cloudtrail.user_identity.arn: (*terraform* or *pulumi* or *ansible*)
+    and not source.as.organization.name: (Amazon* or AMAZON* or Google*)
+    and not source.address: ("cloudformation.amazonaws.com" or "servicecatalog.amazonaws.com")
+```
+
+
+
+### AWS IAM Roles Anywhere Profile Creation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0101
+
+```python
+data_stream.dataset: aws.cloudtrail
+    and event.provider: rolesanywhere.amazonaws.com
+    and event.action: CreateProfile
+    and event.outcome: success
+```
+
+
+
+### AWS IAM SAML Provider Created
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0103
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "iam.amazonaws.com"
+    and event.action: "CreateSAMLProvider"
+    and event.outcome: "success"
+```
+
+
+
+### AWS IAM SAML Provider Updated
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0104
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "iam.amazonaws.com"
+    and event.action: "UpdateSAMLProvider"
+    and event.outcome: "success"
+    and not (source.address: "sso.amazonaws.com" and user_agent.original: "sso.amazonaws.com")
 ```
 
 
@@ -4029,6 +5293,52 @@ event.dataset: "aws.cloudtrail"
 
 
 
+### AWS IAM User Addition to Group
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0106
+
+```python
+data_stream.dataset: aws.cloudtrail and 
+    event.provider: iam.amazonaws.com and 
+    event.action: AddUserToGroup and 
+    event.outcome: success
+```
+
+
+
+### AWS KMS Customer Managed Key Disabled or Scheduled for Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0110
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "kms.amazonaws.com" 
+    and event.action: ("DisableKey" or "ScheduleKeyDeletion") 
+    and event.outcome: "success"
+```
+
+
+
+### AWS KMS Imported Key Material Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0111
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "kms.amazonaws.com"
+    and event.action: "DeleteImportedKeyMaterial"
+    and event.outcome: "success"
+    and not aws.cloudtrail.user_identity.type: "AWSService"
+```
+
+
+
 ### AWS KMS Key Policy Updated via PutKeyPolicy
 
 Branch count: 1  
@@ -4041,6 +5351,21 @@ event.dataset: "aws.cloudtrail"
     and event.action: "PutKeyPolicy"
     and event.outcome: "success"
     and not aws.cloudtrail.user_identity.type: "AWSService"
+```
+
+
+
+### AWS Lambda Event Source Mapping Creation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0113
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "lambda.amazonaws.com"
+    and event.action: CreateEventSourceMapping*
+    and event.outcome: "success"
 ```
 
 
@@ -4060,6 +5385,97 @@ event.dataset: "aws.cloudtrail"
 
 
 
+### AWS Lambda Function Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0115
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "lambda.amazonaws.com"
+    and event.action: (DeleteFunction or DeleteFunction20*)
+    and event.outcome: "success"
+```
+
+
+
+### AWS Lambda Layer Added to Existing Function
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0123
+
+```python
+data_stream.dataset: aws.cloudtrail
+    and event.provider: lambda.amazonaws.com
+    and event.outcome: success
+    and event.action: (PublishLayerVersion* or UpdateFunctionConfiguration*)
+```
+
+
+
+### AWS Lambda Layer Shared Externally
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0124
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "lambda.amazonaws.com"
+    and event.action: AddLayerVersionPermission*
+    and event.outcome: "success"
+```
+
+
+
+### AWS Management Console Root Login
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0127
+
+```python
+data_stream.dataset:aws.cloudtrail and 
+event.provider:signin.amazonaws.com and 
+event.action:ConsoleLogin and 
+aws.cloudtrail.user_identity.type:Root and 
+event.outcome:success
+```
+
+
+
+### AWS RDS DB Instance Restored
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0129
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "rds.amazonaws.com"
+    and event.action: ("RestoreDBInstanceFromDBSnapshot" or "RestoreDBInstanceFromS3")
+    and event.outcome: "success"
+```
+
+
+
+### AWS RDS DB Instance or Cluster Deleted
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0130
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: rds.amazonaws.com 
+    and event.action: (DeleteDBCluster or DeleteGlobalCluster or DeleteDBInstance)
+    and event.outcome: success
+```
+
+
+
 ### AWS RDS DB Snapshot Created
 
 Branch count: 2  
@@ -4069,6 +5485,146 @@ Index: geneve-ut-0133
 ```python
 event.dataset: "aws.cloudtrail" and event.provider: "rds.amazonaws.com" 
     and event.action: ("CreateDBSnapshot" or "CreateDBClusterSnapshot") and event.outcome: "success"
+```
+
+
+
+### AWS RDS Snapshot Export
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0136
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: rds.amazonaws.com 
+    and event.action: StartExportTask 
+    and event.outcome: success
+```
+
+
+
+### AWS Route 53 Domain Transfer Lock Disabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0138
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: route53domains.amazonaws.com 
+    and event.action: DisableDomainTransferLock 
+    and event.outcome: success
+```
+
+
+
+### AWS Route 53 Domain Transferred to Another Account
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0139
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: route53domains.amazonaws.com 
+    and event.action: TransferDomainToAnotherAwsAccount 
+    and event.outcome: success
+```
+
+
+
+### AWS Route 53 Private Hosted Zone Associated With a VPC
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0140
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: route53.amazonaws.com 
+    and event.action: AssociateVPCWithHostedZone 
+    and event.outcome: success
+```
+
+
+
+### AWS Route 53 Resolver Query Log Configuration Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0141
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: route53resolver.amazonaws.com
+    and event.action: DeleteResolverQueryLogConfig 
+    and event.outcome: success
+```
+
+
+
+### AWS S3 Bucket Configuration Deletion
+
+Branch count: 5  
+Document count: 5  
+Index: geneve-ut-0142
+
+```python
+data_stream.dataset:aws.cloudtrail and 
+    event.provider:s3.amazonaws.com and
+    event.action:(DeleteBucketPolicy or 
+                    DeleteBucketReplication or 
+                    DeleteBucketCors or 
+                    DeleteBucketEncryption or 
+                    DeleteBucketLifecycle) and 
+    event.outcome:success
+```
+
+
+
+### AWS S3 Credential File Retrieved from Bucket
+
+Branch count: 13  
+Document count: 13  
+Index: geneve-ut-0149
+
+```python
+data_stream.dataset: "aws.cloudtrail" and
+    event.provider: "s3.amazonaws.com" and
+    event.action: "GetObject" and
+    event.outcome: "success" and
+    aws.cloudtrail.flattened.request_parameters.key: (
+        */.aws/credentials or
+        */.aws/config or
+        */id_rsa or
+        */id_ed25519 or
+        */id_ecdsa or
+        */id_dsa or
+        */.env or
+        */.env.* or
+        *.ppk or
+        *.pem or
+        *.key or
+        *private_key* or
+        */.ssh/authorized_keys
+    ) and
+    not aws.cloudtrail.user_identity.type: "AWSService"
+```
+
+
+
+### AWS SQS Queue Purge
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0158
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "sqs.amazonaws.com"
+    and event.action: "PurgeQueue"
+    and event.outcome: "success"
 ```
 
 
@@ -4127,6 +5683,63 @@ event.dataset: aws.cloudtrail
 
 
 
+### AWS Sensitive IAM Operations Performed via CloudShell
+
+Branch count: 9  
+Document count: 9  
+Index: geneve-ut-0175
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: "iam.amazonaws.com"
+    and event.action: (
+        "CreateAccessKey" or
+        "CreateUser" or
+        "AttachUserPolicy" or
+        "PutUserPolicy" or
+        "CreateRole" or
+        "AttachRolePolicy" or
+        "PutRolePolicy" or
+        "CreateInstanceProfile" or
+        "AddRoleToInstanceProfile"
+    )
+    and event.outcome: "success"
+    and user_agent.original: *CloudShell*
+```
+
+
+
+### AWS Sign-In Console Login with Federated User
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0177
+
+```python
+data_stream.dataset: "aws.cloudtrail" and 
+    event.provider: "signin.amazonaws.com" and 
+    event.action : "ConsoleLogin" and 
+    aws.cloudtrail.user_identity.type: "FederatedUser" and
+    event.outcome: "success"
+```
+
+
+
+### AWS Sign-In Root Password Recovery Requested
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0178
+
+```python
+data_stream.dataset:aws.cloudtrail and 
+event.provider:signin.amazonaws.com and 
+event.action:PasswordRecoveryRequested and 
+event.outcome:success
+```
+
+
+
 ### AWS Sign-In Token Created
 
 Branch count: 1  
@@ -4138,6 +5751,94 @@ event.dataset: "aws.cloudtrail" and
     event.provider: "signin.amazonaws.com" and 
     event.action : "GetSigninToken" and 
     event.outcome: "success"
+```
+
+
+
+### AWS VPC Flow Logs Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0182
+
+```python
+data_stream.dataset:aws.cloudtrail and event.provider:ec2.amazonaws.com and event.action:DeleteFlowLogs and event.outcome:success
+```
+
+
+
+### AWS WAF Access Control List Deletion
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0183
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: (waf.amazonaws.com or waf-regional.amazonaws.com or wafv2.amazonaws.com)
+    and event.action: DeleteWebACL 
+    and event.outcome: success
+```
+
+
+
+### AWS WAF Rule or Rule Group Deletion
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0184
+
+```python
+data_stream.dataset: aws.cloudtrail 
+    and event.provider: (waf.amazonaws.com or waf-regional.amazonaws.com or wafv2.amazonaws.com) 
+    and event.action: (DeleteRule or DeleteRuleGroup) 
+    and event.outcome: success
+```
+
+
+
+### Abnormally Large DNS Response
+
+Branch count: 68  
+Document count: 68  
+Index: geneve-ut-0186
+
+```python
+((event.category:(network or network_traffic) and destination.port:53) 
+      or network.protocol:"dns" 
+      or data_stream.dataset:(network_traffic.dns or zeek.dns)
+      or (event.module:corelight and event.dataset:dns))
+    and destination.bytes >= 65000
+    and event.type:("allowed" or "end" or "protocol" or "start")
+and not (
+  event.duration > 60000000000
+  and (
+    event.action:("flow_terminated" or "network_flow")
+    or data_stream.dataset:zeek.connection
+    or (event.module:corelight and event.dataset:conn)
+  )
+)
+```
+
+
+
+### Accepted Default Telnet Port Connection
+
+Branch count: 16  
+Document count: 16  
+Index: geneve-ut-0187
+
+```python
+(data_stream.dataset:(fortinet_fortigate.log or network_traffic.flow
+        or panw.panos or pfsense.log or sonicwall_firewall.log or suricata.eve)
+    or event.category:(network or network_traffic))
+    and event.type:(connection and not (denied or end))
+    and not event.action:(Reject or client-rst or connection-denied or
+        connection-end or denied or deny or flow_denied or flow_dropped or
+        flow_terminated or network_flow or server-rst or timeout)
+    and not (event.action:netflow_flow and not network.packets > 1)
+    and not network.application:(stretchoid-scanning or traceroute)
+    and destination.port:23
 ```
 
 
@@ -4386,6 +6087,18 @@ event.code:5136 and host.os.type:"windows" and winlog.event_data.ObjectDN:CN=Adm
 
 
 
+### Administrator Privileges Assigned to an Okta Group
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0202
+
+```python
+data_stream.dataset:okta.system and event.action:group.privilege.grant
+```
+
+
+
 ### Adversary Behavior - Detected - Elastic Endgame
 
 Branch count: 2  
@@ -4510,6 +6223,33 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 
 
+### Application Added to Google Workspace Domain
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0220
+
+```python
+data_stream.dataset:google_workspace.admin and event.action:ADD_APPLICATION
+```
+
+
+
+### Application Removed from Blocklist in Google Workspace
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0221
+
+```python
+data_stream.dataset:"google_workspace.admin" and
+  event.action:"CHANGE_APPLICATION_SETTING" and
+  google_workspace.admin.application.name:"Google Workspace Marketplace" and
+  google_workspace.admin.old_value: *allowed*false* and google_workspace.admin.new_value: *allowed*true*
+```
+
+
+
 ### Archive File with Unusual Extension
 
 Branch count: 364  
@@ -4609,6 +6349,114 @@ process where host.os.type == "linux" and event.type == "start" and
 event.action in ("exec", "exec_event", "start", "ProcessRollup2", "executed", "process_started") and
 process.name == "journalctl" and process.args like ("--vacuum-time=*", "--vacuum-size=*", "--vacuum-files=*") and
 not process.parent.args == "/etc/cron.daily/clean-journal-logs"
+```
+
+
+
+### Attempt to Create Okta API Token
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0227
+
+```python
+data_stream.dataset:okta.system and event.action:system.api_token.create
+```
+
+
+
+### Attempt to Deactivate an Okta Application
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0228
+
+```python
+data_stream.dataset:okta.system and event.action:application.lifecycle.deactivate
+```
+
+
+
+### Attempt to Deactivate an Okta Network Zone
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0229
+
+```python
+data_stream.dataset:okta.system and event.action:zone.deactivate
+```
+
+
+
+### Attempt to Deactivate an Okta Policy
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0230
+
+```python
+data_stream.dataset:okta.system and event.action:policy.lifecycle.deactivate
+```
+
+
+
+### Attempt to Deactivate an Okta Policy Rule
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0231
+
+```python
+data_stream.dataset:okta.system and event.action:policy.rule.deactivate
+```
+
+
+
+### Attempt to Delete an Okta Application
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0232
+
+```python
+data_stream.dataset:okta.system and event.action:application.lifecycle.delete
+```
+
+
+
+### Attempt to Delete an Okta Network Zone
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0233
+
+```python
+data_stream.dataset:okta.system and event.action:zone.delete
+```
+
+
+
+### Attempt to Delete an Okta Policy
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0234
+
+```python
+data_stream.dataset:okta.system and event.action:policy.lifecycle.delete
+```
+
+
+
+### Attempt to Delete an Okta Policy Rule
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0235
+
+```python
+data_stream.dataset:okta.system and event.action:policy.rule.delete
 ```
 
 
@@ -4772,6 +6620,54 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Attempt to Modify an Okta Application
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0244
+
+```python
+data_stream.dataset:okta.system and event.action:application.lifecycle.update
+```
+
+
+
+### Attempt to Modify an Okta Network Zone
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0245
+
+```python
+data_stream.dataset:okta.system and event.action:(zone.update or network_zone.rule.disabled or zone.remove_blacklist)
+```
+
+
+
+### Attempt to Modify an Okta Policy
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0246
+
+```python
+data_stream.dataset:okta.system and event.action:policy.lifecycle.update
+```
+
+
+
+### Attempt to Modify an Okta Policy Rule
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0247
+
+```python
+data_stream.dataset:okta.system and event.action:policy.rule.update
+```
+
+
+
 ### Attempt to Mount SMB Share via Command Line
 
 Branch count: 8  
@@ -4791,6 +6687,30 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 
 
+### Attempt to Reset MFA Factors for an Okta User Account
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0249
+
+```python
+data_stream.dataset:okta.system and event.action:user.mfa.factor.reset_all
+```
+
+
+
+### Attempt to Revoke Okta API Token
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0250
+
+```python
+data_stream.dataset:okta.system and event.action:system.api_token.revoke
+```
+
+
+
 ### Attempt to Unload Elastic Endpoint Security Kernel Extension
 
 Branch count: 6  
@@ -4800,6 +6720,18 @@ Index: geneve-ut-0251
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and
  process.name == "kextunload" and process.args like~ ("*.EndpointSecurity", "/System/Library/Extensions/EndpointSecurity.kext", "EndpointSecurity.kext")
+```
+
+
+
+### Attempted Bypass of Okta MFA
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0252
+
+```python
+data_stream.dataset:okta.system and event.action:user.mfa.attempt_bypass
 ```
 
 
@@ -4861,6 +6793,196 @@ file where host.os.type == "macos" and event.action == "modification" and
 
 
 
+### Azure Automation Account Created
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0263
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WRITE" and event.outcome:(Success or success)
+```
+
+
+
+### Azure Automation Runbook Created or Modified
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0264
+
+```python
+data_stream.dataset:azure.activitylogs and
+  azure.activitylogs.operation_name:
+  (
+    "MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/DRAFT/WRITE" or
+    "MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/WRITE" or
+    "MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/PUBLISH/ACTION"
+  ) and
+  event.outcome:(Success or success)
+```
+
+
+
+### Azure Automation Runbook Deleted
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0265
+
+```python
+data_stream.dataset:azure.activitylogs and
+    azure.activitylogs.operation_name:"MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/RUNBOOKS/DELETE" and
+    event.outcome:(Success or success)
+```
+
+
+
+### Azure Automation Webhook Created
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0266
+
+```python
+data_stream.dataset:azure.activitylogs and
+  azure.activitylogs.operation_name:
+    (
+      "MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WEBHOOKS/ACTION" or
+      "MICROSOFT.AUTOMATION/AUTOMATIONACCOUNTS/WEBHOOKS/WRITE"
+    ) and
+  event.outcome:(Success or success)
+```
+
+
+
+### Azure Blob Storage Container Access Level Modified
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0267
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/WRITE" and event.outcome:(Success or success)
+```
+
+
+
+### Azure Blob Storage Permissions Modified
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0268
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:(
+     "MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/MANAGEOWNERSHIP/ACTION" or
+     "MICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/MODIFYPERMISSIONS/ACTION") and
+  event.outcome:(Success or success)
+```
+
+
+
+### Azure Diagnostic Settings Alert Suppression Rule Created or Modified
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0274
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.SECURITY/ALERTSSUPPRESSIONRULES/WRITE" and
+event.outcome: "success"
+```
+
+
+
+### Azure Event Hub Authorization Rule Created or Updated
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0276
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.EVENTHUB/NAMESPACES/AUTHORIZATIONRULES/WRITE" and event.outcome:(Success or success)
+```
+
+
+
+### Azure Event Hub Deleted
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0277
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.EVENTHUB/NAMESPACES/EVENTHUBS/DELETE" and event.outcome:(Success or success)
+```
+
+
+
+### Azure Kubernetes Services (AKS) Kubernetes Events Deleted
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0281
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/EVENTS.K8S.IO/EVENTS/DELETE" and
+event.outcome:(Success or success)
+```
+
+
+
+### Azure Kubernetes Services (AKS) Kubernetes Pods Deleted
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0282
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/PODS/DELETE" and
+event.outcome:(Success or success)
+```
+
+
+
+### Azure Kubernetes Services (AKS) Kubernetes Rolebindings Created
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0283
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:
+	("MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/RBAC.AUTHORIZATION.K8S.IO/ROLEBINDINGS/WRITE" or
+	 "MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/RBAC.AUTHORIZATION.K8S.IO/CLUSTERROLEBINDINGS/WRITE") and
+event.outcome:(Success or success)
+```
+
+
+
+### Azure RBAC Built-In Administrator Roles Assigned
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0285
+
+```python
+data_stream.dataset: azure.activitylogs and
+    event.action: "MICROSOFT.AUTHORIZATION/ROLEASSIGNMENTS/WRITE" and
+    azure.activitylogs.properties.requestbody.properties.roleDefinitionId:
+    (
+      *18d7d88d-d35e-4fb5-a5c3-7773c20a72d9* or
+      *f58310d9-a9f6-439a-9e8d-f62e7b41a168* or
+      *b24988ac-6180-42a0-ab88-20f7382dd24c* or
+      *8e3af657-a8ff-443c-a75c-2fe8c4bcb635* or
+      *92b92042-07d9-4307-87f7-36a593fc5850* or
+      *a8889054-8d42-49c9-bc1c-52486c10e7cd*
+  )
+```
+
+
+
 ### Azure Recovery Services Resource Deleted
 
 Branch count: 2  
@@ -4871,6 +6993,18 @@ Index: geneve-ut-0286
 event.dataset:azure.activitylogs and
     azure.activitylogs.operation_name:MICROSOFT.RECOVERYSERVICES/*/DELETE and
     event.outcome:(Success or success)
+```
+
+
+
+### Azure Resource Group Deleted
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0287
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.RESOURCES/SUBSCRIPTIONS/RESOURCEGROUPS/DELETE" and event.outcome:(Success or success)
 ```
 
 
@@ -4889,6 +7023,143 @@ process where event.type in ("start", "process_started") and
     (process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "mksh", "busybox") and
       process.parent.args like "/var/lib/waagent/run-command/download/*/script.sh")
   )
+```
+
+
+
+### Azure Service Principal Sign-In Followed by Arc Cluster Credential Access
+
+Branch count: 2  
+Document count: 4  
+Index: geneve-ut-0290
+
+```python
+sequence with maxspan=30m
+[authentication where data_stream.dataset == "azure.signinlogs"
+    and azure.signinlogs.category == "ServicePrincipalSignInLogs"
+    and azure.signinlogs.properties.status.error_code == 0
+] by azure.signinlogs.properties.app_id
+[any where data_stream.dataset == "azure.activitylogs"
+    and azure.activitylogs.operation_name : "MICROSOFT.KUBERNETES/CONNECTEDCLUSTERS/LISTCLUSTERUSERCREDENTIAL/ACTION"
+    and event.outcome : ("Success", "success")
+] by azure.activitylogs.identity.claims.appid
+```
+
+
+
+### Azure Storage Account Key Regenerated
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0294
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.STORAGE/STORAGEACCOUNTS/REGENERATEKEY/ACTION" and event.outcome:(Success or success)
+```
+
+
+
+### Azure VM Boot Diagnostics Retrieved
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0297
+
+```python
+data_stream.dataset:azure.activitylogs and
+    event.action:"MICROSOFT.COMPUTE/VIRTUALMACHINES/RETRIEVEBOOTDIAGNOSTICSDATA/ACTION" and
+    event.outcome:(success or Success)
+```
+
+
+
+### Azure VM Extension Deployment by User
+
+Branch count: 12  
+Document count: 12  
+Index: geneve-ut-0299
+
+```python
+data_stream.dataset:azure.activitylogs and
+azure.activitylogs.operation_name:"MICROSOFT.COMPUTE/VIRTUALMACHINES/EXTENSIONS/WRITE" and
+azure.activitylogs.identity.authorization.evidence.principal_type:User and
+event.outcome:(success or Success) and
+azure.resource.id:(
+    *VMACCESSAGENT* or
+    *CUSTOMSCRIPTEXTENSION* or
+    *RUNCOMMANDWINDOWS* or
+    *RUNCOMMANDLINUX* or
+    */DSC/* or
+    *MICROSOFTMONITORINGAGENT*
+)
+```
+
+
+
+### Azure VNet Firewall Front Door WAF Policy Deleted
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0302
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.NETWORK/FRONTDOORWEBAPPLICATIONFIREWALLPOLICIES/DELETE" and event.outcome:(Success or success)
+```
+
+
+
+### Azure VNet Firewall Policy Deleted
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0303
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.NETWORK/FIREWALLPOLICIES/DELETE" and event.outcome:(Success or success)
+```
+
+
+
+### Azure VNet Full Network Packet Capture Enabled
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0304
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:
+    (
+        MICROSOFT.NETWORK/*/STARTPACKETCAPTURE/ACTION or
+        MICROSOFT.NETWORK/*/VPNCONNECTIONS/STARTPACKETCAPTURE/ACTION or
+        MICROSOFT.NETWORK/*/PACKETCAPTURES/WRITE
+    ) and
+event.outcome:(Success or success)
+```
+
+
+
+### Azure VNet Network Watcher Deleted
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0305
+
+```python
+data_stream.dataset:azure.activitylogs and azure.activitylogs.operation_name:"MICROSOFT.NETWORK/NETWORKWATCHERS/DELETE" and event.outcome:(Success or success)
+```
+
+
+
+### Azure Virtual Machine Configuration Modified
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0306
+
+```python
+data_stream.dataset:azure.activitylogs and
+    event.action:"MICROSOFT.COMPUTE/VIRTUALMACHINES/WRITE" and
+    event.outcome:(success or Success)
 ```
 
 
@@ -5415,6 +7686,42 @@ process where host.os.type == "windows" and event.type == "start" and
   /* common FPs can be added here */
   not process.parent.args : ("C:\\Windows\\System32\\SHELL32.dll,RunAsNewUser_RunDLL",
                              "C:\\WINDOWS\\*.tmp,zzzzInvokeManagedCustomActionOutOfProc")
+```
+
+
+
+### Command and Scripting Interpreter via Windows Scripts
+
+Branch count: 96  
+Document count: 96  
+Index: geneve-ut-0336
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.command_line != null and
+  (
+    process.name : ("powershell.exe", "pwsh.exe", "powershell_ise.exe", "cmd.exe") or
+    ?process.pe.original_file_name : ("powershell.exe", "pwsh.dll", "powershell_ise.exe", "Cmd.Exe")
+  ) and
+  process.parent.name : ("wscript.exe", "mshta.exe") and
+  not (
+    process.args : (
+      "C:\\Program Files\\Intel\\SUR\\QUEENCREEK\\x64\\task.bat",
+      "\"C:\\Program Files\\Intel\\SUR\\QUEENCREEK\\x64\\task.bat\""
+    ) or
+    process.command_line : (
+      "\"C:\\Windows\\system32\\cmd.exe\" /c auditpol.exe /set /SUBCATEGORY:*",
+      "\"C:\\Windows\\system32\\cmd.exe\" /c auditpol.exe /get*",
+      "\"C:\\Windows\\system32\\cmd.exe\" /c exit\""
+    ) or
+    (process.args == "-File" and process.args == "-ExecutionPolicy")
+  )
+  and 
+  not (
+    ?user.id == "S-1-5-18" and
+    /* Don't apply the user.id exclusion to Sysmon for compatibility */
+    not data_stream.dataset : ("windows.sysmon_operational", "windows.sysmon")
+  )
 ```
 
 
@@ -6002,6 +8309,18 @@ file where host.os.type == "linux" and event.action in ("rename", "creation") an
 
 
 
+### CrowdStrike External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0366
+
+```python
+event.kind: alert and data_stream.dataset: crowdstrike.alert
+```
+
+
+
 ### Cupsd or Foomatic-rip Shell Execution
 
 Branch count: 32  
@@ -6150,6 +8469,33 @@ process.parent.name in ("node", "bun", "node.exe", "bun.exe") and (
   process.command_line like ("*127.0.0.1*", "*localhost*", "*/home/*/.claude/shell-snapshots/*", "*/root/.claude/shell-snapshots/snapshot*", "*/Users/*/.claude/shell-snapshots/*") or
   process.parent.executable like ("/*/.cursor-server/*node", "/home/*/cursor-agent/*/node") 
 )
+```
+
+
+
+### CyberArk Privileged Access Security Error
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0373
+
+```python
+data_stream.dataset:cyberarkpas.audit and event.type:error
+```
+
+
+
+### CyberArk Privileged Access Security Recommended Monitor
+
+Branch count: 20  
+Document count: 20  
+Index: geneve-ut-0374
+
+```python
+data_stream.dataset:cyberarkpas.audit and
+  event.code:(4 or 22 or 24 or 31 or 38 or 57 or 60 or 130 or 295 or 300 or 302 or
+              308 or 319 or 344 or 346 or 359 or 361 or 378 or 380 or 411) and
+  not event.type:error
 ```
 
 
@@ -6304,6 +8650,21 @@ process.name : "openssl*" and process.args : "enc" and process.args : "-in" and 
 
 
 
+### Default Cobalt Strike Team Server Certificate
+
+Branch count: 9  
+Document count: 9  
+Index: geneve-ut-0384
+
+```python
+(data_stream.dataset: network_traffic.tls or event.category: (network or network_traffic))
+  and (tls.server.hash.md5:950098276A495286EB2A2556FBAB6D83
+  or tls.server.hash.sha1:6ECE5ECE4192683D2D84E25B0BA7E04F9CB7EB7C
+  or tls.server.hash.sha256:87F2085C32B6A2CC709B365F55873E207A9CAA10BFFECF2FD16D3CF9D94D390C)
+```
+
+
+
 ### Delete Volume USN Journal with Fsutil
 
 Branch count: 2  
@@ -6349,6 +8710,110 @@ Index: geneve-ut-0389
 registry where host.os.type == "windows" and
 /* update here with encoding combinations */
  registry.data.strings : "TVqQAAMAAAAEAAAA*"
+```
+
+
+
+### Deprecated - M365 Exchange DLP Policy Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0390
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Remove-DlpPolicy" and event.outcome:success
+```
+
+
+
+### Deprecated - M365 Security Compliance Email Reported by User as Malware or Phish
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0391
+
+```python
+data_stream.dataset:o365.audit and event.provider:SecurityComplianceCenter and event.action:AlertTriggered and rule.name:"Email reported by user as malware or phish"
+```
+
+
+
+### Deprecated - M365 Security Compliance Potential Ransomware Activity
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0392
+
+```python
+data_stream.dataset:o365.audit and
+    event.provider:SecurityComplianceCenter and
+    event.category:web and
+    rule.name:("Ransomware activity" or "Potential ransomware activity") and
+    event.outcome:success
+```
+
+
+
+### Deprecated - M365 Security Compliance Unusual Volume of File Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0393
+
+```python
+data_stream.dataset:o365.audit and event.provider:SecurityComplianceCenter and event.category:web and event.action:"Unusual volume of file deletion" and event.outcome:success
+```
+
+
+
+### Deprecated - M365 Security Compliance User Restricted from Sending Email
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0394
+
+```python
+data_stream.dataset:o365.audit and event.provider:SecurityComplianceCenter and event.category:web and event.action:"User restricted from sending email" and event.outcome:success
+```
+
+
+
+### Deprecated - M365 Teams External Access Enabled
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0395
+
+```python
+data_stream.dataset:o365.audit and event.provider:(SkypeForBusiness or MicrosoftTeams) and
+event.category:web and event.action:"Set-CsTenantFederationConfiguration" and
+o365.audit.Parameters.AllowFederatedUsers:True and event.outcome:success
+```
+
+
+
+### Deprecated - M365 Teams Guest Access Enabled
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0396
+
+```python
+data_stream.dataset:o365.audit and event.provider:(SkypeForBusiness or MicrosoftTeams) and
+event.category:web and event.action:"Set-CsTeamsClientConfiguration" and
+o365.audit.Parameters.AllowGuestUser:True and event.outcome:success
+```
+
+
+
+### Deprecated - MFA Disabled for Google Workspace Organization
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0397
+
+```python
+data_stream.dataset:google_workspace.admin and event.provider:admin and event.category:iam and event.action:(ENFORCE_STRONG_AUTHENTICATION or ALLOW_STRONG_AUTHENTICATION) and google_workspace.admin.new_value:false
 ```
 
 
@@ -6709,6 +9174,18 @@ not (
 
 
 
+### Domain Added to Google Workspace Trusted Domains
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0418
+
+```python
+data_stream.dataset:google_workspace.admin and event.action:ADD_TRUSTED_DOMAINS
+```
+
+
+
 ### Downloaded URL Files
 
 Branch count: 1  
@@ -6909,6 +9386,24 @@ not (
 
 
 
+### EKS Authentication Configuration Modified
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0429
+
+```python
+data_stream.dataset:"kubernetes.audit_logs" and 
+kubernetes.audit.objectRef.resource:"configmaps" and 
+kubernetes.audit.objectRef.name:"aws-auth" and 
+kubernetes.audit.verb:("update" or "patch" or "delete") and 
+kubernetes.audit.objectRef.namespace:"kube-system" and 
+kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
+not user.name:"eks:kms-storage-migrator"
+```
+
+
+
 ### ESXI Discovery via Find
 
 Branch count: 18  
@@ -7018,6 +9513,18 @@ process where event.type == "start" and
 
 
 
+### Elastic Security External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0438
+
+```python
+event.kind: alert and data_stream.dataset: elastic_security.alert
+```
+
+
+
 ### Emond Rules Creation or Modification
 
 Branch count: 3  
@@ -7092,6 +9599,475 @@ event.kind:alert and event.module:(endpoint and not endgame)
 
 
 
+### Entra ID Application Credential Modified
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0445
+
+```python
+data_stream.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Update application - Certificates and secrets management" and event.outcome:(success or Success)
+```
+
+
+
+### Entra ID Custom Domain Added or Verified
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0448
+
+```python
+data_stream.dataset: azure.auditlogs
+    and azure.auditlogs.properties.category: DirectoryManagement
+    and event.action: ("Add unverified domain" or "Verify domain")
+    and event.outcome: success
+```
+
+
+
+### Entra ID Device Registration with ROADtools Default OS Build
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0449
+
+```python
+data_stream.dataset:"azure.auditlogs" and event.action:"Add device" and
+    azure.auditlogs.properties.target_resources.0.modified_properties.3.new_value:*10.0.19041.928* and
+    azure.auditlogs.properties.target_resources.0.modified_properties.4.new_value:*DESKTOP-*
+```
+
+
+
+### Entra ID Domain Federation Configuration Change
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0451
+
+```python
+data_stream.dataset: azure.auditlogs
+    and azure.auditlogs.properties.category: DirectoryManagement
+    and event.action: ("Set domain authentication" or "Set federation settings on domain")
+    and event.outcome: success
+```
+
+
+
+### Entra ID External Guest User Invited
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0455
+
+```python
+data_stream.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Invite external user" and azure.auditlogs.properties.target_resources.*.display_name:guest and event.outcome:(Success or success)
+```
+
+
+
+### Entra ID Global Administrator Role Assigned
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0457
+
+```python
+data_stream.dataset:azure.auditlogs and
+    azure.auditlogs.properties.category:RoleManagement and
+    azure.auditlogs.operation_name:"Add member to role" and
+    azure.auditlogs.properties.target_resources.*.modified_properties.*.new_value: "\"Global Administrator\""
+```
+
+
+
+### Entra ID Global Administrator Role Assigned (PIM User)
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0458
+
+```python
+data_stream.dataset:azure.auditlogs and azure.auditlogs.properties.category:RoleManagement and
+    azure.auditlogs.operation_name:("Add eligible member to role in PIM completed (permanent)" or
+                                    "Add member to role in PIM completed (timebound)") and
+    azure.auditlogs.properties.target_resources.*.display_name:"Global Administrator" and
+    event.outcome:(Success or success)
+```
+
+
+
+### Entra ID Guest Account Promoted to Member
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0459
+
+```python
+data_stream.dataset: "azure.auditlogs" and
+azure.auditlogs.operation_name: "Update user" and
+azure.auditlogs.properties.target_resources.*.modified_properties.*.display_name: "UserType" and
+azure.auditlogs.properties.target_resources.*.modified_properties.*.old_value: *Guest* and
+azure.auditlogs.properties.target_resources.*.modified_properties.*.new_value: *Member* and
+event.outcome: (Success or success)
+```
+
+
+
+### Entra ID High Risk Sign-in
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0460
+
+```python
+data_stream.dataset:azure.signinlogs and
+  (
+    azure.signinlogs.properties.risk_level_during_signin:high or
+    azure.signinlogs.properties.risk_level_aggregated:high
+  )
+```
+
+
+
+### Entra ID High Risk User Sign-in Heuristic
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0461
+
+```python
+data_stream.dataset:azure.signinlogs and
+  azure.signinlogs.properties.risk_state:("confirmedCompromised" or "atRisk") and event.outcome:(success or Success)
+```
+
+
+
+### Entra ID Kali365 Default User-Agent Detected
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0463
+
+```python
+data_stream.dataset : ("azure.signinlogs" or "azure.auditlogs" or "o365.audit") and user_agent.original: kali365-live/*
+```
+
+
+
+### Entra ID MFA Disabled for User
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0464
+
+```python
+data_stream.dataset: "azure.auditlogs" and
+    (azure.auditlogs.operation_name: "Disable Strong Authentication" or
+    (
+        azure.auditlogs.operation_name: "User deleted security info" and
+        azure.auditlogs.properties.additional_details.key: "AuthenticationMethod"
+    )) and event.outcome: (Success or success)
+```
+
+
+
+### Entra ID Microsoft Authentication Broker DRS Sign-In from Suspicious ASN
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0466
+
+```python
+data_stream.dataset:"azure.signinlogs" and event.action:"Sign-in activity" and
+source.as.number:(
+    399629 or 14061 or 136787 or 9009 or 45102 or 215540 or 29802 or 62240 or 204957 or 395092 or 393406 or 400940 or
+    59711 or 132203
+) and
+azure.signinlogs.properties.app_display_name:"Microsoft Authentication Broker" and
+azure.signinlogs.properties.resource_display_name:"Device Registration Service"
+```
+
+
+
+### Entra ID Microsoft Authentication Broker Sign-In to Unusual Resource
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0467
+
+```python
+data_stream.dataset:"azure.signinlogs" and event.category:"authentication" and event.action:"Sign-in activity" and
+event.outcome:success and azure.signinlogs.properties.app_id:"29d9ed98-a469-4536-ade2-f981bc1d605e" and
+azure.signinlogs.properties.resource_id:(* and not 
+    ("00000002-0000-0000-c000-000000000000" or
+    "90a2e5d2-fd7a-4a2e-bc90-3dc50ae8e3ee" or
+    "01cb2876-7ebd-4aa4-9cc9-d28bd4d359a9" or
+    "d4ebce55-015a-49b5-a083-c84d1797ae8c" or
+    "00000003-0000-0000-c000-000000000000" or 
+    "0a5f63c0-b750-4f38-a71c-4fc0d58b89e2")
+)
+```
+
+
+
+### Entra ID Microsoft Authentication Broker Sign-In with Non-Standard User Agent
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0468
+
+```python
+data_stream.dataset:"azure.signinlogs" and event.action:"Sign-in activity" and event.outcome:(success or Success) and 
+(azure.signinlogs.properties.app_display_name:"Microsoft Authentication Broker" or azure.signinlogs.properties.app_id:"29d9ed98-a469-4536-ade2-f981bc1d605e") and
+user_agent.original:(* and not (Mozilla* or Dalvik* or *CFNetwork* or Windows-AzureAD-Authentication-Provider* or Java*ThinkPad*)) and
+azure.signinlogs.properties.resource_display_name:*
+```
+
+
+
+### Entra ID OAuth Application Redirect URI Modified
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0469
+
+```python
+data_stream.dataset: "azure.auditlogs" and
+azure.auditlogs.operation_name: "Update application" and
+event.outcome: ("Success" or "success") and
+azure.auditlogs.properties.target_resources.*.modified_properties.*.display_name: "AppAddress"
+```
+
+
+
+### Entra ID OAuth Device Code Grant by Microsoft Authentication Broker
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0472
+
+```python
+data_stream.dataset:(azure.activitylogs or azure.signinlogs)
+    and azure.signinlogs.properties.authentication_protocol:deviceCode
+    and azure.signinlogs.properties.conditional_access_audiences.application_id:29d9ed98-a469-4536-ade2-f981bc1d605e
+    and event.outcome:success or (
+        azure.activitylogs.properties.appId:29d9ed98-a469-4536-ade2-f981bc1d605e
+        and azure.activitylogs.properties.authentication_protocol:deviceCode)
+```
+
+
+
+### Entra ID OAuth Device Code Phishing via AiTM
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0474
+
+```python
+data_stream.dataset:"azure.signinlogs" and event.category:"authentication" and event.action:"Sign-in activity" and
+event.outcome:success and azure.signinlogs.properties.app_id:"29d9ed98-a469-4536-ade2-f981bc1d605e" and
+azure.signinlogs.properties.authentication_protocol:deviceCode and
+azure.signinlogs.properties.resource_id:(
+    "00000002-0000-0ff1-ce00-000000000000" or
+    "00000003-0000-0ff1-ce00-000000000000" or
+    "00000003-0000-0000-c000-000000000000"
+) and azure.signinlogs.properties.is_interactive:true
+```
+
+
+
+### Entra ID OAuth Device Code Sign-in to Azure AD Graph Enumeration
+
+Branch count: 17  
+Document count: 34  
+Index: geneve-ut-0475
+
+```python
+sequence by user.id, azure.tenant_id with maxspan=5m
+[authentication where
+    data_stream.dataset == "azure.signinlogs" and
+    event.outcome == "success" and
+    azure.signinlogs.properties.authentication_protocol == "deviceCode" and
+    azure.signinlogs.properties.device_detail.is_managed == false and
+    azure.signinlogs.properties.resource_id == "00000002-0000-0000-c000-000000000000"]
+[web where
+    data_stream.dataset == "azure.aadgraphactivitylogs" and
+    url.path : (
+        "*/users*",
+        "*/groups*",
+        "*/servicePrincipals*",
+        "*/applications*",
+        "*/applicationRefs*",
+        "*/devices*",
+        "*/directoryRoles*",
+        "*/roleAssignments*",
+        "*/eligibleRoleAssignments*",
+        "*/roleDefinitions*",
+        "*/directoryObjects*",
+        "*/policies*",
+        "*/oauth2PermissionGrants*",
+        "*/administrativeUnits*",
+        "*/tenantDetails*",
+        "*/directorySettingTemplates*",
+        "*/me*"
+    )]
+```
+
+
+
+### Entra ID OAuth PRT Issuance to Non-Managed Device Detected
+
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-0477
+
+```python
+sequence by azure.signinlogs.properties.user_id, azure.signinlogs.properties.device_detail.device_id with maxspan=1h
+  [authentication where
+    data_stream.dataset == "azure.signinlogs" and
+    azure.signinlogs.category == "NonInteractiveUserSignInLogs" and
+    azure.signinlogs.properties.app_id == "29d9ed98-a469-4536-ade2-f981bc1d605e" and
+    azure.signinlogs.properties.incoming_token_type == "refreshToken" and
+    azure.signinlogs.properties.device_detail.trust_type == "Azure AD joined" and
+    azure.signinlogs.properties.device_detail.device_id != null and
+    azure.signinlogs.properties.token_protection_status_details.sign_in_session_status == "unbound" and
+    azure.signinlogs.properties.user_type == "Member" and
+    azure.signinlogs.result_signature == "SUCCESS"
+  ]
+  [authentication where
+    data_stream.dataset == "azure.signinlogs" and
+    azure.signinlogs.properties.incoming_token_type == "primaryRefreshToken" and
+    azure.signinlogs.properties.resource_display_name != "Device Registration Service" and
+    azure.signinlogs.result_signature == "SUCCESS" and
+    azure.signinlogs.properties.device_detail.is_managed != true
+    and not (
+        azure.signinlogs.properties.app_display_name == "Windows Sign In" or
+        user_agent.original == "Windows-AzureAD-Authentication-Provider/1.0"
+    )
+  ]
+```
+
+
+
+### Entra ID OAuth Phishing via First-Party Microsoft Application
+
+Branch count: 78  
+Document count: 78  
+Index: geneve-ut-0478
+
+```python
+data_stream.dataset: "azure.signinlogs" and
+event.action: "Sign-in activity" and
+event.outcome: "success" and
+(
+  (
+    azure.signinlogs.properties.app_id: (
+      "aebc6443-996d-45c2-90f0-388ff96faa56" or
+      "04b07795-8ddb-461a-bbee-02f9e1bf7b46" or
+      "1950a258-227b-4e31-a9cf-717495945fc2"
+    ) and (
+      azure.signinlogs.properties.resource_id: ("00000003-0000-0000-c000-000000000000" or "00000002-0000-0000-c000-000000000000") or
+      azure.signinlogs.properties.resource_display_name: ("Microsoft Graph" or "Windows Azure Active Directory")
+    )
+  ) or
+  (
+    azure.signinlogs.properties.app_id: (
+      "00b41c95-dab0-4487-9791-b9d2c32c80f2" or
+      "1fec8e78-bce4-4aaf-ab1b-5451cc387264" or
+      "26a7ee05-5602-4d76-a7ba-eae8b7b67941" or
+      "27922004-5251-4030-b22d-91ecd9a37ea4" or
+      "4813382a-8fa7-425e-ab75-3b753aab3abb" or
+      "ab9b8c07-8f02-4f72-87fa-80105867a763" or
+      "872cd9fa-d31f-45e0-9eab-6e460a02d1f1" or
+      "af124e86-4e96-495a-b70a-90f90ab96707" or
+      "2d7f3606-b07d-41d1-b9d2-0d0c9296a6e8" or
+      "844cca35-0656-46ce-b636-13f48b0eecbd" or
+      "87749df4-7ccf-48f8-aa87-704bad0e0e16" or
+      "cf36b471-5b44-428c-9ce7-313bf84528de" or
+      "0ec893e0-5785-4de6-99da-4ed124e5296c" or
+      "22098786-6e16-43cc-a27d-191a01a1e3b5" or
+      "4e291c71-d680-4d0e-9640-0a3358e31177" or
+      "57336123-6e14-4acc-8dcf-287b6088aa28" or
+      "57fcbcfa-7cee-4eb1-8b25-12d2030b4ee0" or
+      "66375f6b-983f-4c2c-9701-d680650f588f" or
+      "a40d7d7d-59aa-447e-a655-679a4107e548" or
+      "a569458c-7f2b-45cb-bab9-b7dee514d112" or
+      "b26aadf8-566f-4478-926f-589f601d9c74" or
+      "c0d2a505-13b8-4ae0-aa9e-cddd5eab0b12" or
+      "d326c1ce-6cc6-4de2-bebc-4591e5e13ef0" or
+      "e9c51622-460d-4d3d-952d-966a5b1da34c" or
+      "eb539595-3fe1-474e-9c1d-feb3625d1be5" or
+      "ecd6b820-32c2-49b6-98a6-444530e5a77a" or
+      "f05ff7c9-f75a-4acd-a3b5-f4b6a870245d" or
+      "f44b1140-bc5e-48c6-8dc0-5cf5a53c0e34" or
+      "be1918be-3fe3-4be9-b32b-b542fc27f02e" or
+      "cab96880-db5b-4e15-90a7-f3f1d62ffe39" or
+      "d7b530a4-7680-4c23-a8bf-c52c121d2e87" or
+      "dd47d17a-3194-4d86-bfd5-c6ae6f5651e3" or
+      "e9b154d0-7658-433b-bb25-6b8e0a8a7c59"
+    ) and (
+      azure.signinlogs.properties.resource_id: "00000002-0000-0000-c000-000000000000" or
+      azure.signinlogs.properties.resource_display_name: "Windows Azure Active Directory"
+    )
+  )
+)
+```
+
+
+
+### Entra ID Potential AiTM Sign-In via OfficeHome (Tycoon2FA)
+
+Branch count: 9  
+Document count: 9  
+Index: geneve-ut-0482
+
+```python
+data_stream.dataset:"azure.signinlogs" and event.category:"authentication" and
+event.action:"Sign-in activity" and
+(
+    (
+        azure.signinlogs.properties.app_id:"29d9ed98-a469-4536-ade2-f981bc1d605e" and
+        azure.signinlogs.properties.resource_id:(
+            "00000002-0000-0ff1-ce00-000000000000" or "00000003-0000-0000-c000-000000000000"
+        )
+    ) or
+    (
+        azure.signinlogs.properties.app_id:"4765445b-32c6-49b0-83e6-1d93765276ca" and
+        azure.signinlogs.properties.resource_id:"4765445b-32c6-49b0-83e6-1d93765276ca"
+    )
+) and user_agent.original:(node or axios* or undici)
+```
+
+
+
+### Entra ID PowerShell Sign-in
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0483
+
+```python
+data_stream.dataset:azure.signinlogs and
+  azure.signinlogs.properties.app_display_name:"Azure Active Directory PowerShell" and
+  azure.signinlogs.properties.token_issuer_type:AzureAD and event.outcome:(success or Success)
+```
+
+
+
+### Entra ID Privileged Identity Management (PIM) Role Modified
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0484
+
+```python
+data_stream.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Update role setting in PIM" and event.outcome:(Success or success)
+```
+
+
+
 ### Entra ID Protection - Risk Detection
 
 Branch count: 1  
@@ -7100,6 +10076,197 @@ Index: geneve-ut-0485
 
 ```python
 event.dataset: "azure.identity_protection"
+```
+
+
+
+### Entra ID Protection - Risk Detection - Sign-in Risk
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0486
+
+```python
+data_stream.dataset: "azure.identity_protection" and
+    event.action: "User Risk Detection" and
+    azure.identityprotection.properties.activity: "signin" and
+    not azure.identityprotection.properties.risk_state: (
+        "remediated" or "dismissed" or "confirmedSafe"
+    )
+```
+
+
+
+### Entra ID Protection - Risk Detection - User Risk
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0487
+
+```python
+data_stream.dataset: "azure.identity_protection" and
+    event.action: ("User Risk Detection" or "Risky user") and
+    azure.identityprotection.properties.activity: "user" and
+    not azure.identityprotection.properties.risk_state: (
+        "remediated" or "dismissed" or "confirmedSafe"
+    )
+```
+
+
+
+### Entra ID Protection Admin Confirmed Compromise
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0488
+
+```python
+data_stream.dataset: azure.identity_protection and
+    azure.identityprotection.properties.risk_detail: (
+        "adminConfirmedSigninCompromised" or
+        "adminConfirmedUserCompromised"
+    )
+```
+
+
+
+### Entra ID Protection Alerts for User Detected
+
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-0489
+
+```python
+sequence by azure.identityprotection.properties.user_principal_name with maxspan=10m
+[any where event.module == "azure" and data_stream.dataset == "azure.identity_protection"] with runs=2
+```
+
+
+
+### Entra ID Protection User Alert and Device Registration
+
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-0490
+
+```python
+sequence with maxspan=5m
+[any where data_stream.dataset == "azure.identity_protection"] by azure.identityprotection.properties.user_principal_name
+[any where data_stream.dataset == "azure.auditlogs" and event.action == "Register device"] by azure.auditlogs.properties.initiated_by.user.userPrincipalName
+```
+
+
+
+### Entra ID Register Device with Unusual User Agent (Azure AD Join)
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0491
+
+```python
+data_stream.dataset:"azure.auditlogs" and event.action:"Register device" and
+event.outcome:(success or Success) and
+azure.auditlogs.properties.userAgent:(* and not (Dsreg* or DeviceRegistrationClient or Dalvik*)) and
+azure.auditlogs.properties.additional_details.value:"Azure AD join"
+```
+
+
+
+### Entra ID Service Principal Created
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0492
+
+```python
+data_stream.dataset:azure.auditlogs
+    and azure.auditlogs.operation_name:"Add service principal"
+    and event.outcome:(success or Success)
+    and not azure.auditlogs.identity: (
+        "Managed Service Identity" or
+        "Windows Azure Service Management API" or
+        "Microsoft Azure AD Internal - Jit Provisioning" or
+        "AAD App Management" or
+        "Power Virtual Agents Service"
+        )
+```
+
+
+
+### Entra ID Sign-in TeamFiltration User-Agent Detected
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0499
+
+```python
+data_stream.dataset:("azure.signinlogs" or "o365.audit")
+    and ((user_agent.name:"Electron" and user_agent.os.name:"Windows" and user_agent.version:"8.5.1") or
+    user_agent.original:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Teams/1.3.00.30866 Chrome/80.0.3987.165 Electron/8.5.1 Safari/537.36")
+```
+
+
+
+### Entra ID Temporary Access Pass Created for User
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0500
+
+```python
+data_stream.dataset: "azure.auditlogs" and
+(
+    (
+        azure.auditlogs.operation_name: "User registered security info" and
+        azure.auditlogs.properties.result_reason: "User registered temporary access pass method"
+    ) or (
+        azure.auditlogs.operation_name: "Create Temporary Access Pass method for user"
+    ) or (
+        azure.auditlogs.operation_name: "Admin registered security info" and
+        azure.auditlogs.properties.target_resources.*.modified_properties.*.display_name: *TemporaryAccessPass*
+    )
+) and
+event.outcome: ("Success" or "success")
+```
+
+
+
+### Entra ID User Added as Registered Application Owner
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0502
+
+```python
+data_stream.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Add owner to application" and event.outcome:(Success or success)
+```
+
+
+
+### Entra ID User Added as Service Principal Owner
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0503
+
+```python
+data_stream.dataset:azure.auditlogs and azure.auditlogs.operation_name:"Add owner to service principal" and event.outcome:(Success or success)
+```
+
+
+
+### Entra ID User Reported Suspicious Activity
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0504
+
+```python
+data_stream.dataset: "azure.auditlogs"
+    and azure.auditlogs.operation_name: "Suspicious activity reported"
+    and azure.auditlogs.properties.additional_details.key: "AuthenticationMethod"
+    and azure.auditlogs.properties.target_resources.*.type: "User"
+    and event.outcome: "success"
 ```
 
 
@@ -7114,6 +10281,29 @@ Index: geneve-ut-0509
 process where host.os.type == "windows" and event.type == "start" and
     (process.name : "dsquery.exe" or ?process.pe.original_file_name: "dsquery.exe") and 
     process.args : "*objectClass=trustedDomain*"
+```
+
+
+
+### Enumerating Domain Trusts via NLTEST.EXE
+
+Branch count: 21  
+Document count: 21  
+Index: geneve-ut-0510
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+    process.name : "nltest.exe" and process.args : (
+        "/DCLIST:*", "/DCNAME:*", "/DSGET*",
+        "/LSAQUERYFTI:*", "/PARENTDOMAIN",
+        "/DOMAIN_TRUSTS", "/BDC_QUERY:*"
+        ) and 
+not process.parent.name : "PDQInventoryScanner.exe" and
+not (
+  user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+  /* Don't apply the user.id exclusion to Sysmon for compatibility */
+  not data_stream.dataset : ("windows.sysmon_operational", "windows.sysmon")
+)
 ```
 
 
@@ -7508,6 +10698,49 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Execution via Windows Subsystem for Linux
+
+Branch count: 64  
+Document count: 64  
+Index: geneve-ut-0538
+
+```python
+process where host.os.type == "windows" and event.type : "start" and process.command_line != null and
+  process.parent.name : ("wsl.exe", "wslhost.exe") and
+  not process.executable : (
+        "?:\\Program Files (x86)\\*",
+        "?:\\Program Files\\*",
+        "?:\\Program Files*\\WindowsApps\\MicrosoftCorporationII.WindowsSubsystemForLinux_*\\wsl*.exe",
+        "?:\\Windows\\System32\\conhost.exe",
+        "?:\\Windows\\System32\\lxss\\wslhost.exe",
+        "?:\\Windows\\System32\\WerFault.exe",
+        "?:\\Windows\\System32\\wsl.exe",
+        "?:\\Windows\\Sys?????\\wslconfig.exe"
+  ) and
+  not (
+    /* Crowdstrike specific exclusion as it uses NT Object paths */
+    (data_stream.dataset == "crowdstrike.fdr" or event.action == "ProcessRollup2") and
+      process.executable : (
+        "\\Device\\HarddiskVolume*\\Program Files (x86)\\*",
+        "\\Device\\HarddiskVolume*\\Program Files\\*",
+        "\\Device\\HarddiskVolume*\\Program Files*\\WindowsApps\\MicrosoftCorporationII.WindowsSubsystemForLinux_*\\wsl*.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\System32\\conhost.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\System32\\lxss\\wslhost.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\System32\\WerFault.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\System32\\wsl.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\Sys?????\\wslconfig.exe"
+      )
+  ) and
+  not (
+    (process.name : "cmd.exe" and process.command_line : "*echo*%USERPROFILE%*") or
+    (process.name : "git.exe" and process.command_line : "git.exe -c log.*") or
+    (process.name : "powershell.exe" and process.command_line : "powershell.exe -Command $env:USERPROFILE") or
+    (process.name : "Code.exe" and process.command_line : ("*cli.js --folder-uri=vscode-remote://wsl*", "ms-vscode-remote.remote-wsl"))
+  )
+```
+
+
+
 ### Execution via local SxS Shared Module
 
 Branch count: 2  
@@ -7849,6 +11082,81 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 
 
+### FortiGate Configuration File Downloaded
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0591
+
+```python
+any where data_stream.dataset == "fortinet_fortigate.log" and
+    event.code == "0100032095" and
+    fortinet.firewall.action == "download"
+```
+
+
+
+### FortiGate SOCKS Traffic from an Unusual Process
+
+Branch count: 4  
+Document count: 8  
+Index: geneve-ut-0594
+
+```python
+sequence by source.port, source.ip, destination.ip with maxspan=1m
+ [network where data_stream.dataset == "fortinet_fortigate.log" and event.action == "signature" and network.application in ("SOCKS4", "SOCKS5")]
+ [network where event.module == "endpoint" and event.action in ("disconnect_received", "connection_attempted")]
+```
+
+
+
+### FortiGate SSO Login Followed by Administrator Account Creation
+
+Branch count: 2  
+Document count: 4  
+Index: geneve-ut-0596
+
+```python
+sequence by observer.name with maxspan=15m
+  [authentication where data_stream.dataset == "fortinet_fortigate.log" and
+    event.action == "login" and event.outcome == "success" and
+    (fortinet.firewall.method == "sso" or fortinet.firewall.ui like~ "sso*")]
+  [any where data_stream.dataset == "fortinet_fortigate.log" and
+    event.code == "0100044547" and
+    fortinet.firewall.cfgpath == "system.admin" and
+    fortinet.firewall.action == "Add"]
+```
+
+
+
+### FortiGate Super Admin Account Creation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0597
+
+```python
+any where data_stream.dataset == "fortinet_fortigate.log" and
+    event.code == "0100044547" and
+    fortinet.firewall.cfgpath == "system.admin" and
+    fortinet.firewall.action == "Add" and
+    fortinet.firewall.cfgattr like~ "*accprofile[super_admin]*"
+```
+
+
+
+### Forwarded Google Workspace Security Alert
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0598
+
+```python
+data_stream.dataset: google_workspace.alert
+```
+
+
+
 ### Full Disk Access Permission Check
 
 Branch count: 10  
@@ -7880,6 +11188,447 @@ registry where host.os.type == "windows" and
     ) and
     registry.data.strings : ("2", "0x00000002") and
     not (process.executable : "?:\\Windows\\system32\\svchost.exe" and user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20"))
+```
+
+
+
+### GCP Firewall Rule Creation
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0601
+
+```python
+data_stream.dataset:gcp.audit and event.action:(*.compute.firewalls.insert or google.appengine.*.Firewall.Create*Rule)
+```
+
+
+
+### GCP Firewall Rule Deletion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0602
+
+```python
+data_stream.dataset:gcp.audit and event.action:(*.compute.firewalls.delete or google.appengine.*.Firewall.Delete*Rule)
+```
+
+
+
+### GCP Firewall Rule Modification
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0603
+
+```python
+data_stream.dataset:gcp.audit and event.action:(*.compute.firewalls.patch or google.appengine.*.Firewall.Update*Rule)
+```
+
+
+
+### GCP IAM Custom Role Creation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0604
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.iam.admin.v*.CreateRole and event.outcome:success
+```
+
+
+
+### GCP IAM Role Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0605
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.iam.admin.v*.DeleteRole and event.outcome:success
+```
+
+
+
+### GCP IAM Service Account Key Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0606
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.iam.admin.v*.DeleteServiceAccountKey and event.outcome:success
+```
+
+
+
+### GCP Logging Bucket Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0607
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.logging.v*.ConfigServiceV*.DeleteBucket and event.outcome:success
+```
+
+
+
+### GCP Logging Sink Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0608
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.logging.v*.ConfigServiceV*.DeleteSink and event.outcome:success
+```
+
+
+
+### GCP Logging Sink Modification
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0609
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.logging.v*.ConfigServiceV*.UpdateSink and event.outcome:success
+```
+
+
+
+### GCP Pub/Sub Subscription Creation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0610
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.pubsub.v*.Subscriber.CreateSubscription and event.outcome:success
+```
+
+
+
+### GCP Pub/Sub Subscription Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0611
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.pubsub.v*.Subscriber.DeleteSubscription and event.outcome:success
+```
+
+
+
+### GCP Pub/Sub Topic Creation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0612
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.pubsub.v*.Publisher.CreateTopic and event.outcome:success
+```
+
+
+
+### GCP Pub/Sub Topic Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0613
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.pubsub.v*.Publisher.DeleteTopic and event.outcome:success
+```
+
+
+
+### GCP Service Account Creation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0614
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.iam.admin.v*.CreateServiceAccount and event.outcome:success
+```
+
+
+
+### GCP Service Account Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0615
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.iam.admin.v*.DeleteServiceAccount and event.outcome:success
+```
+
+
+
+### GCP Service Account Disabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0616
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.iam.admin.v*.DisableServiceAccount and event.outcome:success
+```
+
+
+
+### GCP Service Account Key Creation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0617
+
+```python
+data_stream.dataset:gcp.audit and event.action:google.iam.admin.v*.CreateServiceAccountKey and event.outcome:success
+```
+
+
+
+### GCP Storage Bucket Configuration Modification
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0618
+
+```python
+data_stream.dataset:gcp.audit and event.action:"storage.buckets.update" and event.outcome:success
+```
+
+
+
+### GCP Storage Bucket Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0619
+
+```python
+data_stream.dataset:gcp.audit and event.action:"storage.buckets.delete"
+```
+
+
+
+### GCP Storage Bucket Permissions Modification
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0620
+
+```python
+data_stream.dataset:gcp.audit and event.action:"storage.setIamPermissions" and event.outcome:success
+```
+
+
+
+### GCP Virtual Private Cloud Network Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0621
+
+```python
+data_stream.dataset:gcp.audit and event.action:v*.compute.networks.delete and event.outcome:success
+```
+
+
+
+### GCP Virtual Private Cloud Route Creation
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0622
+
+```python
+data_stream.dataset:gcp.audit and event.action:(v*.compute.routes.insert or "beta.compute.routes.insert")
+```
+
+
+
+### GCP Virtual Private Cloud Route Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0623
+
+```python
+data_stream.dataset:gcp.audit and event.action:v*.compute.routes.delete and event.outcome:success
+```
+
+
+
+### GKE Admission Webhook Created or Modified
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0625
+
+```python
+data_stream.dataset:gcp.audit and event.outcome:success and event.action:(
+  "io.k8s.admissionregistration.v1.mutatingwebhookconfigurations.create" or
+  "io.k8s.admissionregistration.v1.mutatingwebhookconfigurations.update" or
+  "io.k8s.admissionregistration.v1.mutatingwebhookconfigurations.patch" or
+  "io.k8s.admissionregistration.v1.validatingwebhookconfigurations.create" or
+  "io.k8s.admissionregistration.v1.validatingwebhookconfigurations.update" or
+  "io.k8s.admissionregistration.v1.validatingwebhookconfigurations.patch"
+) and not user.email:(
+  "system:kube-controller-manager" or "system:kube-scheduler" or system\:serviceaccount\:kube-system\:* or
+  system\:serviceaccount\:gke-managed-system\:* or system\:serviceaccount\:cert-manager\:* or
+  system\:serviceaccount\:gatekeeper-system\:* or system\:serviceaccount\:kyverno\:* or "system:addon-manager" or
+  *-operator or *-cainjector or *-webhook or *argocd* or "system:gke-common-webhooks"
+)
+```
+
+
+
+### GKE Cluster-Admin Role Binding Created or Modified
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0626
+
+```python
+data_stream.dataset:gcp.audit and service.name:"k8s.io" and event.outcome:success and
+event.action:(
+  "io.k8s.authorization.rbac.v1.clusterrolebindings.create" or
+  "io.k8s.authorization.rbac.v1.clusterrolebindings.patch" or
+  "io.k8s.authorization.rbac.v1.clusterrolebindings.update"
+) and gcp.audit.request.kind:"ClusterRoleBinding" and
+gcp.audit.resource_name:"rbac.authorization.k8s.io/v1/clusterrolebindings/cluster-admin"
+```
+
+
+
+### GKE Container Created with Excessive Linux Capabilities
+
+Branch count: 9  
+Document count: 9  
+Index: geneve-ut-0627
+
+```python
+data_stream.dataset:gcp.audit and event.action:"io.k8s.core.v1.pods.create" and event.outcome:success and
+gcp.audit.request.spec.containers.securityContext.capabilities.add:(
+  "BPF" or "DAC_READ_SEARCH" or "NET_ADMIN" or "SYS_ADMIN" or "SYS_BOOT" or "SYS_MODULE" or "SYS_PTRACE" or "SYS_RAWIO" or
+  "SYSLOG"
+) and not gcp.audit.request.metadata.ownerReferences.kind:("ReplicaSet" or "DaemonSet" or "StatefulSet")
+```
+
+
+
+### GKE Pod Created With HostIPC
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0628
+
+```python
+data_stream.dataset:gcp.audit and event.outcome:success and
+event.action:("io.k8s.core.v1.pods.create" or "io.k8s.core.v1.pods.update" or "io.k8s.core.v1.pods.patch") and
+gcp.audit.request.spec.hostIPC:true and
+not gcp.audit.request.metadata.ownerReferences.kind:("ReplicaSet" or "DaemonSet" or "StatefulSet")
+```
+
+
+
+### GKE Pod Created With HostNetwork
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0629
+
+```python
+data_stream.dataset:gcp.audit and
+event.action:("io.k8s.core.v1.pods.create" or "io.k8s.core.v1.pods.update" or "io.k8s.core.v1.pods.patch") and
+gcp.audit.request.spec.hostNetwork:true and
+not gcp.audit.request.metadata.ownerReferences.kind:("ReplicaSet" or "DaemonSet" or "StatefulSet") and
+not user.email:system\:*
+```
+
+
+
+### GKE Pod Created With HostPID
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0630
+
+```python
+data_stream.dataset:gcp.audit and
+event.action:("io.k8s.core.v1.pods.create" or "io.k8s.core.v1.pods.update" or "io.k8s.core.v1.pods.patch") and
+gcp.audit.request.spec.hostPID:true and not user.email:system\:* and
+not gcp.audit.request.metadata.ownerReferences.kind:("ReplicaSet" or "DaemonSet" or "StatefulSet")
+```
+
+
+
+### GKE Pod Created with a Sensitive hostPath Volume
+
+Branch count: 48  
+Document count: 48  
+Index: geneve-ut-0631
+
+```python
+data_stream.dataset:gcp.audit and event.outcome:success and
+event.action:("io.k8s.core.v1.pods.create" or "io.k8s.core.v1.pods.update" or "io.k8s.core.v1.pods.patch") and
+gcp.audit.request.spec.volumes.hostPath.path:(
+  "/" or "/proc" or "/root" or "/var" or "/var/run" or "/var/run/docker.sock" or "/var/run/crio/crio.sock" or
+  "/var/run/cri-dockerd.sock" or "/var/lib/kubelet" or "/var/lib/kubelet/pki" or "/var/lib/docker/overlay2" or "/etc" or
+  "/etc/kubernetes" or "/etc/kubernetes/manifests" or "/etc/kubernetes/pki" or "/home/admin"
+) and not user.email:system\:* and
+not gcp.audit.request.metadata.ownerReferences.kind:("ReplicaSet" or "DaemonSet" or "StatefulSet")
+```
+
+
+
+### GKE Privileged Pod Created
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0632
+
+```python
+data_stream.dataset:gcp.audit and event.action:"io.k8s.core.v1.pods.create" and event.outcome:success and
+gcp.audit.request.spec.containers.securityContext.allowPrivilegeEscalation:true and
+not gcp.audit.request.metadata.ownerReferences.kind:("ReplicaSet" or "DaemonSet" or "StatefulSet")
+```
+
+
+
+### GKE Secret get or list with Suspicious User Agent
+
+Branch count: 30  
+Document count: 30  
+Index: geneve-ut-0633
+
+```python
+data_stream.dataset:gcp.audit and service.name:"k8s.io" and event.outcome:success and
+event.action:("io.k8s.core.v1.secrets.list" or "io.k8s.core.v1.secrets.get") and user_agent.original:(
+  curl* or python* or Python* or wget* or Go-http* or perl* or java* or node* or php* or *distrib#kali* or *kali-amd64* or
+  *kali-arm64* or Bun* or axios* or undici*
+)
+```
+
+
+
+### GKE Suspicious Self-Subject Review via Service Account
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0635
+
+```python
+data_stream.dataset:gcp.audit and service.name:k8s.io and event.action:(io.k8s.authorization.v1.selfsubjectaccessreviews.create or io.k8s.authorization.v1.selfsubjectrulesreviews.create) and user.email:((system\:node\:* or system\:serviceaccount\:*) and not ("system:serviceaccount:default:argo-argo-workflows-server" or "system:serviceaccount:default:argo-argo-workflows-workflow-controller" or system\:serviceaccount\:*\:datadog-kube-state-metrics))
 ```
 
 
@@ -8148,6 +11897,18 @@ sequence by process.entity_id, host.id with maxspan=10s
 
 
 
+### GitHub App Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0654
+
+```python
+configuration where data_stream.dataset == "github.audit" and github.category == "integration_installation" and event.type == "deletion"
+```
+
+
+
 ### GitHub Authentication Token Access via Node.js
 
 Branch count: 24  
@@ -8157,6 +11918,18 @@ Index: geneve-ut-0655
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "ProcessRollup2", "exec_event") and process.parent.name == "node" and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "gh auth token"
+```
+
+
+
+### GitHub Owner Role Granted To User
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0657
+
+```python
+iam where data_stream.dataset == "github.audit" and event.action == "org.update_member" and github.permission == "admin"
 ```
 
 
@@ -8173,6 +11946,32 @@ configuration where event.dataset == "github.audit" and event.action == "persona
 
 
 
+### GitHub Private Repository Turned Public
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0659
+
+```python
+configuration where data_stream.dataset == "github.audit" and github.operation_type == "modify" and github.category == "repo" and
+event.action == "repo.access" and github.visibility == "public"
+```
+
+
+
+### GitHub Protected Branch Settings Changed
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0660
+
+```python
+configuration where data_stream.dataset == "github.audit"
+  and github.category == "protected_branch" and event.type == "change"
+```
+
+
+
 ### GitHub Repo Created
 
 Branch count: 1  
@@ -8181,6 +11980,30 @@ Index: geneve-ut-0661
 
 ```python
 configuration where event.dataset == "github.audit" and event.action == "repo.create"
+```
+
+
+
+### GitHub Repository Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0662
+
+```python
+configuration where event.module == "github" and data_stream.dataset == "github.audit" and event.action == "repo.destroy"
+```
+
+
+
+### GitHub Secret Scanning Disabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0663
+
+```python
+configuration where data_stream.dataset == "github.audit" and event.type == "change" and event.action == "repository_secret_scanning.disable"
 ```
 
 
@@ -8210,6 +12033,292 @@ sequence by process.entity_id with maxspan=20s
      process.code_signature.trusted == false or process.code_signature.exists == false) and
     destination.domain like "calendar.app.google*"]
   [network where host.os.type == "macos" and event.type == "start" and destination.domain == null]
+```
+
+
+
+### Google SecOps External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0668
+
+```python
+event.kind: alert and data_stream.dataset: google_secops.alert
+```
+
+
+
+### Google Workspace 2SV Policy Disabled By User
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0669
+
+```python
+data_stream.dataset:("google_workspace.login" or "google_workspace.user_accounts") and event.action:"2sv_disable"
+```
+
+
+
+### Google Workspace API Access Granted via Domain-Wide Delegation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0670
+
+```python
+data_stream.dataset:google_workspace.admin
+  and event.action:AUTHORIZE_API_CLIENT_ACCESS
+```
+
+
+
+### Google Workspace Admin Role Assigned to a User or Group
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0671
+
+```python
+data_stream.dataset:"google_workspace.admin" and event.action:"ASSIGN_ROLE"
+  and google_workspace.admin.role.name : *_ADMIN_ROLE
+```
+
+
+
+### Google Workspace Admin Role Deletion
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0672
+
+```python
+data_stream.dataset:google_workspace.admin and event.action:DELETE_ROLE
+```
+
+
+
+### Google Workspace Bitlocker Setting Disabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0673
+
+```python
+data_stream.dataset:"google_workspace.admin" and event.action:"CHANGE_APPLICATION_SETTING"
+    and google_workspace.admin.new_value:"Disabled" and google_workspace.admin.setting.name:BitLocker*
+```
+
+
+
+### Google Workspace Custom Admin Role Created
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0674
+
+```python
+data_stream.dataset:google_workspace.admin and event.action:CREATE_ROLE
+```
+
+
+
+### Google Workspace Device Registration After OAuth from Suspicious ASN
+
+Branch count: 4  
+Document count: 8  
+Index: geneve-ut-0675
+
+```python
+sequence by user.name with maxspan=30s
+  [iam where data_stream.dataset == "google_workspace.token" and event.action == "authorize" and
+      google_workspace.token.client.id == "77185425430.apps.googleusercontent.com" and
+      source.as.number in (9009, 45102, 215540, 29802, 62240, 204957, 395092)]
+  [any where data_stream.dataset == "google_workspace.device" and google_workspace.device.account_state == "REGISTERED"]
+```
+
+
+
+### Google Workspace Drive Data Transfer or Takeout Export Initiated
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0677
+
+```python
+data_stream.dataset:"google_workspace.admin" and (
+  (event.action:"CREATE_DATA_TRANSFER_REQUEST" and google_workspace.admin.application.name:Drive*) or
+  event.action:"CUSTOMER_TAKEOUT_CREATED"
+)
+```
+
+
+
+### Google Workspace Drive Encryption Key(s) Accessed from Anonymous User
+
+Branch count: 105  
+Document count: 105  
+Index: geneve-ut-0678
+
+```python
+file where data_stream.dataset == "google_workspace.drive" and event.action : ("copy", "view", "download") and
+    google_workspace.drive.visibility: "people_with_link" and source.user.email == "" and
+    file.extension: (
+        "token","assig", "pssc", "keystore", "pub", "pgp.asc", "ps1xml", "pem", "gpg.sig", "der", "key",
+        "p7r", "p12", "asc", "jks", "p7b", "signature", "gpg", "pgp.sig", "sst", "pgp", "gpgz", "pfx", "crt",
+        "p8", "sig", "pkcs7", "jceks", "pkcs8", "psc1", "p7c", "csr", "cer", "spc", "ps2xml")
+```
+
+
+
+### Google Workspace Gmail Routing or Forwarding Rule Created or Modified
+
+Branch count: 28  
+Document count: 28  
+Index: geneve-ut-0679
+
+```python
+data_stream.dataset:"google_workspace.admin" and event.action:(
+  "CREATE_GMAIL_SETTING" or "CHANGE_GMAIL_SETTING"
+  or "CREATE_APPLICATION_SETTING" or "CHANGE_APPLICATION_SETTING"
+)
+and (
+  google_workspace.admin.setting.name:(
+    "UNIFIED_MAIL_ROUTING"
+    or "ALIAS_TABLE"
+    or "EMAIL_ROUTE"
+    or "MESSAGE_SECURITY_RULE"
+  )
+  or google_workspace.admin.setting.metadata.rule.type:(
+    "UNIFIED_MAIL_ROUTING"
+    or "ALIAS_TABLE"
+    or "EMAIL_ROUTE"
+  )
+)
+```
+
+
+
+### Google Workspace Login Flagged Suspicious
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0680
+
+```python
+data_stream.dataset: "google_workspace.login" and
+    event.provider: "login" and
+    google_workspace.login.is_suspicious: true
+```
+
+
+
+### Google Workspace MFA Enforcement Disabled For Organization
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0681
+
+```python
+data_stream.dataset:google_workspace.admin
+  and event.action:(ENFORCE_STRONG_AUTHENTICATION or ALLOW_STRONG_AUTHENTICATION)
+  and google_workspace.admin.new_value:false
+```
+
+
+
+### Google Workspace Object Copied from External Drive with App Consent
+
+Branch count: 4  
+Document count: 8  
+Index: geneve-ut-0682
+
+```python
+sequence by source.user.email with maxspan=3m
+[file where data_stream.dataset == "google_workspace.drive" and event.action == "copy" and
+
+    /* Should only match if the object lives in a Drive that is external to the user's GWS organization */
+    google_workspace.drive.owner_is_team_drive == false and google_workspace.drive.copy_type == "external" and
+
+    /* Google Script, Forms, Sheets and Document can have container-bound scripts */
+    google_workspace.drive.file.type: ("script", "form", "spreadsheet", "document")]
+
+[any where data_stream.dataset == "google_workspace.token" and event.action == "authorize" and
+
+    /* Ensures application ID references custom app in Google Workspace and not GCP */
+    google_workspace.token.client.id : "*apps.googleusercontent.com"]
+```
+
+
+
+### Google Workspace Password Policy Modified
+
+Branch count: 12  
+Document count: 12  
+Index: geneve-ut-0683
+
+```python
+data_stream.dataset:google_workspace.admin and
+  event.action:(CHANGE_APPLICATION_SETTING or CREATE_APPLICATION_SETTING) and
+  google_workspace.admin.setting.name:(
+    "Password Management - Enforce strong password" or
+    "Password Management - Password reset frequency" or
+    "Password Management - Enable password reuse" or
+    "Password Management - Enforce password policy at next login" or
+    "Password Management - Minimum password length" or
+    "Password Management - Maximum password length"
+  )
+```
+
+
+
+### Google Workspace Restrictions for Marketplace Modified to Allow Any App
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0684
+
+```python
+data_stream.dataset:"google_workspace.admin" and event.action:"CHANGE_APPLICATION_SETTING"
+    and google_workspace.event.type:"APPLICATION_SETTINGS" and google_workspace.admin.application.name:"Google Workspace Marketplace"
+        and google_workspace.admin.setting.name:"Apps Access Setting Allowlist access"  and google_workspace.admin.new_value:"ALLOW_ALL"
+```
+
+
+
+### Google Workspace Role Modified
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0685
+
+```python
+data_stream.dataset:google_workspace.admin and event.provider:admin and event.category:iam and event.action:(ADD_PRIVILEGE or UPDATE_ROLE)
+```
+
+
+
+### Google Workspace Suspended User Account Renewed
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0686
+
+```python
+data_stream.dataset: google_workspace.admin and google_workspace.event.type: "USER_SETTINGS" and event.action: "UNSUSPEND_USER"
+```
+
+
+
+### Google Workspace User Organizational Unit Changed
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0688
+
+```python
+data_stream.dataset:"google_workspace.admin" and google_workspace.event.type:"USER_SETTINGS" and event.action:"MOVE_USER_TO_ORG_UNIT"
 ```
 
 
@@ -8344,6 +12453,78 @@ process where host.os.type == "linux" and event.type == "start" and
 
 
 
+### IBM QRadar External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0710
+
+```python
+event.kind: alert and data_stream.dataset: ibm_qradar.offense
+```
+
+
+
+### ICMP Redirect Message from Internal Host
+
+Branch count: 20  
+Document count: 20  
+Index: geneve-ut-0711
+
+```python
+data_stream.dataset:network_traffic.icmp
+  and (network_traffic.icmp.request.type:(5 or 137) or icmp.request.type:(5 or 137))
+  and source.ip:(10.0.0.0/8 or 172.16.0.0/12 or 192.168.0.0/16 or "FC00::/7" or "FE80::/10")
+```
+
+
+
+### ICMP Timestamp or Information Request from the Internet
+
+Branch count: 12  
+Document count: 12  
+Index: geneve-ut-0712
+
+```python
+data_stream.dataset:network_traffic.icmp
+  and (network_traffic.icmp.request.type:(13 or 15) or icmp.request.type:(13 or 15))
+  and destination.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  )
+  and not source.ip:(
+    10.0.0.0/8 or
+    100.64.0.0/10 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.168.0.0/16 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.175.48.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.88.99.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    224.0.0.0/4 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  )
+```
+
+
+
 ### IIS HTTP Logging Disabled
 
 Branch count: 2  
@@ -8355,6 +12536,52 @@ process where host.os.type == "windows" and event.type == "start" and
   (process.name : "appcmd.exe" or ?process.pe.original_file_name == "appcmd.exe") and
   process.args : "/dontLog*:*True" and
   not process.parent.name : "iissetup.exe"
+```
+
+
+
+### IPSEC NAT Traversal Port Activity
+
+Branch count: 12  
+Document count: 12  
+Index: geneve-ut-0714
+
+```python
+(data_stream.dataset: (network_traffic.flow or zeek.connection) or (event.category: (network or network_traffic))) and
+  network.transport:udp and source.port:4500 and destination.port:4500 and
+  source.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  ) and
+  not destination.ip:(
+    10.0.0.0/8 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.168.0.0/16 or
+    192.88.99.0/24 or
+    224.0.0.0/4 or
+    100.64.0.0/10 or
+    192.175.48.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  )
 ```
 
 
@@ -8520,6 +12747,24 @@ process.name == "unmkinitramfs" and not (
   ?process.parent.executable == "/usr/bin/lsinitramfs" or
   ?process.working_directory == "/usr/local/nutanix/ngt/python/bin"
 )
+```
+
+
+
+### Insecure AWS EC2 VPC Security Group Ingress Rule Added
+
+Branch count: 14  
+Document count: 14  
+Index: geneve-ut-0730
+
+```python
+data_stream.dataset: "aws.cloudtrail"
+    and event.provider: ec2.amazonaws.com
+    and event.action: AuthorizeSecurityGroupIngress
+    and event.outcome: success
+    and aws.cloudtrail.flattened.request_parameters.ipPermissions.items.ipRanges.items.cidrIp: ("0.0.0.0/0" or "::/0")
+    and aws.cloudtrail.flattened.request_parameters.ipPermissions.items.fromPort: (
+        21 or 22 or 23 or 445 or 3389 or 5985 or 5986)
 ```
 
 
@@ -9153,6 +13398,23 @@ network where host.os.type == "linux" and event.type == "start" and event.catego
 
 
 
+### Kubernetes API Request Impersonating Privileged Identity
+
+Branch count: 90  
+Document count: 90  
+Index: geneve-ut-0767
+
+```python
+data_stream.dataset:kubernetes.audit_logs and 
+kubernetes.audit.impersonatedUser.username:(* and not ("eks-event-service:event-controller" or eks\:*)) and 
+kubernetes.audit.annotations.authorization_k8s_io/decision:allow and 
+kubernetes.audit.verb:(create or delete or get or list or patch or update) and 
+(kubernetes.audit.impersonatedUser.username:(admin or cluster-admin or kubernetes-admin or "system:admin" or "system:anonymous" or "system:apiserver" or "system:kube-controller-manager" or "system:kube-proxy" or "system:kube-scheduler" or "system:volume-scheduler" or system\:node\:* or system\:serviceaccount\:kube-system\:*) or kubernetes.audit.impersonatedUser.groups:(cluster-admin or "system:cluster-admins" or "system:masters")) and 
+not user.name:(acsService or aksService or masterclient or nodeclient or "system:kube-controller-manager" or "system:kube-scheduler" or arn\:aws\:iam\:*\:role/aws-service-role* or arn\:aws\:sts\:*\:assumed-role/AWSServiceRoleForAmazonEKS* or arn\:aws\:sts\:*\:assumed-role/AWSServiceRoleForAmazonEKSNodegroup* or eks\:* or system\:node\:* or system\:serviceaccount\:kube-system\:*)
+```
+
+
+
 ### Kubernetes API Server Proxying Request to Kubelet
 
 Branch count: 1  
@@ -9201,6 +13463,97 @@ not (kubernetes.audit.user.groups:"system:serviceaccounts:flux-system" and kuber
 
 
 
+### Kubernetes Anonymous User Create/Update/Patch Pods Request
+
+Branch count: 36  
+Document count: 36  
+Index: geneve-ut-0771
+
+```python
+any where data_stream.dataset == "kubernetes.audit_logs" and (
+    kubernetes.audit.user.username in ("system:anonymous", "system:unauthenticated") or
+    kubernetes.audit.user.username == null or
+    kubernetes.audit.user.username == ""
+  ) and kubernetes.audit.level in ("RequestResponse", "ResponseComplete", "Request") and kubernetes.audit.verb in ("create", "update", "patch") and
+kubernetes.audit.objectRef.resource == "pods"
+```
+
+
+
+### Kubernetes Client Certificate Signing Request Created or Approved
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0772
+
+```python
+data_stream.dataset:"kubernetes.audit_logs" and 
+kubernetes.audit.objectRef.resource:"certificatesigningrequests" and
+kubernetes.audit.verb:("create" or "update" or "patch") and
+kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
+not user.name:(
+  system\:kube-controller-manager or
+  system\:kube-scheduler or
+  system\:node\:* or
+  system\:serviceaccount\:kube-system\:* or
+  eks\:* or aksService
+)
+```
+
+
+
+### Kubernetes Cluster-Admin Role Binding Created
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0773
+
+```python
+data_stream.dataset: "kubernetes.audit_logs" and kubernetes.audit.objectRef.resource:("clusterrolebindings" or "rolebindings") and
+kubernetes.audit.verb:"create" and kubernetes.audit.requestObject.roleRef.name:"cluster-admin" and
+kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
+kubernetes.audit.level:"RequestResponse" and kubernetes.audit.stage:"ResponseComplete"
+```
+
+
+
+### Kubernetes CoreDNS or Kube-DNS Configuration Modified
+
+Branch count: 9  
+Document count: 9  
+Index: geneve-ut-0775
+
+```python
+data_stream.dataset:"kubernetes.audit_logs" and 
+kubernetes.audit.objectRef.resource:"configmaps" and
+kubernetes.audit.objectRef.name:("coredns" or "kube-dns" or "coredns-custom") and
+kubernetes.audit.objectRef.namespace:"kube-system" and
+kubernetes.audit.verb:("update" or "patch" or "delete") and
+kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and 
+not user.name:(
+  system\:serviceaccount\:kube-system\:coredns or
+  system\:serviceaccount\:kube-system\:kube-dns or
+  system\:node\:* or
+  eks\:* or aksService or acsService
+)
+```
+
+
+
+### Kubernetes Creation of a RoleBinding Referencing a ServiceAccount
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0776
+
+```python
+data_stream.dataset: "kubernetes.audit_logs" and kubernetes.audit.requestObject.spec.serviceAccountName:* and
+kubernetes.audit.verb:"create" and kubernetes.audit.objectRef.resource:("rolebindings" or "clusterrolebindings") and
+kubernetes.audit.annotations.authorization_k8s_io/decision:"allow"
+```
+
+
+
 ### Kubernetes Direct API Request via Curl or Wget
 
 Branch count: 84  
@@ -9223,6 +13576,215 @@ process.name in ("curl", "wget") and process.args like~ (
 
 
 
+### Kubernetes Ephemeral Container Added to Pod
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0780
+
+```python
+data_stream.dataset:"kubernetes.audit_logs" and 
+kubernetes.audit.objectRef.resource:"pods" and
+kubernetes.audit.objectRef.subresource:"ephemeralcontainers" and
+kubernetes.audit.verb:("update" or "patch") and
+kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
+not user.name:(
+  system\:node\:* or
+  system\:serviceaccount\:kube-system\:*
+)
+```
+
+
+
+### Kubernetes Events Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0781
+
+```python
+any where data_stream.dataset == "kubernetes.audit_logs" and kubernetes.audit.verb == "delete" and
+kubernetes.audit.objectRef.resource == "events" and kubernetes.audit.stage == "ResponseComplete"
+```
+
+
+
+### Kubernetes Exposed Service Created With Type NodePort
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0782
+
+```python
+data_stream.dataset : "kubernetes.audit_logs"
+  and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow"
+  and kubernetes.audit.objectRef.resource:"services"
+  and kubernetes.audit.verb:("create" or "update" or "patch")
+  and kubernetes.audit.requestObject.spec.type:"NodePort"
+```
+
+
+
+### Kubernetes Pod Created With HostIPC
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0786
+
+```python
+data_stream.dataset : "kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
+kubernetes.audit.objectRef.resource:"pods" and kubernetes.audit.verb:("create" or "update" or "patch") and
+kubernetes.audit.requestObject.spec.hostIPC:true and
+not kubernetes.audit.requestObject.spec.containers.image: (
+  docker.elastic.co/beats/elastic-agent* or rancher/system-agent* or registry.crowdstrike.com/falcon-sensor*
+)
+```
+
+
+
+### Kubernetes Pod Created With HostNetwork
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0787
+
+```python
+data_stream.dataset:kubernetes.audit_logs and kubernetes.audit.annotations.authorization_k8s_io/decision:allow and
+kubernetes.audit.objectRef.resource:pods and kubernetes.audit.verb:(create or patch or update) and
+kubernetes.audit.requestObject.spec.hostNetwork:true and
+not (
+  kubernetes.audit.requestObject.spec.containers.image:(
+    *eks/observability/aws-for-fluent-bit* or *eks/observability/cloudwatch-agent* or *elastic-agent* or *quay/tigera* or *tigera/operator* or
+    docker.io/bitnami/node-exporter* or docker.io/rancher/mirrored-calico-operator* or quay.io/calico/node* or quay.io/cephcsi/cephcsi* or
+    quay.io/frrouting/frr* or quay.io/metallb/speaker* or quay.io/prometheus/node-exporter* or rancher/system-agent* or
+    registry.crowdstrike.com/falcon-sensor* or registry.k8s.io/sig-storage/csi-node-driver-registrar*
+  ) or
+  kubernetes.audit.objectRef.namespace:(
+    calico or calico-system or cilium or elastic or ingress-nginx or kube-system or noname-security-posture or openebs or sysdig-agent
+  )
+)
+```
+
+
+
+### Kubernetes Pod Created With HostPID
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-0788
+
+```python
+data_stream.dataset : "kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
+kubernetes.audit.objectRef.resource:"pods" and kubernetes.audit.verb:("create" or "update" or "patch") and
+kubernetes.audit.requestObject.spec.hostPID:true and
+not kubernetes.audit.requestObject.spec.containers.image: (
+  ghcr.io/aquasecurity/node-collector* or rancher/system-agent* or ghcr.io/kubereboot/kured* or 
+  *elastic/elastic-agent* or registry.k8s.io/sig-storage/csi-node-driver-registrar* or quay.io/prometheus/node-exporter* or
+  docker.elastic.co/beats/elastic-agent* or quay.io/cephcsi/cephcsi* or registry.crowdstrike.com/falcon-sensor* or */sysdig/* or
+  rancher/mirrored-longhornio-longhorn-manager* or gcr.io/datadoghq/agent* or mcr.microsoft.com/oss/*/kubernetes-csi*
+)
+```
+
+
+
+### Kubernetes Pod Created with a Sensitive hostPath Volume
+
+Branch count: 48  
+Document count: 48  
+Index: geneve-ut-0789
+
+```python
+data_stream.dataset : "kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
+kubernetes.audit.objectRef.resource:"pods" and kubernetes.audit.verb:("create" or "update" or "patch") and
+kubernetes.audit.requestObject.spec.volumes.hostPath.path: (
+  "/" or "/proc" or "/root" or "/var" or "/var/run" or "/var/run/docker.sock" or "/var/run/crio/crio.sock" or
+  "/var/run/cri-dockerd.sock" or "/var/lib/kubelet" or "/var/lib/kubelet/pki" or "/var/lib/docker/overlay2" or
+  "/etc" or "/etc/kubernetes" or "/etc/kubernetes/manifests" or "/etc/kubernetes/pki" or "/home/admin"
+) and
+not kubernetes.audit.requestObject.spec.containers.image: (
+  docker.elastic.co/beats/elastic-agent* or *elastic/elastic-agent* or docker.elastic.co/elastic-agent/elastic-agent* or
+  *elastic-agent\:dev* or *cloudops-azure-devops-agent* or rancher/mirrored-longhornio-longhorn-instance-manager* or
+  quay.io/calico* or ghcr.io/aquasecurity* or rancher/system-agent* or rancher/mirrored-longhornio-csi-node-driver-registrar* or
+  rancher/mirrored-longhornio-livenessprobe* or quay.io/prometheus/node-exporter* or *eks/observability/cloudwatch-agent* or
+  amazon/aws-efs-csi-driver* or public.ecr.aws/eks-distro/kubernetes-csi* or quay.io/cilium/cilium* or openebs/node-disk-manager* or
+  openebs/cstor-csi-driver* or registry.k8s.io/sig-storage/csi-node-driver-registrar* or *.amazonaws.com/eks/csi-node-driver-registrar* or
+  *.amazonaws.com/eks/livenessprobe* or *.amazonaws.com/eks/aws-efs-csi-driver* or mcr.microsoft.com/oss/v2/kubernetes-csi* or
+  rancher/mirrored-cilium-cilium* or jenkins/inbound-agent* or gcr.io/datadoghq/agent* or rancher/mirrored-longhornio-longhorn-share-manager* or
+  */sysdig/*
+)
+```
+
+
+
+### Kubernetes Privileged Pod Created
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0797
+
+```python
+data_stream.dataset : "kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
+kubernetes.audit.objectRef.resource:pods and kubernetes.audit.verb:create and kubernetes.audit.requestObject.spec.containers.securityContext.privileged:true and
+not kubernetes.audit.requestObject.spec.containers.image: (
+  *amazonaws.com/betsie/pipeline/pipeline-core* or mirror.gcr.io/aquasec/trivy* or rancher/mirrored-longhornio-longhorn-instance-manager* or quay.io/calico* or
+  rancher/system-agent* or openebs/m-exporter* or openebs/cstor-istgt* or ghcr.io/kubereboot/kured* or registry.k8s.io/sig-storage/csi-node-driver-registrar* or
+  registry.k8s.io/csi-secrets-store* or registry.gitlab.com/gitlab-org/gitlab-runner/gitlab-runner-helper* or sonarsource/sonar-scanner-cli* or
+  rancher/mirrored-longhornio-longhorn-engine* or jenkins/inbound-agent* or mcr.microsoft.com/oss/v2/kubernetes-csi* or registry.k8s.io/dns/k8s-dns-node-cache* or
+  *amazonaws.com/eks/kube-proxy* or *amazonaws.com/eks/aws-efs-csi-driver* or *amazonaws.com/eks/livenessprobe* or *amazonaws.com/amazon-k8s-cni* or
+  *amazonaws.com/amazon/aws-network-policy-agent* or mcr.microsoft.com/oss/kubernetes-csi* or openebs/node-disk-manager* or openebs/node-disk-exporter* or
+  mcr.microsoft.com/oss/kubernetes/kube-proxy* or public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe* or public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner* or
+  amazon/aws-efs-csi-driver* or registry.k8s.io/kube-proxy* or registry.crowdstrike.com/falcon-sensor* or *octopus-deploy/tentacle* or */sysdig/*
+)
+```
+
+
+
+### Kubernetes Secret get or list from Node or Pod Service Account
+
+Branch count: 64  
+Document count: 64  
+Index: geneve-ut-0801
+
+```python
+data_stream.dataset:"kubernetes.audit_logs" and
+event.action:(get or list) and
+kubernetes.audit.objectRef.resource:"secrets" and
+user.name:(system\:serviceaccount\:* or system\:node\:*) and source.ip:(* and not "127.0.0.1") and 
+not kubernetes.audit.user.groups:(
+  "system:serviceaccounts:flux-system"
+  or "system:serviceaccounts:kyverno"
+  or "system:serviceaccounts:ibm-csi"
+  or "system:serviceaccounts:harvester-system"
+  or "system:serviceaccounts:cattle-system"
+  or "system:serviceaccounts:cattle-monitoring-system"
+  or system\:serviceaccounts\:cluster-fleet-local-local-*
+  or "system:serviceaccounts:rabbitmq-system"
+  or "system:serviceaccounts:cattle-fleet-system"
+) and 
+not (kubernetes.audit.user.username:"system:serviceaccount:security:trivy-operator" and kubernetes.audit.user.extra.authentication.kubernetes.io/pod-name :trivy-operator-*) and 
+not (kubernetes.audit.user.username:"system:serviceaccount:cert-manager:cert-manager-cainjector" and kubernetes.audit.user.extra.authentication.kubernetes.io/pod-name:cert-manager-cainjector-*) and 
+not (kubernetes.audit.user.username:"system:serviceaccount:monitoring:plat-central-monitoring-pr-operator" and kubernetes.audit.user.extra.authentication.kubernetes.io/pod-name:plat-central-monitoring-pr-operator*) and 
+not (kubernetes.audit.user.username:"system:serviceaccount:cert-manager:cert-manager" and kubernetes.audit.user.extra.authentication.kubernetes.io/pod-name:cert-manager-*)
+```
+
+
+
+### Kubernetes Secret get or list with Suspicious User Agent
+
+Branch count: 24  
+Document count: 24  
+Index: geneve-ut-0802
+
+```python
+data_stream.dataset:"kubernetes.audit_logs" and
+event.action:(get or list) and
+kubernetes.audit.objectRef.resource:"secrets" and
+user_agent.original:(curl* or python* or Python* or wget* or Go-http* or perl* or java* or node* or php* or *distrib#kali* or *kali-amd64 or *kali-arm64*) and
+source.ip:*
+```
+
+
+
 ### Kubernetes Sensitive Configuration File Activity
 
 Branch count: 6  
@@ -9238,6 +13800,26 @@ file where host.os.type == "linux" and event.type != "deletion" and file.path li
   process.name in ("kubeadm", "kubelet", "dpkg", "sed") or
   (process.name in ("vi", "vim", "vim.basic") and file.extension in ("swx", "swp"))
 )
+```
+
+
+
+### Kubernetes Service Account Modified RBAC Objects
+
+Branch count: 16  
+Document count: 16  
+Index: geneve-ut-0807
+
+```python
+data_stream.dataset:"kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
+kubernetes.audit.user.username:(
+  system\:serviceaccount\:* and not (
+    "system:serviceaccount:kube-system:clusterrole-aggregation-controller" or
+    "system:serviceaccount:kube-system:generic-garbage-collector"
+  )
+) and
+kubernetes.audit.objectRef.resource:("clusterrolebindings" or "clusterroles" or "rolebindings" or "roles") and
+kubernetes.audit.verb:("create" or "delete" or "patch" or "update")
 ```
 
 
@@ -9286,6 +13868,37 @@ not (
 
 
 
+### Kubernetes Service Account Token Created via TokenRequest API
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0809
+
+```python
+data_stream.dataset:"kubernetes.audit_logs" and 
+kubernetes.audit.verb:"create" and
+kubernetes.audit.objectRef.resource:"serviceaccounts" and
+kubernetes.audit.objectRef.subresource:"token" and
+user.name:(* and not 
+ (system\:kube-controller-manager or
+  system\:kube-scheduler or
+  system\:node\:* or
+  system\:serviceaccount\:kube-system\:* or
+  eks\:* or
+  aksService or
+  aks-service or
+  masterclient or
+  nodeclient or
+  system\:serviceaccount\:gke-managed-system\:* or
+  system\:serviceaccount\:gke-connect\:* or
+  system\:serviceaccount\:anthos-identity-service\:* or
+  system\:gke-controller-manager or
+  system\:serviceaccount\:tigera-operator\:* or
+  system\:serviceaccount\:calico-system\:*))
+```
+
+
+
 ### Kubernetes Static Pod Manifest File Access
 
 Branch count: 116  
@@ -9307,6 +13920,25 @@ process.name:(
   process.args:(*/etc/kubernetes/manifests/* and not (/etc/kubernetes/manifests/etcd* or /etc/kubernetes/manifests/kube-apiserver* or /etc/kubernetes/manifests/kube-scheduler* or /etc/kubernetes/manifests/kube-controller-manager*)) and 
   not (process.args :printf* and process.working_directory :/home/*-svc-nessus) and 
   not process.parent.executable :("/opt/nessus/sbin/nessusd" or "/opt/nessus_agent/sbin/nessus-agent-module")
+```
+
+
+
+### Kubernetes Suspicious Assignment of Controller Service Account
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0811
+
+```python
+data_stream.dataset : "kubernetes.audit_logs" and kubernetes.audit.annotations.authorization_k8s_io/decision:"allow" and
+kubernetes.audit.verb : "create" and kubernetes.audit.objectRef.resource : "pods" and
+kubernetes.audit.objectRef.namespace : "kube-system" and kubernetes.audit.requestObject.spec.serviceAccountName:*controller and
+not kubernetes.audit.requestObject.spec.containers.image:(
+  mirror.gcr.io/aquasec/trivy* or *amazonaws.com/eks/snapshot-controller* or rancher/mirrored-sig-storage-snapshot-controller* or
+  public.ecr.aws/eks/aws-load-balancer-controller* or docker.io/bitnami/sealed-secrets-controller* or exoscale/csi-driver* or
+  registry.k8s.io/autoscaling/vpa-admission-controller* or registry.k8s.io/sig-storage/csi-attacher* or registry.k8s.io/sig-storage/csi-provisioner*
+)
 ```
 
 
@@ -9616,6 +14248,336 @@ event.dataset:o365.audit and event.code:AadRiskDetection
 
 
 
+### M365 Exchange Anti-Phish Policy Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0846
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Remove-AntiPhishPolicy" and event.outcome:success
+```
+
+
+
+### M365 Exchange Anti-Phish Rule Modification
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0847
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:("Remove-AntiPhishRule" or "Disable-AntiPhishRule") and event.outcome:success
+```
+
+
+
+### M365 Exchange DKIM Signing Configuration Disabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0848
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Set-DkimSigningConfig" and o365.audit.Parameters.Enabled:False and event.outcome:success
+```
+
+
+
+### M365 Exchange Email Safe Attachment Rule Disabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0849
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Disable-SafeAttachmentRule" and event.outcome:success
+```
+
+
+
+### M365 Exchange Email Safe Link Policy Disabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0850
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Disable-SafeLinksRule" and event.outcome:success
+```
+
+
+
+### M365 Exchange Federated Domain Created or Modified
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0851
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:("Set-AcceptedDomain" or
+"Set-MsolDomainFederationSettings" or "Add-FederatedDomain" or "New-AcceptedDomain" or "Remove-AcceptedDomain" or "Remove-FederatedDomain") and
+event.outcome:success
+```
+
+
+
+### M365 Exchange MFA Notification Email Deleted or Moved
+
+Branch count: 171  
+Document count: 171  
+Index: geneve-ut-0855
+
+```python
+web where data_stream.dataset == "o365.audit" and
+    event.provider == "Exchange" and
+    event.action in ("SoftDelete", "HardDelete", "MoveToDeletedItems") and
+    event.outcome == "success" and
+    (
+        o365.audit.AffectedItems.Subject like~ (
+            /* new + (mfa|multi-|factor|method|device|security) */
+            "*new mfa*", "*new multi*", "*new factor*", "*new method*", "*new device*", "*new security*",
+            /* 2fa and 2-step */
+            "*2fa*", "*2-step*",
+            /* mfa + action verbs */
+            "*mfa enroll*", "*mfa register*", "*mfa added*", "*mfa change*",
+            "*mfa verify*", "*mfa update*", "*mfa activate*", "*mfa configure*", "*mfa setup*",
+            /* factor + action verbs */
+            "*factor enroll*", "*factor register*", "*factor added*", "*factor change*",
+            "*factor verify*", "*factor update*", "*factor activate*", "*factor configure*", "*factor setup*",
+            /* method + action verbs */
+            "*method enroll*", "*method register*", "*method added*", "*method change*",
+            "*method verify*", "*method update*", "*method activate*", "*method configure*", "*method setup*",
+            /* device + action verbs */
+            "*device enroll*", "*device register*", "*device added*", "*device change*",
+            "*device verify*", "*device update*", "*device activate*", "*device configure*", "*device setup*",
+            /* security + action verbs */
+            "*security enroll*", "*security register*", "*security added*", "*security change*",
+            "*security verify*", "*security update*", "*security activate*", "*security configure*", "*security setup*",
+            /* Additional security notifications */
+            "*authenticator*", "*verification code*", "*security info*", "*security alert*"
+        ) and not
+        o365.audit.AffectedItems.Subject like~ ("*sign-in*", "*sign in*", "*log-in*", "*log in*", "*logon*")
+    )
+```
+
+
+
+### M365 Exchange Mail Flow Transport Rule Created
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0856
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"New-TransportRule" and event.outcome:success
+```
+
+
+
+### M365 Exchange Mail Flow Transport Rule Modified
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0857
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:("Remove-TransportRule" or "Disable-TransportRule") and event.outcome:success
+```
+
+
+
+### M365 Exchange Mailbox Audit Logging Bypass Added
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0859
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.action:Set-MailboxAuditBypassAssociation and event.outcome:success
+```
+
+
+
+### M365 Exchange Malware Filter Policy Deleted
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0862
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"Remove-MalwareFilterPolicy" and event.outcome:success
+```
+
+
+
+### M365 Exchange Malware Filter Rule Modified
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0863
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:("Remove-MalwareFilterRule" or "Disable-MalwareFilterRule") and event.outcome:success
+```
+
+
+
+### M365 Exchange Management Group Role Assigned
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0864
+
+```python
+data_stream.dataset:o365.audit and event.provider:Exchange and event.category:web and event.action:"New-ManagementRoleAssignment" and event.outcome:success
+```
+
+
+
+### M365 Identity Global Administrator Role Assigned
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0867
+
+```python
+data_stream.dataset:o365.audit
+    and event.code:"AzureActiveDirectory"
+    and event.action:"Add member to role."
+    and event.outcome: "success"
+    and o365.audit.ModifiedProperties.Role_DisplayName.NewValue: (
+        "Global Administrator" or "Company Administrator"
+    )
+    and o365.audit.AzureActiveDirectoryEventType: 1
+    and o365.audit.RecordType: 8
+```
+
+
+
+### M365 Identity OAuth Flow by User Sign-in to Device Registration
+
+Branch count: 4  
+Document count: 12  
+Index: geneve-ut-0871
+
+```python
+sequence by related.user with maxspan=30m
+[authentication where event.action == "UserLoggedIn" and
+ o365.audit.ExtendedProperties.RequestType == "OAuth2:Authorize" and o365.audit.ExtendedProperties.ResultStatusDetail == "Redirect" and
+ o365.audit.UserType: ("0", "2", "3", "10")] // victim source.ip
+[authentication where event.action == "UserLoggedIn" and
+ o365.audit.ExtendedProperties.RequestType == "OAuth2:Token" and o365.audit.ExtendedProperties.ResultStatusDetail == "Success"] // attacker source.ip to convert oauth code to token
+[web where data_stream.dataset == "o365.audit" and event.action == "Add registered users to device."] // user.name is captured in related.user
+```
+
+
+
+### M365 Identity OAuth Phishing via First-Party Microsoft Application
+
+Branch count: 246  
+Document count: 246  
+Index: geneve-ut-0873
+
+```python
+data_stream.dataset: "o365.audit"
+    and event.action: "UserLoggedIn"
+    and o365.audit.ExtendedProperties.RequestType: "OAuth2:Authorize"
+    and o365.audit.ExtendedProperties.ResultStatusDetail: "Redirect"
+    and o365.audit.UserType: ("0" or "2" or "3" or "5" or "6" or "10")
+    and (
+        (
+            o365.audit.ApplicationId: (
+                "aebc6443-996d-45c2-90f0-388ff96faa56" or
+                "04b07795-8ddb-461a-bbee-02f9e1bf7b46" or
+                "1950a258-227b-4e31-a9cf-717495945fc2"
+            )
+            and o365.audit.Target.ID: (
+                "00000003-0000-0000-c000-000000000000" or
+                "00000002-0000-0000-c000-000000000000"
+            )
+        ) or
+        (
+            o365.audit.ApplicationId: (
+                "00b41c95-dab0-4487-9791-b9d2c32c80f2" or
+                "1fec8e78-bce4-4aaf-ab1b-5451cc387264" or
+                "26a7ee05-5602-4d76-a7ba-eae8b7b67941" or
+                "27922004-5251-4030-b22d-91ecd9a37ea4" or
+                "4813382a-8fa7-425e-ab75-3b753aab3abb" or
+                "ab9b8c07-8f02-4f72-87fa-80105867a763" or
+                "d3590ed6-52b3-4102-aeff-aad2292ab01c" or
+                "872cd9fa-d31f-45e0-9eab-6e460a02d1f1" or
+                "af124e86-4e96-495a-b70a-90f90ab96707" or
+                "2d7f3606-b07d-41d1-b9d2-0d0c9296a6e8" or
+                "844cca35-0656-46ce-b636-13f48b0eecbd" or
+                "87749df4-7ccf-48f8-aa87-704bad0e0e16" or
+                "cf36b471-5b44-428c-9ce7-313bf84528de" or
+                "0ec893e0-5785-4de6-99da-4ed124e5296c" or
+                "22098786-6e16-43cc-a27d-191a01a1e3b5" or
+                "4e291c71-d680-4d0e-9640-0a3358e31177" or
+                "57336123-6e14-4acc-8dcf-287b6088aa28" or
+                "57fcbcfa-7cee-4eb1-8b25-12d2030b4ee0" or
+                "66375f6b-983f-4c2c-9701-d680650f588f" or
+                "9ba1a5c7-f17a-4de9-a1f1-6178c8d51223" or
+                "a40d7d7d-59aa-447e-a655-679a4107e548" or
+                "a569458c-7f2b-45cb-bab9-b7dee514d112" or
+                "b26aadf8-566f-4478-926f-589f601d9c74" or
+                "c0d2a505-13b8-4ae0-aa9e-cddd5eab0b12" or
+                "d326c1ce-6cc6-4de2-bebc-4591e5e13ef0" or
+                "e9c51622-460d-4d3d-952d-966a5b1da34c" or
+                "eb539595-3fe1-474e-9c1d-feb3625d1be5" or
+                "ecd6b820-32c2-49b6-98a6-444530e5a77a" or
+                "f05ff7c9-f75a-4acd-a3b5-f4b6a870245d" or
+                "f44b1140-bc5e-48c6-8dc0-5cf5a53c0e34" or
+                "be1918be-3fe3-4be9-b32b-b542fc27f02e" or
+                "cab96880-db5b-4e15-90a7-f3f1d62ffe39" or
+                "d7b530a4-7680-4c23-a8bf-c52c121d2e87" or
+                "dd47d17a-3194-4d86-bfd5-c6ae6f5651e3" or
+                "e9b154d0-7658-433b-bb25-6b8e0a8a7c59"
+            )
+            and o365.audit.Target.ID: "00000002-0000-0000-c000-000000000000"
+        )
+    )
+```
+
+
+
+### M365 OneDrive Malware File Upload
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0877
+
+```python
+data_stream.dataset:o365.audit and event.provider:OneDrive and event.code:SharePointFileOperation and event.action:FileMalwareDetected
+```
+
+
+
+### M365 Potential AiTM UserLoggedIn via Office App (Tycoon2FA)
+
+Branch count: 9  
+Document count: 9  
+Index: geneve-ut-0879
+
+```python
+data_stream.dataset:"o365.audit" and event.category:"authentication" and event.action:"UserLoggedIn" and
+(
+    (
+        o365.audit.ApplicationId:"29d9ed98-a469-4536-ade2-f981bc1d605e" and
+        o365.audit.ObjectId:(
+            "00000002-0000-0ff1-ce00-000000000000" or "00000003-0000-0000-c000-000000000000"
+        )
+    ) or
+    (
+        o365.audit.ApplicationId:"4765445b-32c6-49b0-83e6-1d93765276ca" and
+        o365.audit.ObjectId:"4765445b-32c6-49b0-83e6-1d93765276ca"
+    )
+) and user_agent.original:(node or axios* or undici)
+```
+
+
+
 ### M365 Purview DLP Signal
 
 Branch count: 7  
@@ -9675,6 +14637,148 @@ Index: geneve-ut-0884
 ```python
 event.dataset:o365.audit and
     event.code:(SecurityComplianceCenterEOPCmdlet or SecurityComplianceInsights or SecurityComplianceRBAC or SecurityComplianceUserChange)
+```
+
+
+
+### M365 SharePoint Malware File Detected
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0885
+
+```python
+data_stream.dataset:o365.audit and event.provider:SharePoint and event.code:SharePointFileOperation and event.action:FileMalwareDetected
+```
+
+
+
+### M365 SharePoint Search for Sensitive Content
+
+Branch count: 80  
+Document count: 80  
+Index: geneve-ut-0886
+
+```python
+web where data_stream.dataset == "o365.audit" and
+    event.provider == "SharePoint" and
+    event.action == "SearchQueryPerformed" and
+    event.outcome == "success" and
+    o365.audit.SearchQueryText != null and
+    o365.audit.SearchQueryText != "" and
+    o365.audit.SearchQueryText like~ (
+        /* Credentials and Secrets */
+        "*password*", "*credential*", "*secret*", "*api key*", "*apikey*",
+        "*token*", "*private key*", "*certificate*", "*ssh*", "*aws*",
+        "*azure*", "*gcp*", "*oauth*", "*bearer*", "*connection string*",
+        "*access key*", "*secret key*",
+        /* Financial */
+        "*salary*", "*payroll*", "*compensation*", "*budget*", "*revenue*",
+        "*financial*", "*banking*", "*invoice*", "*wire transfer*", "*account number*",
+        "*credit card*", "*routing number*", "*profit*", "*expense*", "*1099*",
+        /* Legal and Compliance */
+        "*confidential*", "*privileged*", "*attorney*", "*legal hold*", "*settlement*",
+        "*contract*", "*nda*", "*merger*", "*acquisition*", "*litigation*",
+        "*subpoena*", "*trade secret*", "*intellectual property*", "*proprietary*",
+        "*internal*", "*proposal*", "*poc*",
+        /* HR and PII */
+        "*ssn*", "*social security*", "*employee*", "*personnel*", "*performance review*",
+        "*termination*", "*tax*", "*w2*", "*benefits*", "*background check*",
+        "*medical*", "*hipaa*", "*passport*", "*driver license*", "*dob*",
+        /* Infrastructure and IT */
+        "*admin*", "*root*", "*vpn*", "*firewall*", "*network diagram*",
+        "*architecture*", "*topology*", "*production*", "*database*", "*config*",
+        "*backup*", "*disaster recovery*", "*vulnerability*", "*pentest*", "*security audit*",
+        "*salesforce*"
+    )
+```
+
+
+
+### M365 SharePoint Site Administrator Added
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0887
+
+```python
+data_stream.dataset:o365.audit
+    and event.provider:(SharePoint or OneDrive)
+    and event.category:web
+    and event.action:SiteCollectionAdminAdded
+    and event.outcome:success
+```
+
+
+
+### M365 SharePoint Site Sharing Policy Weakened
+
+Branch count: 48  
+Document count: 48  
+Index: geneve-ut-0888
+
+```python
+data_stream.dataset: "o365.audit" and event.provider: ("SharePoint" or "OneDrive") and
+    event.action: "SharingPolicyChanged" and event.outcome: "success" and
+    (
+        (o365.audit.ModifiedProperties.ShareWithGuests.NewValue: (true or "Enabled") and
+            o365.audit.ModifiedProperties.ShareWithGuests.OldValue: (false or "Disabled"))
+        or
+        (o365.audit.ModifiedProperties.ShareUsingAnonymousLinks.NewValue: (true or "Enabled") and
+            o365.audit.ModifiedProperties.ShareUsingAnonymousLinks.OldValue: (false or "Disabled"))
+        or
+        (o365.audit.ModifiedProperties.IsPublic.NewValue: (true or "Enabled") and
+            o365.audit.ModifiedProperties.IsPublic.OldValue: (false or "Disabled"))
+        or
+        (o365.audit.ModifiedProperties.AllowGuestUser.NewValue: (true or "Enabled") and
+            o365.audit.ModifiedProperties.AllowGuestUser.OldValue: (false or "Disabled"))
+        or
+        (o365.audit.ModifiedProperties.AllowFederatedUsers.NewValue: (true or "Enabled") and
+            o365.audit.ModifiedProperties.AllowFederatedUsers.OldValue: (false or "Disabled"))
+        or
+        (o365.audit.ModifiedProperties.AllowTeamsConsumer.NewValue: (true or "Enabled") and
+            o365.audit.ModifiedProperties.AllowTeamsConsumer.OldValue: (false or "Disabled"))
+    )
+```
+
+
+
+### M365 Teams Custom Application Interaction Enabled
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0890
+
+```python
+data_stream.dataset:o365.audit and event.provider:MicrosoftTeams and
+event.category:web and event.action:TeamsTenantSettingChanged and
+o365.audit.Name:"Allow sideloading and interaction of custom apps" and
+o365.audit.NewValue:True and event.outcome:success
+```
+
+
+
+### M365 Teams Rogue Help Desk Chat Created
+
+Branch count: 20  
+Document count: 20  
+Index: geneve-ut-0891
+
+```python
+data_stream.dataset:o365.audit and event.action:"ChatCreated" and event.provider:"MicrosoftTeams" and event.outcome:"success" and
+  o365.audit.ParticipantInfo.HasOtherGuestUsers:false and o365.audit.ParticipantInfo.HasGuestUsers:false and
+  o365.audit.ParticipantInfo.HasForeignTenantUsers:true and o365.audit.CommunicationType:"OneOnOne" and
+  (
+    o365.audit.Members:(
+      "Help Desk" or "Help Desk Team" or "Help Desk IT" or "IT Help Desk" or
+      "Microsoft Security" or "Microsoft  Security" or "Microsoft Support"
+    ) or
+    user.email:(
+      *helpdesk* or *help.desk* or *help-desk* or *help_desk* or
+      *ithelp* or *it.help* or *itsupport* or *it.support* or *it-support*
+    ) or
+    user.name:(*helpdesk* or *help-desk* or *ithelp* or *itsupport*)
+  )
 ```
 
 
@@ -10124,6 +15228,18 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Microsoft Sentinel External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0930
+
+```python
+event.kind: alert and data_stream.dataset: microsoft_sentinel.alert
+```
+
+
+
 ### Microsoft Windows Defender Tampering
 
 Branch count: 28  
@@ -10266,6 +15382,18 @@ Index: geneve-ut-0939
 event.code:"5136" and host.os.type:"windows" and winlog.event_data.AttributeLDAPDisplayName:"msPKIAccountCredentials" and
   winlog.event_data.OperationType:"%%14674" and
   not winlog.event_data.SubjectUserSid : "S-1-5-18"
+```
+
+
+
+### Modification or Removal of an Okta Application Sign-On Policy
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0940
+
+```python
+data_stream.dataset:okta.system and event.action:(application.policy.sign_on.update or application.policy.sign_on.rule.delete)
 ```
 
 
@@ -10990,6 +16118,43 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### New GitHub App Installed
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0996
+
+```python
+configuration where data_stream.dataset == "github.audit" and event.action == "integration_installation.create"
+```
+
+
+
+### New GitHub Owner Added
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0997
+
+```python
+iam where data_stream.dataset == "github.audit" and event.action == "org.add_member" and github.permission == "admin"
+```
+
+
+
+### New GitHub Personal Access Token (PAT) Added
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0998
+
+```python
+configuration where data_stream.dataset == "github.audit" and github.operation_type == "create" and
+github.category == "personal_access_token" and event.action == "personal_access_token.access_granted"
+```
+
+
+
 ### New Okta Authentication Behavior Detected
 
 Branch count: 1  
@@ -10998,6 +16163,18 @@ Index: geneve-ut-1000
 
 ```python
 event.dataset:okta.system and okta.debug_context.debug_data.risk_behaviors:*
+```
+
+
+
+### New Okta Identity Provider (IdP) Added by Admin
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1001
+
+```python
+data_stream.dataset: "okta.system" and event.action: "system.idp.lifecycle.create" and okta.outcome.result: "SUCCESS"
 ```
 
 
@@ -11103,6 +16280,57 @@ sequence by user.name with maxspan=30m
             "af2d8e4c-3b7c-4e91-8f5a-6c9d0e1f2a3b"
         )
     ]
+```
+
+
+
+### Okta FastPass Phishing Detection
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1019
+
+```python
+data_stream.dataset:okta.system and event.category:authentication and
+  okta.event_type:user.authentication.auth_via_mfa and event.outcome:failure and okta.outcome.reason:"FastPass declined phishing attempt"
+```
+
+
+
+### Okta ThreatInsight Threat Suspected Promotion
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-1023
+
+```python
+data_stream.dataset:okta.system and (event.action:security.threat.detected or okta.debug_context.debug_data.threat_suspected: true)
+```
+
+
+
+### Okta User Assigned Administrator Role
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-1024
+
+```python
+data_stream.dataset:okta.system
+    and event.action: (user.account.privilege.grant or group.privilege.grant)
+    and okta.debug_context.debug_data.flattened.privilegeGranted: *administrator*
+```
+
+
+
+### Okta User Session Impersonation
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1025
+
+```python
+data_stream.dataset:okta.system and event.action:user.session.impersonation.initiate
 ```
 
 
@@ -11877,6 +17105,18 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 
 
+### Possible Okta DoS Attack
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-1070
+
+```python
+data_stream.dataset:okta.system and event.action:(application.integration.rate_limit_exceeded or system.org.rate_limit.warning or system.org.rate_limit.violation or core.concurrency.org.limit.violation)
+```
+
+
+
 ### Potential Admin Group Account Addition
 
 Branch count: 16  
@@ -12274,6 +17514,55 @@ sequence by process.entity_id
 
 
 
+### Potential DLL Side-Loading via Trusted Microsoft Programs
+
+Branch count: 16  
+Document count: 16  
+Index: geneve-ut-1105
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  (
+    process.name : ("WinWord.exe", "EXPLORER.EXE", "w3wp.exe", "DISM.EXE") or
+    ?process.pe.original_file_name : ("WinWord.exe", "EXPLORER.EXE", "w3wp.exe", "DISM.EXE")
+  ) and
+  not process.executable : (
+          "\\\\?\\Volume{????????-????-????-????-????????????}\\Windows\\System32\\inetsrv\\w3wp.exe",
+          "?:\\PROGRA~?\\MICROS~?\\Office??\\winword.exe",
+          "?:\\Program Files\\Microsoft Office\\*\\winword.exe",
+          "?:\\Program Files\\Microsoft Office ??\\*\\winword.exe",
+          "?:\\Program Files\\WindowsApps\\Microsoft.Office.Desktop.*\\Office??\\winword.exe",
+          "?:\\Program Files (x86)\\Microsoft Office\\*\\winword.exe",
+          "?:\\Program Files (x86)\\Windows Kits\\*Assessment and Deployment Kit\\Deployment Tools\\amd64\\DISM\\dism.exe",
+          "?:\\Windows\\explorer.exe",
+          "?:\\Windows\\System32\\Dism.exe",
+          "?:\\Windows\\System32\\inetsrv\\w3wp.exe",
+          "?:\\Windows\\SysWOW64\\Dism.exe",
+          "?:\\Windows\\SysWOW64\\explorer.exe",
+          "?:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe"
+  ) and
+  /* Crowdstrike specific exclusion as it uses NT Object paths */
+  not
+  (
+    data_stream.dataset == "crowdstrike.fdr" and
+    process.executable : (
+        "\\Device\\HarddiskVolume*\\Program Files\\Microsoft Office\\*\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files\\Microsoft Office ??\\*\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files\\WindowsApps\\Microsoft.Office.Desktop.*\\Office??\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files (x86)\\Microsoft Office\\*\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files (x86)\\Windows Kits\\10\\Assessment and Deployment Kit\\Deployment Tools\\amd64\\DISM\\dism.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\explorer.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\System32\\Dism.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\System32\\inetsrv\\w3wp.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\Dism.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\explorer.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\inetsrv\\w3wp.exe"
+    )
+  )
+```
+
+
+
 ### Potential Data Exfiltration via Rclone
 
 Branch count: 4  
@@ -12611,6 +17900,37 @@ Index: geneve-ut-1138
 ```python
 process where host.os.type == "windows" and event.type == "start" and
  (process.name : "CertReq.exe" or ?process.pe.original_file_name == "CertReq.exe") and process.args : "-Post"
+```
+
+
+
+### Potential File Transfer via Curl for Windows
+
+Branch count: 66  
+Document count: 66  
+Index: geneve-ut-1139
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.executable : (
+    "?:\\Windows\\System32\\curl.exe",
+    "?:\\Windows\\SysWOW64\\curl.exe"
+  ) and
+  process.command_line : "*http*" and
+  process.parent.name : (
+    "cmd.exe", "powershell.exe",
+    "rundll32.exe", "explorer.exe",
+    "conhost.exe", "forfiles.exe",
+    "wscript.exe", "cscript.exe",
+    "mshta.exe", "hh.exe", "mmc.exe"
+  ) and 
+  not (
+    ?user.id == "S-1-5-18" and
+    /* Don't apply the user.id exclusion to Sysmon for compatibility */
+    not data_stream.dataset : ("windows.sysmon_operational", "windows.sysmon")
+  ) and
+  /* Exclude System Integrity Processes for Sysmon */
+  not ?winlog.event_data.IntegrityLevel == "System"
 ```
 
 
@@ -13422,6 +18742,124 @@ file where host.os.type == "macos" and event.action == "modification" and
  file.path like "/Users/*/.atom/init.coffee" and 
  not process.name like ("Atom", "xpcproxy") and 
  not user.name == "root"
+```
+
+
+
+### Potential Persistence via File Modification
+
+Branch count: 138  
+Document count: 138  
+Index: geneve-ut-1204
+
+```python
+file where host.os.type == "linux" and data_stream.dataset == "fim.event" and event.action == "updated" and
+file.path : (
+  // cron, anacron & at
+  "/etc/cron.d/*", "/etc/cron.daily/*", "/etc/cron.hourly/*", "/etc/cron.monthly/*",
+  "/etc/cron.weekly/*", "/etc/crontab", "/var/spool/cron/crontabs/*", "/etc/cron.allow",
+  "/etc/cron.deny",  "/var/spool/anacron/*", "/var/spool/cron/atjobs/*",
+
+  // systemd services & timers
+  "/etc/systemd/system/*", "/usr/local/lib/systemd/system/*", "/lib/systemd/system/*",
+  "/usr/lib/systemd/system/*", "/home/*/.config/systemd/user/*", "/home/*/.local/share/systemd/user/*",
+  "/root/.config/systemd/user/*", "/root/.local/share/systemd/user/*",
+
+  // LD_PRELOAD
+  "/etc/ld.so.preload", "/etc/ld.so.conf.d/*", "/etc/ld.so.conf",
+
+  // Dynamic linker
+  "/lib/ld-linux*.so*", "/lib64/ld-linux*.so*", "/usr/lib/ld-linux*.so*", "/usr/lib64/ld-linux*.so*",
+
+  // message-of-the-day (MOTD)
+  "/etc/update-motd.d/*",
+
+  // SSH
+  "/home/*/.ssh/*", "/root/.ssh/*", "/etc/ssh/*",
+
+  // system-wide shell configurations
+  "/etc/profile", "/etc/profile.d/*", "/etc/bash.bashrc", "/etc/zsh/*", "/etc/csh.cshrc",
+  "/etc/csh.login", "/etc/fish/config.fish", "/etc/ksh.kshrc",
+
+  // root and user shell configurations
+  "/home/*/.profile", "/home/*/.bashrc", "/home/*/.bash_login", "/home/*/.bash_logout",
+  "/root/.profile", "/root/.bashrc", "/root/.bash_login", "/root/.bash_logout",
+  "/home/*/.zprofile", "/home/*/.zshrc", "/root/.zprofile", "/root/.zshrc",
+  "/home/*/.cshrc", "/home/*/.login", "/home/*/.logout", "/root/.cshrc", "/root/.login", "/root/.logout",
+  "/home/*/.config/fish/config.fish", "/root/.config/fish/config.fish",
+  "/home/*/.kshrc", "/root/.kshrc",
+
+  // Alias files
+  "/home/*/.bash_aliases", "/root/.bash_aliases", "/home/*/.zsh_aliases", "/root/.zsh_aliases",
+  "/home/*/.aws/cli/alias", "/root/.aws/cli/alias", 
+
+  // runtime control
+  "/etc/rc.common", "/etc/rc.local",
+
+  // System V init/Upstart
+  "/etc/init.d/*", "/etc/init/*",
+
+  // passwd/sudoers/shadow
+  "/etc/passwd", "/etc/shadow", "/etc/sudoers", "/etc/sudoers.d/*",
+
+  // Systemd udevd
+  "/lib/udev/*", "/etc/udev/rules.d/*", "/usr/lib/udev/rules.d/*", "/run/udev/rules.d/*", "/usr/local/lib/udev/rules.d/*",
+
+  // XDG/KDE autostart entries
+  "/home/*/.config/autostart/*", "/root/.config/autostart/*", "/etc/xdg/autostart/*", "/usr/share/autostart/*",
+  "/home/*/.kde/Autostart/*", "/root/.kde/Autostart/*",
+  "/home/*/.kde4/Autostart/*", "/root/.kde4/Autostart/*",
+  "/home/*/.kde/share/autostart/*", "/root/.kde/share/autostart/*",
+  "/home/*/.kde4/share/autostart/*", "/root/.kde4/share/autostart/*",
+  "/home/*/.local/share/autostart/*", "/root/.local/share/autostart/*",
+  "/home/*/.config/autostart-scripts/*", "/root/.config/autostart-scripts/*",
+
+  // LKM configuration files
+  "/etc/modules", "/etc/modprobe.d/*", "/usr/lib/modprobe.d/*", "/etc/modules-load.d/*",
+  "/run/modules-load.d/*", "/usr/local/lib/modules-load.d/*", "/usr/lib/modules-load.d/*",
+
+  // PAM modules & configuration files
+  "/lib/security/*", "/lib64/security/*", "/usr/lib/security/*", "/usr/lib64/security/*",
+  "/lib/x86_64-linux-gnu/security/*", "/usr/lib/x86_64-linux-gnu/security/*",
+  "/etc/pam.d/*", "/etc/security/pam_*", "/etc/pam.conf",
+
+  // Polkit Rule files
+  "/etc/polkit-1/rules.d/*", "/usr/share/polkit-1/rules.d/*",
+
+  // Polkit pkla files
+  "/etc/polkit-1/localauthority/*", "/var/lib/polkit-1/localauthority/*",
+
+  // Polkit Action files
+  "/usr/share/polkit-1/actions/*",
+
+  // Polkit Legacy paths
+  "/lib/polkit-1/rules.d/*", "/lib64/polkit-1/rules.d/*", "/var/lib/polkit-1/rules.d/*",
+
+  // NetworkManager
+  "/etc/NetworkManager/dispatcher.d/*",
+
+  // D-bus Service files
+  "/usr/share/dbus-1/system-services/*", "/etc/dbus-1/system.d/*",
+  "/lib/dbus-1/system-services/*", "/run/dbus/system.d/*",
+  "/home/*/.local/share/dbus-1/services/*", "/home/*/.dbus/session-bus/*",
+  "/usr/share/dbus-1/services/*", "/etc/dbus-1/session.d/*",
+
+  // GRUB
+  "/etc/default/grub.d/*", "/etc/default/grub", "/etc/grub.d/*", "/boot/grub2/grub.cfg",
+  "/boot/grub/grub.cfg", "/boot/efi/EFI/*/grub.cfg", "/etc/sysconfig/grub",
+
+  // Dracut
+  "/lib/dracut/modules.d/*", "/usr/lib/dracut/modules.d/*",
+
+  // Misc.
+  "/etc/shells"
+
+) and not (
+  file.path : (
+    "/var/spool/cron/crontabs/tmp.*", "/run/udev/rules.d/*rules.*", "/home/*/.ssh/known_hosts.*", "/root/.ssh/known_hosts.*"
+  ) or
+  file.extension in ("dpkg-new", "dpkg-remove", "SEQ")
+)
 ```
 
 
@@ -15012,6 +20450,24 @@ not process.parent.command_line like ("linode-longview", "*bootstrap*", "*homebr
 
 
 
+### Potential VIEWSTATE RCE Attempt on SharePoint/IIS
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1304
+
+```python
+data_stream.dataset : "network_traffic.http" and
+    network.direction: "ingress" and
+    http.request.method: "POST" and
+    http.request.referrer: *SignOut.aspx and
+    http.request.body.content: *__VIEWSTATE=* and
+    http.request.body.bytes >= 500 and
+    http.response.headers.server: Microsoft-IIS*
+```
+
+
+
 ### Potential Veeam Credential Access Command
 
 Branch count: 6  
@@ -15076,6 +20532,31 @@ file where host.os.type == "windows" and event.type != "deletion" and
 
 
 
+### Potential Webshell Deployed via Apache Struts CVE-2023-50164 Exploitation
+
+Branch count: 1  
+Document count: 2  
+Index: geneve-ut-1309
+
+```python
+sequence by agent.id with maxspan=10s
+  [network where data_stream.dataset == "network_traffic.http" and
+      http.request.method == "POST" and
+      http.request.body.content like "*WebKitFormBoundary*" and
+      url.path like~ "*upload*.action"]
+  [file where data_stream.dataset == "endpoint.events.file" and
+      host.os.type == "linux" and
+      event.action == "creation" and
+      process.name == "java" and
+      file.extension == "jsp" and
+      file.path like "*/webapps/*" and
+      not file.path like "*/WEB-INF/*" and
+      not file.path like "*/META-INF/*"
+  ]
+```
+
+
+
 ### Potential privilege escalation via CVE-2022-38028
 
 Branch count: 4  
@@ -15113,6 +20594,39 @@ Index: geneve-ut-1316
 file where host.os.type == "linux" and event.action == "creation" and
 file.path like ("/tmp/.snap*", "/tmp/snap-private-tmp/*/tmp/.snap*") and
 user.id != "0"
+```
+
+
+
+### Potentially Successful Okta MFA Bombing via Push Notifications
+
+Branch count: 128  
+Document count: 768  
+Index: geneve-ut-1317
+
+```python
+sequence by okta.actor.id with maxspan=10m
+  [ any
+    where data_stream.dataset == "okta.system"
+      and (
+        okta.event_type == "user.mfa.okta_verify.deny_push"
+        or (
+          okta.event_type == "user.authentication.auth_via_mfa"
+          and okta.debug_context.debug_data.factor == "OKTA_VERIFY_PUSH"
+          and okta.outcome.reason == "INVALID_CREDENTIALS"
+        )
+      )
+  ] with runs=5
+  [ any
+    where data_stream.dataset == "okta.system"
+      and okta.event_type in (
+        "user.authentication.sso",
+        "user.authentication.auth_via_mfa",
+        "user.authentication.verify",
+        "user.session.start"
+      )
+      and okta.outcome.result == "SUCCESS"
+  ]
 ```
 
 
@@ -16131,6 +21645,19 @@ not (
 
 
 
+### Process Started with Executable Stack
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1371
+
+```python
+host.os.type:"linux" and data_stream.dataset:"system.syslog" and process.name:"kernel" and
+message:"started with executable stack"
+```
+
+
+
 ### Processes with Trailing Spaces
 
 Branch count: 4  
@@ -16399,6 +21926,58 @@ file where event.action == "extended_attributes_delete" and host.os.type == "mac
 
 
 
+### RDP (Remote Desktop Protocol) from the Internet
+
+Branch count: 30  
+Document count: 30  
+Index: geneve-ut-1386
+
+```python
+(data_stream.dataset: network_traffic.flow or (event.category: (network or network_traffic))) and
+  network.transport:tcp and (destination.port:3389 or data_stream.dataset:zeek.rdp) and
+  not source.ip:(
+    10.0.0.0/8 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.168.0.0/16 or
+    192.88.99.0/24 or
+    224.0.0.0/4 or
+    100.64.0.0/10 or
+    192.175.48.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  ) and
+  destination.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  ) and
+  not (
+    data_stream.dataset:"panw.panos" and (
+      event.action:("flow_dropped" or "flow_denied") or
+      network.application:("incomplete" or "insufficient-data" or "not-applicable")
+    )
+  )
+```
+
+
+
 ### RDP Enabled via Registry
 
 Branch count: 2  
@@ -16442,6 +22021,99 @@ sequence by process.entity_id with maxspan=1m
   )]
  [file where host.os.type in ("windows", "macos") and
   event.action != "deletion" and process.name : "python*" and file.name : "rot_??.cpython-*.pyc*"]
+```
+
+
+
+### RPC (Remote Procedure Call) from the Internet
+
+Branch count: 15  
+Document count: 15  
+Index: geneve-ut-1389
+
+```python
+(data_stream.dataset: network_traffic.flow or (event.category: (network or network_traffic))) and
+  network.transport:tcp and (destination.port:135 or data_stream.dataset:zeek.dce_rpc) and
+  not (event.type: denied or event.action: flow_dropped or event.outcome: failure) and
+  not source.ip:(
+    10.0.0.0/8 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.168.0.0/16 or
+    192.88.99.0/24 or
+    224.0.0.0/4 or
+    100.64.0.0/10 or
+    192.175.48.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  ) and
+  destination.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  )
+```
+
+
+
+### RPC (Remote Procedure Call) to the Internet
+
+Branch count: 15  
+Document count: 15  
+Index: geneve-ut-1390
+
+```python
+(data_stream.dataset: network_traffic.flow or (event.category: (network or network_traffic))) and
+  network.transport:tcp and (destination.port:135 or data_stream.dataset:zeek.dce_rpc) and
+  source.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  ) and
+  not destination.ip:(
+    10.0.0.0/8 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.168.0.0/16 or
+    192.88.99.0/24 or
+    224.0.0.0/4 or
+    100.64.0.0/10 or
+    192.175.48.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  )
 ```
 
 
@@ -16490,6 +22162,21 @@ Index: geneve-ut-1395
 
 ```python
 event.kind:alert and event.module:endgame and endgame.metadata.type:prevention and (event.action:ransomware_event or endgame.event_subtype_full:ransomware_event)
+```
+
+
+
+### React2Shell Network Security Alert
+
+Branch count: 5  
+Document count: 5  
+Index: geneve-ut-1402
+
+```python
+(data_stream.dataset:"cisco_ftd.log" and message:"SERVER-WEBAPP React Server Components remote code execution attempt") or
+(data_stream.dataset:"fortinet_fortigate.log" and message:"applications3: React.Server.Components.react-flight.Remote.Code.Execution") or
+(data_stream.dataset:"panw.panos" and event.action:"exploit_detected" and event.original :*React*Server*) or
+(data_stream.dataset:("suricata_corelight" or "suricata.eve") and rule.name:*CVE-2025-55182*)
 ```
 
 
@@ -17027,6 +22714,53 @@ sequence by host.id, process.entry_leader.entity_id with maxspan=30s
 
 
 
+### Roshal Archive (RAR) or PowerShell File Downloaded from the Internet
+
+Branch count: 48  
+Document count: 48  
+Index: geneve-ut-1430
+
+```python
+(data_stream.dataset: (network_traffic.http or network_traffic.tls) or
+  (event.category: (network or network_traffic) and network.protocol: http)) and
+  (url.extension:(ps1 or rar) or url.path:(*.ps1 or *.rar)) and
+    not destination.ip:(
+      10.0.0.0/8 or
+      127.0.0.0/8 or
+      169.254.0.0/16 or
+      172.16.0.0/12 or
+      192.0.0.0/24 or
+      192.0.0.0/29 or
+      192.0.0.8/32 or
+      192.0.0.9/32 or
+      192.0.0.10/32 or
+      192.0.0.170/32 or
+      192.0.0.171/32 or
+      192.0.2.0/24 or
+      192.31.196.0/24 or
+      192.52.193.0/24 or
+      192.168.0.0/16 or
+      192.88.99.0/24 or
+      224.0.0.0/4 or
+      100.64.0.0/10 or
+      192.175.48.0/24 or
+      198.18.0.0/15 or
+      198.51.100.0/24 or
+      203.0.113.0/24 or
+      240.0.0.0/4 or
+      "::1" or
+      "FE80::/10" or
+      "FF00::/8"
+    ) and
+    source.ip:(
+      10.0.0.0/8 or
+      172.16.0.0/12 or
+      192.168.0.0/16
+    )
+```
+
+
+
 ### SELinux Configuration Creation or Renaming
 
 Branch count: 4  
@@ -17063,6 +22797,46 @@ registry where host.os.type == "windows" and event.type == "change" and registry
   registry.data.strings:"*.dll" and
   not (process.name : "msiexec.exe" and registry.data.strings : "mso.dll") and
   not (process.name : "regsvr32.exe" and registry.data.strings == "WINTRUST.DLL")
+```
+
+
+
+### SMTP to the Internet on Port 26/TCP
+
+Branch count: 12  
+Document count: 12  
+Index: geneve-ut-1436
+
+```python
+(data_stream.dataset: (network_traffic.flow or zeek.smtp) or event.category:(network or network_traffic)) and
+  network.transport:tcp and destination.port:26 and
+  source.ip:(10.0.0.0/8 or 172.16.0.0/12 or 192.168.0.0/16) and
+  not destination.ip:(10.0.0.0/8
+    or 100.64.0.0/10
+    or 127.0.0.0/8
+    or 169.254.0.0/16
+    or 172.16.0.0/12
+    or 192.0.0.0/24
+    or 192.0.0.0/29
+    or 192.0.0.10/32
+    or 192.0.0.170/32
+    or 192.0.0.171/32
+    or 192.0.0.8/32
+    or 192.0.0.9/32
+    or 192.0.2.0/24
+    or 192.168.0.0/16
+    or 192.175.48.0/24
+    or 192.31.196.0/24
+    or 192.52.193.0/24
+    or 192.88.99.0/24
+    or 198.18.0.0/15
+    or 198.51.100.0/24
+    or 203.0.113.0/24
+    or 224.0.0.0/4
+    or 240.0.0.0/4
+    or "::1"
+    or "FE80::/10"
+    or "FF00::/8")
 ```
 
 
@@ -17506,6 +23280,18 @@ process.name : ("grep", "egrep", "pgrep") and user.id != "0" and
 
 
 
+### Segfault Detected
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1455
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and message:segfault
+```
+
+
+
 ### Sensitive Audit Policy Sub-Category Disabled
 
 Branch count: 6  
@@ -17560,6 +23346,69 @@ process.entry_leader.entry_meta.type == "container" and process.name in ("zip", 
 process.command_line like~ (
   "*/root/.ssh/*", "*/home/*/.ssh/*", "*/root/.bash_history*", "*/etc/hosts*", "*/root/.aws/*", "*/home/*/.aws/*",
   "*/root/.docker/*", "*/home/*/.docker/*", "*/etc/group*", "*/etc/passwd*", "*/etc/shadow*", "*/etc/gshadow*"
+)
+```
+
+
+
+### Sensitive Identity File Open by Suspicious Process via Auditd
+
+Branch count: 1682  
+Document count: 1682  
+Index: geneve-ut-1461
+
+```python
+host.os.type:"linux" and 
+data_stream.dataset:"auditd_manager.auditd" and 
+event.category:"file" and 
+event.action:"opened-file" and 
+(
+  process.name:(
+    cp or mv or ln or cat or head or tail or 
+    base64 or xxd or od or 
+    curl or wget or 
+    tar or zip or gzip or scp or rsync or 
+    python* or perl* or ruby* or node or bun or php* or lua* or 
+    tee or dd or 
+    nc or ncat or netcat or socat or 
+    openssl or ssh or sftp or 
+    busybox or jq or yq or 
+    strings or xargs or sed or awk or grep or find or 
+    .*
+  ) or 
+  process.executable:(/tmp/* or /var/tmp/* or /dev/shm/* or /run/*) or 
+  (process.name:(sh or bash or zsh or dash or fish or ksh) and process.args:("-c" or "-i"))
+) and 
+file.path:(
+  "/var/run/secrets/kubernetes.io/serviceaccount/token" or
+  "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt" or 
+  "/var/run/secrets/eks.amazonaws.com/serviceaccount/token" or
+  "/var/run/secrets/azure/tokens/azure-identity-token" or
+  "/var/run/secrets/tokens/azure-identity-token" or
+  "/var/lib/kubelet/kubeconfig" or
+  "/etc/kubernetes/admin.conf" or
+  "/etc/kubernetes/pki/ca.key" or 
+  "/etc/kubernetes/pki/apiserver-kubelet-client.key" or 
+  "/var/lib/kubelet/pki/kubelet-client-current.pem" or 
+  "/etc/rancher/k3s/k3s.yaml" or 
+  "/etc/shadow" or
+  "/root/.ssh/id_rsa" or
+  "/root/.ssh/id_ed25519" or
+  "/root/.ssh/id_ecdsa" or
+  "/root/.aws/credentials" or
+  "/root/.aws/config" or
+  "/root/.aws/cli/cache" or
+  "/root/.aws/sso/cache" or
+  "/root/.azure/accessTokens.json" or
+  "/root/.azure/azureProfile.json" or
+  "/root/.azure/msal_token_cache.json" or
+  "/root/.azure/msal_http_cache.bin" or
+  "/root/.config/gcloud/application_default_credentials.json" or
+  "/root/.config/gcloud/credentials.db" or
+  "/root/.config/gcloud/access_tokens.db" or 
+  "/root/.config/gcloud/legacy_credentials" or 
+  "/root/.kube/config" or
+  "/root/.docker/config.json"
 )
 ```
 
@@ -17624,6 +23473,30 @@ file where host.os.type == "windows" and
         "?:\\Program Files (x86)\\Padvish AV\\APCcSvc.exe"
     )
  )
+```
+
+
+
+### SentinelOne Alert External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1465
+
+```python
+event.kind: event and data_stream.dataset: sentinel_one.alert
+```
+
+
+
+### SentinelOne Threat External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1466
+
+```python
+event.kind: alert and data_stream.dataset: sentinel_one.threat
 ```
 
 
@@ -17986,6 +23859,18 @@ registry where host.os.type == "windows" and event.type == "change" and registry
 
 
 
+### Splunk External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1515
+
+```python
+event.kind: alert and data_stream.dataset: splunk.alert
+```
+
+
+
 ### Startup Folder Persistence via Unsigned Process
 
 Branch count: 12  
@@ -18163,6 +24048,21 @@ beacon_stats.beaconing_score: 3
 
 
 
+### Stolen Credentials Used to Login to Okta Account After MFA Reset
+
+Branch count: 2  
+Document count: 6  
+Index: geneve-ut-1522
+
+```python
+sequence by user.name with maxspan=12h
+    [any where host.os.type == "windows" and signal.rule.threat.tactic.name == "Credential Access"]
+    [any where data_stream.dataset == "okta.system" and okta.event_type == "user.mfa.factor.update"]
+    [any where data_stream.dataset == "okta.system" and okta.event_type: ("user.session.start", "user.authentication*")]
+```
+
+
+
 ### Sublime Plugin or Application Script Modification
 
 Branch count: 2  
@@ -18226,6 +24126,25 @@ file.path like ("/etc/sudoers*", "/private/etc/sudoers*") and not (
 
 
 
+### Suricata and Elastic Defend Network Correlation
+
+Branch count: 2  
+Document count: 4  
+Index: geneve-ut-1530
+
+```python
+sequence by source.port, source.ip, destination.ip with maxspan=5s
+ [network where data_stream.dataset == "suricata.eve" and event.kind == "alert" and
+  event.severity != 3 and source.ip != null and destination.ip != null and
+  not source.domain : ("*nessusscan*", "SCCMPS*") and
+  not rule.name in ("ET INFO SMB2 NT Create AndX Request For a Powershell .ps1 File", "ET SCAN MS Terminal Server Traffic on Non-standard Port")]
+ [network where event.module == "endpoint" and event.action in ("disconnect_received", "connection_attempted") and
+  not process.executable in ("System", "C:\\Program Files (x86)\\Admin Arsenal\\PDQ Inventory\\PDQInventoryService.exe") and 
+  not process.executable : "C:\\Windows\\AdminArsenal\\PDQInventory-Scanner\\service-*\\exec\\PDQInventoryScanner.exe"]
+```
+
+
+
 ### Suspicious .NET Code Compilation
 
 Branch count: 16  
@@ -18285,6 +24204,18 @@ sequence by host.id with maxspan=5s
      )
    ) and not process.executable == "/usr/bin/apt-listbugs"
   ] by process.parent.entity_id
+```
+
+
+
+### Suspicious Activity Reported by Okta User
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1539
+
+```python
+data_stream.dataset:okta.system and event.action:user.account.report_suspicious_activity_by_enduser
 ```
 
 
@@ -20247,6 +26178,18 @@ process where host.os.type == "windows" and event.action == "start" and
 
 
 
+### Suspicious Usage of bpf_probe_write_user Helper
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1647
+
+```python
+host.os.type:linux and data_stream.dataset:"system.syslog" and process.name:kernel and message:"bpf_probe_write_user"
+```
+
+
+
 ### Suspicious Utility Launched via ProxyChains
 
 Branch count: 204  
@@ -20261,6 +26204,25 @@ process.name == "proxychains" and process.args : (
   "ssf", "3proxy", "ngrok", "gost", "pivotnacci", "chisel*", "nmap", "ping", "python*", "php*", "perl", "ruby",
   "lua*", "openssl", "nc", "netcat", "ncat", "telnet", "awk", "java", "telnet", "ftp", "curl", "wget"
 )
+```
+
+
+
+### Suspicious WMI Event Subscription Created
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-1649
+
+```python
+any where host.os.type == "windows" and
+ (
+   (data_stream.dataset == "windows.sysmon_operational" and event.code == "21" and
+    ?winlog.event_data.Operation : "Created" and ?winlog.event_data.Consumer : ("*subscription:CommandLineEventConsumer*", "*subscription:ActiveScriptEventConsumer*")) or
+
+   (data_stream.dataset == "endpoint.events.api" and event.provider == "Microsoft-Windows-WMI-Activity" and ?process.Ext.api.name == "IWbemServices::PutInstance" and
+    ?process.Ext.api.parameters.consumer_type in ("ActiveScriptEventConsumer", "CommandLineEventConsumer"))
+ )
 ```
 
 
@@ -20334,6 +26296,117 @@ process where host.os.type == "windows" and event.type == "start" and
   (process.parent.args : "-s" and process.parent.args : "-t" and process.parent.args : "-c") and
 
   not process.executable : ("?:\\Windows\\SysWOW64\\Initcrypt.exe", "?:\\Program Files (x86)\\Heimdal\\Heimdal.Guard.exe")
+```
+
+
+
+### Suspicious Windows Powershell Arguments
+
+Branch count: 231  
+Document count: 231  
+Index: geneve-ut-1655
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+ process.name : "powershell.exe" and
+
+  not (
+    ?user.id == "S-1-5-18" and
+    /* Don't apply the user.id exclusion to Sysmon for compatibility */
+    not data_stream.dataset : ("windows.sysmon_operational", "windows.sysmon")
+  ) and
+
+  not process.parent.executable : (
+        "?:\\Program Files\\*.exe",
+        "?:\\Program Files (x86)\\*.exe"
+  ) and
+
+  (
+    process.command_line : (
+          "*^*^*^*^*^*^*^*^*^*",
+          "*`*`*`*`*",
+          "*+*+*+*+*+*+*",
+          "*[char[]](*)*-join*",
+          "*Base64String*",
+          "*[*Convert]*",
+          "*.Compression.*",
+          "*-join($*",
+          "*.replace*",
+          "*MemoryStream*",
+          "*WriteAllBytes*",
+          "* -enc *",
+          "* -ec *",
+          "* /e *",
+          "* /enc *",
+          "* /ec *",
+          "*WebClient*",
+          "*DownloadFile*",
+          "*DownloadString*",
+          "* iex*",
+          "* iwr*",
+          "* aQB3AHIAIABpA*",
+          "*Reflection.Assembly*",
+          "*Assembly.GetType*",
+          "*$env:temp\\*start*",
+          "*powercat*",
+          "*nslookup -q=txt*",
+          "*$host.UI.PromptForCredential*",
+          "*Net.Sockets.TCPClient*",
+          "*curl *;Start*",
+          "powershell.exe \"<#*",
+          "*ssh -p *",
+          "*http*|iex*",
+          "*@SSL\\DavWWWRoot\\*.ps1*",
+          "*.lnk*.Seek(0x*",
+          "*[string]::join(*",
+          "*[Array]::Reverse($*",
+          "* hidden $(gc *",
+          "*=wscri& set*",
+          "*http'+'s://*",
+          "*.content|i''Ex*",
+          "*//:sptth*",
+          "*//:ptth*",
+          "*h''t''t''p*",
+          "*'tp'':''/'*",
+          "*$env:T\"E\"MP*",
+          "*;cmd /c $?",
+          "*s''t''a''r*",
+          "*$*=Get-Content*AppData*.SubString(*$*",
+          "*=cat *AppData*.substring(*);*$*",
+          "*-join'';*|powershell*",
+          "*.Content;sleep *|powershell*",
+          "*h\''t\''tp:\''*",
+          "*-e aQB3AHIAIABp*",
+          "*iwr *https*).Content*",
+          "*$env:computername*http*",
+          "*;InVoKe-ExpRESsIoN $COntent.CONTENt;*",
+          "*WebClient*example.com*",
+          "*=iwr $*;iex $*",
+          "*ServerXmlHttp*IEX*",
+          "*XmlDocument*IEX*"
+    ) or
+
+    (process.args : "-c" and process.args : "&{'*") or
+
+    (process.args : "-Outfile" and process.args : "Start*") or
+
+    (process.args : "-bxor" and process.args : "0x*") or
+
+    process.args : "$*$*;set-alias" or
+
+    process.args == "-e" or
+
+    // ATHPowerShellCommandLineParameter
+    process.args : ("-EncodedCommandParamVariation", "-UseEncodedArguments", "-CommandParamVariation") or
+
+    (
+      process.parent.name : ("explorer.exe", "cmd.exe") and
+      process.command_line : ("*-encodedCommand*", "*Invoke-webrequest*", "*WebClient*", "*Reflection.Assembly*"))
+    ) and
+    not process.command_line : (
+      "*Use-Icinga -Minimal*",
+      "*& {$j = sajb {Add-Type -AssemblyName*"
+    )
 ```
 
 
@@ -20472,6 +26545,19 @@ Index: geneve-ut-1659
 ```python
 sequence by host.hostname, host.id with maxspan=1m
 [process where host.os.type == "macos" and event.type == "start" and event.action == "exec" and process.name: "pbpaste"] with runs = 5
+```
+
+
+
+### Suspicious rc.local Error Message
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-1660
+
+```python
+host.os.type:linux and data_stream.dataset:system.syslog and process.name:rc.local and
+message:("Connection refused" or "No such file or directory" or "command not found")
 ```
 
 
@@ -21045,6 +27131,32 @@ process where host.os.type == "macos" and event.type in ("start", "process_start
 
 
 
+### Tainted Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1689
+
+```python
+host.os.type:linux and data_stream.dataset:"system.syslog" and process.name:kernel and
+message:"module verification failed: signature and/or required key missing - tainting kernel"
+```
+
+
+
+### Tainted Out-Of-Tree Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1690
+
+```python
+host.os.type:linux and data_stream.dataset:"system.syslog" and process.name:kernel and
+message:"loading out-of-tree module taints kernel."
+```
+
+
+
 ### Tampering of Shell Command-Line History
 
 Branch count: 180  
@@ -21326,6 +27438,18 @@ process where host.os.type == "windows" and event.type == "start" and
  /* process.Ext.token.integrity_level_name == "high" can be added in future for tuning */
  /* args of the Windows Firewall SnapIn */
   process.parent.args == "WF.msc" and process.name != "WerFault.exe"
+```
+
+
+
+### Unauthorized Access to an Okta Application
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1711
+
+```python
+data_stream.dataset:okta.system and event.action:app.generic.unauth_app_access_attempt
 ```
 
 
@@ -22121,6 +28245,98 @@ event.action in ("changed-password", "added-user-account", "added-group-account-
 
 
 
+### VNC (Virtual Network Computing) from the Internet
+
+Branch count: 9  
+Document count: 9  
+Index: geneve-ut-1832
+
+```python
+(data_stream.dataset: network_traffic.flow or (event.category: (network or network_traffic))) and
+  network.transport:tcp and destination.port >= 5800 and destination.port <= 5810 and
+  not source.ip:(
+    10.0.0.0/8 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.168.0.0/16 or
+    192.88.99.0/24 or
+    224.0.0.0/4 or
+    100.64.0.0/10 or
+    192.175.48.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  ) and
+  destination.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  )
+```
+
+
+
+### VNC (Virtual Network Computing) to the Internet
+
+Branch count: 9  
+Document count: 9  
+Index: geneve-ut-1833
+
+```python
+(data_stream.dataset: network_traffic.flow  or (event.category: (network or network_traffic))) and
+  network.transport:tcp and destination.port >= 5800 and destination.port <= 5810 and
+  source.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  ) and
+  not destination.ip:(
+    10.0.0.0/8 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.168.0.0/16 or
+    192.88.99.0/24 or
+    224.0.0.0/4 or
+    100.64.0.0/10 or
+    192.175.48.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  )
+```
+
+
+
 ### Veeam Backup Library Loaded by Unusual Process
 
 Branch count: 30  
@@ -22268,6 +28484,42 @@ file where host.os.type == "windows" and event.action != "deletion" and
   ) and
   /* System / ntoskrnl.exe (PID 4) */
   not process.pid == 4
+```
+
+
+
+### WMI Incoming Lateral Movement
+
+Branch count: 24  
+Document count: 48  
+Index: geneve-ut-1842
+
+```python
+sequence by host.id with maxspan = 20s
+
+ /* Accepted Incoming RPC connection by Winmgmt service */
+
+  [network where host.os.type == "windows" and process.name : "svchost.exe" and network.direction : ("incoming", "ingress") and
+   source.ip != "127.0.0.1" and source.ip != "::1" and destination.port == 135]
+
+  /* Excluding Common FPs Nessus and SCCM */
+
+  [process where host.os.type == "windows" and event.type == "start" and process.parent.name : "WmiPrvSE.exe" and
+   not (?process.Ext.token.integrity_level_name : "System" or ?winlog.event_data.IntegrityLevel : "System") and
+   not (
+         user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+         /* Don't apply the user.id exclusion to Sysmon for compatibility */
+         not data_stream.dataset : ("windows.sysmon_operational", "windows.sysmon")
+   ) and
+   not process.executable :
+               ("?:\\Program Files\\HPWBEM\\Tools\\hpsum_swdiscovery.exe",
+                "?:\\Windows\\CCM\\Ccm32BitLauncher.exe",
+                "?:\\Windows\\System32\\wbem\\mofcomp.exe",
+                "?:\\Windows\\Microsoft.NET\\Framework*\\csc.exe",
+                "?:\\Windows\\System32\\powercfg.exe") and
+   not (process.executable : "?:\\Windows\\System32\\msiexec.exe" and process.args : "REBOOT=ReallySuppress") and
+   not (process.executable : "?:\\Windows\\System32\\inetsrv\\appcmd.exe" and process.args : "uninstall")
+   ]
 ```
 
 
@@ -22542,6 +28794,49 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 
 
+### Whoami Process Activity
+
+Branch count: 61  
+Document count: 61  
+Index: geneve-ut-1863
+
+```python
+process where host.os.type == "windows" and event.type == "start" and process.name : "whoami.exe" and
+(
+  (
+    /* scoped for whoami execution under system privileges */
+    (
+      (
+        user.domain : ("NT *", "* NT", "IIS APPPOOL") and
+        user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20", "S-1-5-82-*") and
+        not ?winlog.event_data.SubjectUserName : "*$" and
+
+        /* Sysmon will always populate user.id as S-1-5-18, leading to FPs */
+        not data_stream.dataset : ("windows.sysmon_operational", "windows.sysmon")
+      ) or
+      (?process.Ext.token.integrity_level_name : "System" or ?winlog.event_data.IntegrityLevel : "System")
+    ) and
+    not (
+      process.parent.name : "cmd.exe" and
+      process.parent.args : (
+          "chcp 437>nul 2>&1 & C:\\WINDOWS\\System32\\whoami.exe  /groups",
+          "chcp 437>nul 2>&1 & %systemroot%\\system32\\whoami /user",
+          "C:\\WINDOWS\\System32\\whoami.exe /groups",
+          "*WINDOWS\\system32\\config\\systemprofile*"
+      )
+    ) and
+    not (process.parent.executable : "C:\\Windows\\system32\\inetsrv\\appcmd.exe" and process.parent.args : "LIST") and
+    not process.parent.executable : (
+        "C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe",
+        "C:\\Program Files\\Cohesity\\cohesity_windows_agent_service.exe"
+    )
+  ) or
+  process.parent.name : ("wsmprovhost.exe", "w3wp.exe", "wmiprvse.exe", "rundll32.exe", "regsvr32.exe")
+)
+```
+
+
+
 ### Windows Account or Group Discovery
 
 Branch count: 36  
@@ -22576,6 +28871,18 @@ process where host.os.type == "windows" and event.type == "start" and
   )
 ) and not process.parent.args: "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\Content\\DetectionScripts\\*.ps1"
 and not process.parent.name : "LTSVC.exe" and not user.id : "S-1-5-18"
+```
+
+
+
+### Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1865
+
+```python
+event.provider:"Microsoft-Windows-Audit-CVE" and message:"[CVE-2020-0601]" and host.os.type:windows
 ```
 
 
@@ -23007,6 +29314,19 @@ process.name == "grep" and process.args : "plugins*" and process.args like (
   "/usr/lib/python*/site-packages/dnf-plugins/*", "/etc/dnf/plugins/*", "/etc/dnf/dnf.conf"
 ) and
 not ?process.parent.executable == "/usr/lib/venv-salt-minion/bin/python.original"
+```
+
+
+
+### Zoom Meeting with no Passcode
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1887
+
+```python
+event.type:creation and event.module:zoom and data_stream.dataset:zoom.webhook and
+  event.action:meeting.created and not zoom.meeting.password:*
 ```
 
 

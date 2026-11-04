@@ -57,7 +57,6 @@ invalid-syntax
       1. [Unsupported function: match (14)](#unsupported-function-match-14)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (13)](#unsupported-lhs-type-class-eqlastfunctioncall-13)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
-      1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (6)](#unsupported-argument-types-class-eqlastfield-6)
       1. [Root without branches (5)](#root-without-branches-5)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
@@ -607,17 +606,6 @@ Invalid syntax
 * AWS S3 Bucket Replicated to Another Account
 * AWS S3 Bucket Server Access Logging Disabled
 * AWS S3 Object Versioning Suspended
-
-### Field type solver: match_only_text (7)
-
-7 rules:
-* Process Started with Executable Stack
-* Segfault Detected
-* Suspicious Usage of bpf_probe_write_user Helper
-* Suspicious rc.local Error Message
-* Tainted Kernel Module Load
-* Tainted Out-Of-Tree Kernel Module Load
-* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Unsupported argument type(s): <class 'eql.ast.Field'> (6)
 

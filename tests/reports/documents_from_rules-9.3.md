@@ -209,14 +209,12 @@ invalid-syntax
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
       1. [Unsupported predicate on metadata field: _ignored (1)](#unsupported-predicate-on-metadata-field-_ignored-1)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (421)](#field-type-solver-constant_keyword-421)
       1. [Unsupported function: match (40)](#unsupported-function-match-40)
       1. [Root with too many branches (limit: 10000) (30)](#root-with-too-many-branches-limit-10000-30)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
       1. [Root without branches (11)](#root-without-branches-11)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (9)](#unsupported-argument-types-class-eqlastfield-9)
-      1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
       1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (3)](#unsupported-keyword-processextrelative_file_creation_time-constraint--3)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
@@ -231,9 +229,28 @@ invalid-syntax
       1. [Unsupported is_negated: {'is_negated': True} (2)](#unsupported-is_negated-is_negated-true-2)
       1. ['NoneType' object is not subscriptable (1)](#nonetype-object-is-not-subscriptable-1)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
+      1. [Field type solver: flattened (1)](#field-type-solver-flattened-1)
       1. [Unsolvable constraints: event.action (3 different values are needed, the conditions allow 2) (1)](#unsolvable-constraints-eventaction-3-different-values-are-needed-the-conditions-allow-2-1)
       1. [Unsolvable constraints: file.extension (cannot be non-null) (1)](#unsolvable-constraints-fileextension-cannot-be-non-null-1)
+      1. [Unsolvable constraints: fortinet.firewall.cfgattr (not in Strings({'*srcaddr[all]*'}): ('*dstaddr[all]*')) (1)](#unsolvable-constraints-fortinetfirewallcfgattr-not-in-stringssrcaddrall-dstaddrall-1)
+      1. [Unsolvable constraints: http.request.body.content (not in Strings({'*Content-Disposition: form-data*'}): ('*filename=*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringscontent-disposition-form-data-filename-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
+      1. [Unsolvable constraints: message (not in Strings({'/vmfs/volumes'}): ('/tmp/')) (1)](#unsolvable-constraints-message-not-in-stringsvmfsvolumes-tmp-1)
+      1. [Unsolvable constraints: message (not in Strings({'/vmfs/volumes'}): ('find')) (1)](#unsolvable-constraints-message-not-in-stringsvmfsvolumes-find-1)
+      1. [Unsolvable constraints: message (not in Strings({'PHP Fatal error'}): ('Allowed memory size')) (1)](#unsolvable-constraints-message-not-in-stringsphp-fatal-error-allowed-memory-size-1)
+      1. [Unsolvable constraints: message (not in Strings({'SSH session was opened for'}): ('vpxuser')) (1)](#unsolvable-constraints-message-not-in-stringsssh-session-was-opened-for-vpxuser-1)
+      1. [Unsolvable constraints: message (not in Strings({'auditrecords'}): ('--enabled false')) (1)](#unsolvable-constraints-message-not-in-stringsauditrecords---enabled-false-1)
+      1. [Unsolvable constraints: message (not in Strings({'esxcli'}): ('vm process list')) (1)](#unsolvable-constraints-message-not-in-stringsesxcli-vm-process-list-1)
+      1. [Unsolvable constraints: message (not in Strings({'execInstalledOnly'}): ('-i 0')) (1)](#unsolvable-constraints-message-not-in-stringsexecinstalledonly--i-0-1)
+      1. [Unsolvable constraints: message (not in Strings({'rm'}): ('*.log')) (1)](#unsolvable-constraints-message-not-in-stringsrm-log-1)
+      1. [Unsolvable constraints: message (not in Strings({'segfault'}): ('agetty')) (1)](#unsolvable-constraints-message-not-in-stringssegfault-agetty-1)
+      1. [Unsolvable constraints: message (not in Strings({'syslog config set'}): ('--reset loghost')) (1)](#unsolvable-constraints-message-not-in-stringssyslog-config-set---reset-loghost-1)
+      1. [Unsolvable constraints: message (not in Strings({'system permission set'}): ('--role Admin')) (1)](#unsolvable-constraints-message-not-in-stringssystem-permission-set---role-admin-1)
+      1. [Unsolvable constraints: message (not in Strings({'vib install'}): ('--force')) (1)](#unsolvable-constraints-message-not-in-stringsvib-install---force-1)
+      1. [Unsolvable constraints: network_traffic.cassandra.request.query (not in Strings({'*create*function*'}): ('*language*javascript*')) (1)](#unsolvable-constraints-network_trafficcassandrarequestquery-not-in-stringscreatefunction-languagejavascript-1)
+      1. [Unsolvable constraints: network_traffic.redis.query (not in Strings({'*CONFIG SET dir*'}): ('*/.ssh*')) (1)](#unsolvable-constraints-network_trafficredisquery-not-in-stringsconfig-set-dir-ssh-1)
+      1. [Unsolvable constraints: network_traffic.redis.query (not in Strings({'*CONFIG SET dir*'}): ('*/etc/cron*')) (1)](#unsolvable-constraints-network_trafficredisquery-not-in-stringsconfig-set-dir-etccron-1)
+      1. [Unsolvable constraints: network_traffic.redis.query (not in Strings({'*EVAL*'}): ('*string.rep*')) (1)](#unsolvable-constraints-network_trafficredisquery-not-in-stringseval-stringrep-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Clear-Host'}): ('Cloudflare ID:')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsclear-host-cloudflare-id-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
@@ -253,12 +270,15 @@ invalid-syntax
       1. [Unsolvable constraints: process.command_line (not in Strings({'*snmptrap*'}): ('*zmservicename*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringssnmptrap-zmservicename-1)
       1. [Unsolvable constraints: process.parent.executable (cannot be null) (1)](#unsolvable-constraints-processparentexecutable-cannot-be-null-1)
       1. [Unsolvable constraints: process.pid (out of boundary, 1 <= 0 <= 4294967295) (1)](#unsolvable-constraints-processpid-out-of-boundary-1--0--4294967295-1)
+      1. [Unsolvable constraints: request (not in Strings({'*MSOTlPn_Uri*'}): ('*DisplayMode*')) (1)](#unsolvable-constraints-request-not-in-stringsmsotlpn_uri-displaymode-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings1131f6ad-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1131f6aa-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsolvable constraints: winlog.event_data.param1 (not in Strings({'*FullControl*'}): ('*setsharingmode*')) (1)](#unsolvable-constraints-winlogevent_dataparam1-not-in-stringsfullcontrol-setsharingmode-1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: < (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
+      1. [Unsupported &keyword 'kibana.alert.risk_score' constraint: > (1)](#unsupported-keyword-kibanaalertrisk_score-constraint--1)
       1. [Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)](#unsupported-keyword-ml_is_dgamalicious_probability-constraint--1)
+      1. [Unsupported &keyword 'o365.audit.OperationCount' constraint: >= (1)](#unsupported-keyword-o365auditoperationcount-constraint--1)
       1. [Unsupported &keyword 'powershell.file.script_block_entropy_bits' constraint: >= (1)](#unsupported-keyword-powershellfilescript_block_entropy_bits-constraint--1)
       1. [Unsupported &keyword 'powershell.file.script_block_length' constraint: > (1)](#unsupported-keyword-powershellfilescript_block_length-constraint--1)
       1. [Unsupported &keyword 'problemchild.prediction_probability' constraint: <= (1)](#unsupported-keyword-problemchildprediction_probability-constraint--1)
@@ -285,6 +305,7 @@ invalid-syntax
       1. [Unsupported field in WHERE after STATS: access_key (1)](#unsupported-field-in-where-after-stats-access_key-1)
       1. [Unsupported number of different values of event.outcome: between 2 and 2 in 6 documents (1)](#unsupported-number-of-different-values-of-eventoutcome-between-2-and-2-in-6-documents-1)
       1. [Unsupported number of different values of kubernetes.audit.annotations.`authorization_k8s_io/decision`: between 2 and 2 in 6 documents (1)](#unsupported-number-of-different-values-of-kubernetesauditannotationsauthorization_k8s_iodecision-between-2-and-2-in-6-documents-1)
+      1. [sequence item 0: expected str instance, int found (1)](#sequence-item-0-expected-str-instance-int-found-1)
 
 ## Skipped rules
 
@@ -1394,431 +1415,6 @@ Invalid syntax
 
 ## Generation errors
 
-### Field type solver: constant_keyword (421)
-
-421 rules:
-* AWS Account Closed
-* AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
-* AWS Attempt to Leave Organization
-* AWS Backup Resource Enumeration via Long-Term Access Key
-* AWS Backup Vault Deleted or Vault Lock Removed
-* AWS Bedrock API Key Phantom User Activity Outside Bedrock
-* AWS Bedrock Agent Created by IAM User or Root
-* AWS Bedrock Automated Reasoning Safety Policy Tampering
-* AWS Bedrock Foundation Model Access Enabled or Entitlement Granted
-* AWS Bedrock Foundation Model Enumeration Followed by Invocation via Long-Term Key
-* AWS Bedrock Guardrail Deleted or Weakened
-* AWS Bedrock Model Invocation Logging Disabled or Modified
-* AWS Bedrock Provisioned Model Throughput Tampering
-* AWS Bedrock Unauthorized Foundation Model Access Attempt
-* AWS Bedrock Unauthorized Resource-Based Policy Modification Attempt
-* AWS Bedrock Untrusted Model Imported or Marketplace Endpoint Registered
-* AWS CloudShell Environment Created
-* AWS CloudTrail Log Created
-* AWS CloudTrail Log Deleted
-* AWS CloudTrail Log Evasion
-* AWS CloudTrail Log Suspended
-* AWS CloudTrail Log Updated
-* AWS CloudTrail Management Events Disabled via PutEventSelectors
-* AWS CloudWatch Alarm Deletion
-* AWS CloudWatch Log Group Deletion
-* AWS CloudWatch Log Stream Deletion
-* AWS Config Resource Deletion
-* AWS Configuration Recorder Stopped
-* AWS Detective Graph Deleted
-* AWS EC2 AMI Shared with Another Account
-* AWS EC2 Deprecated AMI Discovery
-* AWS EC2 Encryption Disabled
-* AWS EC2 Export Task
-* AWS EC2 Full Network Packet Capture Detected
-* AWS EC2 Instance Connect SSH Public Key Uploaded
-* AWS EC2 Network Access Control List Creation
-* AWS EC2 Network Access Control List Deletion
-* AWS EC2 Security Group Configuration Change
-* AWS EC2 Serial Console Access Enabled
-* AWS EFS File System Deleted
-* AWS EKS Access Entry Created Then Deleted by Same Identity
-* AWS EKS Access Entry Granted Cluster Admin Policy
-* AWS EKS Access Entry Modified
-* AWS EKS Control Plane Logging Disabled
-* AWS EventBridge Rule Disabled or Deleted
-* AWS GuardDuty Detection Suppression
-* AWS GuardDuty Detector Deletion
-* AWS GuardDuty Member Account Manipulation
-* AWS GuardDuty Publishing Destination Deleted
-* AWS GuardDuty Threat Intelligence Set Deleted
-* AWS IAM Account Password Policy Deleted
-* AWS IAM Deactivation of MFA Device
-* AWS IAM Group Creation
-* AWS IAM Group Deletion
-* AWS IAM Inline Policy Added to a Group
-* AWS IAM Login Profile Created or Modified for an IAM User
-* AWS IAM Permissions Boundary Modified or Removed
-* AWS IAM Roles Anywhere Profile Creation
-* AWS IAM SAML Provider Created
-* AWS IAM SAML Provider Updated
-* AWS IAM User Addition to Group
-* AWS KMS Customer Managed Key Disabled or Scheduled for Deletion
-* AWS KMS Imported Key Material Deleted
-* AWS Lambda Event Source Mapping Creation
-* AWS Lambda Layer Added to Existing Function
-* AWS Lambda Layer Shared Externally
-* AWS Management Console Root Login
-* AWS Organizations Delegated Administrator Registered
-* AWS RDS DB Instance Restored
-* AWS RDS DB Instance or Cluster Deleted
-* AWS RDS Snapshot Export
-* AWS Route 53 Domain Transfer Lock Disabled
-* AWS Route 53 Domain Transferred to Another Account
-* AWS Route 53 Private Hosted Zone Associated With a VPC
-* AWS Route 53 Resolver Query Log Configuration Deleted
-* AWS S3 Bucket Configuration Deletion
-* AWS S3 Bucket MFA Delete Disabled
-* AWS S3 Credential File Retrieved from Bucket
-* AWS SES Account Email Sending Enabled
-* AWS SES Enumeration via Long-Term Access Key
-* AWS SQS Queue Purge
-* AWS Security Hub Disabled
-* AWS Sensitive IAM Operations Performed via CloudShell
-* AWS Sign-In Console Login with Federated User
-* AWS Sign-In Root Password Recovery Requested
-* AWS VPC Flow Logs Deletion
-* AWS WAF Access Control List Deletion
-* AWS WAF Rule or Rule Group Deletion
-* Abnormally Large DNS Response
-* Accepted Default Telnet Port Connection
-* Administrator Privileges Assigned to an Okta Group
-* Application Added to Google Workspace Domain
-* Application Removed from Blocklist in Google Workspace
-* Attempt to Create Okta API Token
-* Attempt to Deactivate an Okta Application
-* Attempt to Deactivate an Okta Network Zone
-* Attempt to Deactivate an Okta Policy
-* Attempt to Deactivate an Okta Policy Rule
-* Attempt to Delete an Okta Application
-* Attempt to Delete an Okta Network Zone
-* Attempt to Delete an Okta Policy
-* Attempt to Delete an Okta Policy Rule
-* Attempt to Modify an Okta Application
-* Attempt to Modify an Okta Network Zone
-* Attempt to Modify an Okta Policy
-* Attempt to Modify an Okta Policy Rule
-* Attempt to Reset MFA Factors for an Okta User Account
-* Attempt to Revoke Okta API Token
-* Attempted Bypass of Okta MFA
-* Azure AKS API Server Proxying Request to Kubelet
-* Azure AKS Attempted User Exec into Pod
-* Azure AKS Certificate Signing Request Created or Approved
-* Azure AKS CoreDNS or Kube-DNS Configuration Modified
-* Azure AKS Ephemeral Container Added to Pod
-* Azure AKS Kubelet Proxy to Command Execution Endpoint
-* Azure AKS Kubernetes Events Deleted
-* Azure AKS Secret get or list with Suspicious User Agent
-* Azure AKS Service Account Token Created via TokenRequest API
-* Azure AKS Suspicious Self-Subject Review by Service Account or Node Identity
-* Azure Automation Account Created
-* Azure Automation Runbook Created or Modified
-* Azure Automation Runbook Deleted
-* Azure Automation Webhook Created
-* Azure Blob Storage Container Access Level Modified
-* Azure Blob Storage Permissions Modified
-* Azure Diagnostic Settings Alert Suppression Rule Created or Modified
-* Azure Event Hub Authorization Rule Created or Updated
-* Azure Event Hub Deleted
-* Azure Kubernetes Services (AKS) Kubernetes Events Deleted
-* Azure Kubernetes Services (AKS) Kubernetes Pods Deleted
-* Azure Kubernetes Services (AKS) Kubernetes Rolebindings Created
-* Azure RBAC Built-In Administrator Roles Assigned
-* Azure Resource Group Deleted
-* Azure Service Principal Sign-In Followed by Arc Cluster Credential Access
-* Azure Storage Account Key Regenerated
-* Azure VM Boot Diagnostics Retrieved
-* Azure VM Extension Deployment by User
-* Azure VNet Firewall Front Door WAF Policy Deleted
-* Azure VNet Firewall Policy Deleted
-* Azure VNet Full Network Packet Capture Enabled
-* Azure VNet Network Watcher Deleted
-* Azure Virtual Machine Configuration Modified
-* Cassandra JavaScript UDF Creation
-* Command and Scripting Interpreter via Windows Scripts
-* CrowdStrike External Alerts
-* CyberArk Privileged Access Security Error
-* CyberArk Privileged Access Security Recommended Monitor
-* Default Cobalt Strike Team Server Certificate
-* Deprecated - M365 Exchange DLP Policy Deleted
-* Deprecated - M365 Security Compliance Potential Ransomware Activity
-* Deprecated - M365 Security Compliance Unusual Volume of File Deletion
-* Deprecated - M365 Security Compliance User Restricted from Sending Email
-* Deprecated - M365 Teams External Access Enabled
-* Deprecated - M365 Teams Guest Access Enabled
-* Direct Interactive Kubernetes API Request by Common Utilities
-* Direct Interactive Kubernetes API Request by Unusual Utilities
-* Domain Added to Google Workspace Trusted Domains
-* EKS Authentication Configuration Modified
-* ESXi Account Granted Admin Role
-* ESXi Attempt to Force Install a VMware VIB Package
-* ESXi Audit Records Disabled
-* ESXi Curl or Wget Activity
-* ESXi ExecInstalledOnly Protection Disabled
-* ESXi File Made Executable with chmod
-* ESXi Firewall Disabled
-* ESXi Host Logs Deleted with rm
-* ESXi Local Account Created
-* ESXi Lockdown Mode Disabled
-* ESXi Payload Executed Against Datastore
-* ESXi Root Password Accepted from Remote Host
-* ESXi Root Password Changed
-* ESXi SSH Access Enabled
-* ESXi SSH Session from vpxuser
-* ESXi Shell Command Obfuscation
-* ESXi Syslog Remote Host Reset
-* ESXi System and Account Enumeration
-* ESXi Virtual Disk Files Enumerated
-* ESXi Virtual Machine Powered Off
-* ESXi Virtual Machine Process Killed
-* ESXi Virtual Machine Process List
-* ESXi Virtual Machine Snapshot Removed
-* Elastic Security External Alerts
-* Entra ID ADRS Token Request by Microsoft Authentication Broker
-* Entra ID AiTM Phishing-Kit Chain Detected
-* Entra ID Application Credential Modified
-* Entra ID Custom Domain Added or Verified
-* Entra ID Device Registration with Phishing Kit Default OS Build
-* Entra ID Device Registration with ROADtools Default OS Build
-* Entra ID Domain Federation Configuration Change
-* Entra ID External Guest User Invited
-* Entra ID Global Administrator Role Assigned
-* Entra ID Global Administrator Role Assigned (PIM User)
-* Entra ID Guest Account Promoted to Member
-* Entra ID High Risk Sign-in
-* Entra ID High Risk User Sign-in Heuristic
-* Entra ID Kali365 Default User-Agent Detected
-* Entra ID MFA Disabled for User
-* Entra ID Microsoft Authentication Broker DRS Sign-In from Suspicious ASN
-* Entra ID Microsoft Authentication Broker Sign-In to Unusual Resource
-* Entra ID Microsoft Authentication Broker Sign-In with Non-Standard User Agent
-* Entra ID OAuth Application Redirect URI Modified
-* Entra ID OAuth Device Code Grant by Microsoft Authentication Broker
-* Entra ID OAuth Device Code Phishing via AiTM
-* Entra ID OAuth Device Code Sign-in to Azure AD Graph Enumeration
-* Entra ID OAuth PRT Issuance to Non-Managed Device Detected
-* Entra ID OAuth Phishing via First-Party Microsoft Application
-* Entra ID Potential AiTM Sign-In via OfficeHome (Tycoon2FA)
-* Entra ID PowerShell Sign-in
-* Entra ID Privileged Identity Management (PIM) Role Modified
-* Entra ID Protection - Risk Detection - Sign-in Risk
-* Entra ID Protection - Risk Detection - User Risk
-* Entra ID Protection Admin Confirmed Compromise
-* Entra ID Protection Alerts for User Detected
-* Entra ID Protection User Alert and Device Registration
-* Entra ID Register Device with Phishing Kit or ROADtools User Agent
-* Entra ID Register Device with Unusual User Agent (Azure AD Join)
-* Entra ID Service Principal Created
-* Entra ID Sign-in TeamFiltration User-Agent Detected
-* Entra ID Temporary Access Pass Created for User
-* Entra ID Unusual Cloud Device Registration
-* Entra ID User Added as Registered Application Owner
-* Entra ID User Added as Service Principal Owner
-* Entra ID User Reported Suspicious Activity
-* Enumerating Domain Trusts via NLTEST.EXE
-* Execution via Windows Subsystem for Linux
-* First Seen Network Flow Exporter
-* Forbidden Direct Interactive Kubernetes API Request
-* FortiGate Configuration File Downloaded
-* FortiGate Overly Permissive Firewall Policy Created
-* FortiGate SOCKS Traffic from an Unusual Process
-* FortiGate SSL VPN Login Followed by SIEM Alert by User
-* FortiGate SSO Login Followed by Administrator Account Creation
-* FortiGate Super Admin Account Creation
-* Forwarded Google Workspace Security Alert
-* GCP Firewall Rule Creation
-* GCP Firewall Rule Deletion
-* GCP Firewall Rule Modification
-* GCP IAM Custom Role Creation
-* GCP IAM Role Deletion
-* GCP IAM Service Account Key Deletion
-* GCP Logging Bucket Deletion
-* GCP Logging Sink Deletion
-* GCP Logging Sink Modification
-* GCP Pub/Sub Subscription Creation
-* GCP Pub/Sub Subscription Deletion
-* GCP Pub/Sub Topic Creation
-* GCP Pub/Sub Topic Deletion
-* GCP Secret Manager ListSecrets Across Multiple Projects
-* GCP Service Account Creation
-* GCP Service Account Deletion
-* GCP Service Account Disabled
-* GCP Service Account Key Creation
-* GCP Storage Bucket Configuration Modification
-* GCP Storage Bucket Deletion
-* GCP Storage Bucket Permissions Modification
-* GCP Virtual Private Cloud Network Deletion
-* GCP Virtual Private Cloud Route Creation
-* GCP Virtual Private Cloud Route Deletion
-* GKE API Request Failure Burst by User
-* GKE API Request Impersonating Privileged Identity
-* GKE API Server Proxying Request to Kubelet
-* GKE Admission Webhook Created or Modified
-* GKE Anonymous Pod Create/Update/Patch
-* GKE Certificate Signing Request API Client Signer Requested
-* GKE Client Certificate Signing Request Created or Approved
-* GKE Cluster-Admin Role Binding Created or Modified
-* GKE Container Created with Excessive Linux Capabilities
-* GKE CoreDNS or Kube-DNS Configuration Modified
-* GKE Creation of a RoleBinding Referencing a ServiceAccount
-* GKE Creation or Modification of Sensitive Role
-* GKE Ephemeral Container Added to Pod
-* GKE Exposed Service Created With Type NodePort
-* GKE Forbidden Creation Request
-* GKE Pod Created With HostIPC
-* GKE Pod Created With HostNetwork
-* GKE Pod Created With HostPID
-* GKE Pod Created with a Sensitive hostPath Volume
-* GKE Pod Exec Cloud Instance Metadata Access
-* GKE Pod Exec Potential Reverse Shell
-* GKE Pod Exec Sensitive File or Credential Path Access
-* GKE Pod Exec with Curl or Wget to HTTPS
-* GKE Privileged Pod Created
-* GKE RBAC Wildcard Elevation on Existing Role
-* GKE Secret Access from Node or Denied Service Account
-* GKE Secret get or list with Suspicious User Agent
-* GKE Service Account Modified RBAC Objects
-* GKE Suspicious Assignment of Controller Service Account
-* GKE Suspicious Self-Subject Review via Service Account
-* GitHub App Deleted
-* GitHub Owner Role Granted To User
-* GitHub Private Repository Turned Public
-* GitHub Protected Branch Settings Changed
-* GitHub Repository Deleted
-* GitHub Secret Scanning Disabled
-* Google SecOps External Alerts
-* Google Workspace 2SV Policy Disabled By User
-* Google Workspace API Access Granted via Domain-Wide Delegation
-* Google Workspace Admin Role Assigned to a User or Group
-* Google Workspace Admin Role Deletion
-* Google Workspace Bitlocker Setting Disabled
-* Google Workspace Custom Admin Role Created
-* Google Workspace Device Registration After OAuth from Suspicious ASN
-* Google Workspace Drive Data Transfer or Takeout Export Initiated
-* Google Workspace Drive Encryption Key(s) Accessed from Anonymous User
-* Google Workspace Gmail Routing or Forwarding Rule Created or Modified
-* Google Workspace Login Flagged Suspicious
-* Google Workspace MFA Enforcement Disabled For Organization
-* Google Workspace Object Copied from External Drive with App Consent
-* Google Workspace Password Policy Modified
-* Google Workspace Restrictions for Marketplace Modified to Allow Any App
-* Google Workspace Role Modified
-* Google Workspace Suspended User Account Renewed
-* Google Workspace User Organizational Unit Changed
-* IBM QRadar External Alerts
-* ICMP Redirect Message from Internal Host
-* ICMP Timestamp or Information Request from the Internet
-* Inbound Connection to an Unsecure Elasticsearch Node
-* Initial Access via File Upload Followed by GET Request
-* Insecure AWS EC2 VPC Security Group Ingress Rule Added
-* Kubernetes API Request Impersonating Privileged Identity
-* Kubernetes Anonymous User Create/Update/Patch Pods Request
-* Kubernetes Client Certificate Signing Request Created or Approved
-* Kubernetes Cluster-Admin Role Binding Created
-* Kubernetes CoreDNS or Kube-DNS Configuration Modified
-* Kubernetes Creation of a RoleBinding Referencing a ServiceAccount
-* Kubernetes Ephemeral Container Added to Pod
-* Kubernetes Events Deleted
-* Kubernetes Exposed Service Created With Type NodePort
-* Kubernetes Forbidden Creation Request
-* Kubernetes Pod Created With HostIPC
-* Kubernetes Pod Created With HostNetwork
-* Kubernetes Pod Created With HostPID
-* Kubernetes Pod Created with a Sensitive hostPath Volume
-* Kubernetes Privileged Pod Created
-* Kubernetes Secret Get or List from Node or Pod Service Account
-* Kubernetes Secret Get or List with Suspicious User Agent
-* Kubernetes Sensitive RBAC Change Followed by Workload Modification
-* Kubernetes Service Account Modified RBAC Objects
-* Kubernetes Service Account Token Created via TokenRequest API
-* Kubernetes Suspicious Assignment of Controller Service Account
-* Kubernetes User Exec into Pod
-* M365 Exchange Anti-Phish Policy Deleted
-* M365 Exchange Anti-Phish Rule Modification
-* M365 Exchange DKIM Signing Configuration Disabled
-* M365 Exchange Email Safe Attachment Rule Disabled
-* M365 Exchange Email Safe Link Policy Disabled
-* M365 Exchange Federated Domain Created or Modified
-* M365 Exchange MFA Notification Email Deleted or Moved
-* M365 Exchange Mail Flow Transport Rule Created
-* M365 Exchange Mail Flow Transport Rule Modified
-* M365 Exchange Mailbox Audit Logging Bypass Added
-* M365 Exchange Mailbox Items Accessed Excessively
-* M365 Exchange Malware Filter Policy Deleted
-* M365 Exchange Malware Filter Rule Modified
-* M365 Exchange Management Group Role Assigned
-* M365 Identity Global Administrator Role Assigned
-* M365 Identity OAuth Flow by User Sign-in to Device Registration
-* M365 Identity OAuth Phishing via First-Party Microsoft Application
-* M365 OneDrive Malware File Upload
-* M365 Potential AiTM UserLoggedIn via Office App (Tycoon2FA)
-* M365 SharePoint Malware File Detected
-* M365 SharePoint Search for Sensitive Content
-* M365 SharePoint Site Administrator Added
-* M365 SharePoint Site Sharing Policy Weakened
-* M365 Teams Custom Application Interaction Enabled
-* M365 Teams Rogue Help Desk Chat Created
-* Microsoft Defender XDR Alert External Alerts
-* Microsoft Defender XDR Incident External Alerts
-* Microsoft Sentinel External Alerts
-* Modification or Removal of an Okta Application Sign-On Policy
-* MySQL User-Defined Function Injection
-* New GitHub App Installed
-* New GitHub Owner Added
-* New GitHub Personal Access Token (PAT) Added
-* New Okta Identity Provider (IdP) Added by Admin
-* Okta FastPass Phishing Detection
-* Okta ThreatInsight Threat Suspected Promotion
-* Okta User Assigned Administrator Role
-* Okta User Session Impersonation
-* Possible Okta DoS Attack
-* PostgreSQL COPY PROGRAM Command Execution
-* Potential DLL Side-Loading via Trusted Microsoft Programs
-* Potential File Transfer via Curl for Windows
-* Potential Persistence via File Modification
-* Potential Redis CONFIG SET Cron Directory Persistence (RedisRaider)
-* Potential Redis CONFIG SET SSH Authorized Key Injection
-* Potential Redis Lua Use-After-Free RCE Attempt (CVE-2025-49844 / RediShell)
-* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
-* Potential VIEWSTATE RCE Attempt on SharePoint/IIS
-* Potential Webshell Deployed via Apache Struts CVE-2023-50164 Exploitation
-* Potential cPanel WHM CRLF Authentication Bypass (CVE-2026-41940)
-* Potentially Successful Okta MFA Bombing via Push Notifications
-* Process Started with Executable Stack
-* RDP (Remote Desktop Protocol) from the Internet
-* RPC (Remote Procedure Call) from the Internet
-* RPC (Remote Procedure Call) to the Internet
-* React2Shell Network Security Alert
-* Roshal Archive (RAR) or PowerShell File Downloaded from the Internet
-* SMTP to the Internet on Port 26/TCP
-* Sensitive Identity File Open by Suspicious Process via Auditd
-* SentinelOne Alert External Alerts
-* SentinelOne Threat External Alerts
-* Service Account Token or Certificate Access Followed by Kubernetes API Request
-* Splunk Enterprise PostgreSQL Recovery Endpoint Injection Artifacts
-* Splunk External Alerts
-* Stolen Credentials Used to Login to Okta Account After MFA Reset
-* Suricata and Elastic Defend Network Correlation
-* Suspicious Activity Reported by Okta User
-* Suspicious Usage of bpf_probe_write_user Helper
-* Suspicious WMI Event Subscription Created
-* Suspicious Windows Command Shell Arguments
-* Suspicious Windows Powershell Arguments
-* Suspicious rc.local Error Message
-* Tainted Kernel Module Load
-* Tainted Out-Of-Tree Kernel Module Load
-* Unauthorized Access to an Okta Application
-* VNC (Virtual Network Computing) from the Internet
-* VNC (Virtual Network Computing) to the Internet
-* WMI Incoming Lateral Movement
-* Whoami Process Activity
-* Zoom Meeting with no Passcode
-
 ### Unsupported function: match (40)
 
 40 rules:
@@ -1969,17 +1565,6 @@ Invalid syntax
 * Unusual Parent-Child Relationship
 * Windows Service Installed via an Unusual Client
 
-### Field type solver: match_only_text (7)
-
-7 rules:
-* Newly Observed FortiGate Alert
-* OpenAI ChatGPT Enterprise Conversation Message Containing Credentials
-* OpenAI ChatGPT Enterprise Repeated Assistant Refusals
-* Potential PHP2Shell Exploitation Attempt
-* Segfault Detected
-* Segfault from Sensitive Process Detected
-* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
-
 ### <class 'eql.ast.Sample'> (3)
 
 3 rules:
@@ -2069,6 +1654,11 @@ Invalid syntax
 1 rules:
 * Potential Okta MFA Bombing via Push Notifications
 
+### Field type solver: flattened (1)
+
+1 rules:
+* Entra ID ADRS Token Request by Microsoft Authentication Broker
+
 ### Unsolvable constraints: event.action (3 different values are needed, the conditions allow 2) (1)
 
 1 rules:
@@ -2079,10 +1669,100 @@ Invalid syntax
 1 rules:
 * Pluggable Authentication Module or Configuration Creation
 
+### Unsolvable constraints: fortinet.firewall.cfgattr (not in Strings({'*srcaddr[all]*'}): ('*dstaddr[all]*')) (1)
+
+1 rules:
+* FortiGate Overly Permissive Firewall Policy Created
+
+### Unsolvable constraints: http.request.body.content (not in Strings({'*Content-Disposition: form-data*'}): ('*filename=*')) (1)
+
+1 rules:
+* Initial Access via File Upload Followed by GET Request
+
 ### Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)
 
 1 rules:
 * Kubernetes Container Created with Excessive Linux Capabilities
+
+### Unsolvable constraints: message (not in Strings({'/vmfs/volumes'}): ('/tmp/')) (1)
+
+1 rules:
+* ESXi Payload Executed Against Datastore
+
+### Unsolvable constraints: message (not in Strings({'/vmfs/volumes'}): ('find')) (1)
+
+1 rules:
+* ESXi Virtual Disk Files Enumerated
+
+### Unsolvable constraints: message (not in Strings({'PHP Fatal error'}): ('Allowed memory size')) (1)
+
+1 rules:
+* Potential PHP2Shell Exploitation Attempt
+
+### Unsolvable constraints: message (not in Strings({'SSH session was opened for'}): ('vpxuser')) (1)
+
+1 rules:
+* ESXi SSH Session from vpxuser
+
+### Unsolvable constraints: message (not in Strings({'auditrecords'}): ('--enabled false')) (1)
+
+1 rules:
+* ESXi Audit Records Disabled
+
+### Unsolvable constraints: message (not in Strings({'esxcli'}): ('vm process list')) (1)
+
+1 rules:
+* ESXi Virtual Machine Process List
+
+### Unsolvable constraints: message (not in Strings({'execInstalledOnly'}): ('-i 0')) (1)
+
+1 rules:
+* ESXi ExecInstalledOnly Protection Disabled
+
+### Unsolvable constraints: message (not in Strings({'rm'}): ('*.log')) (1)
+
+1 rules:
+* ESXi Host Logs Deleted with rm
+
+### Unsolvable constraints: message (not in Strings({'segfault'}): ('agetty')) (1)
+
+1 rules:
+* Segfault from Sensitive Process Detected
+
+### Unsolvable constraints: message (not in Strings({'syslog config set'}): ('--reset loghost')) (1)
+
+1 rules:
+* ESXi Syslog Remote Host Reset
+
+### Unsolvable constraints: message (not in Strings({'system permission set'}): ('--role Admin')) (1)
+
+1 rules:
+* ESXi Account Granted Admin Role
+
+### Unsolvable constraints: message (not in Strings({'vib install'}): ('--force')) (1)
+
+1 rules:
+* ESXi Attempt to Force Install a VMware VIB Package
+
+### Unsolvable constraints: network_traffic.cassandra.request.query (not in Strings({'*create*function*'}): ('*language*javascript*')) (1)
+
+1 rules:
+* Cassandra JavaScript UDF Creation
+
+### Unsolvable constraints: network_traffic.redis.query (not in Strings({'*CONFIG SET dir*'}): ('*/.ssh*')) (1)
+
+1 rules:
+* Potential Redis CONFIG SET SSH Authorized Key Injection
+
+### Unsolvable constraints: network_traffic.redis.query (not in Strings({'*CONFIG SET dir*'}): ('*/etc/cron*')) (1)
+
+1 rules:
+* Potential Redis CONFIG SET Cron Directory Persistence (RedisRaider)
+
+### Unsolvable constraints: network_traffic.redis.query (not in Strings({'*EVAL*'}): ('*string.rep*')) (1)
+
+1 rules:
+* Potential Redis Lua Use-After-Free RCE Attempt (CVE-2025-49844 / RediShell)
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Clear-Host'}): ('Cloudflare ID:')) (1)
 
@@ -2179,6 +1859,11 @@ Invalid syntax
 1 rules:
 * Service Creation via Local Kerberos Authentication
 
+### Unsolvable constraints: request (not in Strings({'*MSOTlPn_Uri*'}): ('*DisplayMode*')) (1)
+
+1 rules:
+* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
+
 ### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)
 
 1 rules:
@@ -2204,10 +1889,20 @@ Invalid syntax
 1 rules:
 * Unsigned DLL Loaded by Svchost
 
+### Unsupported &keyword 'kibana.alert.risk_score' constraint: > (1)
+
+1 rules:
+* FortiGate SSL VPN Login Followed by SIEM Alert by User
+
 ### Unsupported &keyword 'ml_is_dga.malicious_probability' constraint: > (1)
 
 1 rules:
 * Machine Learning Detected a DNS Request With a High DGA Probability Score
+
+### Unsupported &keyword 'o365.audit.OperationCount' constraint: >= (1)
+
+1 rules:
+* M365 Exchange Mailbox Items Accessed Excessively
 
 ### Unsupported &keyword 'powershell.file.script_block_entropy_bits' constraint: >= (1)
 
@@ -2338,3 +2033,8 @@ Invalid syntax
 
 1 rules:
 * Kubernetes Potential Endpoint Permission Enumeration Attempt Detected
+
+### sequence item 0: expected str instance, int found (1)
+
+1 rules:
+* ESXi File Made Executable with chmod
