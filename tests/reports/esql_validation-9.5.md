@@ -11,9 +11,9 @@ Elasticsearch version: 9.5 (rules 9.5.9)
 
 | validated | failed | error | skipped |
 |---|---|---|---|
-| 128 | 0 | 0 | 192 |
+| 135 | 0 | 0 | 185 |
 
-## Validated (128)
+## Validated (135)
 
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action, 8 branch(es)
 * AWS Bedrock AgentCore Runtime Prompt Containing Credentials, 5 branch(es)
@@ -30,6 +30,7 @@ Elasticsearch version: 9.5 (rules 9.5.9)
 * AWS S3 Rapid Bucket Posture API Calls from a Single Principal, 5 branch(es), all 5 group(s) run
 * Agent Spoofing - Multiple Hosts Using Same Agent, 1 branch(es), all 1 group(s) run
 * Alerts in Different ATT&CK Tactics by Host, 1 branch(es), all 1 group(s) run
+* Anthropic Activity from a Suspicious User Agent, 182 branch(es)
 * Anthropic Admin API Key Created, 1 branch(es)
 * Anthropic Admin API Key Deleted, 1 branch(es)
 * Anthropic Admin Role Assigned to User, 3 branch(es)
@@ -60,15 +61,18 @@ Elasticsearch version: 9.5 (rules 9.5.9)
 * Entra ID MFA TOTP Brute Force Attempted, 2 branch(es), all 2 group(s) run
 * Entra ID Multiple Device Registrations by a Single User, 1 branch(es), all 1 group(s) run
 * File Transfer Utility Launched from Unusual Parent, 186 branch(es), all 186 group(s) run
+* First Seen Network Flow Exporter, 1 branch(es), all 1 group(s) run
 * First-Time FortiGate Administrator Login, 1 branch(es), all 1 group(s) run
 * FortiGate Administrator Login from Multiple IP Addresses, 1 branch(es), all 1 group(s) run
 * FortiGate FortiCloud SSO Login from Unusual Source, 2 branch(es), all 2 group(s) run
+* GCP Secret Manager ListSecrets Across Multiple Projects, 1 branch(es), all 1 group(s) run
 * GCP Vertex AI Caller Activity From High Number of Countries, 3 branch(es), all 3 group(s) run
 * GCP Vertex AI Elevated Safety Rating on Response, 2 branch(es)
 * GCP Vertex AI High GenerateContent Volume From Single IP, 4 branch(es), all 4 group(s) run
 * GCP Vertex AI Publisher Model Config Modified, 2 branch(es)
 * GCP Vertex AI Response Blocked by Safety Filters, 1 branch(es)
 * GCP Vertex AI Safety Filters Set to BLOCK_NONE, 1 branch(es)
+* GKE API Request Failure Burst by User, 1 branch(es), all 1 group(s) run
 * GKE Rapid Secret GET Activity Against Multiple Objects, 2 branch(es), all 2 group(s) run
 * GitHub Exfiltration via High Number of Repository Clones by User, 1 branch(es), all 1 group(s) run
 * GitHub OAuth Application Authorized, 1 branch(es)
@@ -92,6 +96,7 @@ Elasticsearch version: 9.5 (rules 9.5.9)
 * Multiple Machine Learning Alerts by Influencer Field, 1 branch(es), all 1 group(s) run
 * Multiple Okta User Authentication Events with Same Device Token Hash, 2 branch(es), all 2 group(s) run
 * Newly Observed Elastic Defend Behavior Alert, 1 branch(es), all 1 group(s) run
+* Newly Observed FortiGate Alert, 2 branch(es), all 2 group(s) run
 * Newly Observed High Severity Detection Alert, 1 branch(es), all 1 group(s) run
 * Newly Observed High Severity Suricata Alert, 1 branch(es), all 1 group(s) run
 * Okta User Sessions Started from Different Geolocations, 2 branch(es), all 2 group(s) run
@@ -101,6 +106,7 @@ Elasticsearch version: 9.5 (rules 9.5.9)
 * OpenAI ChatGPT Enterprise Codex Access Token Created, 1 branch(es)
 * OpenAI ChatGPT Enterprise Codex Prompt Containing Credentials, 34 branch(es)
 * OpenAI ChatGPT Enterprise Codex Security Scan Configuration Changed, 2 branch(es)
+* OpenAI ChatGPT Enterprise Conversation Message Containing Credentials, 17 branch(es)
 * OpenAI ChatGPT Enterprise Conversation Shared, 1 branch(es)
 * OpenAI ChatGPT Enterprise Custom Agent Published, 1 branch(es)
 * OpenAI ChatGPT Enterprise Custom Agent Trigger Changed, 2 branch(es)
@@ -110,6 +116,7 @@ Elasticsearch version: 9.5 (rules 9.5.9)
 * OpenAI ChatGPT Enterprise High File Download Activity, 1 branch(es), all 1 group(s) run
 * OpenAI ChatGPT Enterprise Memory Deleted, 1 branch(es)
 * OpenAI ChatGPT Enterprise Multiple Authentication Failures, 1 branch(es), all 1 group(s) run
+* OpenAI ChatGPT Enterprise Repeated Assistant Refusals, 12 branch(es), all 12 group(s) run
 * OpenAI ChatGPT Enterprise Resources Sharing Updated, 4 branch(es)
 * OpenAI ChatGPT Enterprise Slack Query Burst, 1 branch(es), all 1 group(s) run
 * OpenAI ChatGPT Enterprise User Activity From High Number of Countries, 1 branch(es), all 1 group(s) run
@@ -144,15 +151,13 @@ Elasticsearch version: 9.5 (rules 9.5.9)
 * Unusual Process Resolving AWS ECS Agent Communication Service Endpoint, 4 branch(es)
 * Web Server Potential Spike in Error Response Codes, 4 branch(es), all 4 group(s) run
 
-## Skipped (192)
+## Skipped (185)
 
 * 12 x NotImplementedError: Unsupported right operand, it must be a literal
 * 8 x NotImplementedError: Unsupported second STATS
 * 7 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.script_block_length
 * 4 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.dest_host
 * 4 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.executed_command
-* 3 x NotImplementedError: Field type solver: constant_keyword
-* 3 x NotImplementedError: Field type solver: match_only_text
 * 3 x NotImplementedError: Unsupported WHERE on a field made by EVAL: Esql.source_geo_lat
 * 3 x NotImplementedError: Unsupported command: COMPLETION
 * 3 x NotImplementedError: Unsupported command: IP_LOCATION
@@ -171,7 +176,6 @@ Elasticsearch version: 9.5 (rules 9.5.9)
 * 2 x NotImplementedError: Unsupported condition on the aggregate Esql.url_original_count_distinct
 * 2 x NotImplementedError: Unsupported function: TO_IP
 * 1 x ConflictError: Unsolvable constraints: event.action (3 different values are needed, the conditions allow 2)
-* 1 x ConflictError: Unsolvable constraints: user_agent.original (excluded by Strings({'go-http*'}): ('go-http*'))
 * 1 x EsqlParseError: Error at line:14,column:53
 * 1 x EsqlParseError: Error at line:3,column:3
 * 1 x EsqlParseError: Error at line:3,column:38
