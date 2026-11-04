@@ -4,9 +4,9 @@ This report captures the unit test queries signals generation coverage.
 Here you can learn what queries are supported.
 
 ## Table of contents
-   1. [Rules with the correct signals (58)](#rules-with-the-correct-signals-58)
+   1. [Rules with the correct signals (59)](#rules-with-the-correct-signals-59)
 
-## Rules with the correct signals (58)
+## Rules with the correct signals (59)
 
 ### Rule 000
 
@@ -219,7 +219,7 @@ Document count: 1
 Index: geneve-ut-0017
 
 ```python
-any where process.pid == null
+data_stream.dataset : "okta.system" and message : "some message"
 ```
 
 
@@ -231,7 +231,7 @@ Document count: 1
 Index: geneve-ut-0018
 
 ```python
-any where not process.pid != null
+any where process.pid == null
 ```
 
 
@@ -243,7 +243,7 @@ Document count: 1
 Index: geneve-ut-0019
 
 ```python
-any where process.pid != null
+any where not process.pid != null
 ```
 
 
@@ -255,7 +255,7 @@ Document count: 1
 Index: geneve-ut-0020
 
 ```python
-any where not process.pid == null
+any where process.pid != null
 ```
 
 
@@ -267,7 +267,7 @@ Document count: 1
 Index: geneve-ut-0021
 
 ```python
-process where process.name == "regsvr32.exe" and process.parent.name == "cmd.exe"
+any where not process.pid == null
 ```
 
 
@@ -279,7 +279,7 @@ Document count: 1
 Index: geneve-ut-0022
 
 ```python
-process where process.args != null
+process where process.name == "regsvr32.exe" and process.parent.name == "cmd.exe"
 ```
 
 
@@ -291,7 +291,7 @@ Document count: 1
 Index: geneve-ut-0023
 
 ```python
-process where process.args : "-f" and process.args == "-r"
+process where process.args != null
 ```
 
 
@@ -303,7 +303,7 @@ Document count: 1
 Index: geneve-ut-0024
 
 ```python
-network where destination.ip == "127.0.0.1"
+process where process.args : "-f" and process.args == "-r"
 ```
 
 
@@ -315,7 +315,7 @@ Document count: 1
 Index: geneve-ut-0025
 
 ```python
-network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
+network where destination.ip == "127.0.0.1"
 ```
 
 
@@ -327,7 +327,7 @@ Document count: 1
 Index: geneve-ut-0026
 
 ```python
-network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
+network where cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 ```
 
 
@@ -339,7 +339,7 @@ Document count: 1
 Index: geneve-ut-0027
 
 ```python
-network where destination.ip != null
+network where not cidrMatch(destination.ip, "10.0.0.0/8", "192.168.0.0/16")
 ```
 
 
@@ -351,7 +351,7 @@ Document count: 1
 Index: geneve-ut-0028
 
 ```python
-network where destination.ip == "::1"
+network where destination.ip != null
 ```
 
 
@@ -363,7 +363,7 @@ Document count: 1
 Index: geneve-ut-0029
 
 ```python
-network where destination.ip == "822e::/16"
+network where destination.ip == "::1"
 ```
 
 
@@ -375,7 +375,7 @@ Document count: 1
 Index: geneve-ut-0030
 
 ```python
-event.category:network and destination.ip:"822e::/16"
+network where destination.ip == "822e::/16"
 ```
 
 
@@ -387,7 +387,7 @@ Document count: 1
 Index: geneve-ut-0031
 
 ```python
-network where host.ip != null
+event.category:network and destination.ip:"822e::/16"
 ```
 
 
@@ -399,7 +399,7 @@ Document count: 1
 Index: geneve-ut-0032
 
 ```python
-event.category:network and host.ip:"822e::/96"
+network where host.ip != null
 ```
 
 
@@ -411,19 +411,19 @@ Document count: 1
 Index: geneve-ut-0033
 
 ```python
-event.category:process and not process.args : (TRUE or true)
+event.category:network and host.ip:"822e::/96"
 ```
 
 
 
 ### Rule 034
 
-Branch count: 2  
-Document count: 2  
+Branch count: 1  
+Document count: 1  
 Index: geneve-ut-0034
 
 ```python
-network where not (source.port > 512 and source.port < 1024)
+event.category:process and not process.args : (TRUE or true)
 ```
 
 
@@ -435,7 +435,7 @@ Document count: 2
 Index: geneve-ut-0035
 
 ```python
-network where source.port > 512 or source.port < 1024
+network where not (source.port > 512 and source.port < 1024)
 ```
 
 
@@ -447,7 +447,7 @@ Document count: 2
 Index: geneve-ut-0036
 
 ```python
-network where source.port < 2000 and (source.port > 512 or source.port > 1024)
+network where source.port > 512 or source.port < 1024
 ```
 
 
@@ -459,31 +459,31 @@ Document count: 2
 Index: geneve-ut-0037
 
 ```python
-network where (source.port > 512 or source.port > 1024) and source.port < 2000
+network where source.port < 2000 and (source.port > 512 or source.port > 1024)
 ```
 
 
 
 ### Rule 038
 
-Branch count: 4  
-Document count: 4  
+Branch count: 2  
+Document count: 2  
 Index: geneve-ut-0038
 
 ```python
-network where (source.port > 1024 or source.port < 2000) and (source.port < 4000 or source.port > 512)
+network where (source.port > 512 or source.port > 1024) and source.port < 2000
 ```
 
 
 
 ### Rule 039
 
-Branch count: 2  
-Document count: 2  
+Branch count: 4  
+Document count: 4  
 Index: geneve-ut-0039
 
 ```python
-network where destination.port in (80, 443)
+network where (source.port > 1024 or source.port < 2000) and (source.port < 4000 or source.port > 512)
 ```
 
 
@@ -495,7 +495,7 @@ Document count: 2
 Index: geneve-ut-0040
 
 ```python
-process where process.name : ("*.EXE", "*.DLL")
+network where destination.port in (80, 443)
 ```
 
 
@@ -507,19 +507,19 @@ Document count: 2
 Index: geneve-ut-0041
 
 ```python
-process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
+process where process.name : ("*.EXE", "*.DLL")
 ```
 
 
 
 ### Rule 042
 
-Branch count: 3  
-Document count: 3  
+Branch count: 2  
+Document count: 2  
 Index: geneve-ut-0042
 
 ```python
-process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or process.name == "powershell.exe"
+process where process.name == "regsvr32.exe" or process.parent.name == "cmd.exe"
 ```
 
 
@@ -531,7 +531,7 @@ Document count: 3
 Index: geneve-ut-0043
 
 ```python
-process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
+process where process.name == "regsvr32.exe" or process.name == "cmd.exe" or process.name == "powershell.exe"
 ```
 
 
@@ -543,19 +543,19 @@ Document count: 3
 Index: geneve-ut-0044
 
 ```python
-process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "powershell.exe"
+process where process.name in ("regsvr32.exe", "cmd.exe", "powershell.exe")
 ```
 
 
 
 ### Rule 045
 
-Branch count: 2  
-Document count: 2  
+Branch count: 3  
+Document count: 3  
 Index: geneve-ut-0045
 
 ```python
-process where event.type in ("start", "process_started") and process.args : "dump-keychain" and process.args : "-d"
+process where process.name in ("regsvr32.exe", "cmd.exe") or process.name == "powershell.exe"
 ```
 
 
@@ -567,19 +567,19 @@ Document count: 2
 Index: geneve-ut-0046
 
 ```python
-event.type:(start or process_started) and (process.args:"dump-keychain" and process.args:"-d")
+process where event.type in ("start", "process_started") and process.args : "dump-keychain" and process.args : "-d"
 ```
 
 
 
 ### Rule 047
 
-Branch count: 4  
-Document count: 4  
+Branch count: 2  
+Document count: 2  
 Index: geneve-ut-0047
 
 ```python
-event.category:process and process.args:a and process.args:(b1 or b2) and process.args:(c1 or c2)
+event.type:(start or process_started) and (process.args:"dump-keychain" and process.args:"-d")
 ```
 
 
@@ -591,21 +591,19 @@ Document count: 4
 Index: geneve-ut-0048
 
 ```python
-process where process.args : "a" and process.args : ("b1", "b2") and process.args : ("c1", "c2")
+event.category:process and process.args:a and process.args:(b1 or b2) and process.args:(c1 or c2)
 ```
 
 
 
 ### Rule 049
 
-Branch count: 1  
-Document count: 2  
+Branch count: 4  
+Document count: 4  
 Index: geneve-ut-0049
 
 ```python
-sequence
-        [process where process.name : "cmd.exe"]
-        [process where process.parent.name : "cmd.exe"]
+process where process.args : "a" and process.args : ("b1", "b2") and process.args : ("c1", "c2")
 ```
 
 
@@ -617,7 +615,7 @@ Document count: 2
 Index: geneve-ut-0050
 
 ```python
-sequence by user.id
+sequence
         [process where process.name : "cmd.exe"]
         [process where process.parent.name : "cmd.exe"]
 ```
@@ -631,9 +629,9 @@ Document count: 2
 Index: geneve-ut-0051
 
 ```python
-sequence
-        [process where process.name : "cmd.exe"] by user.id
-        [process where process.parent.name : "cmd.exe"] by user.name
+sequence by user.id
+        [process where process.name : "cmd.exe"]
+        [process where process.parent.name : "cmd.exe"]
 ```
 
 
@@ -646,8 +644,8 @@ Index: geneve-ut-0052
 
 ```python
 sequence
-        [process where process.name : "*.exe"] by process.name
-        [process where process.name : "*.dll"] by process.parent.name
+        [process where process.name : "cmd.exe"] by user.id
+        [process where process.parent.name : "cmd.exe"] by user.name
 ```
 
 
@@ -655,27 +653,27 @@ sequence
 ### Rule 053
 
 Branch count: 1  
-Document count: 4  
+Document count: 2  
 Index: geneve-ut-0053
 
 ```python
 sequence
-        [process where process.name : "*.exe"] with runs=2
-        [process where process.pid < 10] with runs=2
+        [process where process.name : "*.exe"] by process.name
+        [process where process.name : "*.dll"] by process.parent.name
 ```
 
 
 
 ### Rule 054
 
-Branch count: 2  
+Branch count: 1  
 Document count: 4  
 Index: geneve-ut-0054
 
 ```python
 sequence
-        [process where process.name : "cmd.exe"]
-        [process where process.parent.name : "cmd.exe" or process.name : "powershell.exe"]
+        [process where process.name : "*.exe"] with runs=2
+        [process where process.pid < 10] with runs=2
 ```
 
 
@@ -687,7 +685,7 @@ Document count: 4
 Index: geneve-ut-0055
 
 ```python
-sequence by user.id
+sequence
         [process where process.name : "cmd.exe"]
         [process where process.parent.name : "cmd.exe" or process.name : "powershell.exe"]
 ```
@@ -696,14 +694,14 @@ sequence by user.id
 
 ### Rule 056
 
-Branch count: 4  
-Document count: 8  
+Branch count: 2  
+Document count: 4  
 Index: geneve-ut-0056
 
 ```python
-sequence
-        [process where process.name in ("cmd.exe", "powershell.exe")] by process.name
-        [process where process.name in ("cmd.exe", "powershell.exe")] by process.parent.name
+sequence by user.id
+        [process where process.name : "cmd.exe"]
+        [process where process.parent.name : "cmd.exe" or process.name : "powershell.exe"]
 ```
 
 
@@ -713,6 +711,20 @@ sequence
 Branch count: 4  
 Document count: 8  
 Index: geneve-ut-0057
+
+```python
+sequence
+        [process where process.name in ("cmd.exe", "powershell.exe")] by process.name
+        [process where process.name in ("cmd.exe", "powershell.exe")] by process.parent.name
+```
+
+
+
+### Rule 058
+
+Branch count: 4  
+Document count: 8  
+Index: geneve-ut-0058
 
 ```python
 sequence by user.id

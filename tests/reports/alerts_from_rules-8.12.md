@@ -12,7 +12,7 @@ Rules version: 8.12.26
    1. [Unsuccessful rules with signals (10)](#unsuccessful-rules-with-signals-10)
    1. [Rules with no signals (3)](#rules-with-no-signals-3)
    1. [Rules with too few signals (13)](#rules-with-too-few-signals-13)
-   1. [Rules with the correct signals (893)](#rules-with-the-correct-signals-893)
+   1. [Rules with the correct signals (900)](#rules-with-the-correct-signals-900)
 
 ## Failed rules (10)
 
@@ -1217,7 +1217,7 @@ sequence by host.id with maxspan=5s
 
 
 
-## Rules with the correct signals (893)
+## Rules with the correct signals (900)
 
 ### A scheduled task was created
 
@@ -2211,6 +2211,19 @@ process where host.os.type == "windows" and event.type == "start" and process.ar
         process.name : "rundll32.exe" and
         process.args : "*davclnt.dll,DavSetCookie*"
   )
+```
+
+
+
+### Account Configured with Never-Expiring Password
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0093
+
+```python
+event.action:"modified-user-account" and winlog.api:"wineventlog" and event.code:"4738" and
+  message:"'Don't Expire Password' - Enabled" and not user.id:"S-1-5-18"
 ```
 
 
@@ -6648,6 +6661,18 @@ Index: geneve-ut-0432
 event.category:process and host.os.type:macos and event.type:(start or process_started) and
   process.name:kcc and
   process.args:copy_cred_cache
+```
+
+
+
+### Kerberos Pre-authentication Disabled for User
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0433
+
+```python
+event.code:4738 and winlog.api:"wineventlog" and message:"'Don't Require Preauth' - Enabled"
 ```
 
 
@@ -14406,6 +14431,18 @@ process.name : "grep" and user.id != "0" and
 
 
 
+### Segfault Detected
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0896
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and message:segfault
+```
+
+
+
 ### Sensitive Files Compression Inside A Container
 
 Branch count: 270  
@@ -16953,6 +16990,19 @@ sequence by host.hostname, host.id with maxspan=1m
 
 
 
+### Suspicious rc.local Error Message
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-1042
+
+```python
+host.os.type:linux and event.dataset:system.syslog and process.name:rc.local and
+message:("Connection refused" or "No such file or directory" or "command not found")
+```
+
+
+
 ### Suspicious which Enumeration
 
 Branch count: 2  
@@ -17387,6 +17437,32 @@ Index: geneve-ut-1062
 ```python
 event.category:process and host.os.type:macos and event.type:(start or process_started) and process.name:mount_apfs and
   process.args:(/System/Volumes/Data and noowners)
+```
+
+
+
+### Tainted Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1063
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and 
+message:"module verification failed: signature and/or required key missing - tainting kernel"
+```
+
+
+
+### Tainted Out-Of-Tree Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1064
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and 
+message:"loading out-of-tree module taints kernel."
 ```
 
 
@@ -18945,6 +19021,18 @@ process where host.os.type == "windows" and event.type == "start" and
   )
 ) and not process.parent.args: "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\Content\\DetectionScripts\\*.ps1"
 and not process.parent.name : "LTSVC.exe" and not user.id : "S-1-5-18"
+```
+
+
+
+### Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1190
+
+```python
+event.provider:"Microsoft-Windows-Audit-CVE" and message:"[CVE-2020-0601]" and host.os.type:windows
 ```
 
 

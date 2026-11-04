@@ -17,7 +17,6 @@ Rules version: 8.5.8
    1. [Generation errors](#generation-errors)
       1. [Unsupported function: match (9)](#unsupported-function-match-9)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)](#unsupported-lhs-type-class-eqlastfunctioncall-6)
-      1. [Field type solver: match_only_text (5)](#field-type-solver-match_only_text-5)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
       1. [Root with too many branches (limit: 10000) (2)](#root-with-too-many-branches-limit-10000-2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
@@ -164,15 +163,6 @@ Rules version: 8.5.8
 * NullSessionPipe Registry Modification
 * Suspicious Execution - Short Program Name
 * Suspicious Process Access via Direct System Call
-
-### Field type solver: match_only_text (5)
-
-5 rules:
-* Account Configured with Never-Expiring Password
-* Kerberos Pre-authentication Disabled for User
-* Scheduled Task Execution at Scale via GPO
-* Startup/Logon Script added to Group Policy Object
-* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Pipes are unsupported (2)
 

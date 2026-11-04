@@ -18,7 +18,6 @@ Rules version: 8.7.13
       1. [Root with too many branches (limit: 10000) (8)](#root-with-too-many-branches-limit-10000-8)
       1. [Unsupported function: match (8)](#unsupported-function-match-8)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (6)](#unsupported-lhs-type-class-eqlastfunctioncall-6)
-      1. [Field type solver: match_only_text (5)](#field-type-solver-match_only_text-5)
       1. [Root without branches (3)](#root-without-branches-3)
       1. [<class 'eql.ast.Sample'> (2)](#class-eqlastsample-2)
       1. [Pipes are unsupported (2)](#pipes-are-unsupported-2)
@@ -201,15 +200,6 @@ Rules version: 8.7.13
 * NullSessionPipe Registry Modification
 * Renamed Utility Executed with Short Program Name
 * Suspicious Process Access via Direct System Call
-
-### Field type solver: match_only_text (5)
-
-5 rules:
-* Account Configured with Never-Expiring Password
-* Kerberos Pre-authentication Disabled for User
-* Scheduled Task Execution at Scale via GPO
-* Startup/Logon Script added to Group Policy Object
-* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Root without branches (3)
 

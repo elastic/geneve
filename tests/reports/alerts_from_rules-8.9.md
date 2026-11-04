@@ -10,9 +10,9 @@ Rules version: 8.9.15
 ## Table of contents
    1. [Failed rules (9)](#failed-rules-9)
    1. [Unsuccessful rules with signals (9)](#unsuccessful-rules-with-signals-9)
-   1. [Rules with no signals (2)](#rules-with-no-signals-2)
+   1. [Rules with no signals (3)](#rules-with-no-signals-3)
    1. [Rules with too few signals (10)](#rules-with-too-few-signals-10)
-   1. [Rules with the correct signals (803)](#rules-with-the-correct-signals-803)
+   1. [Rules with the correct signals (810)](#rules-with-the-correct-signals-810)
 
 ## Failed rules (9)
 
@@ -559,7 +559,7 @@ event.type == "start" and process.name == "ln" and process.args in ("-s", "-sf")
 
 
 
-## Rules with no signals (2)
+## Rules with no signals (3)
 
 ### Linux Group Creation
 
@@ -583,6 +583,22 @@ Index: geneve-ut-0406
 ```python
 iam where host.os.type == "linux" and (event.type == "user" and event.type == "creation") and
 process.name in ("useradd", "adduser") and user.name != null
+```
+
+
+
+### Scheduled Task Execution at Scale via GPO
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0766
+
+```python
+(event.code: "5136" and winlog.event_data.AttributeLDAPDisplayName:("gPCMachineExtensionNames" or "gPCUserExtensionNames") and
+   winlog.event_data.AttributeValue:(*CAB54552-DEEA-4691-817E-ED4A4D1AFC72* and *AADCED64-746C-4633-A97C-D61349046527*))
+or
+(event.code: "5145" and winlog.event_data.ShareName: "\\\\*\\SYSVOL" and winlog.event_data.RelativeTargetName: *ScheduledTasks.xml and
+  (message: WriteData or winlog.event_data.AccessList: *%%4417*))
 ```
 
 
@@ -885,7 +901,7 @@ event.type == "start" and process.name == "ln" and process.args in ("-s", "-sf")
 
 
 
-## Rules with the correct signals (803)
+## Rules with the correct signals (810)
 
 ### A scheduled task was created
 
@@ -1751,6 +1767,19 @@ Index: geneve-ut-0063
 ```python
 process where host.os.type == "windows" and event.type == "start" and process.args : ("*.ost", "*.pst") and
   not process.name : "outlook.exe"
+```
+
+
+
+### Account Configured with Never-Expiring Password
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0064
+
+```python
+event.action:"modified-user-account" and winlog.api:"wineventlog" and event.code:"4738" and
+  message:"'Don't Expire Password' - Enabled" and not user.id:"S-1-5-18"
 ```
 
 
@@ -5725,6 +5754,18 @@ Index: geneve-ut-0374
 event.category:process and host.os.type:macos and event.type:(start or process_started) and
   process.name:kcc and
   process.args:copy_cred_cache
+```
+
+
+
+### Kerberos Pre-authentication Disabled for User
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0375
+
+```python
+event.code:4738 and winlog.api:"wineventlog" and message:"'Don't Require Preauth' - Enabled"
 ```
 
 
@@ -12531,6 +12572,18 @@ process.name : "grep" and user.id != "0" and
 
 
 
+### Segfault Detected
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0773
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and message:segfault
+```
+
+
+
 ### Sensitive Files Compression Inside A Container
 
 Branch count: 270  
@@ -12894,6 +12947,28 @@ file where host.os.type == "windows" and event.type != "deletion" and
                   "MSACCESS.EXE",
                   "iexplore.exe",
                   "InstallUtil.exe")
+```
+
+
+
+### Startup/Logon Script added to Group Policy Object
+
+Branch count: 4  
+Document count: 4  
+Index: geneve-ut-0809
+
+```python
+(
+ event.code:5136 and winlog.event_data.AttributeLDAPDisplayName:(gPCMachineExtensionNames or gPCUserExtensionNames) and
+   winlog.event_data.AttributeValue:(*42B5FAAE-6536-11D2-AE5A-0000F87571E3* and
+                                      (*40B66650-4972-11D1-A7CA-0000F87571E3* or *40B6664F-4972-11D1-A7CA-0000F87571E3*))
+)
+or
+(
+ event.code:5145 and winlog.event_data.ShareName:\\\\*\\SYSVOL and
+   winlog.event_data.RelativeTargetName:(*\\scripts.ini or *\\psscripts.ini) and
+   (message:WriteData or winlog.event_data.AccessList:*%%4417*)
+)
 ```
 
 
@@ -14822,6 +14897,32 @@ event.category:process and host.os.type:macos and event.type:(start or process_s
 
 
 
+### Tainted Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0920
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and 
+message:"module verification failed: signature and/or required key missing - tainting kernel"
+```
+
+
+
+### Tainted Out-Of-Tree Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0921
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and 
+message:"loading out-of-tree module taints kernel."
+```
+
+
+
 ### Tampering of Bash Command-Line History
 
 Branch count: 90  
@@ -16288,6 +16389,18 @@ process where host.os.type == "windows" and event.type == "start" and
   )
 ) and not process.parent.args: "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\Content\\DetectionScripts\\*.ps1"
 and not process.parent.name : "LTSVC.exe" and not user.id : "S-1-5-18"
+```
+
+
+
+### Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1036
+
+```python
+event.provider:"Microsoft-Windows-Audit-CVE" and message:"[CVE-2020-0601]" and host.os.type:windows
 ```
 
 

@@ -20,7 +20,6 @@ Rules version: 8.13.23
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (12)](#unsupported-lhs-type-class-eqlastfunctioncall-12)
       1. [Unsupported function: stringContains (12)](#unsupported-function-stringcontains-12)
       1. [Unsupported function: match (11)](#unsupported-function-match-11)
-      1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (6)](#unsupported-argument-types-class-eqlastfield-6)
       1. [Root without branches (4)](#root-without-branches-4)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
@@ -381,17 +380,6 @@ Rules version: 8.13.23
 * SUID/SGID Bit Set
 * Suspicious Execution via Microsoft Office Add-Ins
 * Suspicious Service was Installed in the System
-
-### Field type solver: match_only_text (7)
-
-7 rules:
-* Account Configured with Never-Expiring Password
-* Kerberos Pre-authentication Disabled for User
-* Segfault Detected
-* Suspicious rc.local Error Message
-* Tainted Kernel Module Load
-* Tainted Out-Of-Tree Kernel Module Load
-* Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
 
 ### Unsupported argument type(s): <class 'eql.ast.Field'> (6)
 

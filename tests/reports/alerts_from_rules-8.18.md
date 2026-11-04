@@ -12,7 +12,7 @@ Rules version: 8.18.15
    1. [Unsuccessful rules with signals (17)](#unsuccessful-rules-with-signals-17)
    1. [Rules with no signals (7)](#rules-with-no-signals-7)
    1. [Rules with too few signals (20)](#rules-with-too-few-signals-20)
-   1. [Rules with the correct signals (989)](#rules-with-the-correct-signals-989)
+   1. [Rules with the correct signals (1005)](#rules-with-the-correct-signals-1005)
 
 ## Failed rules (18)
 
@@ -2674,7 +2674,7 @@ network where host.os.type == "windows" and dns.question.name != null and proces
 
 
 
-## Rules with the correct signals (989)
+## Rules with the correct signals (1005)
 
 ### A scheduled task was created
 
@@ -5868,6 +5868,18 @@ event.action in ("rename", "creation") and file.path : (
 
 
 
+### CrowdStrike External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0282
+
+```python
+event.kind: alert and data_stream.dataset: crowdstrike.alert
+```
+
+
+
 ### Cupsd or Foomatic-rip Shell Execution
 
 Branch count: 32  
@@ -6566,6 +6578,18 @@ or
   (process.name : "kextunload" and
     process.args : "com.apple.iokit.EndpointSecurity" and
     event.action : "end"))
+```
+
+
+
+### Elastic Security External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0328
+
+```python
+event.kind: alert and data_stream.dataset: elastic_security.alert
 ```
 
 
@@ -8132,6 +8156,18 @@ Index: geneve-ut-0460
 ```python
 event.dataset:"google_workspace.admin" and event.action:"CREATE_DATA_TRANSFER_REQUEST"
   and event.category:"iam" and google_workspace.admin.application.name:Drive*
+```
+
+
+
+### Google SecOps External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0461
+
+```python
+event.kind: alert and data_stream.dataset: google_secops.alert
 ```
 
 
@@ -10692,6 +10728,18 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Microsoft Sentinel External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0664
+
+```python
+event.kind: alert and data_stream.dataset: microsoft_sentinel.alert
+```
+
+
+
 ### Microsoft Windows Defender Tampering
 
 Branch count: 28  
@@ -12752,6 +12800,55 @@ sequence by process.entity_id
  [process where host.os.type == "windows" and event.type == "start" and (process.name : "MSBuild.exe" or process.pe.original_file_name == "MSBuild.exe")]
  [any where host.os.type == "windows" and (event.category == "library" or (event.category == "process" and event.action : "Image loaded*")) and
   (?dll.name : ("vaultcli.dll", "SAMLib.DLL") or file.name : ("vaultcli.dll", "SAMLib.DLL"))]
+```
+
+
+
+### Potential DLL Side-Loading via Trusted Microsoft Programs
+
+Branch count: 16  
+Document count: 16  
+Index: geneve-ut-0805
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  (
+    process.name : ("WinWord.exe", "EXPLORER.EXE", "w3wp.exe", "DISM.EXE") or
+    ?process.pe.original_file_name : ("WinWord.exe", "EXPLORER.EXE", "w3wp.exe", "DISM.EXE")
+  ) and
+  not process.executable : (
+          "\\\\?\\Volume{????????-????-????-????-????????????}\\Windows\\System32\\inetsrv\\w3wp.exe",
+          "?:\\PROGRA~?\\MICROS~?\\Office??\\winword.exe",
+          "?:\\Program Files\\Microsoft Office\\*\\winword.exe",
+          "?:\\Program Files\\Microsoft Office ??\\*\\winword.exe",
+          "?:\\Program Files\\WindowsApps\\Microsoft.Office.Desktop.*\\Office??\\winword.exe",
+          "?:\\Program Files (x86)\\Microsoft Office\\*\\winword.exe",
+          "?:\\Program Files (x86)\\Windows Kits\\*Assessment and Deployment Kit\\Deployment Tools\\amd64\\DISM\\dism.exe",
+          "?:\\Windows\\explorer.exe",
+          "?:\\Windows\\System32\\Dism.exe",
+          "?:\\Windows\\System32\\inetsrv\\w3wp.exe",
+          "?:\\Windows\\SysWOW64\\Dism.exe",
+          "?:\\Windows\\SysWOW64\\explorer.exe",
+          "?:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe"
+  ) and
+  /* Crowdstrike specific exclusion as it uses NT Object paths */
+  not
+  (
+    data_stream.dataset == "crowdstrike.fdr" and
+    process.executable : (
+        "\\Device\\HarddiskVolume*\\Program Files\\Microsoft Office\\*\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files\\Microsoft Office ??\\*\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files\\WindowsApps\\Microsoft.Office.Desktop.*\\Office??\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files (x86)\\Microsoft Office\\*\\winword.exe",
+        "\\Device\\HarddiskVolume*\\Program Files (x86)\\Windows Kits\\10\\Assessment and Deployment Kit\\Deployment Tools\\amd64\\DISM\\dism.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\explorer.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\System32\\Dism.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\System32\\inetsrv\\w3wp.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\Dism.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\explorer.exe",
+        "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\inetsrv\\w3wp.exe"
+    )
+  )
 ```
 
 
@@ -15119,6 +15216,24 @@ process where host.os.type == "linux" and event.type == "start" and
 
 
 
+### Potential VIEWSTATE RCE Attempt on SharePoint/IIS
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0966
+
+```python
+data_stream.dataset : "network_traffic.http" and
+    network.direction: "ingress" and
+    http.request.method: "POST" and
+    http.request.referrer: *SignOut.aspx and
+    http.request.body.content: *__VIEWSTATE=* and
+    http.request.body.bytes >= 500 and
+    http.response.headers.server: Microsoft-IIS*
+```
+
+
+
 ### Potential Veeam Credential Access Command
 
 Branch count: 6  
@@ -16322,6 +16437,19 @@ process where event.type == "start" and host.os.type == "linux" and event.action
     process.args in ("/usr/games/lolcat", "/usr/bin/screenfetch") or
     process.parent.name == "system-crash-notification"
   )
+```
+
+
+
+### Process Started with Executable Stack
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1032
+
+```python
+host.os.type:"linux" and event.dataset:"system.syslog" and process.name:"kernel" and
+message:"started with executable stack"
 ```
 
 
@@ -17818,6 +17946,18 @@ process.name : "grep" and user.id != "0" and
 
 
 
+### Segfault Detected
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1111
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and message:segfault
+```
+
+
+
 ### Sensitive Audit Policy Sub-Category Disabled
 
 Branch count: 6  
@@ -17903,6 +18043,30 @@ file where host.os.type == "windows" and
     user.id == "S-1-5-18" and process.executable : (
         "?:\\Windows\\system32\\taskhostw.exe", "?:\\Windows\\system32\\taskhost.exe"
     ))
+```
+
+
+
+### SentinelOne Alert External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1118
+
+```python
+event.kind: event and data_stream.dataset: sentinel_one.alert
+```
+
+
+
+### SentinelOne Threat External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1119
+
+```python
+event.kind: alert and data_stream.dataset: sentinel_one.threat
 ```
 
 
@@ -18199,6 +18363,18 @@ registry where host.os.type == "windows" and event.type == "change" and registry
   ) and
   registry.path : "*\\SYSTEM\\*ControlSet*\\Services\\*\\Start" and
   registry.data.strings : ("4", "0x00000004")
+```
+
+
+
+### Splunk External Alerts
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1163
+
+```python
+event.kind: alert and data_stream.dataset: splunk.alert
 ```
 
 
@@ -20213,6 +20389,18 @@ process where host.os.type == "windows" and event.action == "start" and
 
 
 
+### Suspicious Usage of bpf_probe_write_user Helper
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1277
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and message:"bpf_probe_write_user"
+```
+
+
+
 ### Suspicious Utility Launched via ProxyChains
 
 Branch count: 204  
@@ -20517,6 +20705,19 @@ Index: geneve-ut-1288
 ```python
 sequence by host.hostname, host.id with maxspan=1m
 [process where host.os.type == "macos" and event.type == "start" and event.action == "exec" and process.name: "pbpaste"] with runs = 5
+```
+
+
+
+### Suspicious rc.local Error Message
+
+Branch count: 3  
+Document count: 3  
+Index: geneve-ut-1289
+
+```python
+host.os.type:linux and event.dataset:system.syslog and process.name:rc.local and
+message:("Connection refused" or "No such file or directory" or "command not found")
 ```
 
 
@@ -21027,6 +21228,32 @@ Index: geneve-ut-1314
 ```python
 process where host.os.type == "macos" and event.type in ("start", "process_started") and process.name == "mount_apfs" and
  process.args like~ "/System/Volumes/Data" and process.args like~ "noowners"
+```
+
+
+
+### Tainted Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1315
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and
+message:"module verification failed: signature and/or required key missing - tainting kernel"
+```
+
+
+
+### Tainted Out-Of-Tree Kernel Module Load
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1316
+
+```python
+host.os.type:linux and event.dataset:"system.syslog" and process.name:kernel and
+message:"loading out-of-tree module taints kernel."
 ```
 
 
@@ -22717,6 +22944,18 @@ process where host.os.type == "windows" and event.type == "start" and
   )
 ) and not process.parent.args: "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\Content\\DetectionScripts\\*.ps1"
 and not process.parent.name : "LTSVC.exe" and not user.id : "S-1-5-18"
+```
+
+
+
+### Windows CryptoAPI Spoofing Vulnerability (CVE-2020-0601 - CurveBall)
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-1484
+
+```python
+event.provider:"Microsoft-Windows-Audit-CVE" and message:"[CVE-2020-0601]" and host.os.type:windows
 ```
 
 
