@@ -33,6 +33,9 @@ TEMPLATE = "geneve-esql-validation"
 UNKNOWN_COLUMN = re.compile(r"Unknown column \[([^\]]+)\]")
 NO_MATCH = re.compile(r"No matches found for pattern \[([^\]]+)\]")
 MAX_ATTEMPTS = 8
+# a FROM that names the alerts indices also reads those of the stack, if it has any (Kibana creates them), so the
+# fields that the alerts indices map must be mapped with the same type or ES|QL refuses to use them
+ALERT_FIELDS = {"kibana.alert.risk_score": "float"}
 CHUNK = 500  # documents indexed and checked at once
 MAX_GROUPS = 1000  # branches of a query that aggregates that are checked, one by one
 MAX_ROWS = 10000  # ES|QL does not return more
@@ -85,7 +88,7 @@ def infer_mappings(mappings, docs, schema):
             # what hangs from a field that the schema knows is the field (a geo_point is an object with lat and lon)
             known = any(".".join(parts[:i]) in schema for i in range(1, len(parts) + 1))
             if not known and path != "@timestamp":
-                inferred[path] = {"type": value_type(value)}
+                inferred[path] = {"type": ALERT_FIELDS.get(path) or value_type(value)}
     deep_merge(mappings, {"properties": emit_mappings(list(inferred), inferred).get("properties", {})}, overwrite=True)
     return mappings
 

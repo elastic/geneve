@@ -90,7 +90,7 @@ class TestEsqlDeterminism(unittest.TestCase):
             env = {**os.environ, "PYTHONHASHSEED": hash_seed}
             out = subprocess.run(
                 [sys.executable, "-m", "tests.test_esql_determinism"], env=env, cwd=tu.root_dir, capture_output=True, text=True, check=True
-            )  # noqa: S603
+            )
             digests.add(out.stdout.strip())
         self.assertEqual(1, len(digests), digests)
 
