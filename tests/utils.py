@@ -98,11 +98,21 @@ def http_server(directory, timeout=10):
         thread.join(timeout=timeout)
 
 
+def get_default_stack_version():
+    """Highest stack version known to the test config, as `major.minor.0`."""
+    versions = load_config()["emitter_rules"]["rules_versions"]
+    major_minor = max((v for v in versions if v != "serverless"), key=lambda v: tuple(int(x) for x in v.split(".")))
+    return f"{major_minor}.0"
+
+
 def get_stack_version():
     version = os.getenv("TEST_STACK_VERSION", None)
 
-    if version in ("serverless", None):
+    if version == "serverless":
         return version
+
+    if version is None:
+        version = get_default_stack_version()
 
     import semver
 
@@ -146,6 +156,12 @@ def get_rule_by_id(rules, rule_id):
         if rule["id"] == rule_id:
             return rule
     raise KeyError(f"cannot to find rule by id: {rule_id}")
+
+
+def parse_interval(interval):
+    """Convert a Kibana schedule interval such as `180s`, `5m` or `1h` to seconds."""
+    units = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+    return int(interval[:-1]) * units[interval[-1]]
 
 
 def get_rule_test_data(rules, rule_id):
@@ -446,29 +462,90 @@ class SignalsTestCase:
 
         return (bulk(), num_docs, se.mappings(extra_fields=corpus_fields))
 
-    def load_bulk_chunk(self, operations):
+    def load_bulk_chunk(self, operations, attempts=5):
+        """Send one bulk request, tell if it had to be replayed.
+
+        Replaying is safe: the operations are `create` with deterministic ids, the
+        documents indexed by a timed out attempt are rejected with status 409.
+        """
         from elasticsearch import exceptions
 
-        for attempt in range(3):
+        for attempt in range(attempts):
             try:
-                return self.es.options(request_timeout=30).bulk(operations=operations), attempt > 0
+                ret = self.es.options(request_timeout=30).bulk(operations=operations)
             except exceptions.ConnectionTimeout:
-                if attempt == 2:
+                if attempt == attempts - 1:
                     raise
+                continue
+            except exceptions.ApiError as e:
+                if e.status_code != 429 or attempt == attempts - 1:
+                    raise
+                retry_after = e.meta.headers.get("Retry-After")
+                time.sleep(float(retry_after) if retry_after else 1 + attempt)
+                continue
+            # the request may be accepted but its items rejected under indexing pressure
+            if attempt < attempts - 1 and any(item["create"]["status"] == 429 for item in ret["items"]):
+                time.sleep(1 + attempt)
+                continue
+            return ret, attempt > 0
 
-    def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=100, rules_chunk_size=50):
-        bulk, docs_to_go, mappings = self.generate_docs_and_mappings(rules, asts)
+    def load_bulk(self, bulk, docs_to_go, cells, *, docs_chunk_size, workers=8):
+        """Send the bulk in chunks, with up to `workers` requests in flight.
+
+        The generation goes on in this thread, with at most `2 * workers` chunks
+        waiting to be sent: memory stays bounded, the workers never starve. The
+        results are processed in generation order, so the report is deterministic.
+        """
+        from collections import deque
+        from concurrent.futures import ThreadPoolExecutor
 
         # for each doc there are two lines in the bulk: the operation and the doc itself
         bulk_chunk_size = docs_chunk_size * 2
 
+        num_chunks = math.ceil(docs_to_go / docs_chunk_size)
+        prev_report_chunk = 0
+
+        def handle(i, future):
+            nonlocal docs_to_go, prev_report_chunk
+            ret, replayed = future.result()
+            for item in ret["items"]:
+                if item["create"]["status"] != 201 and not (replayed and item["create"]["status"] == 409):
+                    cells.append(jupyter.Markdown(str(item["create"])))
+                    if verbose > 1:
+                        sys.stderr.write(f"{item['create']!s}\n")
+                        sys.stderr.flush()
+            if verbose:
+                docs_to_go -= len(ret["items"])
+                nth_chunk = int(i / num_chunks * 14)  # 14 is just an arbitray number to give enough updates
+                if nth_chunk != prev_report_chunk or i == num_chunks - 1:
+                    prev_report_chunk = nth_chunk
+                    sys.stderr.write(f"{docs_to_go} ")
+                    sys.stderr.flush()
+
+        in_flight = deque()
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            try:
+                for i, chunk in enumerate(batched(bulk, bulk_chunk_size)):
+                    if len(in_flight) >= 2 * workers:
+                        handle(*in_flight.popleft())
+                    in_flight.append((i, pool.submit(self.load_bulk_chunk, "\n".join(chunk))))
+                while in_flight:
+                    handle(*in_flight.popleft())
+            finally:
+                for _, future in in_flight:
+                    future.cancel()
+
+    def load_rules_and_docs(self, rules, asts, *, docs_chunk_size=500, rules_chunk_size=50):
+        bulk, docs_to_go, mappings = self.generate_docs_and_mappings(rules, asts)
+
         if verbose:
             sys.stderr.write("\n  Deleting any unit-test indices: ")
             sys.stderr.flush()
-        indices = []
-        for i, rule in enumerate(rules):
-            # this expands all the wildcards
-            indices.extend(self.es.indices.get(index=rule["index"], ignore_unavailable=True))
+        # one request for all the rules' indices, other tests may own indices under the same prefix
+        prefix = f"{self.index_template}-"
+        rules_indices = {index for rule in rules for index in rule["index"]}
+        patterns = [f"{prefix}*"] + sorted(index for index in rules_indices if not index.startswith(prefix))
+        indices = [index for index in self.es.indices.get(index=patterns, ignore_unavailable=True) if index in rules_indices]
         indices_to_go = len(indices)
         if verbose:
             sys.stderr.write(f"{indices_to_go} ")
@@ -507,23 +584,7 @@ class SignalsTestCase:
             if verbose:
                 sys.stderr.write(f"\n  Loading documents: {docs_to_go} ")
                 sys.stderr.flush()
-                num_chunks = math.ceil(docs_to_go / docs_chunk_size)
-                prev_report_chunk = 0
-            for i, chunk in enumerate(batched(bulk, bulk_chunk_size)):
-                ret, replayed = self.load_bulk_chunk("\n".join(chunk))
-                for item in ret["items"]:
-                    if item["create"]["status"] != 201 and not (replayed and item["create"]["status"] == 409):
-                        cells.append(jupyter.Markdown(str(item["create"])))
-                        if verbose > 1:
-                            sys.stderr.write(f"{item['create']!s}\n")
-                            sys.stderr.flush()
-                if verbose:
-                    docs_to_go -= len(chunk) // 2  # bulk: op + doc
-                    nth_chunk = int(i / num_chunks * 14)  # 14 is just an arbitray number to give enough updates
-                    if nth_chunk != prev_report_chunk or i == num_chunks - 1:
-                        prev_report_chunk = nth_chunk
-                        sys.stderr.write(f"{docs_to_go} ")
-                        sys.stderr.flush()
+            self.load_bulk(bulk, docs_to_go, cells, docs_chunk_size=docs_chunk_size)
 
         if verbose:
             rules_to_go = len(rules)
@@ -546,18 +607,19 @@ class SignalsTestCase:
                     break
         return pending
 
-    def wait_for_rules(self, pending, max_rules, timeout=300, sleep=5):
-        start = time.time()
+    def wait_for_rules(self, pending, max_rules, timeout=300, sleep=5, margin=60):
+        deadline = time.time() + timeout
         successful = {}
         failed = {}
+        timed_out = set()
         if verbose:
             sys.stderr.write("\n  Waiting for rules execution: ")
             sys.stderr.flush()
-        while (time.time() - start) < timeout:
+        while time.time() < deadline:
             if verbose:
                 sys.stderr.write(f"{len(pending)} ")
                 sys.stderr.flush()
-            self.check_rules(pending, successful, failed, max_rules)
+            deadline = max(deadline, self.check_rules(pending, successful, failed, max_rules, timed_out, margin))
             if pending:
                 time.sleep(sleep)
             else:
@@ -567,7 +629,13 @@ class SignalsTestCase:
             sys.stderr.flush()
         return successful, failed
 
-    def check_rules(self, pending, successful, failed, max_rules):
+    def check_rules(self, pending, successful, failed, max_rules, timed_out=None, margin=60):
+        """Check the pending rules, tell until when it is worth waiting for them.
+
+        A rule whose execution was cancelled by the rule type timeout gets a second
+        chance: its next execution comes one `interval` later and may well succeed.
+        """
+        deadline = 0
         for rule_id, rule in self.kb.find_detection_engine_rules(max_rules).items():
             if "execution_summary" not in rule:
                 continue
@@ -579,6 +647,12 @@ class SignalsTestCase:
                 self.handle_rule_success(rule_id, pending, successful, failed)
             elif last_execution["status"] in ("failed", "partial failure"):
                 self.handle_rule_failure(rule_id, failed, last_execution["message"])
+                if timed_out is None or rule_id in timed_out or "interval" not in rule:
+                    continue
+                if "execution cancelled due to timeout" in last_execution["message"]:
+                    timed_out.add(rule_id)
+                    deadline = max(deadline, time.time() + parse_interval(rule["interval"]) + margin)
+        return deadline
 
     def handle_rule_success(self, rule_id, pending, successful, failed):
         del pending[rule_id]
@@ -629,7 +703,25 @@ class SignalsTestCase:
             signals[bucket["key"]] = (bucket["doc_count"], branch_count)
         return signals
 
-    def wait_for_signals(self, rules, timeout=90, sleep=5):
+    @staticmethod
+    def get_idle_timeout(rules, signals, timeout, margin):
+        """Tell how long the signals can stall before giving up.
+
+        A rule emits at most `max_signals` alerts per execution. If it stopped
+        exactly at a multiple of it with signals still missing, the rest comes
+        with the next executions, one `interval` away, so stalling for less than
+        that does not mean anything.
+        """
+        idle_timeout = timeout
+        for rule in rules:
+            if not rule["enabled"] or "interval" not in rule or "max_signals" not in rule:
+                continue
+            got, expected = signals.get(rule["id"], (0, 0))
+            if 0 < got < expected and got % rule["max_signals"] == 0:
+                idle_timeout = max(idle_timeout, parse_interval(rule["interval"]) + margin)
+        return idle_timeout
+
+    def wait_for_signals(self, rules, timeout=90, sleep=5, margin=60):
         if verbose:
             sys.stderr.write("\n  Waiting for signals generation: ")
             sys.stderr.flush()
@@ -637,7 +729,8 @@ class SignalsTestCase:
         partial_count = 0
         partial_count_prev = 0
         partial_time = time.time()
-        while (time.time() - partial_time) < timeout:
+        idle_timeout = timeout
+        while (time.time() - partial_time) < idle_timeout:
             if verbose:
                 sys.stderr.write(f"{total_count - partial_count} ")
                 sys.stderr.flush()
@@ -646,6 +739,7 @@ class SignalsTestCase:
             if partial_count != partial_count_prev:
                 partial_count_prev = partial_count
                 partial_time = time.time()
+            idle_timeout = self.get_idle_timeout(rules, signals, timeout, margin)
             if total_count - partial_count > 0:
                 time.sleep(sleep)
             else:
@@ -716,9 +810,26 @@ class SignalsTestCase:
             msg = None if verbose < 3 else self.debug_rules(rules, rule_ids)
             self.assertEqual(len(rule_ids), value, msg=msg)
 
+    @staticmethod
+    def forgive_max_signals(signals, successful, failed):
+        """Do not fail rules that got all their signals despite max_signals.
+
+        Reaching the maximum alert limit is only informational if the rule
+        eventually delivered exactly the expected signals (the rest comes with
+        later executions): whether its last execution looks failed is timing.
+        """
+        for rule_id, messages in list(failed.items()):
+            if rule_id not in signals:
+                continue
+            got, expected = signals[rule_id]
+            if got == expected and all("reached the maximum alert limit" in message for message in messages):
+                del failed[rule_id]
+                successful[rule_id] = None
+
     def check_signals(self, rules, pending):
         successful, failed = self.wait_for_rules(pending, len(rules))
         signals = self.wait_for_signals(rules)
+        self.forgive_max_signals(signals, successful, failed)
 
         unsuccessful = set(signals) - set(successful)
         no_signals = set(successful) - set(signals)

@@ -65,110 +65,110 @@ emitter_rules:
       ack_too_few_signals: 3
     "8.5":
       ack_no_signals: 4
-      ack_too_few_signals: 3
+      ack_too_few_signals: 4
     "8.6":
       ack_no_signals: 4
-      ack_too_few_signals: 9
+      ack_too_few_signals: 10
     "8.7":
       ack_no_signals: 4
-      ack_too_few_signals: 11
+      ack_too_few_signals: 12
     "8.8":
+      ack_failed: 10
+      ack_unsuccessful_with_signals: 10
+      ack_no_signals: 4
+      ack_too_few_signals: 11
+    "8.9":
       ack_failed: 9
       ack_unsuccessful_with_signals: 9
-      ack_no_signals: 4
-      ack_too_few_signals: 10
-    "8.9":
-      ack_failed: 7
-      ack_unsuccessful_with_signals: 7
       ack_no_signals: 2
-      ack_too_few_signals: 8
+      ack_too_few_signals: 10
     "8.10":
-      ack_failed: 6
-      ack_unsuccessful_with_signals: 6
+      ack_failed: 9
+      ack_unsuccessful_with_signals: 9
       ack_no_signals: 3
-      ack_too_few_signals: 7
+      ack_too_few_signals: 10
     "8.11":
-      ack_failed: 7
-      ack_unsuccessful_with_signals: 7
+      ack_failed: 10
+      ack_unsuccessful_with_signals: 10
       ack_no_signals: 3
-      ack_too_few_signals: 10
+      ack_too_few_signals: 13
     "8.12":
-      ack_failed: 7
-      ack_unsuccessful_with_signals: 7
+      ack_failed: 10
+      ack_unsuccessful_with_signals: 10
       ack_no_signals: 3
-      ack_too_few_signals: 10
+      ack_too_few_signals: 13
     "8.13":
-      ack_failed: 7
-      ack_unsuccessful_with_signals: 7
+      ack_failed: 10
+      ack_unsuccessful_with_signals: 10
       ack_no_signals: 3
-      ack_too_few_signals: 10
+      ack_too_few_signals: 13
     "8.14":
-      ack_failed: 7
-      ack_unsuccessful_with_signals: 7
+      ack_failed: 11
+      ack_unsuccessful_with_signals: 11
       ack_no_signals: 3
-      ack_too_few_signals: 10
-    "8.15":
-      ack_failed: 8
-      ack_unsuccessful_with_signals: 8
-      ack_no_signals: 3
-      ack_too_few_signals: 11
-    "8.16":
-      ack_failed: 8
-      ack_unsuccessful_with_signals: 8
-      ack_no_signals: 5
-      ack_too_few_signals: 11
-    "8.17":
-      ack_failed: 8
-      ack_unsuccessful_with_signals: 8
-      ack_no_signals: 5
-      ack_too_few_signals: 11
-    "8.18":
-      ack_failed: 13
-      ack_unsuccessful_with_signals: 12
-      ack_no_signals: 7
-      ack_too_few_signals: 15
-    "8.19":
-      ack_failed: 21
-      ack_unsuccessful_with_signals: 21
-      ack_no_signals: 4
-      ack_too_few_signals: 25
-    "9.0":
-      ack_failed: 17
-      ack_unsuccessful_with_signals: 16
-      ack_no_signals: 7
-      ack_too_few_signals: 19
-    "9.1":
-      ack_failed: 13
-      ack_unsuccessful_with_signals: 12
-      ack_no_signals: 8
       ack_too_few_signals: 14
-    "9.2":
-      ack_failed: 17
-      ack_unsuccessful_with_signals: 17
+    "8.15":
+      ack_failed: 12
+      ack_unsuccessful_with_signals: 12
+      ack_no_signals: 3
+      ack_too_few_signals: 15
+    "8.16":
+      ack_failed: 12
+      ack_unsuccessful_with_signals: 12
       ack_no_signals: 5
-      ack_too_few_signals: 21
+      ack_too_few_signals: 15
+    "8.17":
+      ack_failed: 12
+      ack_unsuccessful_with_signals: 12
+      ack_no_signals: 5
+      ack_too_few_signals: 15
+    "8.18":
+      ack_failed: 18
+      ack_unsuccessful_with_signals: 17
+      ack_no_signals: 7
+      ack_too_few_signals: 20
+    "8.19":
+      ack_failed: 31
+      ack_unsuccessful_with_signals: 31
+      ack_no_signals: 4
+      ack_too_few_signals: 35
+    "9.0":
+      ack_failed: 23
+      ack_unsuccessful_with_signals: 22
+      ack_no_signals: 7
+      ack_too_few_signals: 25
+    "9.1":
+      ack_failed: 24
+      ack_unsuccessful_with_signals: 23
+      ack_no_signals: 8
+      ack_too_few_signals: 25
+    "9.2":
+      ack_failed: 26
+      ack_unsuccessful_with_signals: 26
+      ack_no_signals: 5
+      ack_too_few_signals: 30
     "9.3":
-      ack_failed: 28
-      ack_unsuccessful_with_signals: 28
+      ack_failed: 40
+      ack_unsuccessful_with_signals: 40
       ack_no_signals: 4
-      ack_too_few_signals: 32
+      ack_too_few_signals: 44
     "9.4":
-      ack_failed: 28
-      ack_unsuccessful_with_signals: 28
+      ack_failed: 40
+      ack_unsuccessful_with_signals: 40
       ack_no_signals: 4
-      ack_too_few_signals: 32
+      ack_too_few_signals: 44
     "9.5":
-      ack_failed: 28
-      ack_unsuccessful_with_signals: 28
+      ack_failed: 40
+      ack_unsuccessful_with_signals: 40
       ack_no_signals: 4
-      ack_too_few_signals: 32
+      ack_too_few_signals: 44
     "9.6":
-      ack_failed: 28
-      ack_unsuccessful_with_signals: 28
+      ack_failed: 40
+      ack_unsuccessful_with_signals: 40
       ack_no_signals: 4
-      ack_too_few_signals: 32
+      ack_too_few_signals: 44
     "serverless":
-      ack_failed: 28
-      ack_unsuccessful_with_signals: 28
+      ack_failed: 40
+      ack_unsuccessful_with_signals: 40
       ack_no_signals: 4
-      ack_too_few_signals: 32
+      ack_too_few_signals: 44

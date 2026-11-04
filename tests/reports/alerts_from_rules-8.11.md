@@ -8,13 +8,60 @@ Curious about the inner workings? Read [here](signals_generation.md).
 Rules version: 8.11.21
 
 ## Table of contents
-   1. [Failed rules (7)](#failed-rules-7)
-   1. [Unsuccessful rules with signals (7)](#unsuccessful-rules-with-signals-7)
+   1. [Failed rules (10)](#failed-rules-10)
+   1. [Unsuccessful rules with signals (10)](#unsuccessful-rules-with-signals-10)
    1. [Rules with no signals (3)](#rules-with-no-signals-3)
-   1. [Rules with too few signals (10)](#rules-with-too-few-signals-10)
-   1. [Rules with the correct signals (829)](#rules-with-the-correct-signals-829)
+   1. [Rules with too few signals (13)](#rules-with-too-few-signals-13)
+   1. [Rules with the correct signals (864)](#rules-with-the-correct-signals-864)
 
-## Failed rules (7)
+## Failed rules (10)
+
+### Delayed Execution via Ping
+
+Branch count: 1664  
+Document count: 3328  
+Index: geneve-ut-0226  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+sequence by process.parent.entity_id with maxspan=1m
+  [process where host.os.type == "windows" and event.action == "start" and process.name : "ping.exe" and
+   process.args : "-n" and process.parent.name : "cmd.exe" and not user.id : "S-1-5-18"]
+  [process where host.os.type == "windows" and event.action == "start" and
+   process.parent.name : "cmd.exe" and
+   (
+        process.name : (
+            "rundll32.exe", "powershell.exe",
+            "mshta.exe", "msbuild.exe",
+            "certutil.exe", "regsvr32.exe",
+            "powershell.exe", "cscript.exe",
+            "wscript.exe", "wmic.exe",
+            "installutil.exe", "msxsl.exe",
+            "Microsoft.Workflow.Compiler.exe",
+            "ieexec.exe", "iexpress.exe",
+            "RegAsm.exe", "installutil.exe",
+            "RegSvcs.exe", "RegAsm.exe"
+        ) or
+        (process.executable : "?:\\Users\\*\\AppData\\*.exe" and not process.code_signature.trusted == true)
+    ) and
+
+    not process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+    not (process.name : ("openssl.exe", "httpcfg.exe", "certutil.exe") and process.parent.command_line : "*ScreenConnectConfigurator.cmd*") and
+    not (process.pe.original_file_name : "DPInst.exe" and process.command_line : "driver\\DPInst_x64  /f ") and
+    not (process.name : "powershell.exe" and process.args : "Write-Host ======*") and
+    not (process.name : "wscript.exe" and process.args : "launchquiet_args.vbs" and process.parent.args : "?:\\Windows\\TempInst\\7z*") and
+    not (process.name : "regsvr32.exe" and process.args : ("?:\\windows\\syswow64\\msxml?.dll", "msxml?.dll", "?:\\Windows\\SysWOW64\\mschrt20.ocx")) and 
+    not (process.name : "wscript.exe" and
+         process.working_directory :
+                    ("?:\\Windows\\TempInst\\*",
+                     "?:\\Users\\*\\AppData\\Local\\Temp\\BackupBootstrapper\\Logs\\",
+                     "?:\\Users\\*\\AppData\\Local\\Temp\\QBTools\\"))
+    ]
+```
+
+
 
 ### File Creation, Execution and Self-Deletion in Suspicious Directory
 
@@ -219,6 +266,71 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Suspicious JetBrains TeamCity Child Process
+
+Branch count: 2280  
+Document count: 2280  
+Index: geneve-ut-0936  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.parent.executable :
+                 ("?:\\TeamCity\\jre\\bin\\java.exe",
+                  "?:\\Program Files\\TeamCity\\jre\\bin\\java.exe",
+                  "?:\\Program Files (x86)\\TeamCity\\jre\\bin\\java.exe",
+                  "?:\\TeamCity\\BuildAgent\\jre\\bin\\java.exe") and
+  process.name : ("cmd.exe", "powershell.exe", "msiexec.exe", "certutil.exe", "bitsadmin.exe", "wmic.exe", "curl.exe", "ssh.exe",
+                   "rundll32.exe", "regsvr32.exe", "mshta.exe", "certreq.exe", "net.exe", "nltest.exe", "whoami.exe", "hostname.exe",
+                   "tasklist.exe", "arp.exe", "nbtstat.exe", "netstat.exe", "reg.exe", "tasklist.exe", "Microsoft.Workflow.Compiler.exe",
+                   "arp.exe", "atbroker.exe", "bginfo.exe", "bitsadmin.exe", "cdb.exe", "cmstp.exe", "control.exe", "cscript.exe", "csi.exe",
+                   "dnx.exe", "dsget.exe", "dsquery.exe", "forfiles.exe", "fsi.exe", "ftp.exe", "gpresult.exe", "ieexec.exe", "iexpress.exe",
+                   "installutil.exe", "ipconfig.exe","msxsl.exe", "netsh.exe", "odbcconf.exe", "ping.exe", "pwsh.exe", "qprocess.exe",
+                   "quser.exe", "qwinsta.exe", "rcsi.exe", "regasm.exe", "regsvcs.exe", "regsvr32.exe", "sc.exe", "schtasks.exe",
+                   "systeminfo.exe", "tracert.exe", "wmic.exe", "wscript.exe","xwizard.exe", "explorer.exe", "msdt.exe") and
+ not (process.name : "powershell.exe" and process.args : "-ExecutionPolicy" and process.args : "?:\\TeamCity\\buildAgent\\work\\*.ps1") and
+ not (process.name : "cmd.exe" and process.args : "dir" and process.args : "/-c")
+```
+
+
+
+### Suspicious MS Office Child Process
+
+Branch count: 1759  
+Document count: 1759  
+Index: geneve-ut-0940  
+Failure message(s):  
+  SDE says:
+> This rule reached the maximum alert limit for the rule execution. Some alerts were not created.  
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.parent.name : (
+      "eqnedt32.exe", "excel.exe", "fltldr.exe", "msaccess.exe",
+      "mspub.exe", "powerpnt.exe", "winword.exe", "outlook.exe"
+  ) and
+  process.name : (
+      "Microsoft.Workflow.Compiler.exe", "arp.exe", "atbroker.exe", "bginfo.exe", "bitsadmin.exe", "cdb.exe",
+      "certutil.exe", "cmd.exe", "cmstp.exe", "control.exe", "cscript.exe", "csi.exe", "dnx.exe", "dsget.exe",
+      "dsquery.exe", "forfiles.exe", "fsi.exe", "ftp.exe", "gpresult.exe", "hostname.exe", "ieexec.exe", "iexpress.exe",
+      "installutil.exe", "ipconfig.exe", "mshta.exe", "msxsl.exe", "nbtstat.exe", "net.exe", "net1.exe", "netsh.exe",
+      "netstat.exe", "nltest.exe", "odbcconf.exe", "ping.exe", "powershell.exe", "pwsh.exe", "qprocess.exe",
+      "quser.exe", "qwinsta.exe", "rcsi.exe", "reg.exe", "regasm.exe", "regsvcs.exe", "regsvr32.exe", "sc.exe",
+      "schtasks.exe", "systeminfo.exe", "tasklist.exe", "tracert.exe", "whoami.exe", "wmic.exe", "wscript.exe",
+      "xwizard.exe", "explorer.exe", "rundll32.exe", "hh.exe", "msdt.exe"
+  ) and
+  not (
+    process.parent.name : "outlook.exe" and
+    process.name : "rundll32.exe" and
+    process.args : "shell32.dll,Control_RunDLL" and
+    process.args : "srchadmin.dll"
+  )
+```
+
+
+
 ### Suspicious Symbolic Link Created
 
 Branch count: 1836  
@@ -252,7 +364,51 @@ process.name == "ln" and process.args in ("-s", "-sf") and
 
 
 
-## Unsuccessful rules with signals (7)
+## Unsuccessful rules with signals (10)
+
+### Delayed Execution via Ping
+
+Branch count: 1664  
+Document count: 3328  
+Index: geneve-ut-0226
+
+```python
+sequence by process.parent.entity_id with maxspan=1m
+  [process where host.os.type == "windows" and event.action == "start" and process.name : "ping.exe" and
+   process.args : "-n" and process.parent.name : "cmd.exe" and not user.id : "S-1-5-18"]
+  [process where host.os.type == "windows" and event.action == "start" and
+   process.parent.name : "cmd.exe" and
+   (
+        process.name : (
+            "rundll32.exe", "powershell.exe",
+            "mshta.exe", "msbuild.exe",
+            "certutil.exe", "regsvr32.exe",
+            "powershell.exe", "cscript.exe",
+            "wscript.exe", "wmic.exe",
+            "installutil.exe", "msxsl.exe",
+            "Microsoft.Workflow.Compiler.exe",
+            "ieexec.exe", "iexpress.exe",
+            "RegAsm.exe", "installutil.exe",
+            "RegSvcs.exe", "RegAsm.exe"
+        ) or
+        (process.executable : "?:\\Users\\*\\AppData\\*.exe" and not process.code_signature.trusted == true)
+    ) and
+
+    not process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+    not (process.name : ("openssl.exe", "httpcfg.exe", "certutil.exe") and process.parent.command_line : "*ScreenConnectConfigurator.cmd*") and
+    not (process.pe.original_file_name : "DPInst.exe" and process.command_line : "driver\\DPInst_x64  /f ") and
+    not (process.name : "powershell.exe" and process.args : "Write-Host ======*") and
+    not (process.name : "wscript.exe" and process.args : "launchquiet_args.vbs" and process.parent.args : "?:\\Windows\\TempInst\\7z*") and
+    not (process.name : "regsvr32.exe" and process.args : ("?:\\windows\\syswow64\\msxml?.dll", "msxml?.dll", "?:\\Windows\\SysWOW64\\mschrt20.ocx")) and 
+    not (process.name : "wscript.exe" and
+         process.working_directory :
+                    ("?:\\Windows\\TempInst\\*",
+                     "?:\\Users\\*\\AppData\\Local\\Temp\\BackupBootstrapper\\Logs\\",
+                     "?:\\Users\\*\\AppData\\Local\\Temp\\QBTools\\"))
+    ]
+```
+
+
 
 ### File Creation, Execution and Self-Deletion in Suspicious Directory
 
@@ -439,6 +595,65 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Suspicious JetBrains TeamCity Child Process
+
+Branch count: 2280  
+Document count: 2280  
+Index: geneve-ut-0936
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.parent.executable :
+                 ("?:\\TeamCity\\jre\\bin\\java.exe",
+                  "?:\\Program Files\\TeamCity\\jre\\bin\\java.exe",
+                  "?:\\Program Files (x86)\\TeamCity\\jre\\bin\\java.exe",
+                  "?:\\TeamCity\\BuildAgent\\jre\\bin\\java.exe") and
+  process.name : ("cmd.exe", "powershell.exe", "msiexec.exe", "certutil.exe", "bitsadmin.exe", "wmic.exe", "curl.exe", "ssh.exe",
+                   "rundll32.exe", "regsvr32.exe", "mshta.exe", "certreq.exe", "net.exe", "nltest.exe", "whoami.exe", "hostname.exe",
+                   "tasklist.exe", "arp.exe", "nbtstat.exe", "netstat.exe", "reg.exe", "tasklist.exe", "Microsoft.Workflow.Compiler.exe",
+                   "arp.exe", "atbroker.exe", "bginfo.exe", "bitsadmin.exe", "cdb.exe", "cmstp.exe", "control.exe", "cscript.exe", "csi.exe",
+                   "dnx.exe", "dsget.exe", "dsquery.exe", "forfiles.exe", "fsi.exe", "ftp.exe", "gpresult.exe", "ieexec.exe", "iexpress.exe",
+                   "installutil.exe", "ipconfig.exe","msxsl.exe", "netsh.exe", "odbcconf.exe", "ping.exe", "pwsh.exe", "qprocess.exe",
+                   "quser.exe", "qwinsta.exe", "rcsi.exe", "regasm.exe", "regsvcs.exe", "regsvr32.exe", "sc.exe", "schtasks.exe",
+                   "systeminfo.exe", "tracert.exe", "wmic.exe", "wscript.exe","xwizard.exe", "explorer.exe", "msdt.exe") and
+ not (process.name : "powershell.exe" and process.args : "-ExecutionPolicy" and process.args : "?:\\TeamCity\\buildAgent\\work\\*.ps1") and
+ not (process.name : "cmd.exe" and process.args : "dir" and process.args : "/-c")
+```
+
+
+
+### Suspicious MS Office Child Process
+
+Branch count: 1759  
+Document count: 1759  
+Index: geneve-ut-0940
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.parent.name : (
+      "eqnedt32.exe", "excel.exe", "fltldr.exe", "msaccess.exe",
+      "mspub.exe", "powerpnt.exe", "winword.exe", "outlook.exe"
+  ) and
+  process.name : (
+      "Microsoft.Workflow.Compiler.exe", "arp.exe", "atbroker.exe", "bginfo.exe", "bitsadmin.exe", "cdb.exe",
+      "certutil.exe", "cmd.exe", "cmstp.exe", "control.exe", "cscript.exe", "csi.exe", "dnx.exe", "dsget.exe",
+      "dsquery.exe", "forfiles.exe", "fsi.exe", "ftp.exe", "gpresult.exe", "hostname.exe", "ieexec.exe", "iexpress.exe",
+      "installutil.exe", "ipconfig.exe", "mshta.exe", "msxsl.exe", "nbtstat.exe", "net.exe", "net1.exe", "netsh.exe",
+      "netstat.exe", "nltest.exe", "odbcconf.exe", "ping.exe", "powershell.exe", "pwsh.exe", "qprocess.exe",
+      "quser.exe", "qwinsta.exe", "rcsi.exe", "reg.exe", "regasm.exe", "regsvcs.exe", "regsvr32.exe", "sc.exe",
+      "schtasks.exe", "systeminfo.exe", "tasklist.exe", "tracert.exe", "whoami.exe", "wmic.exe", "wscript.exe",
+      "xwizard.exe", "explorer.exe", "rundll32.exe", "hh.exe", "msdt.exe"
+  ) and
+  not (
+    process.parent.name : "outlook.exe" and
+    process.name : "rundll32.exe" and
+    process.args : "shell32.dll,Control_RunDLL" and
+    process.args : "srchadmin.dll"
+  )
+```
+
+
+
 ### Suspicious Symbolic Link Created
 
 Branch count: 1836  
@@ -515,7 +730,53 @@ sequence by user.name, source.port, source.ip with maxspan=15s
 
 
 
-## Rules with too few signals (10)
+## Rules with too few signals (13)
+
+### Delayed Execution via Ping
+
+Branch count: 1664  
+Document count: 3328  
+Index: geneve-ut-0226  
+Failure message(s):  
+  got 1000 signals, expected 1664  
+
+```python
+sequence by process.parent.entity_id with maxspan=1m
+  [process where host.os.type == "windows" and event.action == "start" and process.name : "ping.exe" and
+   process.args : "-n" and process.parent.name : "cmd.exe" and not user.id : "S-1-5-18"]
+  [process where host.os.type == "windows" and event.action == "start" and
+   process.parent.name : "cmd.exe" and
+   (
+        process.name : (
+            "rundll32.exe", "powershell.exe",
+            "mshta.exe", "msbuild.exe",
+            "certutil.exe", "regsvr32.exe",
+            "powershell.exe", "cscript.exe",
+            "wscript.exe", "wmic.exe",
+            "installutil.exe", "msxsl.exe",
+            "Microsoft.Workflow.Compiler.exe",
+            "ieexec.exe", "iexpress.exe",
+            "RegAsm.exe", "installutil.exe",
+            "RegSvcs.exe", "RegAsm.exe"
+        ) or
+        (process.executable : "?:\\Users\\*\\AppData\\*.exe" and not process.code_signature.trusted == true)
+    ) and
+
+    not process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+    not (process.name : ("openssl.exe", "httpcfg.exe", "certutil.exe") and process.parent.command_line : "*ScreenConnectConfigurator.cmd*") and
+    not (process.pe.original_file_name : "DPInst.exe" and process.command_line : "driver\\DPInst_x64  /f ") and
+    not (process.name : "powershell.exe" and process.args : "Write-Host ======*") and
+    not (process.name : "wscript.exe" and process.args : "launchquiet_args.vbs" and process.parent.args : "?:\\Windows\\TempInst\\7z*") and
+    not (process.name : "regsvr32.exe" and process.args : ("?:\\windows\\syswow64\\msxml?.dll", "msxml?.dll", "?:\\Windows\\SysWOW64\\mschrt20.ocx")) and 
+    not (process.name : "wscript.exe" and
+         process.working_directory :
+                    ("?:\\Windows\\TempInst\\*",
+                     "?:\\Users\\*\\AppData\\Local\\Temp\\BackupBootstrapper\\Logs\\",
+                     "?:\\Users\\*\\AppData\\Local\\Temp\\QBTools\\"))
+    ]
+```
+
+
 
 ### File Creation, Execution and Self-Deletion in Suspicious Directory
 
@@ -756,6 +1017,69 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Suspicious JetBrains TeamCity Child Process
+
+Branch count: 2280  
+Document count: 2280  
+Index: geneve-ut-0936  
+Failure message(s):  
+  got 1000 signals, expected 2280  
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.parent.executable :
+                 ("?:\\TeamCity\\jre\\bin\\java.exe",
+                  "?:\\Program Files\\TeamCity\\jre\\bin\\java.exe",
+                  "?:\\Program Files (x86)\\TeamCity\\jre\\bin\\java.exe",
+                  "?:\\TeamCity\\BuildAgent\\jre\\bin\\java.exe") and
+  process.name : ("cmd.exe", "powershell.exe", "msiexec.exe", "certutil.exe", "bitsadmin.exe", "wmic.exe", "curl.exe", "ssh.exe",
+                   "rundll32.exe", "regsvr32.exe", "mshta.exe", "certreq.exe", "net.exe", "nltest.exe", "whoami.exe", "hostname.exe",
+                   "tasklist.exe", "arp.exe", "nbtstat.exe", "netstat.exe", "reg.exe", "tasklist.exe", "Microsoft.Workflow.Compiler.exe",
+                   "arp.exe", "atbroker.exe", "bginfo.exe", "bitsadmin.exe", "cdb.exe", "cmstp.exe", "control.exe", "cscript.exe", "csi.exe",
+                   "dnx.exe", "dsget.exe", "dsquery.exe", "forfiles.exe", "fsi.exe", "ftp.exe", "gpresult.exe", "ieexec.exe", "iexpress.exe",
+                   "installutil.exe", "ipconfig.exe","msxsl.exe", "netsh.exe", "odbcconf.exe", "ping.exe", "pwsh.exe", "qprocess.exe",
+                   "quser.exe", "qwinsta.exe", "rcsi.exe", "regasm.exe", "regsvcs.exe", "regsvr32.exe", "sc.exe", "schtasks.exe",
+                   "systeminfo.exe", "tracert.exe", "wmic.exe", "wscript.exe","xwizard.exe", "explorer.exe", "msdt.exe") and
+ not (process.name : "powershell.exe" and process.args : "-ExecutionPolicy" and process.args : "?:\\TeamCity\\buildAgent\\work\\*.ps1") and
+ not (process.name : "cmd.exe" and process.args : "dir" and process.args : "/-c")
+```
+
+
+
+### Suspicious MS Office Child Process
+
+Branch count: 1759  
+Document count: 1759  
+Index: geneve-ut-0940  
+Failure message(s):  
+  got 1000 signals, expected 1759  
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.parent.name : (
+      "eqnedt32.exe", "excel.exe", "fltldr.exe", "msaccess.exe",
+      "mspub.exe", "powerpnt.exe", "winword.exe", "outlook.exe"
+  ) and
+  process.name : (
+      "Microsoft.Workflow.Compiler.exe", "arp.exe", "atbroker.exe", "bginfo.exe", "bitsadmin.exe", "cdb.exe",
+      "certutil.exe", "cmd.exe", "cmstp.exe", "control.exe", "cscript.exe", "csi.exe", "dnx.exe", "dsget.exe",
+      "dsquery.exe", "forfiles.exe", "fsi.exe", "ftp.exe", "gpresult.exe", "hostname.exe", "ieexec.exe", "iexpress.exe",
+      "installutil.exe", "ipconfig.exe", "mshta.exe", "msxsl.exe", "nbtstat.exe", "net.exe", "net1.exe", "netsh.exe",
+      "netstat.exe", "nltest.exe", "odbcconf.exe", "ping.exe", "powershell.exe", "pwsh.exe", "qprocess.exe",
+      "quser.exe", "qwinsta.exe", "rcsi.exe", "reg.exe", "regasm.exe", "regsvcs.exe", "regsvr32.exe", "sc.exe",
+      "schtasks.exe", "systeminfo.exe", "tasklist.exe", "tracert.exe", "whoami.exe", "wmic.exe", "wscript.exe",
+      "xwizard.exe", "explorer.exe", "rundll32.exe", "hh.exe", "msdt.exe"
+  ) and
+  not (
+    process.parent.name : "outlook.exe" and
+    process.name : "rundll32.exe" and
+    process.args : "shell32.dll,Control_RunDLL" and
+    process.args : "srchadmin.dll"
+  )
+```
+
+
+
 ### Suspicious Network Connection via systemd
 
 Branch count: 11  
@@ -809,7 +1133,7 @@ process.name == "ln" and process.args in ("-s", "-sf") and
 
 
 
-## Rules with the correct signals (829)
+## Rules with the correct signals (864)
 
 ### A scheduled task was created
 
@@ -1674,6 +1998,19 @@ event.dataset:aws.cloudtrail and event.provider:(waf.amazonaws.com or waf-region
 
 
 
+### Abnormally Large DNS Response
+
+Branch count: 8  
+Document count: 8  
+Index: geneve-ut-0077
+
+```python
+(event.dataset: network_traffic.dns or (event.category: (network or network_traffic) and destination.port: 53)) and
+  (event.dataset:zeek.dns or type:dns or event.type:connection) and network.bytes > 60000
+```
+
+
+
 ### Accepted Default Telnet Port Connection
 
 Branch count: 3  
@@ -2037,6 +2374,37 @@ event.dataset:"google_workspace.admin" and event.category:"iam" and event.type:"
   event.action:"CHANGE_APPLICATION_SETTING" and
   google_workspace.admin.application.name:"Google Workspace Marketplace" and
   google_workspace.admin.old_value: *allowed*false* and google_workspace.admin.new_value: *allowed*true*
+```
+
+
+
+### Archive File with Unusual Extension
+
+Branch count: 364  
+Document count: 364  
+Index: geneve-ut-0106
+
+```python
+file where host.os.type == "windows" and event.action != "deletion" and
+
+  /* common archive file headers - Rar, 7z, GZIP, MSCF, XZ, ZIP */
+  file.Ext.header_bytes : ("52617221*", "377ABCAF271C*", "1F8B*", "4d534346*", "FD377A585A00*", "504B0304*", "504B0708*") and
+
+  (
+    /* common image file extensions */
+    file.extension : ("jpg", "jpeg", "emf", "tiff", "gif", "png", "bmp", "ico", "fpx", "eps", "inf") or
+
+    /* common audio and video file extensions */
+    file.extension : ("mp3", "wav", "avi", "mpeg", "flv", "wma", "wmv", "mov", "mp4", "3gp") or
+
+    /* common document file extensions */
+    (file.extension : ("doc", "docx", "rtf", "ppt", "pptx", "xls", "xlsx") and
+
+    /* exclude ZIP file header values for OPENXML documents */
+    not file.Ext.header_bytes : ("504B0304*", "504B0708*"))
+  ) and
+
+  not (process.executable : "?:\\Windows\\System32\\inetsrv\\w3wp.exe" and file.path : "?:\\inetpub\\temp\\IIS Temporary Compressed Files\\*")
 ```
 
 
@@ -3307,6 +3675,25 @@ library where host.os.type == "windows" and event.action == "load" and
 
 
 
+### Conhost Spawned By Suspicious Parent Process
+
+Branch count: 23  
+Document count: 23  
+Index: geneve-ut-0193
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.name : "conhost.exe" and
+  process.parent.name : ("lsass.exe", "services.exe", "smss.exe", "winlogon.exe", "explorer.exe", "dllhost.exe", "rundll32.exe",
+                         "regsvr32.exe", "userinit.exe", "wininit.exe", "spoolsv.exe", "ctfmon.exe") and
+  not (process.parent.name : "rundll32.exe" and
+       process.parent.args : ("?:\\Windows\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc",
+                              "?:\\WINDOWS\\system32\\PcaSvc.dll,PcaPatchSdbTask",
+                              "?:\\WINDOWS\\system32\\davclnt.dll,DavSetCookie"))
+```
+
+
+
 ### Connection to Commonly Abused Free SSL Certificate Providers
 
 Branch count: 24  
@@ -4201,6 +4588,49 @@ not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20")
 
 
 
+### Enumeration Command Spawned via WMIPrvSE
+
+Branch count: 87  
+Document count: 87  
+Index: geneve-ut-0256
+
+```python
+process where host.os.type == "windows" and event.type == "start" and process.command_line != null and 
+  process.name:
+  (
+    "arp.exe",
+    "dsquery.exe",
+    "dsget.exe",
+    "gpresult.exe",
+    "hostname.exe",
+    "ipconfig.exe",
+    "nbtstat.exe",
+    "net.exe",
+    "net1.exe",
+    "netsh.exe",
+    "netstat.exe",
+    "nltest.exe",
+    "ping.exe",
+    "qprocess.exe",
+    "quser.exe",
+    "qwinsta.exe",
+    "reg.exe",
+    "sc.exe",
+    "systeminfo.exe",
+    "tasklist.exe",
+    "tracert.exe",
+    "whoami.exe"
+  ) and
+  process.parent.name:"wmiprvse.exe" and 
+  not (
+    process.name : "sc.exe" and process.args : "RemoteRegistry" and process.args : "start=" and 
+    process.args : ("demand", "disabled")
+  ) and
+  not process.args : "tenable_mw_scan"
+```
+
+
+
 ### Enumeration of Administrator Accounts
 
 Branch count: 64  
@@ -4475,6 +4905,52 @@ Index: geneve-ut-0274
 
 ```python
 event.category:process and host.os.type:macos and event.type:(start or process_started) and process.args:("-e" and const*require*child_process*)
+```
+
+
+
+### Execution via MS VisualStudio Pre/Post Build Events
+
+Branch count: 39  
+Document count: 78  
+Index: geneve-ut-0275
+
+```python
+sequence with maxspan=1m
+  [process where host.os.type == "windows" and event.action == "start" and
+   process.name : "cmd.exe" and process.parent.name : "MSBuild.exe" and
+   process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\tmp*.exec.cmd"] by process.entity_id
+  [process where host.os.type == "windows" and event.action == "start" and
+    process.name : (
+      "cmd.exe", "powershell.exe",
+      "MSHTA.EXE", "CertUtil.exe",
+      "CertReq.exe", "rundll32.exe",
+      "regsvr32.exe", "MSbuild.exe",
+      "cscript.exe", "wscript.exe",
+      "installutil.exe"
+    ) and
+    not 
+    (
+      process.name : ("cmd.exe", "powershell.exe") and
+      process.args : (
+        "*\\vcpkg\\scripts\\buildsystems\\msbuild\\applocal.ps1",
+        "HKLM\\SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VS?",
+        "process.versions.node*",
+        "?:\\Program Files\\nodejs\\node.exe",
+        "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MSBuild\\ToolsVersions\\*",
+        "*Get-ChildItem*Tipasplus.css*",
+        "Build\\GenerateResourceScripts.ps1",
+        "Shared\\Common\\..\\..\\BuildTools\\ConfigBuilder.ps1\"",
+        "?:\\Projets\\*\\PostBuild\\MediaCache.ps1"
+      )
+    ) and
+    not process.executable : "?:\\Program Files*\\Microsoft Visual Studio\\*\\MSBuild.exe" and
+    not (process.name : "cmd.exe" and
+         process.command_line :
+                  ("*vswhere.exe -property catalog_productSemanticVersion*",
+                   "*git log --pretty=format*", "*\\.nuget\\packages\\vswhere\\*",
+                   "*Common\\..\\..\\BuildTools\\*"))
+  ] by process.parent.entity_id
 ```
 
 
@@ -8570,6 +9046,41 @@ event.category:process and host.os.type:macos and event.type:(start or process_s
 
 
 
+### Potential Antimalware Scan Interface Bypass via PowerShell
+
+Branch count: 28  
+Document count: 28  
+Index: geneve-ut-0587
+
+```python
+event.category:"process" and host.os.type:windows and
+  (
+    powershell.file.script_block_text : (
+      "System.Management.Automation.AmsiUtils" or
+			amsiInitFailed or 
+			"Invoke-AmsiBypass" or 
+			"Bypass.AMSI" or 
+			"amsi.dll" or 
+			AntimalwareProvider  or 
+			amsiSession or 
+			amsiContext or
+			AmsiInitialize or 
+			unloadobfuscated or 
+			unloadsilent or 
+			AmsiX64 or 
+			AmsiX32 or 
+			FindAmsiFun
+    ) or
+    powershell.file.script_block_text:("[System.Runtime.InteropServices.Marshal]::Copy" and "VirtualProtect") or
+    powershell.file.script_block_text:("[Ref].Assembly.GetType(('System.Management.Automation" and ".SetValue(")
+  ) and
+  not powershell.file.script_block_text : (
+    "sentinelbreakpoints" and "Set-PSBreakpoint"
+  )
+```
+
+
+
 ### Potential Application Shimming via Sdbinst
 
 Branch count: 2  
@@ -9109,6 +9620,25 @@ process.args : "*hidepid=2*"
 
 
 
+### Potential Invoke-Mimikatz PowerShell Script
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0628
+
+```python
+event.category:process and host.os.type:windows and
+powershell.file.script_block_text:(
+  (DumpCreds and
+  DumpCerts) or
+  "sekurlsa::logonpasswords" or
+  ("crypto::certificates" and
+  "CERT_SYSTEM_STORE_LOCAL_MACHINE")
+)
+```
+
+
+
 ### Potential JAVA/JNDI Exploitation Attempt
 
 Branch count: 60  
@@ -9354,6 +9884,139 @@ process where host.os.type == "windows" and event.type == "start" and
 
   /* Access to named pipe via http */
   process.args : ("http*/print/pipe/*", "http*/pipe/spoolss", "http*/pipe/srvsvc")
+```
+
+
+
+### Potential Masquerading as Browser Process
+
+Branch count: 568  
+Document count: 568  
+Index: geneve-ut-0644
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  (
+    /* Chrome Related Processes */
+    (process.name : (
+      "chrome.exe", "GoogleUpdate.exe", "GoogleCrashHandler64.exe", "GoogleCrashHandler.exe",
+      "GoogleUpdateComRegisterShell64.exe", "GoogleUpdateSetup.exe", "GoogleUpdateOnDemand.exe",
+      "chrome_proxy.exe", "remote_assistance_host.exe", "remoting_native_messaging_host.exe",
+      "GoogleUpdateBroker.exe"
+     ) and not
+      (process.code_signature.subject_name : ("Google LLC", "Google Inc") and process.code_signature.trusted == true)
+     and not
+      (
+        process.executable : (
+          "?:\\Program Files\\HP\\Sure Click\\servers\\chrome.exe",
+          "?:\\Program Files\\HP\\Sure Click\\*\\servers\\chrome.exe"
+        ) and
+        process.code_signature.subject_name : ("Bromium, Inc.") and process.code_signature.trusted == true
+      ) and not
+      (
+        process.executable : (
+          "?:\\Program Files\\dynatrace\\synthetic\\Chrome-bin\\chrome.exe"
+        ) and
+        process.code_signature.subject_name : ("Dynatrace LLC") and process.code_signature.trusted == true
+      ) and
+     not (
+       process.executable : (
+         "?:\\Users\\*\\AppData\\Local\\ms-playwright\\chromium-*\\chrome-win\\chrome.exe",
+         "?:\\Users\\*\\AppData\\Local\\Programs\\synthetics-recorder\\resources\\local-browsers\\chromium-*\\chrome-win\\chrome.exe",
+         "*\\node_modules\\puppeteer\\.local-chromium\\win64-*\\chrome-win\\chrome.exe",
+         "?:\\Program Files (x86)\\Invicti Professional Edition\\chromium\\chrome.exe",
+         "?:\\Program Files\\End2End, Inc\\ARMS Html Engine\\chrome.exe",
+         "?:\\Users\\*\\AppData\\Local\\*BurpSuitePro\\burpbrowser\\*\\chrome.exe",
+         "?:\\Users\\*\\AppData\\Roaming\\*BurpSuite\\burpbrowser\\*\\chrome.exe"
+       ) and process.args: (
+               "--enable-features=NetworkService,NetworkServiceInProcess",
+               "--type=crashpad-handler", "--enable-automation", "--disable-xss-auditor"
+             )
+     )
+    ) or
+
+    /* MS Edge Related Processes */
+    (process.name : (
+      "msedge.exe", "MicrosoftEdgeUpdate.exe", "identity_helper.exe", "msedgewebview2.exe",
+      "MicrosoftEdgeWebview2Setup.exe", "MicrosoftEdge_X*.exe", "msedge_proxy.exe",
+      "MicrosoftEdgeUpdateCore.exe", "MicrosoftEdgeUpdateBroker.exe", "MicrosoftEdgeUpdateSetup_X*.exe",
+      "MicrosoftEdgeUpdateComRegisterShell64.exe", "msedgerecovery.exe", "MicrosoftEdgeUpdateSetup.exe"
+     ) and not
+      (process.code_signature.subject_name : "Microsoft Corporation" and process.code_signature.trusted == true)
+     and not
+      (
+        process.name : "msedgewebview2.exe" and
+        process.code_signature.subject_name : ("Bromium, Inc.", "Amazon.com Services LLC", "Code Systems Corporation") and process.code_signature.trusted == true
+      )
+    ) or
+
+    /* Brave Related Processes */
+    (process.name : (
+      "brave.exe", "BraveUpdate.exe", "BraveCrashHandler64.exe", "BraveCrashHandler.exe",
+      "BraveUpdateOnDemand.exe", "brave_vpn_helper.exe", "BraveUpdateSetup*.exe",
+      "BraveUpdateComRegisterShell64.exe"
+     ) and not
+      (process.code_signature.subject_name : "Brave Software, Inc." and process.code_signature.trusted == true)
+    ) or
+
+    /* Firefox Related Processes */
+    (process.name : (
+      "firefox.exe", "pingsender.exe", "default-browser-agent.exe", "maintenanceservice.exe",
+      "plugin-container.exe", "maintenanceservice_tmp.exe", "maintenanceservice_installer.exe",
+      "minidump-analyzer.exe"
+     ) and not
+      (process.code_signature.subject_name : "Mozilla Corporation" and process.code_signature.trusted == true)
+     and not
+      (
+        process.name : "default-browser-agent.exe" and
+        process.code_signature.subject_name : ("WATERFOX LIMITED") and process.code_signature.trusted == true
+      )
+    ) or
+
+    /* Island Related Processes */
+    (process.name : (
+      "Island.exe", "IslandUpdate.exe", "IslandCrashHandler.exe", "IslandCrashHandler64.exe",
+      "IslandUpdateBroker.exe", "IslandUpdateOnDemand.exe", "IslandUpdateComRegisterShell64.exe",
+      "IslandUpdateSetup.exe"
+     ) and not
+      (process.code_signature.subject_name : "Island Technology Inc." and process.code_signature.trusted == true)
+    ) or
+
+    /* Opera Related Processes */
+    (process.name : (
+      "opera.exe", "opera_*.exe", "browser_assistant.exe"
+     ) and not
+      (process.code_signature.subject_name : ("Opera Norway AS", "Opera Software AS") and process.code_signature.trusted == true)
+    ) or
+
+    /* Whale Related Processes */
+    (process.name : (
+      "whale.exe", "whale_update.exe", "wusvc.exe"
+     ) and not
+      (process.code_signature.subject_name : "NAVER Corp." and process.code_signature.trusted == true)
+    ) or
+
+    /* Chromium-based Browsers processes */
+    (process.name : (
+      "chrmstp.exe", "notification_helper.exe", "elevation_service.exe"
+     ) and not
+      (process.code_signature.subject_name : (
+        "Island Technology Inc.",
+        "Citrix Systems, Inc.",
+        "Brave Software, Inc.",
+        "Google LLC",
+        "Google Inc",
+        "Microsoft Corporation",
+        "NAVER Corp.",
+        "AVG Technologies USA, LLC",
+        "Avast Software s.r.o.",
+        "PIRIFORM SOFTWARE LIMITED",
+        "NortonLifeLock Inc.",
+        "Opera Norway AS"
+       ) and process.code_signature.trusted == true
+      )
+    )
+  )
 ```
 
 
@@ -10140,6 +10803,26 @@ event.category:process and host.os.type:windows and
 
 
 
+### Potential PowerShell Pass-the-Hash/Relay Script
+
+Branch count: 5  
+Document count: 5  
+Index: geneve-ut-0674
+
+```python
+event.category:process and host.os.type:windows and
+  powershell.file.script_block_text : (
+    ("NTLMSSPNegotiate" and ("NegotiateSMB" or "NegotiateSMB2")) or
+    "4E544C4D53535000" or
+    "0x4e,0x54,0x4c,0x4d,0x53,0x53,0x50" or
+    "0x4e,0x54,0x20,0x4c,0x4d" or
+    "0x53,0x4d,0x42,0x20,0x32" or
+    "0x81,0xbb,0x7a,0x36,0x44,0x98,0xf1,0x35,0xad,0x32,0x98,0xf0,0x38"
+  )
+```
+
+
+
 ### Potential Privacy Control Bypass via Localhost Secure Copy
 
 Branch count: 4  
@@ -10213,6 +10896,34 @@ process where host.os.type == "linux" and event.type == "start" and event.action
   (process.name == "ctr" and process.args == "run" and process.args in ("--privileged", "--mount"))
 ) and not user.Ext.real.id == "0" and not group.Ext.real.id == "0" and 
 process.interactive == true and process.parent.interactive == true
+```
+
+
+
+### Potential Privilege Escalation via InstallerFileTakeOver
+
+Branch count: 13  
+Document count: 13  
+Index: geneve-ut-0681
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+    process.Ext.token.integrity_level_name : "System" and
+    (
+      (process.name : "elevation_service.exe" and
+       not process.pe.original_file_name == "elevation_service.exe") or
+
+      (process.name : "elevation_service.exe" and
+       not process.code_signature.trusted == true) or
+
+      (process.parent.name : "elevation_service.exe" and
+       process.name : ("rundll32.exe", "cmd.exe", "powershell.exe"))
+    ) and
+    not
+    (
+      process.name : "elevation_service.exe" and process.code_signature.trusted == true and
+      process.pe.original_file_name == null
+    )
 ```
 
 
@@ -10926,6 +11637,28 @@ event.category:process and host.os.type:windows and
 
 
 
+### PowerShell Keylogging Script
+
+Branch count: 8  
+Document count: 8  
+Index: geneve-ut-0742
+
+```python
+event.category:process and host.os.type:windows and
+  (
+   powershell.file.script_block_text : (GetAsyncKeyState or NtUserGetAsyncKeyState or GetKeyboardState or "Get-Keystrokes") or
+   powershell.file.script_block_text : (
+        (SetWindowsHookA or SetWindowsHookW or SetWindowsHookEx or SetWindowsHookExA or NtUserSetWindowsHookEx) and
+        (GetForegroundWindow or GetWindowTextA or GetWindowTextW or "WM_KEYBOARD_LL" or "WH_MOUSE_LL")
+   )
+   ) and not user.id : "S-1-5-18"
+  and not powershell.file.script_block_text : (
+    "sentinelbreakpoints" and "Set-PSBreakpoint"
+  )
+```
+
+
+
 ### PowerShell Mailbox Collection Script
 
 Branch count: 5  
@@ -11002,6 +11735,343 @@ registry where host.os.type == "windows" and event.type == "change" and
 
 
 
+### PowerShell Script with Archive Compression Capabilities
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0747
+
+```python
+event.category:process and host.os.type:windows and
+(
+  powershell.file.script_block_text : (
+    "IO.Compression.ZipFile" or
+    "IO.Compression.ZipArchive" or
+    "ZipFile.CreateFromDirectory" or
+    "IO.Compression.BrotliStream" or
+    "IO.Compression.DeflateStream" or
+    "IO.Compression.GZipStream" or
+    "IO.Compression.ZLibStream"
+  ) and 
+  powershell.file.script_block_text : (
+    "CompressionLevel" or
+    "CompressionMode" or
+    "ZipArchiveMode"
+  ) or
+  powershell.file.script_block_text : "Compress-Archive"
+) and 
+  not file.path : (
+        ?\:\\\\ProgramData\\\\Microsoft\\\\Windows?Defender?Advanced?Threat?Protection\\\\Downloads\\\\* or
+        ?\:\\\\ProgramData\\\\Microsoft\\\\Windows?Defender?Advanced?Threat?Protection\\\\DataCollection\\\\* or
+        ?\:\\\\Program?Files\\\\Microsoft?Dependency?Agent\\\\plugins\\\\* or
+        ?\:\\\\Program?Files\\\\Azure\\\\StorageSyncAgent\\\\AFSDiag.ps1
+      )
+```
+
+
+
+### PowerShell Script with Discovery Capabilities
+
+Branch count: 114  
+Document count: 114  
+Index: geneve-ut-0748
+
+```python
+event.category:process and host.os.type:windows and
+  powershell.file.script_block_text : (
+    (
+      "Get-ADDefaultDomainPasswordPolicy" or
+      "Get-ADDomain" or "Get-ComputerInfo" or
+      "Get-Disk" or "Get-DnsClientCache" or
+      "Get-GPOReport" or "Get-HotFix" or
+      "Get-LocalUser" or "Get-NetFirewallProfile" or
+      "get-nettcpconnection" or "Get-NetAdapter" or
+      "Get-PhysicalDisk" or "Get-Process" or
+      "Get-PSDrive" or "Get-Service" or
+      "Get-SmbShare" or "Get-WinEvent"
+    ) or
+    (
+      ("Get-WmiObject" or "gwmi" or "Get-CimInstance" or
+       "gcim" or "Management.ManagementObjectSearcher" or
+       "System.Management.ManagementClass" or
+       "[WmiClass]" or "[WMI]") and
+      (
+        "AntiVirusProduct" or "CIM_BIOSElement" or "CIM_ComputerSystem" or "CIM_Product" or "CIM_DiskDrive" or
+        "CIM_LogicalDisk" or "CIM_NetworkAdapter" or "CIM_StorageVolume" or "CIM_OperatingSystem" or
+        "CIM_Process" or "CIM_Service" or "MSFT_DNSClientCache" or "Win32_BIOS" or "Win32_ComputerSystem" or
+        "Win32_ComputerSystemProduct" or "Win32_DiskDrive" or "win32_environment" or "Win32_Group" or
+        "Win32_groupuser" or "Win32_IP4RouteTable" or "Win32_logicaldisk" or "Win32_MappedLogicalDisk" or
+        "Win32_NetworkAdapterConfiguration" or "win32_ntdomain" or "Win32_OperatingSystem" or
+        "Win32_PnPEntity" or "Win32_Process" or "Win32_Product" or "Win32_quickfixengineering" or
+        "win32_service" or "Win32_Share" or "Win32_UserAccount"
+      )
+    ) or
+    (
+      ("ADSI" and "WinNT") or
+      ("Get-ChildItem" and "sysmondrv.sys") or
+      ("::GetIPGlobalProperties()" and "GetActiveTcpConnections()") or
+      ("ServiceProcess.ServiceController" and "::GetServices") or
+      ("Diagnostics.Process" and "::GetProcesses") or
+      ("DirectoryServices.Protocols.GroupPolicy" and ".GetGPOReport()") or
+      ("DirectoryServices.AccountManagement" and "PrincipalSearcher") or
+      ("NetFwTypeLib.NetFwMgr" and "CurrentProfile") or
+      ("NetworkInformation.NetworkInterface" and "GetAllNetworkInterfaces") or
+      ("Automation.PSDriveInfo") or
+      ("Microsoft.Win32.RegistryHive")
+    ) or
+    (
+      "Get-ItemProperty" and
+      (
+        "\Control\SecurityProviders\WDigest" or
+        "\microsoft\windows\currentversion\explorer\runmru" or
+        "\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters" or
+        "\Microsoft\Windows\CurrentVersion\Uninstall" or
+        "\Microsoft\Windows\WindowsUpdate" or
+        "Policies\Microsoft\Windows\Installer" or
+        "Software\Microsoft\Windows\CurrentVersion\Policies" or
+        ("\Services\SharedAccess\Parameters\FirewallPolicy" and "EnableFirewall") or
+        ("Microsoft\Windows\CurrentVersion\Internet Settings" and "proxyEnable")
+      )
+    ) or
+    (
+      ("Directoryservices.Activedirectory" or
+      "DirectoryServices.AccountManagement") and 
+      (
+        "Domain Admins" or "DomainControllers" or
+        "FindAllGlobalCatalogs" or "GetAllTrustRelationships" or
+        "GetCurrentDomain" or "GetCurrentForest"
+      ) or
+      "DirectoryServices.DirectorySearcher" and
+      (
+        "samAccountType=805306368" or
+        "samAccountType=805306369" or
+        "objectCategory=group" or
+        "objectCategory=groupPolicyContainer" or
+        "objectCategory=site" or
+        "objectCategory=subnet" or
+        "objectClass=trustedDomain"
+      )
+    ) or
+    (
+      "Get-Process" and
+      (
+        "mcshield" or "windefend" or "savservice" or
+        "TMCCSF" or "symantec antivirus" or
+        "CSFalcon" or "TmPfw" or "kvoop"
+      )
+    )
+  ) and
+  not powershell.file.script_block_text : (
+    (
+      "__cmdletization_BindCommonParameters" and
+      "Microsoft.PowerShell.Core\Export-ModuleMember" and
+      "Microsoft.PowerShell.Cmdletization.Cim.CimCmdletAdapter"
+    ) or
+    "CmdletsToExport=@(\"Add-Content\","
+  ) and
+  not user.id : ("S-1-5-18" or "S-1-5-19" or "S-1-5-20") and
+  not file.path : (
+        ?\:\\\\Program?Files\\\\WindowsPowerShell\\\\Modules\\\\*.psd1 or
+        ?\:\\\\Program?Files\\\\WindowsPowerShell\\\\Modules\\\\*.psm1 or
+        ?\:\\\\Program?Files\\\\Microsoft?Azure?AD?Sync\\\\Extensions\\\\AADConnector.psm1* or
+        *ServiceNow?MID?Server*agent\\\\scripts\\\\PowerShell\\\\*.psm1 or
+        ?\:\\\\*\\\\IMECache\\\\HealthScripts\\\\*\\\\detect.ps1
+      ) and
+  not (
+    file.path : (
+      ?\:\\\\*\\\\TEMP\\\\SDIAG* or
+      ?\:\\\\TEMP\\\\SDIAG* or
+      ?\:\\\\Temp\\\\SDIAG* or
+      ?\:\\\\temp\\\\SDIAG* or
+      ?\:\\\\Users\\\\*\\\\AppData\\\\Local\\\\Temp\\\\SDIAG* or
+      ?\:\\\\Users\\\\*\\\\AppData\\\\Local\\\\Temp\\\\*\\\\SDIAG*
+    ) and file.name : "CL_Utility.ps1"
+  )
+```
+
+
+
+### PowerShell Script with Log Clear Capabilities
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0750
+
+```python
+event.category:process and host.os.type:windows and
+  powershell.file.script_block_text : (
+    "Clear-EventLog" or
+    "Remove-EventLog" or
+    ("Eventing.Reader.EventLogSession" and ".ClearLog") or
+    ("Diagnostics.EventLog" and ".Clear")
+  ) and
+  not file.path : (
+    ?\:\\\\*\\\\system32\\\\WindowsPowerShell\\\\v1.0\\\\Modules\\\\Microsoft.PowerShell.Management\\\\*.psd1
+  ) and
+  not powershell.file.script_block_text : (
+    "CmdletsToExport=@(\"Add-Content\""
+  )
+```
+
+
+
+### PowerShell Script with Password Policy Discovery Capabilities
+
+Branch count: 54  
+Document count: 54  
+Index: geneve-ut-0751
+
+```python
+event.category: "process" and host.os.type:windows and
+(
+  powershell.file.script_block_text: (
+    "Get-ADDefaultDomainPasswordPolicy" or
+    "Get-ADFineGrainedPasswordPolicy" or
+    "Get-ADUserResultantPasswordPolicy" or
+    "Get-DomainPolicy" or
+    "Get-GPPPassword" or
+    "Get-PassPol"
+  )
+  or
+  powershell.file.script_block_text: (
+    ("defaultNamingContext" or "ActiveDirectory.DirectoryContext" or "ActiveDirectory.DirectorySearcher") and
+    (
+      (
+        ".MinLengthPassword" or
+        ".MinPasswordAge" or
+        ".MaxPasswordAge"
+      ) or
+      (
+        "minPwdAge" or
+        "maxPwdAge" or
+        "minPwdLength"
+      ) or
+      (
+        "msDS-PasswordSettings"
+      )
+    )
+  )
+) and not powershell.file.script_block_text : (
+    "sentinelbreakpoints" and "Set-PSBreakpoint" and "PowerSploitIndicators"
+  )
+  and not 
+  (
+    powershell.file.script_block_text : ("43c15630-959c-49e4-a977-758c5cc93408" and "CmdletsToExport" and "ActiveDirectory.Types.ps1xml")
+  )
+  and not user.id : "S-1-5-18"
+```
+
+
+
+### PowerShell Script with Token Impersonation Capabilities
+
+Branch count: 18  
+Document count: 18  
+Index: geneve-ut-0753
+
+```python
+event.category:process and host.os.type:windows and
+  powershell.file.script_block_text:(
+    "Invoke-TokenManipulation" or
+    "ImpersonateNamedPipeClient" or
+    "NtImpersonateThread" or
+    (
+      "STARTUPINFOEX" and
+      "UpdateProcThreadAttribute"
+    ) or
+    (
+      "AdjustTokenPrivileges" and
+      "SeDebugPrivilege"
+    ) or
+    (
+      ("DuplicateToken" or
+      "DuplicateTokenEx") and
+      ("SetThreadToken" or
+      "ImpersonateLoggedOnUser" or
+      "CreateProcessWithTokenW" or
+      "CreatePRocessAsUserW" or
+      "CreateProcessAsUserA")
+    ) 
+  ) and
+  not (
+    user.id:("S-1-5-18" or "S-1-5-19" or "S-1-5-20") and
+    file.directory: "C:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Downloads"
+  ) and
+  not powershell.file.script_block_text : (
+    "sentinelbreakpoints" and "Set-PSBreakpoint" and "PowerSploitIndicators"
+  )
+```
+
+
+
+### PowerShell Script with Veeam Credential Access Capabilities
+
+Branch count: 1  
+Document count: 1  
+Index: geneve-ut-0754
+
+```python
+event.category:process and host.os.type:windows and
+  powershell.file.script_block_text : (
+    (
+      "[dbo].[Credentials]" and
+      ("Veeam" or "VeeamBackup")
+    ) or
+    "ProtectedStorage]::GetLocalString"
+  )
+```
+
+
+
+### PowerShell Script with Webcam Video Capture Capabilities
+
+Branch count: 5  
+Document count: 5  
+Index: geneve-ut-0755
+
+```python
+event.category:process and host.os.type:windows and
+  powershell.file.script_block_text : (
+    "NewFrameEventHandler" or
+    "VideoCaptureDevice" or
+    "DirectX.Capture.Filters" or
+    "VideoCompressors" or
+    "Start-WebcamRecorder" or
+    (
+      ("capCreateCaptureWindowA" or
+       "capCreateCaptureWindow" or
+       "capGetDriverDescription") and
+      ("avicap32.dll" or "avicap32")
+    )
+  )
+```
+
+
+
+### PowerShell Share Enumeration Script
+
+Branch count: 2  
+Document count: 2  
+Index: geneve-ut-0756
+
+```python
+event.category:process and host.os.type:windows and
+  powershell.file.script_block_text:(
+    "Invoke-ShareFinder" or
+    "Invoke-ShareFinderThreaded" or
+    (
+      "shi1_netname" and
+      "shi1_remark"
+    ) or
+    (
+      "NetShareEnum" and
+      "NetApiBufferFree"
+    )
+  ) and not user.id : "S-1-5-18"
+```
+
+
+
 ### PowerShell Suspicious Discovery Related Windows API Functions
 
 Branch count: 24  
@@ -11037,6 +12107,63 @@ event.category:process and host.os.type:windows and
     NetUserModalsGet
   )
   and not file.path : ?\:\\\\ProgramData\\\\Microsoft\\\\Windows?Defender?Advanced?Threat?Protection\\\\DataCollection\\\\*
+```
+
+
+
+### PowerShell Suspicious Script with Audio Capture Capabilities
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0759
+
+```python
+event.category:process and host.os.type:windows and
+  powershell.file.script_block_text : (
+    "Get-MicrophoneAudio" or
+    "WindowsAudioDevice-Powershell-Cmdlet" or
+    (waveInGetNumDevs and mciSendStringA)
+  )
+  and not powershell.file.script_block_text : (
+    "sentinelbreakpoints" and "Set-PSBreakpoint" and "PowerSploitIndicators"
+  )
+  and not user.id : "S-1-5-18"
+```
+
+
+
+### PowerShell Suspicious Script with Clipboard Retrieval Capabilities
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0760
+
+```python
+event.category:process and host.os.type:windows and
+  (powershell.file.script_block_text : (
+    "Windows.Clipboard" or
+    "Windows.Forms.Clipboard" or
+    "Windows.Forms.TextBox"
+   ) and
+   powershell.file.script_block_text : (
+    "]::GetText" or
+    ".Paste()"
+  )) or powershell.file.script_block_text : "Get-Clipboard" and
+  not powershell.file.script_block_text : (
+    "sentinelbreakpoints" and "Set-PSBreakpoint" and "PowerSploitIndicators"
+  ) and
+  not user.id : "S-1-5-18" and
+  not file.path : (
+        ?\:\\\\program?files\\\\powershell\\\\?\\\\Modules\\\\*.psd1 or
+        ?\:\\\\Windows\\\\system32\\\\WindowsPowerShell\\\\v1.0\\\\Modules\\\\*.psd1 or
+        ?\:\\\\WINDOWS\\\\system32\\\\WindowsPowerShell\\\\v1.0\\\\Modules\\\\*.psd1 or
+        ?\:\\\\Program?Files\\\\WindowsPowerShell\\\\Modules\\\\*.psd1 or
+        ?\:\\\\Program?Files\\\\WindowsPowerShell\\\\Modules\\\\*.psm1
+      ) and 
+  not (
+    file.path : ?\:\\\\Program?Files\\\\WindowsPowerShell\\\\*Modules*.ps1 and
+    file.name : ("Convert-ExcelRangeToImage.ps1" or "Read-Clipboard.ps1")
+  )
 ```
 
 
@@ -11649,6 +12776,52 @@ file.path : "/private/var/folders/*"
 
 
 
+### RDP (Remote Desktop Protocol) from the Internet
+
+Branch count: 15  
+Document count: 15  
+Index: geneve-ut-0794
+
+```python
+(event.dataset: network_traffic.flow or (event.category: (network or network_traffic))) and
+  network.transport:tcp and (destination.port:3389 or event.dataset:zeek.rdp) and
+  not source.ip:(
+    10.0.0.0/8 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.168.0.0/16 or
+    192.88.99.0/24 or
+    224.0.0.0/4 or
+    100.64.0.0/10 or
+    192.175.48.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  ) and
+  destination.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  )
+```
+
+
+
 ### RDP Enabled via Registry
 
 Branch count: 4  
@@ -11666,6 +12839,98 @@ registry where host.os.type == "windows" and
                             "?:\\Windows\\System32\\SystemSettingsAdminFlows.exe", 
                             "?:\\Windows\\WinSxS\\*\\TiWorker.exe", 
                             "?:\\Windows\\system32\\svchost.exe")
+```
+
+
+
+### RPC (Remote Procedure Call) from the Internet
+
+Branch count: 15  
+Document count: 15  
+Index: geneve-ut-0796
+
+```python
+(event.dataset: network_traffic.flow or (event.category: (network or network_traffic))) and
+  network.transport:tcp and (destination.port:135 or event.dataset:zeek.dce_rpc) and
+  not source.ip:(
+    10.0.0.0/8 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.168.0.0/16 or
+    192.88.99.0/24 or
+    224.0.0.0/4 or
+    100.64.0.0/10 or
+    192.175.48.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  ) and
+  destination.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  )
+```
+
+
+
+### RPC (Remote Procedure Call) to the Internet
+
+Branch count: 15  
+Document count: 15  
+Index: geneve-ut-0797
+
+```python
+(event.dataset: network_traffic.flow or (event.category: (network or network_traffic))) and
+  network.transport:tcp and (destination.port:135 or event.dataset:zeek.dce_rpc) and
+  source.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  ) and
+  not destination.ip:(
+    10.0.0.0/8 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.168.0.0/16 or
+    192.88.99.0/24 or
+    224.0.0.0/4 or
+    100.64.0.0/10 or
+    192.175.48.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  )
 ```
 
 
@@ -11938,6 +13203,38 @@ iam where event.action == "scheduled-task-created" and
 
 
 
+### Remote System Discovery Commands
+
+Branch count: 23  
+Document count: 23  
+Index: geneve-ut-0819
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  ((process.name : "nbtstat.exe" and process.args : ("-n", "-s")) or
+  (process.name : "arp.exe" and process.args : "-a") or
+  (process.name : "nltest.exe" and process.args : ("/dclist", "/dsgetdc")) or
+  (process.name : "nslookup.exe" and process.args : "*_ldap._tcp.dc.*") or
+  (process.name: ("dsquery.exe", "dsget.exe") and process.args: "subnet") or
+  ((((process.name : "net.exe" or process.pe.original_file_name == "net.exe") or
+    ((process.name : "net1.exe" or process.pe.original_file_name == "net1.exe") and not 
+       process.parent.name : "net.exe")) and 
+       process.args : "group" and process.args : "/domain" and not process.args : "/add"))) and
+  not
+  (
+    (
+      process.name : "arp.exe" and
+      process.parent.executable : (
+        "?:\\ProgramData\\CentraStage\\AEMAgent\\AEMAgent.exe",
+        "?:\\Program Files (x86)\\Citrix\\Workspace Environment Management Agent\\Citrix.Wem.Agent.Service.exe",
+        "?:\\Program Files (x86)\\Lansweeper\\Service\\LansweeperService.exe"
+      )
+    )
+  )
+```
+
+
+
 ### Remote Windows Service Installed
 
 Branch count: 1  
@@ -12156,6 +13453,52 @@ registry where host.os.type == "windows" and event.type:"change" and
     "*\\SOFTWARE\\WOW6432Node\\Microsoft\\Cryptography\\Providers\\Trust\\FinalPolicy\\{*}\\$Dll"
     ) and
   registry.data.strings:"*.dll"
+```
+
+
+
+### SMB (Windows File Sharing) Activity to the Internet
+
+Branch count: 24  
+Document count: 24  
+Index: geneve-ut-0829
+
+```python
+(event.dataset: network_traffic.flow or (event.category: (network or network_traffic))) and
+  network.transport:tcp and (destination.port:(139 or 445) or event.dataset:zeek.smb) and
+  source.ip:(
+    10.0.0.0/8 or
+    172.16.0.0/12 or
+    192.168.0.0/16
+  ) and
+  not destination.ip:(
+    10.0.0.0/8 or
+    127.0.0.0/8 or
+    169.254.0.0/16 or
+    172.16.0.0/12 or
+    192.0.0.0/24 or
+    192.0.0.0/29 or
+    192.0.0.8/32 or
+    192.0.0.9/32 or
+    192.0.0.10/32 or
+    192.0.0.170/32 or
+    192.0.0.171/32 or
+    192.0.2.0/24 or
+    192.31.196.0/24 or
+    192.52.193.0/24 or
+    192.168.0.0/16 or
+    192.88.99.0/24 or
+    224.0.0.0/4 or
+    100.64.0.0/10 or
+    192.175.48.0/24 or
+    198.18.0.0/15 or
+    198.51.100.0/24 or
+    203.0.113.0/24 or
+    240.0.0.0/4 or
+    "::1" or
+    "FE80::/10" or
+    "FF00::/8"
+  )
 ```
 
 
@@ -13697,6 +15040,28 @@ process where host.os.type == "windows" and event.type == "start" and
 
 
 
+### Suspicious File Creation in /etc for Persistence
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-0925
+
+```python
+file where host.os.type == "linux" and event.type in ("creation", "file_create_event") and user.id == "0" and
+file.path : ("/etc/ld.so.conf.d/*", "/etc/cron.d/*", "/etc/sudoers.d/*", "/etc/init.d/*", "/etc/systemd/system/*",
+"/usr/lib/systemd/system/*") and not (
+  (process.name : (
+    "chef-client", "ruby", "pacman", "packagekitd", "python*", "platform-python", "dpkg", "yum", "apt", "dnf", "rpm",
+    "systemd", "snapd", "dnf-automatic", "yum-cron", "elastic-agent", "dnfdaemon-system", "dockerd", "executor",
+    "rhn_check"
+    )
+  ) or 
+  (file.extension in ("swp", "swpx", "tmp"))
+)
+```
+
+
+
 ### Suspicious File Creation via Kworker
 
 Branch count: 2  
@@ -13896,6 +15261,30 @@ Index: geneve-ut-0943
 ```python
 process where host.os.type == "linux" and event.type == "start" and event.action in ("exec", "exec_event") and
 process.name in ("grep", "egrep", "fgrep", "rgrep") and process.args in ("[stack]", "[vdso]", "[heap]")
+```
+
+
+
+### Suspicious Microsoft Diagnostics Wizard Execution
+
+Branch count: 75  
+Document count: 75  
+Index: geneve-ut-0945
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+   (process.pe.original_file_name == "msdt.exe" or process.name : "msdt.exe") and
+   (
+    process.args : ("IT_RebrowseForFile=*", "ms-msdt:/id", "ms-msdt:-id", "*FromBase64*") or
+
+    (process.args : "-af" and process.args : "/skip" and
+     process.parent.name : ("explorer.exe", "cmd.exe", "powershell.exe", "cscript.exe", "wscript.exe", "mshta.exe", "rundll32.exe", "regsvr32.exe") and
+     process.args : ("?:\\WINDOWS\\diagnostics\\index\\PCWDiagnostic.xml", "PCWDiagnostic.xml", "?:\\Users\\Public\\*", "?:\\Windows\\Temp\\*")) or
+
+    (process.pe.original_file_name == "msdt.exe" and not process.name : "msdt.exe" and process.name != null) or
+
+    (process.pe.original_file_name == "msdt.exe" and not process.executable : ("?:\\Windows\\system32\\msdt.exe", "?:\\Windows\\SysWOW64\\msdt.exe"))
+    )
 ```
 
 
@@ -14170,6 +15559,38 @@ file where host.os.type == "windows" and event.type == "creation" and
     "?:\\WINDOWS\\system32\\spool\\PRTPROCS\\x64\\*.dll",
     "?:\\WINDOWS\\system32\\spool\\{????????-????-????-????-????????????}\\*.dll"
   )
+```
+
+
+
+### Suspicious Process Creation CallTrace
+
+Branch count: 592  
+Document count: 1184  
+Index: geneve-ut-0964
+
+```python
+sequence by host.id with maxspan=1m
+  [process where host.os.type == "windows" and event.code == "1" and
+   /* sysmon process creation */
+   process.parent.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe", "eqnedt32.exe", "fltldr.exe",
+                          "mspub.exe", "msaccess.exe","cscript.exe", "wscript.exe", "rundll32.exe", "regsvr32.exe",
+                          "mshta.exe", "wmic.exe", "cmstp.exe", "msxsl.exe") and
+
+   /* noisy FP patterns */
+   not (process.parent.name : "EXCEL.EXE" and process.executable : "?:\\Program Files\\Microsoft Office\\root\\Office*\\ADDINS\\*.exe") and
+   not (process.executable : "?:\\Windows\\splwow64.exe" and process.args in ("8192", "12288") and process.parent.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe")) and
+   not (process.parent.name : "rundll32.exe" and process.parent.args : ("?:\\WINDOWS\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc", "--no-sandbox")) and
+   not (process.executable :
+            ("?:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\*\\msedgewebview2.exe",
+             "?:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
+             "?:\\Windows\\SysWOW64\\DWWIN.EXE") and
+        process.parent.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe")) and
+   not (process.parent.name : "regsvr32.exe" and process.parent.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
+   ] by process.parent.entity_id, process.entity_id
+  [process where host.os.type == "windows" and event.code == "10" and
+   /* Sysmon process access event from unknown module */
+   winlog.event_data.CallTrace : "*UNKNOWN*"] by process.entity_id, winlog.event_data.TargetProcessGUID
 ```
 
 
@@ -14541,6 +15962,84 @@ Index: geneve-ut-0989
 ```python
 process where host.os.type == "windows" and event.type == "start" and
  process.parent.name : "Zoom.exe" and process.name : ("cmd.exe", "powershell.exe", "pwsh.exe", "powershell_ise.exe")
+```
+
+
+
+### Suspicious macOS MS Office Child Process
+
+Branch count: 185  
+Document count: 185  
+Index: geneve-ut-0990
+
+```python
+process where event.action == "exec" and host.os.type == "macos" and
+    process.parent.name: (
+      "Microsoft Word",
+      "Microsoft Outlook",
+      "Microsoft Excel",
+      "Microsoft PowerPoint",
+      "Microsoft OneNote"
+    ) and
+  process.name : (
+    "curl",
+    "nscurl",
+    "bash",
+    "sh",
+    "osascript",
+    "python*",
+    "perl*",
+    "mktemp",
+    "chmod",
+    "php",
+    "nohup",
+    "openssl",
+    "plutil",
+    "PlistBuddy",
+    "xattr",
+    "mktemp",
+    "sqlite3",
+    "funzip",
+    "popen"
+  ) and
+
+  // Filter FPs related to product version discovery and Office error reporting behavior
+  not process.args:
+    (
+      "ProductVersion",
+      "hw.model",
+      "ioreg",
+      "ProductName",
+      "ProductUserVisibleVersion",
+      "ProductBuildVersion",
+      "/Library/Application Support/Microsoft/MERP*/Microsoft Error Reporting.app/Contents/MacOS/Microsoft Error Reporting",
+      "open -a Safari *",
+      "defaults read *",
+      "sysctl hw.model*",
+      "ioreg -d2 -c IOPlatformExpertDevice *",
+      "ps aux | grep 'ToDesk_Desktop' | grep -v grep",
+      "PIPE=\"$CFFIXED_USER_HOME/.zoteroIntegrationPipe*"
+    ) and
+
+   not process.parent.executable :
+        (
+          "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
+          "/usr/local/Privacy-i/PISupervisor",
+          "/Library/Addigy/lan-cache",
+          "/Library/Elastic/Agent/*",
+          "/opt/jc/bin/jumpcloud-agent",
+          "/usr/sbin/networksetup"
+        ) and
+   not (process.name : "sh" and process.command_line : "*$CFFIXED_USER_HOME/.zoteroIntegrationPipe*") and
+
+   not process.Ext.effective_parent.executable : (
+        "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
+        "/usr/local/Privacy-i/PISupervisor",
+        "/Library/Addigy/auditor",
+        "/Library/Elastic/Agent/*",
+        "/opt/jc/bin/jumpcloud-agent",
+        "/usr/sbin/networksetup"
+      )
 ```
 
 
@@ -15224,6 +16723,22 @@ not process.code_signature.status : ("errorExpired", "errorCode_endpoint*")
 
 
 
+### Unsigned DLL loaded by DNS Service
+
+Branch count: 6  
+Document count: 6  
+Index: geneve-ut-1040
+
+```python
+any where host.os.type == "windows" and event.category : ("library", "process") and
+  event.type : ("start", "change") and event.action : ("load", "Image loaded*") and
+  process.executable : "?:\\windows\\system32\\dns.exe" and 
+  not ?dll.code_signature.trusted == true and
+  not file.code_signature.status == "Valid"
+```
+
+
+
 ### Untrusted Driver Loaded
 
 Branch count: 1  
@@ -15503,6 +17018,44 @@ sequence by host.id, process.entity_id with maxspan=1m
 
 
 
+### Unusual Parent Process for cmd.exe
+
+Branch count: 47  
+Document count: 47  
+Index: geneve-ut-1072
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.name : "cmd.exe" and
+  process.parent.name : ("lsass.exe",
+                         "csrss.exe",
+                         "epad.exe",
+                         "regsvr32.exe",
+                         "dllhost.exe",
+                         "LogonUI.exe",
+                         "wermgr.exe",
+                         "spoolsv.exe",
+                         "jucheck.exe",
+                         "jusched.exe",
+                         "ctfmon.exe",
+                         "taskhostw.exe",
+                         "GoogleUpdate.exe",
+                         "sppsvc.exe",
+                         "sihost.exe",
+                         "slui.exe",
+                         "SIHClient.exe",
+                         "SearchIndexer.exe",
+                         "SearchProtocolHost.exe",
+                         "FlashPlayerUpdateService.exe",
+                         "WerFault.exe",
+                         "WUDFHost.exe",
+                         "unsecapp.exe",
+                         "wlanext.exe" ) and
+  not (process.parent.name : "dllhost.exe" and process.parent.args : "/Processid:{CA8C87C1-929D-45BA-94DB-EF8E6CB346AD}")
+```
+
+
+
 ### Unusual Parent-Child Relationship
 
 Branch count: 32  
@@ -15759,6 +17312,43 @@ sequence by process.entity_id
                   process.name : "odbcconf.exe" or
                   process.name : "rcsi.exe" or
                   process.name : "xwizard.exe")]
+```
+
+
+
+### Unusual Service Host Child Process - Childless Service
+
+Branch count: 320  
+Document count: 320  
+Index: geneve-ut-1090
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.parent.name : "svchost.exe" and
+
+  /* based on svchost service arguments -s svcname where the service is known to be childless */
+  process.parent.args : (
+    "WdiSystemHost", "LicenseManager", "StorSvc", "CDPSvc", "cdbhsvc", "BthAvctpSvc", "SstpSvc", "WdiServiceHost",
+    "imgsvc", "TrkWks", "WpnService", "IKEEXT", "PolicyAgent", "CryptSvc", "netprofm", "ProfSvc", "StateRepository",
+    "camsvc", "LanmanWorkstation", "NlaSvc", "EventLog", "hidserv", "DisplayEnhancementService", "ShellHWDetection",
+    "AppHostSvc", "fhsvc", "CscService", "PushToInstall"
+  ) and
+
+  /* unknown FPs can be added here */
+  not process.name : ("WerFault.exe", "WerFaultSecure.exe", "wermgr.exe") and
+  not (process.executable : "?:\\Windows\\System32\\RelPost.exe" and process.parent.args : "WdiSystemHost") and
+  not (
+    process.name : "rundll32.exe" and
+    process.args : "?:\\WINDOWS\\System32\\winethc.dll,ForceProxyDetectionOnNextRun" and
+    process.parent.args : "WdiServiceHost"
+  ) and
+  not (
+    process.executable : (
+      "?:\\Program Files\\*",
+      "?:\\Program Files (x86)\\*",
+      "?:\\Windows\\System32\\Kodak\\kds_?????\\lib\\lexexe.exe"
+    ) and process.parent.args : "imgsvc"
+  )
 ```
 
 
@@ -16203,6 +17793,30 @@ user_agent.original:"sqlmap/1.3.11#stable (http://sqlmap.org)"
 
 
 
+### Web Shell Detection: Script Process Child of Common Web Processes
+
+Branch count: 106  
+Document count: 106  
+Index: geneve-ut-1127
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.parent.name : ("w3wp.exe", "httpd.exe", "nginx.exe", "php.exe", "php-cgi.exe", "tomcat.exe") and
+  process.name : ("cmd.exe", "cscript.exe", "powershell.exe", "pwsh.exe", "powershell_ise.exe", "wmic.exe", "wscript.exe") and
+  not
+  (
+    process.parent.name : ("php.exe", "httpd.exe") and process.name : "cmd.exe" and
+    process.command_line : (
+      "cmd.exe /c mode CON",
+      "cmd.exe /s /c \"mode CON\"",
+      "cmd.exe /c \"mode\"",
+      "cmd.exe /s /c \"tput colors 2>&1\""
+    )
+  )
+```
+
+
+
 ### WebProxy Settings Modification
 
 Branch count: 3  
@@ -16477,6 +18091,24 @@ file where host.os.type == "windows" and event.type == "creation" and
     "?:\\Windows\\Netwrix\\Temp\\????????.???.offreg",
     "?:\\*\\AppData\\Local\\Packages\\Microsoft.*\\Settings\\settings.dat*"
  )
+```
+
+
+
+### Windows Script Executing PowerShell
+
+Branch count: 5  
+Document count: 5  
+Index: geneve-ut-1141
+
+```python
+process where host.os.type == "windows" and event.type == "start" and
+  process.parent.name : ("cscript.exe", "wscript.exe") and process.name : "powershell.exe" and
+  not (
+    process.parent.name : "wscript.exe" and
+    process.parent.args : "?:\\ProgramData\\intune-drive-mapping-generator\\IntuneDriveMapping-VBSHelper.vbs" and
+    process.parent.args : "?:\\ProgramData\\intune-drive-mapping-generator\\DriveMapping.ps1"
+  )
 ```
 
 

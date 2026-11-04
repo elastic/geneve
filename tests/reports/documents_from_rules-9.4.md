@@ -214,113 +214,52 @@ invalid-syntax
       1. [Unsupported left operand, it must be a field (1)](#unsupported-left-operand-it-must-be-a-field-1)
       1. [Unsupported predicate on metadata field: _ignored (1)](#unsupported-predicate-on-metadata-field-_ignored-1)
    1. [Generation errors](#generation-errors)
-      1. [Field type solver: constant_keyword (420)](#field-type-solver-constant_keyword-420)
+      1. [Field type solver: constant_keyword (421)](#field-type-solver-constant_keyword-421)
       1. [Unsupported function: match (40)](#unsupported-function-match-40)
       1. [Root with too many branches (limit: 10000) (30)](#root-with-too-many-branches-limit-10000-30)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
       1. [Root without branches (11)](#root-without-branches-11)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Unsupported argument type(s): <class 'eql.ast.Field'> (9)](#unsupported-argument-types-class-eqlastfield-9)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (8)](#unsolvable-constraints-processname-excluded-by-stringscmdexe-cmdexe-8)
       1. [Field type solver: match_only_text (7)](#field-type-solver-match_only_text-7)
       1. [<class 'eql.ast.Sample'> (3)](#class-eqlastsample-3)
-      1. [Unsolvable constraints: event.category & event.type (empty intersection) (3)](#unsolvable-constraints-eventcategory--eventtype-empty-intersection-3)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (3)](#unsolvable-constraints-processname-excluded-by-stringspowershellexe-powershellexe-3)
+      1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (3)](#unsupported-keyword-processextrelative_file_creation_time-constraint--3)
       1. [Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-types-class-eqlastfunctioncall-3)
       1. [Unsupported argument type: <class 'eql.ast.FunctionCall'> (3)](#unsupported-argument-type-class-eqlastfunctioncall-3)
       1. [Unsupported condition on the values of Esql.rule_severity_values (3)](#unsupported-condition-on-the-values-of-esqlrule_severity_values-3)
       1. [Unsupported function: endswith (3)](#unsupported-function-endswith-3)
       1. [Unsupported function: startsWith (3)](#unsupported-function-startswith-3)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'bash'}): ('bash')) (2)](#unsolvable-constraints-processname-excluded-by-stringsbash-bash-2)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'nc.traditional'}): ('nc.traditional')) (2)](#unsolvable-constraints-processname-excluded-by-stringsnctraditional-nctraditional-2)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'python*'}): ('python*')) (2)](#unsolvable-constraints-processname-excluded-by-stringspython-python-2)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)](#unsolvable-constraints-processname-excluded-by-stringsrundll32exe-rundll32exe-2)
       1. [Unsupported &keyword 'file.Ext.entropy' constraint: >= (2)](#unsupported-keyword-fileextentropy-constraint--2)
       1. [Unsupported &keyword 'file.Ext.windows.zone_identifier' constraint: > (2)](#unsupported-keyword-fileextwindowszone_identifier-constraint--2)
-      1. [Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (2)](#unsupported-keyword-processextrelative_file_creation_time-constraint--2)
       1. [Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)](#unsupported-keyword-processparentextrealpid-constraint--2)
       1. [Unsupported condition on the aggregate Esql.url_original_count_distinct (2)](#unsupported-condition-on-the-aggregate-esqlurl_original_count_distinct-2)
       1. [Unsupported is_negated: {'is_negated': True} (2)](#unsupported-is_negated-is_negated-true-2)
       1. ['NoneType' object is not subscriptable (1)](#nonetype-object-is-not-subscriptable-1)
       1. [<class 'eql.ast.SubqueryBy'> (1)](#class-eqlastsubqueryby-1)
-      1. [Unsolvable constraints: destination.as.number (out of boundary, 0 <= 202412 <= 65535) (1)](#unsolvable-constraints-destinationasnumber-out-of-boundary-0--202412--65535-1)
       1. [Unsolvable constraints: event.action (3 different values are needed, the conditions allow 2) (1)](#unsolvable-constraints-eventaction-3-different-values-are-needed-the-conditions-allow-2-1)
-      1. [Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)](#unsolvable-constraints-fileextheader_bytes-excluded-by-strings504b0304-504b0304-1)
       1. [Unsolvable constraints: file.extension (cannot be non-null) (1)](#unsolvable-constraints-fileextension-cannot-be-non-null-1)
-      1. [Unsolvable constraints: file.name (excluded by Strings({'Local State'}): ('Local State')) (1)](#unsolvable-constraints-filename-excluded-by-stringslocal-state-local-state-1)
-      1. [Unsolvable constraints: file.name (not in Strings({'*.so.*'}): ('.*.so')) (1)](#unsolvable-constraints-filename-not-in-stringsso-so-1)
-      1. [Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)](#unsolvable-constraints-httprequestbodycontent-not-in-stringschild_process-exec-1)
       1. [Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)](#unsolvable-constraints-kubernetesauditrequestobjectspeccontainersimage-cannot-be-null-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (excluded by Strings({'DsGetSiteName'}): ('DsGetSiteName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-excluded-by-stringsdsgetsitename-dsgetsitename-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Clear-Host'}): ('Cloudflare ID:')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsclear-host-cloudflare-id-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'CopyFromScreen'}): ('System.Drawing.Bitmap')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscopyfromscreen-systemdrawingbitmap-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Cryptography.AESManaged'}): ('CipherMode')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscryptographyaesmanaged-ciphermode-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdumpcreds-dumpcerts-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Eventing.Reader.EventLogSession'}): ('.ClearLog')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringseventingreadereventlogsession-clearlog-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-AudioDevice'}): ('Recording')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsget-audiodevice-recording-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-WmiObject'}): ('AntiVirusProduct')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsget-wmiobject-antivirusproduct-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'IO.Compression.ZipFile'}): ('CompressionLevel')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsiocompressionzipfile-compressionlevel-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Invoke-WmiMethod'}): ('ComputerName')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsinvoke-wmimethod-computername-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'LsaCallAuthenticationPackage'}): ('KerbRetrieveEncodedTicketMessage')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringslsacallauthenticationpackage-kerbretrieveencodedticketmessage-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Microsoft.Office.Interop.Outlook'}): ('MAPI')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsmicrosoftofficeinteropoutlook-mapi-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NTLMSSPNegotiate'}): ('NegotiateSMB')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsntlmsspnegotiate-negotiatesmb-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NdrClientCall'}): ('GetProcAddress')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsndrclientcall-getprocaddress-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'New-MailboxExportRequest'}): ('-FilePath')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsnew-mailboxexportrequest--filepath-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsstartupinfoex-updateprocthreadattribute-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Set-MpPreference'}): ('DisableArchiveScanning')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsset-mppreference-disablearchivescanning-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookEx'}): ('GetForegroundWindow')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssetwindowshookex-getforegroundwindow-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'VirtualAlloc'}): ('WriteProcessMemory')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsvirtualalloc-writeprocessmemory-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringswindowsclipboard-gettext-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[Ref].Assembly.GetType(('System.Management.Automation'}): ('.SetValue(')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsrefassemblygettypesystemmanagementautomation-setvalue-1)
       1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Reflection.Assembly]::Load'}): ('FromBase64String')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringssystemreflectionassemblyload-frombase64string-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[dbo].[Credentials]'}): ('Veeam')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdbocredentials-veeam-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringscapcreatecapturewindowa-avicap32dll-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsdefaultnamingcontext-minlengthpassword-1)
-      1. [Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)](#unsolvable-constraints-powershellfilescript_block_text-not-in-stringsshi1_netname-shi1_remark-1)
-      1. [Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*')) (1)](#unsolvable-constraints-processcommand_line-excluded-by-stringsprocsysvmdrop_caches-drop_caches-1)
-      1. [Unsolvable constraints: process.command_line (not in Strings({'*-e *'}): ('*RABpAHMAYQBiAGwAZQBSAGUAYQBsAHQAaQBtAGUATQBvAG4AaQB0AG8AcgBpAG4AZwAgA*')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-e--rabpahmayqbiagwazqbsaguayqbsahqaaqbtaguatqbvag4aaqb0ag8acgbpag4azwaga-1)
-      1. [Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings-o--c--1)
-      1. [Unsolvable constraints: process.command_line (not in Strings({'*Remove-Item*'}): ('*ConsoleHost_history.txt*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsremove-item-consolehost_historytxt-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('* copy*')) (1)](#unsolvable-constraints-processcommand_line-not-in-strings--copy-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*com.apple.Safari*'}): ('*IncludeDevelopMenu*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringscomapplesafari-includedevelopmenu-1)
-      1. [Unsolvable constraints: process.command_line (not in Strings({'*connect=*'}): ('*restrict=off*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsconnect-restrictoff-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*csrutil*status*'}): ('*enabled*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringscsrutilstatus-enabled-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*drive.google.com*'}): ('*export=download*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsdrivegooglecom-exportdownload-1)
-      1. [Unsolvable constraints: process.command_line (not in Strings({'*fromhex*'}): ('*decode*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsfromhex-decode-1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*id_dsa*'}): ('*/home/*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsid_dsa-home-1)
-      1. [Unsolvable constraints: process.command_line (not in Strings({'*net.ipv4.ip_forward*'}): ('*echo *')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsnetipv4ip_forward-echo--1)
       1. [Unsolvable constraints: process.command_line (not in Strings({'*snmptrap*'}): ('*zmservicename*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringssnmptrap-zmservicename-1)
-      1. [Unsolvable constraints: process.command_line (not in Strings({'*vm.swappiness*'}): ('*echo *')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringsvmswappiness-echo--1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsarpexe-arpexe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'cp'}): ('cp')) (1)](#unsolvable-constraints-processname-excluded-by-stringscp-cp-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'elastic-agent.exe'}): ('elastic-agent.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselastic-agentexe-elastic-agentexe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringselevation_serviceexe-elevation_serviceexe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'kubectl'}): ('kubectl')) (1)](#unsolvable-constraints-processname-excluded-by-stringskubectl-kubectl-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'modprobe'}): ('modprobe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmodprobe-modprobe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsdtexe-msdtexe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsmsedgewebview2exe-msedgewebview2exe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'net1.exe'}): ('net1.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsnet1exe-net1exe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'nohup'}): ('nohup')) (1)](#unsolvable-constraints-processname-excluded-by-stringsnohup-nohup-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringsscexe-scexe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh')) (1)](#unsolvable-constraints-processname-excluded-by-stringssh-sh-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'smss.exe'}): ('smss.exe')) (1)](#unsolvable-constraints-processname-excluded-by-stringssmssexe-smssexe-1)
-      1. [Unsolvable constraints: process.name (excluded by Strings({'sysctl'}): ('sysctl')) (1)](#unsolvable-constraints-processname-excluded-by-stringssysctl-sysctl-1)
-      1. [Unsolvable constraints: process.name (not in Strings({'rundll32.exe'}): ('mshta.exe')) (1)](#unsolvable-constraints-processname-not-in-stringsrundll32exe-mshtaexe-1)
-      1. [Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)](#unsolvable-constraints-processparentargs-excluded-by-stringswdisystemhost-wdisystemhost-1)
       1. [Unsolvable constraints: process.parent.executable (cannot be null) (1)](#unsolvable-constraints-processparentexecutable-cannot-be-null-1)
-      1. [Unsolvable constraints: process.parent.name (excluded by Strings({'dllhost.exe'}): ('dllhost.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsdllhostexe-dllhostexe-1)
-      1. [Unsolvable constraints: process.parent.name (excluded by Strings({'fish'}): ('fish')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsfish-fish-1)
-      1. [Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsrundll32exe-rundll32exe-1)
-      1. [Unsolvable constraints: process.parent.name (excluded by Strings({'ssm-document-worker.exe'}): ('ssm-document-worker.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringsssm-document-workerexe-ssm-document-workerexe-1)
-      1. [Unsolvable constraints: process.parent.name (excluded by Strings({'winword.exe'}): ('winword.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringswinwordexe-winwordexe-1)
-      1. [Unsolvable constraints: process.parent.name (excluded by Strings({'wscript.exe'}): ('wscript.exe')) (1)](#unsolvable-constraints-processparentname-excluded-by-stringswscriptexe-wscriptexe-1)
-      1. [Unsolvable constraints: process.parent.name (not in Strings({'slack.exe'}): ('CiscoCollabHost.exe')) (1)](#unsolvable-constraints-processparentname-not-in-stringsslackexe-ciscocollabhostexe-1)
       1. [Unsolvable constraints: process.pid (out of boundary, 1 <= 0 <= 4294967295) (1)](#unsolvable-constraints-processpid-out-of-boundary-1--0--4294967295-1)
-      1. [Unsolvable constraints: user_agent.original (excluded by Strings({'go-http*'}): ('go-http*')) (1)](#unsolvable-constraints-user_agentoriginal-excluded-by-stringsgo-http-go-http-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings1131f6ad-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1131f6aa-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1)
-      1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings42b5faae-6536-11d2-ae5a-0000f87571e3-40b66650-4972-11d1-a7ca-0000f87571e3-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
-      1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-stringscab54552-deea-4691-817e-ed4a4d1afc72-aadced64-746c-4633-a97c-d61349046527-1)
       1. [Unsolvable constraints: winlog.event_data.param1 (not in Strings({'*FullControl*'}): ('*setsharingmode*')) (1)](#unsolvable-constraints-winlogevent_dataparam1-not-in-stringsfullcontrol-setsharingmode-1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: < (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
       1. [Unsupported &keyword 'dll.Ext.relative_file_creation_time' constraint: <= (1)](#unsupported-keyword-dllextrelative_file_creation_time-constraint--1)
@@ -1627,9 +1566,9 @@ Invalid syntax
 
 ## Generation errors
 
-### Field type solver: constant_keyword (420)
+### Field type solver: constant_keyword (421)
 
-420 rules:
+421 rules:
 * AWS Account Closed
 * AWS AssumeRoleWithWebIdentity from Kubernetes SA and External ASN
 * AWS Attempt to Leave Organization
@@ -2040,6 +1979,7 @@ Invalid syntax
 * Suspicious Activity Reported by Okta User
 * Suspicious Usage of bpf_probe_write_user Helper
 * Suspicious WMI Event Subscription Created
+* Suspicious Windows Command Shell Arguments
 * Suspicious Windows Powershell Arguments
 * Suspicious rc.local Error Message
 * Tainted Kernel Module Load
@@ -2201,18 +2141,6 @@ Invalid syntax
 * Unusual Parent-Child Relationship
 * Windows Service Installed via an Unusual Client
 
-### Unsolvable constraints: process.name (excluded by Strings({'cmd.exe'}): ('cmd.exe')) (8)
-
-8 rules:
-* Execution via MS VisualStudio Pre/Post Build Events
-* Local Scheduled Task Creation
-* Suspicious Execution from VS Code Extension
-* Suspicious Execution from a WebDav Share
-* Suspicious JetBrains TeamCity Child Process
-* Suspicious Microsoft HTML Application Child Process
-* Suspicious Shell Execution via Velociraptor
-* Suspicious Windows Command Shell Arguments
-
 ### Field type solver: match_only_text (7)
 
 7 rules:
@@ -2231,19 +2159,12 @@ Invalid syntax
 * Potential Meterpreter Reverse Shell
 * Potential Reverse Shell via UDP
 
-### Unsolvable constraints: event.category & event.type (empty intersection) (3)
+### Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (3)
 
 3 rules:
-* File Execution Permission Modification Detected via Defend for Containers
-* File with Right-to-Left Override Character (RTLO) Created/Executed
-* Unsigned DLL loaded by DNS Service
-
-### Unsolvable constraints: process.name (excluded by Strings({'powershell.exe'}): ('powershell.exe')) (3)
-
-3 rules:
-* Delayed Execution via Ping
-* SMB Connections via LOLBin or Untrusted Process
-* Veeam Backup Library Loaded by Unusual Process
+* Java Dropped and Executed With DNS Lookup
+* Suspicious Execution from VS Code Extension
+* Suspicious Inter-Process Communication via Outlook
 
 ### Unsupported argument type(s): <class 'eql.ast.FunctionCall'> (3)
 
@@ -2280,30 +2201,6 @@ Invalid syntax
 * Persistent Scripts in the Startup Directory
 * Potential ADIDNS Poisoning via Wildcard Record Creation
 
-### Unsolvable constraints: process.name (excluded by Strings({'bash'}): ('bash')) (2)
-
-2 rules:
-* Potential CVE-2025-32463 Nsswitch File Creation
-* Suspicious macOS MS Office Child Process
-
-### Unsolvable constraints: process.name (excluded by Strings({'nc.traditional'}): ('nc.traditional')) (2)
-
-2 rules:
-* Suspicious Network Tool Launch Detected via Defend for Containers
-* Suspicious Network Tool Launched Inside A Container
-
-### Unsolvable constraints: process.name (excluded by Strings({'python*'}): ('python*')) (2)
-
-2 rules:
-* Base64 Decoded Payload Piped to Interpreter
-* Shared Object Load via LoLBin
-
-### Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (2)
-
-2 rules:
-* Potential Execution via FileFix Phishing Attack
-* Suspicious MS Office Child Process
-
 ### Unsupported &keyword 'file.Ext.entropy' constraint: >= (2)
 
 2 rules:
@@ -2315,12 +2212,6 @@ Invalid syntax
 2 rules:
 * Downloaded Shortcut Files
 * File with Suspicious Extension Downloaded
-
-### Unsupported &keyword 'process.Ext.relative_file_creation_time' constraint: <= (2)
-
-2 rules:
-* Java Dropped and Executed With DNS Lookup
-* Suspicious Inter-Process Communication via Outlook
 
 ### Unsupported &keyword 'process.parent.Ext.real.pid' constraint: > (2)
 
@@ -2350,50 +2241,20 @@ Invalid syntax
 1 rules:
 * Potential Okta MFA Bombing via Push Notifications
 
-### Unsolvable constraints: destination.as.number (out of boundary, 0 <= 202412 <= 65535) (1)
-
-1 rules:
-* Suspicious Linux Process Connection to Bulletproof Hosting ASN
-
 ### Unsolvable constraints: event.action (3 different values are needed, the conditions allow 2) (1)
 
 1 rules:
 * AWS EC2 Stop, Start, and User Data Modification Correlation
-
-### Unsolvable constraints: file.Ext.header_bytes (excluded by Strings({'504B0304*'}): ('504B0304*')) (1)
-
-1 rules:
-* Archive File with Unusual Extension
 
 ### Unsolvable constraints: file.extension (cannot be non-null) (1)
 
 1 rules:
 * Pluggable Authentication Module or Configuration Creation
 
-### Unsolvable constraints: file.name (excluded by Strings({'Local State'}): ('Local State')) (1)
-
-1 rules:
-* GenAI Process Accessing Sensitive Files
-
-### Unsolvable constraints: file.name (not in Strings({'*.so.*'}): ('.*.so')) (1)
-
-1 rules:
-* Creation of Hidden Shared Object File
-
-### Unsolvable constraints: http.request.body.content (not in Strings({'*child_process*'}): ('*.exec*')) (1)
-
-1 rules:
-* Anomalous React Server Components Flight Data Patterns
-
 ### Unsolvable constraints: kubernetes.audit.requestObject.spec.containers.image (cannot be null) (1)
 
 1 rules:
 * Kubernetes Container Created with Excessive Linux Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (excluded by Strings({'DsGetSiteName'}): ('DsGetSiteName')) (1)
-
-1 rules:
-* PowerShell Suspicious Discovery Related Windows API Functions
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Clear-Host'}): ('Cloudflare ID:')) (1)
 
@@ -2410,31 +2271,6 @@ Invalid syntax
 1 rules:
 * PowerShell Script with Encryption/Decryption Capabilities
 
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'DumpCreds'}): ('DumpCerts')) (1)
-
-1 rules:
-* Potential Invoke-Mimikatz PowerShell Script
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Eventing.Reader.EventLogSession'}): ('.ClearLog')) (1)
-
-1 rules:
-* PowerShell Script with Log Clear Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-AudioDevice'}): ('Recording')) (1)
-
-1 rules:
-* PowerShell Suspicious Script with Audio Capture Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Get-WmiObject'}): ('AntiVirusProduct')) (1)
-
-1 rules:
-* Deprecated - PowerShell Script with Discovery Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'IO.Compression.ZipFile'}): ('CompressionLevel')) (1)
-
-1 rules:
-* PowerShell Script with Archive Compression Capabilities
-
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Invoke-WmiMethod'}): ('ComputerName')) (1)
 
 1 rules:
@@ -2450,11 +2286,6 @@ Invalid syntax
 1 rules:
 * PowerShell Mailbox Collection Script
 
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NTLMSSPNegotiate'}): ('NegotiateSMB')) (1)
-
-1 rules:
-* Potential PowerShell Pass-the-Hash/Relay Script
-
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'NdrClientCall'}): ('GetProcAddress')) (1)
 
 1 rules:
@@ -2465,80 +2296,20 @@ Invalid syntax
 1 rules:
 * Exchange Mailbox Export via PowerShell
 
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'STARTUPINFOEX'}): ('UpdateProcThreadAttribute')) (1)
-
-1 rules:
-* PowerShell Script with Token Impersonation Capabilities
-
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Set-MpPreference'}): ('DisableArchiveScanning')) (1)
 
 1 rules:
 * PowerShell Script with Windows Defender Tampering Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'SetWindowsHookEx'}): ('GetForegroundWindow')) (1)
-
-1 rules:
-* PowerShell Keylogging Script
 
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'VirtualAlloc'}): ('WriteProcessMemory')) (1)
 
 1 rules:
 * Potential Process Injection via PowerShell
 
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'Windows.Clipboard'}): (']::GetText')) (1)
-
-1 rules:
-* PowerShell Suspicious Script with Clipboard Retrieval Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[Ref].Assembly.GetType(('System.Management.Automation'}): ('.SetValue(')) (1)
-
-1 rules:
-* Potential Antimalware Scan Interface Bypass via PowerShell
-
 ### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[System.Reflection.Assembly]::Load'}): ('FromBase64String')) (1)
 
 1 rules:
 * Suspicious .NET Reflection via PowerShell
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'[dbo].[Credentials]'}): ('Veeam')) (1)
-
-1 rules:
-* PowerShell Script with Veeam Credential Access Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'capCreateCaptureWindowA'}): ('avicap32.dll')) (1)
-
-1 rules:
-* PowerShell Script with Webcam Video Capture Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'defaultNamingContext'}): ('.MinLengthPassword')) (1)
-
-1 rules:
-* PowerShell Script with Password Policy Discovery Capabilities
-
-### Unsolvable constraints: powershell.file.script_block_text (not in Strings({'shi1_netname'}): ('shi1_remark')) (1)
-
-1 rules:
-* PowerShell Share Enumeration Script
-
-### Unsolvable constraints: process.command_line (excluded by Strings({'*/proc/sys/vm/drop_caches*'}): ('*drop_caches*')) (1)
-
-1 rules:
-* Suspicious Kernel Feature Activity
-
-### Unsolvable constraints: process.command_line (not in Strings({'*-e *'}): ('*RABpAHMAYQBiAGwAZQBSAGUAYQBsAHQAaQBtAGUATQBvAG4AaQB0AG8AcgBpAG4AZwAgA*')) (1)
-
-1 rules:
-* Disabling Windows Defender Security Settings via PowerShell
-
-### Unsolvable constraints: process.command_line (not in Strings({'*-o *'}): ('*.c *')) (1)
-
-1 rules:
-* GenAI Process Compiling or Generating Executables
-
-### Unsolvable constraints: process.command_line (not in Strings({'*Remove-Item*'}): ('*ConsoleHost_history.txt*')) (1)
-
-1 rules:
-* Clearing Windows Console History
 
 ### Unsolvable constraints: process.command_line (not in Strings({'*\\*\*$*'}): ('* copy*')) (1)
 
@@ -2550,11 +2321,6 @@ Invalid syntax
 1 rules:
 * Modification of Safari Settings via Defaults Command
 
-### Unsolvable constraints: process.command_line (not in Strings({'*connect=*'}): ('*restrict=off*')) (1)
-
-1 rules:
-* Potential Traffic Tunneling using QEMU
-
 ### Unsolvable constraints: process.command_line (not in Strings({'*csrutil*status*'}): ('*enabled*')) (1)
 
 1 rules:
@@ -2565,180 +2331,35 @@ Invalid syntax
 1 rules:
 * Suspicious File Downloaded from Google Drive
 
-### Unsolvable constraints: process.command_line (not in Strings({'*fromhex*'}): ('*decode*')) (1)
-
-1 rules:
-* Potential Hex Payload Execution via Common Utility
-
 ### Unsolvable constraints: process.command_line (not in Strings({'*id_dsa*'}): ('*/home/*')) (1)
 
 1 rules:
 * Private Key Searching Activity
-
-### Unsolvable constraints: process.command_line (not in Strings({'*net.ipv4.ip_forward*'}): ('*echo *')) (1)
-
-1 rules:
-* IPv4/IPv6 Forwarding Activity
 
 ### Unsolvable constraints: process.command_line (not in Strings({'*snmptrap*'}): ('*zmservicename*')) (1)
 
 1 rules:
 * Zimbra Swatchdog SNMP Command Injection Execution
 
-### Unsolvable constraints: process.command_line (not in Strings({'*vm.swappiness*'}): ('*echo *')) (1)
-
-1 rules:
-* Memory Swap Modification
-
-### Unsolvable constraints: process.name (excluded by Strings({'arp.exe'}): ('arp.exe')) (1)
-
-1 rules:
-* Remote System Discovery Commands
-
-### Unsolvable constraints: process.name (excluded by Strings({'cp'}): ('cp')) (1)
-
-1 rules:
-* Boot File Copy
-
-### Unsolvable constraints: process.name (excluded by Strings({'elastic-agent.exe'}): ('elastic-agent.exe')) (1)
-
-1 rules:
-* Elastic Agent Service Terminated
-
-### Unsolvable constraints: process.name (excluded by Strings({'elevation_service.exe'}): ('elevation_service.exe')) (1)
-
-1 rules:
-* Potential Privilege Escalation via InstallerFileTakeOver
-
-### Unsolvable constraints: process.name (excluded by Strings({'kubectl'}): ('kubectl')) (1)
-
-1 rules:
-* Container Management Utility Run Inside A Container
-
-### Unsolvable constraints: process.name (excluded by Strings({'modprobe'}): ('modprobe')) (1)
-
-1 rules:
-* Kernel Module Load via Built-in Utility
-
-### Unsolvable constraints: process.name (excluded by Strings({'msdt.exe'}): ('msdt.exe')) (1)
-
-1 rules:
-* Suspicious Microsoft Diagnostics Wizard Execution
-
-### Unsolvable constraints: process.name (excluded by Strings({'msedgewebview2.exe'}): ('msedgewebview2.exe')) (1)
-
-1 rules:
-* Potential Masquerading as Browser Process
-
-### Unsolvable constraints: process.name (excluded by Strings({'net1.exe'}): ('net1.exe')) (1)
-
-1 rules:
-* Account Discovery Command via SYSTEM Account
-
-### Unsolvable constraints: process.name (excluded by Strings({'nohup'}): ('nohup')) (1)
-
-1 rules:
-* Curl or Wget Egress Network Connection via LoLBin
-
-### Unsolvable constraints: process.name (excluded by Strings({'sc.exe'}): ('sc.exe')) (1)
-
-1 rules:
-* Enumeration Command Spawned via WMIPrvSE
-
-### Unsolvable constraints: process.name (excluded by Strings({'sh'}): ('sh')) (1)
-
-1 rules:
-* Suspicious Process Execution by Zoom
-
-### Unsolvable constraints: process.name (excluded by Strings({'smss.exe'}): ('smss.exe')) (1)
-
-1 rules:
-* Unusual Executable File Creation by a System Critical Process
-
-### Unsolvable constraints: process.name (excluded by Strings({'sysctl'}): ('sysctl')) (1)
-
-1 rules:
-* Privilege Escalation via SUID/SGID
-
-### Unsolvable constraints: process.name (not in Strings({'rundll32.exe'}): ('mshta.exe')) (1)
-
-1 rules:
-* Script Execution via Microsoft HTML Application
-
-### Unsolvable constraints: process.parent.args (excluded by Strings({'WdiSystemHost'}): ('WdiSystemHost')) (1)
-
-1 rules:
-* Unusual Service Host Child Process - Childless Service
-
 ### Unsolvable constraints: process.parent.executable (cannot be null) (1)
 
 1 rules:
 * Proxy Execution via Console Window Host
-
-### Unsolvable constraints: process.parent.name (excluded by Strings({'dllhost.exe'}): ('dllhost.exe')) (1)
-
-1 rules:
-* Unusual Parent Process for cmd.exe
-
-### Unsolvable constraints: process.parent.name (excluded by Strings({'fish'}): ('fish')) (1)
-
-1 rules:
-* Kubeconfig File Discovery
-
-### Unsolvable constraints: process.parent.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe')) (1)
-
-1 rules:
-* Conhost Spawned By Suspicious Parent Process
-
-### Unsolvable constraints: process.parent.name (excluded by Strings({'ssm-document-worker.exe'}): ('ssm-document-worker.exe')) (1)
-
-1 rules:
-* AWS SSM Session Manager Child Process Execution
-
-### Unsolvable constraints: process.parent.name (excluded by Strings({'winword.exe'}): ('winword.exe')) (1)
-
-1 rules:
-* Suspicious Process Creation CallTrace
-
-### Unsolvable constraints: process.parent.name (excluded by Strings({'wscript.exe'}): ('wscript.exe')) (1)
-
-1 rules:
-* Windows Script Executing PowerShell
-
-### Unsolvable constraints: process.parent.name (not in Strings({'slack.exe'}): ('CiscoCollabHost.exe')) (1)
-
-1 rules:
-* Suspicious Communication App Child Process
 
 ### Unsolvable constraints: process.pid (out of boundary, 1 <= 0 <= 4294967295) (1)
 
 1 rules:
 * Service Creation via Local Kerberos Authentication
 
-### Unsolvable constraints: user_agent.original (excluded by Strings({'go-http*'}): ('go-http*')) (1)
-
-1 rules:
-* Anthropic Activity from a Suspicious User Agent
-
 ### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)
 
 1 rules:
 * Potential Active Directory Replication Account Backdoor
 
-### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*42B5FAAE-6536-11D2-AE5A-0000F87571E3*'}): ('*40B66650-4972-11D1-A7CA-0000F87571E3*')) (1)
-
-1 rules:
-* Startup/Logon Script added to Group Policy Object
-
 ### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)
 
 1 rules:
 * Group Policy Abuse for Privilege Addition
-
-### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*CAB54552-DEEA-4691-817E-ED4A4D1AFC72*'}): ('*AADCED64-746C-4633-A97C-D61349046527*')) (1)
-
-1 rules:
-* Scheduled Task Execution at Scale via GPO
 
 ### Unsolvable constraints: winlog.event_data.param1 (not in Strings({'*FullControl*'}): ('*setsharingmode*')) (1)
 

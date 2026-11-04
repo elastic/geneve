@@ -55,6 +55,15 @@ class ConflictError(ValueError):
         super().__init__(f"Unsolvable constraints{name}: {field} ({msg})")
 
 
+class UnsolvableBranchesError(ConflictError):
+    """Raised in strict mode when some branches of the query cannot be solved."""
+
+    def __init__(self, conflicts, total):
+        self.conflicts = conflicts
+        msgs = sorted({str(conflict) for conflict in conflicts})
+        ValueError.__init__(self, f"{len(conflicts)} of {total} branches are unsolvable:\n  " + "\n  ".join(msgs))
+
+
 class Document:
     def __init__(self, field=None, name=None, value=None):
         self.__aliases = {}
@@ -217,6 +226,7 @@ Branch.Identity = Branch([Document()])
 
 class Root(List[Branch]):
     meta = None
+    conflicts = ()
 
     def fields(self):
         return {"@timestamp"} | set(chain(*(branch.fields() for branch in self)))
@@ -224,9 +234,32 @@ class Root(List[Branch]):
     def constraints(self):
         return chain(*self)
 
-    def optimize(self, *args, **kwargs):
+    def optimize(self, *args, strict=False, **kwargs):
+        """Prepare the solvers of every branch, dropping the branches that cannot be solved.
+
+        The IR is a disjunction of branches, `A and not (A and B)` expands to
+        `(A and not A) or (A and not B)`: the first branch is a contradiction
+        but the query is satisfied by the second. The dropped branches are
+        recorded in `conflicts`; only when no branch at all can be solved is
+        the conflict reported, the one of the first branch.
+
+        In strict mode any unsolvable branch is an error and all of them are
+        reported, for using the query translation as a linter.
+        """
+        solvable, conflicts = [], []
         for branch in self:
-            branch.optimize(*args, **kwargs)
+            try:
+                branch.optimize(*args, **kwargs)
+            except ConflictError as e:
+                conflicts.append(e)
+            else:
+                solvable.append(branch)
+        if conflicts and strict:
+            raise UnsolvableBranchesError(conflicts, len(self))
+        if conflicts and not solvable:
+            raise conflicts[0]
+        self[:] = solvable
+        self.conflicts = conflicts
 
     @classmethod
     def chain(cls, roots):

@@ -21,6 +21,7 @@ import os
 import unittest
 
 import tests.utils as tu
+from geneve.constraints import UnsolvableBranchesError
 from geneve.events_emitter import SourceEvents, guess_from_query
 
 from . import jupyter
@@ -894,6 +895,54 @@ class TestQueries(tu.QueryTestCase, tu.SeededTestCase, unittest.TestCase):
                     self.assertQuery(query, None)
                 self.assertEqual(msg, str(cm.exception))
                 cells.append(self.query_cell(query, str(cm.exception), output_type="stream"))
+
+    def test_unsolvable_branches_are_pruned(self):
+        """A conjunction with a negated conjunction expands to a disjunction with some contradictory branches.
+
+        `A and not (A and B)` is `(A and not A) or (A and not B)`: the first branch is dropped,
+        the query still emits. Only when every branch is contradictory the error is reported.
+        """
+        query = """process where process.name : ("cmd.exe", "rundll32.exe") and
+            not (process.name : "rundll32.exe" and process.args : "srchadmin.dll")
+        """
+        docs = [
+            [{"event": {"category": ["process"]}, "process": {"name": "cmd.exe"}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "cmd.exe", "args": ["DoDualyo"]}}],
+            [{"event": {"category": ["process"]}, "process": {"name": "rundll32.exe", "args": ["juDneHkVnkwd"]}}],
+        ]
+        with self.subTest(query):
+            se = SourceEvents(self.schema)
+            se.stack_version = self.stack_version
+            root = se.add_query(query)
+            # the IR has four branches, the `rundll32.exe and not rundll32.exe` one is gone
+            self.assertEqual(len(root), 3)
+            self.assertEqual(len(root.conflicts), 1)
+            self.assertEqual(
+                "Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe'))", str(root.conflicts[0])
+            )
+            self.assertQuery(query, docs)
+
+        query = """process where process.name : ("cmd.exe", "powershell.exe") and process.name : "rundll32.exe"
+        """
+        with self.subTest(query):
+            with self.assertRaises(ValueError) as cm:
+                self.assertQuery(query, None)
+            self.assertEqual("Unsolvable constraints: process.name (not in Strings({'cmd.exe'}): ('rundll32.exe'))", str(cm.exception))
+
+    def test_unsolvable_branches_are_errors_in_strict_mode(self):
+        """In strict mode the unsolvable branches are not dropped, they are reported all together."""
+        query = """process where process.name : ("cmd.exe", "rundll32.exe") and
+            not (process.name : "rundll32.exe" and process.args : "srchadmin.dll")
+        """
+        se = SourceEvents(self.schema, strict=True)
+        se.stack_version = self.stack_version
+        with self.assertRaises(UnsolvableBranchesError) as cm:
+            se.add_query(query)
+        self.assertEqual(
+            "1 of 4 branches are unsolvable:\n  Unsolvable constraints: process.name (excluded by Strings({'rundll32.exe'}): ('rundll32.exe'))",
+            str(cm.exception),
+        )
+        self.assertEqual(len(cm.exception.conflicts), 1)
 
     @nb.chapter("## Cardinality")
     def test_cardinality(self, cells):
