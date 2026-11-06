@@ -24,6 +24,15 @@ from ..utils import random
 from . import Field, solver
 
 
+def esql_bool(field, v):
+    # ES|QL casts "true" and "false" strings (whatever the case) to a boolean, and nothing else
+    if isinstance(v, str) and v.lower() in ("true", "false"):
+        return v.lower() == "true"
+    if isinstance(v, bool):
+        return v
+    raise NotImplementedError(f"Unsupported value for boolean field '{field}': {v!r}")
+
+
 @solver.type("boolean")
 class BooleanField(Field):
     valid_constraints: ClassVar[list] = ["==", "!="]
@@ -31,15 +40,16 @@ class BooleanField(Field):
     def __init__(self, field, constraints, field_constraints, schema):
         super().__init__(field, constraints, field_constraints, schema)
 
-        for k, v, *_ in constraints + field_constraints:
+        for k, v, *flags in constraints + field_constraints:
+            esql = bool(flags and flags[0].get("esql"))
             if k == "==":
-                v = bool(v)
+                v = esql_bool(field, v) if esql else bool(v)
                 if self.value is None or self.value == v:
                     self.value = v
                 else:
                     raise ConflictError(f"is already {self.value}, cannot set to {v}", field, k)
             elif k == "!=":
-                v = bool(v)
+                v = esql_bool(field, v) if esql else bool(v)
                 if self.value is None or self.value != v:
                     self.value = not v
                 else:

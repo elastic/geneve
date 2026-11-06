@@ -30,11 +30,17 @@ class Strings:
     min_star_len = 0
     max_star_len = 32
 
-    def __init__(self, iterable=None, *, exclude=None):
+    # Patterns match regardless of the case by default. When set, `&` and `in` are case
+    # sensitive instead. `-` and `|` keep ignoring the case: for exclusions that only
+    # ever removes more values than needed, which is safe.
+    case_sensitive = False
+
+    def __init__(self, iterable=None, *, exclude=None, literal=False):
         self.__set = everything()
         self.__exclude = None
         if iterable not in (None, everything()):
-            self.__set &= {(s, has_wildcards(s)) for s in iterable}
+            # a literal is what it is, `*` and `?` in it are not wildcards
+            self.__set &= {(s, False if literal else has_wildcards(s)) for s in iterable}
         if self.__set and exclude:
             if not isinstance(exclude, Strings):
                 exclude = Strings(exclude)
@@ -74,14 +80,23 @@ class Strings:
     def __bool__(self):
         return bool(self.__set)
 
+    def __match(self, item, pattern):
+        if self.case_sensitive:
+            return fnmatchcase(item, pattern)
+        return fnmatchcase(item.lower(), pattern.lower())
+
     def __contains__(self, item):
         if self.__exclude and item in self.__exclude:
             return False
         if self.__set == everything():
             return True
-        item = str(item).lower()
+        item = str(item)
+        if not self.case_sensitive:
+            item = item.lower()
         for value, wc in self.__set:
-            value = str(value).lower()
+            value = str(value)
+            if not self.case_sensitive:
+                value = value.lower()
             if item == value:
                 return True
             if wc and fnmatchcase(item, value):
@@ -124,9 +139,9 @@ class Strings:
         new_set = set()
         for s in self.__set:
             for o in other.__set:
-                if s == o or o[1] and fnmatchcase(s[0].lower(), o[0].lower()):
+                if s == o or o[1] and self.__match(s[0], o[0]):
                     new_set.add(s)
-                elif s[1] and fnmatchcase(o[0].lower(), s[0].lower()):  # s has wildcards
+                elif s[1] and self.__match(o[0], s[0]):  # s has wildcards
                     new_set.add(o)
         self.__set = new_set
         return self
@@ -160,7 +175,7 @@ class Strings:
                     new.add(s)
                     new.add(o)
         self.__set = new
-        self.__exclude -= {x[0] for x in new}
+        self.__exclude -= self.__from_pairs(new)
         return self
 
     def __isub__(self, other):
@@ -186,10 +201,17 @@ class Strings:
                 if s == o or o[1] and fnmatchcase(s[0].lower(), o[0].lower()):
                     sub.add(s)
                 elif (s[1] and fnmatchcase(o[0].lower(), s[0].lower())) or (s[1] and o[1]):  # s has wildcards
-                    excl.add(o[0])
+                    excl.add(o)
         self.__set -= sub
-        self.__exclude |= excl
+        self.__exclude |= self.__from_pairs(excl)
         return self
+
+    @classmethod
+    def __from_pairs(cls, pairs):
+        # the strings with the information of which are wildcards, which what is made of them from the text could not tell
+        ss = cls()
+        ss.__set = set(pairs)
+        return ss
 
     def __mul__(self, other):
         return Strings(product(self, other))

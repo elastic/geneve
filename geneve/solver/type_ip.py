@@ -42,7 +42,8 @@ class IPField(Field):
         self.exclude_nets = set()
         self.exclude_addrs = set()
 
-        for k, v, *_ in constraints + field_constraints:
+        for k, v, *flags in constraints + field_constraints:
+            esql = bool(flags and flags[0].get("esql"))
             if k == "==":
                 v = str(v)
                 try:
@@ -58,9 +59,12 @@ class IPField(Field):
                         raise ConflictError(f"is already {self.value}, cannot set to {v}", field, k)
                     continue
                 try:
-                    self.include_nets.add(ipaddress.ip_network(v))
+                    net = ipaddress.ip_network(v)
                 except ValueError:
                     raise ValueError(f"Not an IP address or network: {v}")
+                if esql:
+                    raise NotImplementedError(f"Unsupported network literal on ip field '{field}': {k} {v}, use CIDR_MATCH")
+                self.include_nets.add(net)
             elif k == "!=":
                 v = str(v)
                 try:
@@ -69,9 +73,12 @@ class IPField(Field):
                 except ValueError:
                     pass
                 try:
-                    self.exclude_nets.add(ipaddress.ip_network(v))
+                    net = ipaddress.ip_network(v)
                 except ValueError:
                     raise ValueError(f"Not an IP address or network: {v}")
+                if esql:
+                    raise NotImplementedError(f"Unsupported network literal on ip field '{field}': {k} {v}, use CIDR_MATCH")
+                self.exclude_nets.add(net)
             elif k == "in":
                 values = [v] if isinstance(v, str) else v
                 for v in values:

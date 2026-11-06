@@ -171,6 +171,9 @@ jobs:
           TEST_SCHEMA_URI: ${{ matrix.schema-uri }}
           TEST_SIGNALS_QUERIES: 1
           TEST_SIGNALS_RULES: 1
+          # ES|QL queries are run against the generated documents, for the newest stack only
+          TEST_ESQL_VALIDATION: ${{ startsWith(matrix.stack-version, '9.5.') && '1' || '0' }}
+          TEST_ESQL_ES_URL: ${{ env.TEST_ELASTICSEARCH_URL }}
         run: make online-tests V=$TEST_VERBOSITY
 
       - name: Explain shards allocation

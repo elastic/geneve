@@ -12,6 +12,12 @@ NOT_SUPPORTED_EQL_FIELDS = ["text"]
 
 class KqlToEQL(BaseKqlParser):
 
+    def __init__(self, text, schema=None, strict_literals=False):
+        super().__init__(text, schema=schema)
+        # what KQL does and the generator can say, opt-in as it changes the documents generated: the
+        # value of a quoted string is a literal, and `?` is not a wildcard (`*` of an unquoted value is)
+        self.strict_literals = strict_literals
+
     #
     # Lark Visit methods
     #
@@ -90,6 +96,13 @@ class KqlToEQL(BaseKqlParser):
 
         if value is None:
             return eql.ast.IsNull(field)
+
+        if self.strict_literals and eql.utils.is_string(value):
+            quoted = tree.children[0].type == "QUOTED_STRING"
+            if (quoted and ("*" in value or "?" in value)) or (not quoted and "?" in value):
+                if not quoted and "*" in value:
+                    raise self.error(tree.children[0], "Unable to mix a wildcard and a literal question mark")
+                return eql.ast.FunctionCall("_literal", [field, value_ast])
 
         if eql.utils.is_string(value) and value.replace("*", "") == "":
             return eql.ast.IsNotNull(field)

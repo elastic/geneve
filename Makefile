@@ -33,7 +33,7 @@ tests: tests/*.py
 	$(PYTHON) -m pytest $(PYTEST_VERBOSE) tests/test_*.py
 
 online-tests: tests/*.py
-	$(PYTHON) -m pytest $(PYTEST_VERBOSE) tests/test_emitter_*.py
+	$(PYTHON) -m pytest $(PYTEST_VERBOSE) tests/test_emitter_*.py tests/test_esql_validation.py
 
 up:
 	@$(call print_server_version,ES,ELASTICSEARCH)

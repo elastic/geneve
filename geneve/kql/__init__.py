@@ -35,13 +35,13 @@ def to_dsl(parsed, optimize=True, schema=None):
     return ToDsl.convert(parsed)
 
 
-def to_eql(text, optimize=True, schema=None):
+def to_eql(text, optimize=True, schema=None, strict_literals=False):
     if isinstance(text, bytes):
         text = text.decode("utf-8")
 
     lark_parsed = lark_parse(text)
 
-    converted = KqlToEQL(text, schema=schema).visit(lark_parsed)
+    converted = KqlToEQL(text, schema=schema, strict_literals=strict_literals).visit(lark_parsed)
     return converted.optimize(recursive=True) if optimize else converted
 
 

@@ -34,12 +34,22 @@ class ASEntity(Entity):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if "number" not in self.fields:
+        # the group of the organization is also taken for this one, because of its name: for ES|QL it is just its fields
+        self.of_organization = self.strict and self.group.endswith(".as.organization")
+        # the organization is made up for the languages that never asked for it, for ES|QL it is as the query says
+        self.asked_name = self.strict and f"{self.group}.organization.name" in self.asked
+
+        if "number" not in self.fields and not self.of_organization:
             self.fields["number"] = self.field_solver("number")
 
     def solve(self, doc, join_doc, env):
+        if self.of_organization:
+            return Entity.solve(self, doc, join_doc, env)
         entities = env.setdefault("entities", {}).setdefault("as", {})
         asn = self.fields["number"].solve_field(None, join_doc, env)
+        if self.asked_name:
+            self.emit_group(doc, {"number": asn})
+            return
         org_name = entities.get(asn, None)
         if org_name is None:
             org_name = faker.company()
