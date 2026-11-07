@@ -1,0 +1,35 @@
+name: geneve
+
+observe:
+  ready_within: 10m
+  unhealthy_for: 1m
+
+actions:
+  - name: run
+    inputs:
+      - name: triggers_per_second
+        type: integer
+        route: geneve.triggersPerSecond
+        default: 1
+        description: Aggregate Geneve rule-trigger attempts per second.
+      - name: rule_ids
+        type: string
+        route: geneve.ruleIds
+        default: ""
+        description: Optional JSON array of stable detection-rule IDs; omitted discovers enabled rules.
+      - name: target_es_url
+        type: string
+        route: geneve.targetEsUrl
+        description: Target Elasticsearch URL.
+      - name: target_kibana_url
+        type: string
+        route: geneve.targetKibanaUrl
+        description: Target Kibana URL.
+      - name: target_api_key
+        type: secret_ref
+        route: geneve.targetApiKeySecret
+        description: Google Secret Manager reference for the target stack API key.
+    outputs:
+      - name: status
+        type: keyword
+        description: Reserved completion status; Geneve never emits this output.
