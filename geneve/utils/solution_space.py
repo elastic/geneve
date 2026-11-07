@@ -204,33 +204,33 @@ class Strings:
             raise ValueError("`exclude` requires `max_attempts`")
         return None if self.__set == everything() else sorted(self.__set)
 
-    def __generate_one(self, items, alphabet):
+    def __generate_one(self, items, alphabet, random):
         if items is None:
             return "".join(random.choices(alphabet, k=random.randint(self.min_star_len, self.max_star_len)))
         item, has_wildcards = random.choice(items)
         if has_wildcards:
-            return expand_wildcards(item, alphabet, self.min_star_len, self.max_star_len)
+            return expand_wildcards(item, alphabet, self.min_star_len, self.max_star_len, random)
         return item
 
-    def __generate(self, items, alphabet, max_attempts):
+    def __generate(self, items, alphabet, max_attempts, random):
         if not self.__exclude:
-            return self.__generate_one(items, alphabet)
+            return self.__generate_one(items, alphabet, random)
         for _ in range(max_attempts):
-            val = self.__generate_one(items, alphabet)
+            val = self.__generate_one(items, alphabet, random)
             if val not in self.__exclude:
                 return val
         raise ValueError(f"Failed to generate after {max_attempts} attempts")
 
-    def generate(self, *, alphabet=None, max_attempts=None, count=1):
+    def generate(self, *, alphabet=None, max_attempts=None, count=1, random=random):
         alphabet = alphabet or string.ascii_letters + string.digits
         items = self.__generate_items(max_attempts)
-        return [self.__generate(items, alphabet, max_attempts) for _ in range(count)]
+        return [self.__generate(items, alphabet, max_attempts, random) for _ in range(count)]
 
-    def generator(self, *, alphabet=None, max_attempts=None):
+    def generator(self, *, alphabet=None, max_attempts=None, random=random):
         alphabet = alphabet or string.ascii_letters + string.digits
         items = self.__generate_items(max_attempts)
         while True:
-            yield self.__generate(items, alphabet, max_attempts)
+            yield self.__generate(items, alphabet, max_attempts, random)
 
 
 def product(A, B):

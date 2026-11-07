@@ -48,6 +48,6 @@ class BooleanField(Field):
     def solve(self, left_attempts, environment):
         value = self.value
         if left_attempts and value is None:
-            value = random.choice((True, False))
+            value = environment.get("random", random).choice((True, False))
             left_attempts -= 1
         return {"value": value, "left_attempts": left_attempts}

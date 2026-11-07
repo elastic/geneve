@@ -122,6 +122,14 @@ def get_test_schema_uri():
     return os.getenv("TEST_SCHEMA_URI") or "https://github.com/elastic/ecs/archive/refs/heads/main.tar.gz"
 
 
+def get_rules_package_uri(rules_version):
+    """Exactly this version of the rules package, whatever the test environment says.
+
+    Story drafts are written against one package version and load that one.
+    """
+    return f"https://epr.elastic.co/package/security_detection_engine/{rules_version}"
+
+
 def get_test_rules_uri(rules_version=None, kibana_version=None):
     uri = os.getenv("TEST_DETECTION_RULES_URI")
     if uri:

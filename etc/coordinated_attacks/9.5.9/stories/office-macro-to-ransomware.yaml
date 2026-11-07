@@ -1,0 +1,76 @@
+# Licensed to Elasticsearch B.V. under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Elasticsearch B.V. licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# 	http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# Attack story draft: the intermediate artifact between the AI proposal and
+# the runtime coordinated attack. Reviewed by a human before it is compiled.
+id: office-macro-to-ransomware
+title: Office macro to ransomware
+rules_version: 9.5.9
+platform: windows
+size: medium
+
+narrative: >
+  A finance clerk opens a macro-laden invoice. Word spawns a script
+  interpreter, which downloads a loader from the operator's server. The loader
+  dumps LSASS; the stolen credentials are used to schedule a task on a file
+  server, and shadow copies are deleted there before encryption starts.
+
+# Roles: the entities of the story. Members refer to them, each with the field
+# under which that member sees the entity, as `role.attr` (id, name, ip).
+roles:
+  ws: { kind: host, description: the clerk's workstation }
+  fs: { kind: host, description: the file server reached with the stolen credentials }
+  clerk: { kind: user, description: the finance clerk }
+  c2: { kind: ip, description: the operator's download server }
+
+members:
+  - rule: Suspicious MS Office Child Process
+    stage: initial access
+    host: ws
+    optional: true  # alternative entry, see `Execution of File Written or Modified by Microsoft Office`
+    bindings: { host.id: ws.id, user.id: clerk.id }
+  - rule: Execution of File Written or Modified by Microsoft Office
+    stage: execution
+    host: ws
+    bindings: { host.id: ws.id, user.id: clerk.id }
+  - rule: Remote File Download via Script Interpreter
+    stage: command and control
+    host: ws
+    bindings: { host.id: ws.id, user.id: clerk.id, destination.ip: c2.ip }
+    after: { member: Execution of File Written or Modified by Microsoft Office, within: 2m }
+  - rule: LSASS Memory Dump Creation
+    stage: credential access
+    host: ws
+    bindings: { host.id: ws.id, user.id: clerk.id }
+    after: { member: Remote File Download via Script Interpreter, within: 5m }
+  - rule: Remote Scheduled Task Creation
+    stage: lateral movement
+    host: fs
+    bindings: { host.id: fs.id, user.id: clerk.id, source.ip: ws.ip }
+    after: { member: LSASS Memory Dump Creation, within: 30m }
+  - rule: Volume Shadow Copy Deletion via WMIC
+    stage: impact
+    host: fs
+    bindings: { host.id: fs.id, user.id: clerk.id }
+    after: { member: Remote Scheduled Task Creation, within: 10m }
+
+expected_alerts: 5  # 6 with the optional member
+
+provenance:
+  proposed_by: { backend: file, model: claude (cursor session), prompt: traces/office-macro-to-ransomware/prompt.md }
+  response: traces/office-macro-to-ransomware/response.md
+  reviewed_by: null

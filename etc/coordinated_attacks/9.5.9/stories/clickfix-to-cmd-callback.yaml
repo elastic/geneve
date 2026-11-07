@@ -1,0 +1,52 @@
+# Licensed to Elasticsearch B.V. under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Elasticsearch B.V. licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# 	http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# Attack story draft: the intermediate artifact between the AI proposal and
+# the runtime coordinated attack. Reviewed by a human before it is compiled.
+id: clickfix-to-cmd-callback
+title: ClickFix lure to command prompt callback
+rules_version: 9.5.9
+platform: windows
+size: small
+
+narrative: >
+  A sales representative lands on a fake "verify you are human" page and
+  pastes the proposed command in the Run dialog. The command prompt it opens
+  fetches the next stage from the operator's server.
+
+roles:
+  ws: { kind: host, description: the sales representative's workstation }
+  rep: { kind: user, description: the sales representative }
+  c2: { kind: ip, description: the operator's staging server }
+
+members:
+  - rule: Potential Fake CAPTCHA Phishing Attack
+    stage: initial access
+    host: ws
+    bindings: { host.id: ws.id, user.id: rep.id }
+  - rule: Suspicious Command Prompt Network Connection
+    stage: command and control
+    host: ws
+    bindings: { host.id: ws.id, user.id: rep.id, destination.ip: c2.ip }
+    after: { member: Potential Fake CAPTCHA Phishing Attack, within: 30s }
+
+expected_alerts: 2
+
+provenance:
+  proposed_by: { backend: file, model: claude (cursor session), prompt: traces/clickfix-to-cmd-callback/prompt.md }
+  response: traces/clickfix-to-cmd-callback/response.md
+  reviewed_by: null
