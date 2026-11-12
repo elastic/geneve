@@ -35,7 +35,7 @@ emitter_rules:
     # renovate: datasource=epr package=security_detection_engine-8.18
     "8.18": "8.18.15"
     # renovate: datasource=epr package=security_detection_engine-8.19
-    "8.19": "8.19.36"
+    "8.19": "8.19.37"
     # renovate: datasource=epr package=security_detection_engine-9.0
     "9.0": "9.0.19"
     # renovate: datasource=epr package=security_detection_engine-9.1
@@ -45,13 +45,13 @@ emitter_rules:
     # renovate: datasource=epr package=security_detection_engine-9.3
     "9.3": "9.3.24"
     # renovate: datasource=epr package=security_detection_engine-9.4
-    "9.4": "9.4.16"
+    "9.4": "9.4.17"
     # renovate: datasource=epr package=security_detection_engine-9.5
-    "9.5": "9.5.9"
+    "9.5": "9.5.10"
     # renovate: datasource=epr package=security_detection_engine-9.6
-    "9.6": "9.5.9"
+    "9.6": "9.6.1"
     # renovate: datasource=epr package=security_detection_engine
-    "serverless": "9.5.9"
+    "serverless": "9.6.1"
 
   stack_signals:
     "8.2":
@@ -163,12 +163,12 @@ emitter_rules:
       ack_no_signals: 13
       ack_too_few_signals: 46
     "9.6":
-      ack_failed: 43
-      ack_unsuccessful_with_signals: 42
-      ack_no_signals: 13
-      ack_too_few_signals: 46
+      ack_failed: 42
+      ack_unsuccessful_with_signals: 41
+      ack_no_signals: 15
+      ack_too_few_signals: 47
     "serverless":
       ack_failed: 42
       ack_unsuccessful_with_signals: 41
-      ack_no_signals: 13
-      ack_too_few_signals: 46
+      ack_no_signals: 15
+      ack_too_few_signals: 47

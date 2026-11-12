@@ -5,15 +5,16 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.19.36
+Rules version: 8.19.37
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: esql (265)](#unsupported-rule-type-esql-265)
-      1. [Unsupported rule type: new_terms (256)](#unsupported-rule-type-new_terms-256)
+      1. [Unsupported rule type: esql (291)](#unsupported-rule-type-esql-291)
+      1. [Unsupported rule type: new_terms (258)](#unsupported-rule-type-new_terms-258)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
+      1. ['KvTree' object has no attribute 'line' (1)](#kvtree-object-has-no-attribute-line-1)
       1. [Error at line:14,column:51
 Invalid syntax
     */.local/bin/q or */usr/local/bin/q or
@@ -61,7 +62,7 @@ invalid-syntax
 -------------------1)
    1. [Generation errors](#generation-errors)
       1. [Unsupported function: match (36)](#unsupported-function-match-36)
-      1. [Root with too many branches (limit: 10000) (25)](#root-with-too-many-branches-limit-10000-25)
+      1. [Root with too many branches (limit: 10000) (26)](#root-with-too-many-branches-limit-10000-26)
       1. [Unsupported function: stringContains (25)](#unsupported-function-stringcontains-25)
       1. [Unsupported LHS type: <class 'eql.ast.FunctionCall'> (11)](#unsupported-lhs-type-class-eqlastfunctioncall-11)
       1. [Root without branches (9)](#root-without-branches-9)
@@ -95,6 +96,7 @@ invalid-syntax
       1. [Unsolvable constraints: message (not in Strings({'system permission set'}): ('--role Admin')) (1)](#unsolvable-constraints-message-not-in-stringssystem-permission-set---role-admin-1)
       1. [Unsolvable constraints: message (not in Strings({'vib install'}): ('--force')) (1)](#unsolvable-constraints-message-not-in-stringsvib-install---force-1)
       1. [Unsolvable constraints: network_traffic.cassandra.request.query (not in Strings({'*create*function*'}): ('*language*javascript*')) (1)](#unsolvable-constraints-network_trafficcassandrarequestquery-not-in-stringscreatefunction-languagejavascript-1)
+      1. [Unsolvable constraints: network_traffic.http.request.original (not in Strings({'MSOTlPn_Uri'}): ('DisplayMode')) (1)](#unsolvable-constraints-network_traffichttprequestoriginal-not-in-stringsmsotlpn_uri-displaymode-1)
       1. [Unsolvable constraints: network_traffic.redis.query (not in Strings({'*CONFIG SET dir*'}): ('*/.ssh*')) (1)](#unsolvable-constraints-network_trafficredisquery-not-in-stringsconfig-set-dir-ssh-1)
       1. [Unsolvable constraints: network_traffic.redis.query (not in Strings({'*CONFIG SET dir*'}): ('*/etc/cron*')) (1)](#unsolvable-constraints-network_trafficredisquery-not-in-stringsconfig-set-dir-etccron-1)
       1. [Unsolvable constraints: network_traffic.redis.query (not in Strings({'*EVAL*'}): ('*string.rep*')) (1)](#unsolvable-constraints-network_trafficredisquery-not-in-stringseval-stringrep-1)
@@ -117,7 +119,6 @@ invalid-syntax
       1. [Unsolvable constraints: process.command_line (not in Strings({'*snmptrap*'}): ('*zmservicename*')) (1)](#unsolvable-constraints-processcommand_line-not-in-stringssnmptrap-zmservicename-1)
       1. [Unsolvable constraints: process.parent.executable (cannot be null) (1)](#unsolvable-constraints-processparentexecutable-cannot-be-null-1)
       1. [Unsolvable constraints: process.pid (out of boundary, 1 <= 0 <= 4294967295) (1)](#unsolvable-constraints-processpid-out-of-boundary-1--0--4294967295-1)
-      1. [Unsolvable constraints: request (not in Strings({'*MSOTlPn_Uri*'}): ('*DisplayMode*')) (1)](#unsolvable-constraints-request-not-in-stringsmsotlpn_uri-displaymode-1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings1131f6ad-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1131f6aa-9c07-11d1-f79f-00c04fc2dcd2s-1-5-21--1)
       1. [Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*827D319E-6EAC-11D2-A4EA-00C04F79F83A*'}): ('*803E14A0-B4FB-11D0-A0D0-00A0C90F574B*')) (1)](#unsolvable-constraints-winlogevent_dataattributevalue-not-in-strings827d319e-6eac-11d2-a4ea-00c04f79f83a-803e14a0-b4fb-11d0-a0d0-00a0c90f574b-1)
       1. [Unsolvable constraints: winlog.event_data.param1 (not in Strings({'*FullControl*'}): ('*setsharingmode*')) (1)](#unsolvable-constraints-winlogevent_dataparam1-not-in-stringsfullcontrol-setsharingmode-1)
@@ -135,9 +136,9 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: esql (265)
+### Unsupported rule type: esql (291)
 
-265 rules:
+291 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -150,9 +151,11 @@ invalid-syntax
 * AWS Bedrock High Risk Filesystem or Execution Tool Invocation
 * AWS Bedrock High-Frequency Single-Model Inference API Probing
 * AWS Bedrock Invocations without Guardrails Detected by a Single User Over a Session
+* AWS Bedrock Model Invocation From High Number of Countries
 * AWS Bedrock Model Prompt or Completion Containing Credentials
 * AWS Credentials Used from GitHub Actions and Non-CI/CD Infrastructure
 * AWS Discovery API Calls via CLI from a Single Resource
+* AWS EC2 Bulk User Data Enumeration
 * AWS EC2 LOLBin Execution via SSM SendCommand
 * AWS EC2 Multi-Region DescribeInstances API Calls
 * AWS EC2 Stop, Start, and User Data Modification Correlation
@@ -169,6 +172,7 @@ invalid-syntax
 * AWS S3 Object Encryption Using External KMS Key
 * AWS S3 Static Site JavaScript File Uploaded
 * AWS SES Email Identity Verified Then Deleted
+* AWS STS GetCallerIdentity Bulk Account Enumeration
 * AWS SageMaker Execution Role Passed by Unusual Principal
 * AWS SageMaker Notebook Lifecycle Configuration With Suspicious Script Content
 * AWS Service Quotas Multi-Region GetServiceQuota Requests
@@ -203,8 +207,11 @@ invalid-syntax
 * Azure AD Graph Access with Suspicious User-Agent
 * Azure AD Graph High 4xx Error Ratio from User
 * Azure AD Graph Potential Enumeration (ROADrecon)
+* Azure Diagnostic Settings Deleted
 * Azure Key Vault Excessive Secret or Key Retrieved
+* Azure Key Vault Multi-Vault Secret Retrieval Burst by Application
 * Azure OpenAI Insecure Output Handling
+* Azure Resource Group Deleted by Unusual Principal
 * Azure Run Command Correlated with Process Execution
 * Cobalt Strike Command and Control Beacon
 * Command Line Obfuscation via Whitespace Padding
@@ -221,6 +228,7 @@ invalid-syntax
 * Entra ID Federated Identity Credential Issuer Modified
 * Entra ID Illicit Consent Grant via Registered Application
 * Entra ID MFA TOTP Brute Force Attempted
+* Entra ID Managed Device Client Sign-In to Graph Enumeration
 * Entra ID Multiple Device Registrations by a Single User
 * Entra ID OAuth Device Code Flow with Concurrent Sign-ins
 * Entra ID OAuth Flow by Microsoft Authentication Broker to Device Registration Service (DRS)
@@ -246,9 +254,25 @@ invalid-syntax
 * GKE Multi-Resource Discovery
 * GKE Rapid Secret GET Activity Against Multiple Objects
 * GKE Sensitive RBAC Change Followed by Workload Modification
+* GenAI Agent Instruction File Written to Downloads
+* GitHub API Failed Access Burst
+* GitHub API Sensitive Resource Enumeration
 * GitHub Actions Workflow Modification Blocked
+* GitHub Advanced Security Disabled
+* GitHub Dependabot Alerts or Security Updates Disabled
 * GitHub Exfiltration via High Number of Repository Clones by User
+* GitHub Fine-Grained PAT Auto-Approve Enabled
+* GitHub IP Allow List Modified
+* GitHub MFA Requirement Disabled
+* GitHub OAuth App Access Restrictions Disabled
 * GitHub OAuth Application Authorized
+* GitHub Private Repository Forking Enabled
+* GitHub SAML SSO Disabled
+* GitHub SSH Certificate Authority or Requirement Modified
+* GitHub SSO Recovery Codes Activity
+* GitHub Secret Scanning Alert for a Publicly Leaked Secret
+* GitHub Secret Scanning Push Protection Bypassed or Disabled
+* GitHub Webhook Created or Configuration Changed
 * Google Workspace Device Registration Burst for Single User
 * Halfbaked Command and Control Beacon
 * High Number of Closed Pull Requests by User
@@ -278,6 +302,7 @@ invalid-syntax
 * M365 OneDrive/SharePoint Excessive File Downloads
 * M365 or Entra ID Identity Sign-in from a Suspicious Source
 * Microsoft Entra ID Exccessive Account Lockouts Detected
+* Microsoft Graph Application Directory Reconnaissance with Denied Requests
 * Microsoft Graph Multi-Category Reconnaissance Burst
 * Multi-Cloud CLI Token and Credential Access Commands
 * Multiple Alerts Involving a User
@@ -323,6 +348,7 @@ invalid-syntax
 * OpenAI ChatGPT Enterprise Google Drive Sensitive Query Burst
 * OpenAI ChatGPT Enterprise High Codex MCP Tool Diversity
 * OpenAI ChatGPT Enterprise High File Download Activity
+* OpenAI ChatGPT Enterprise Jailbreak Prompt Heuristics
 * OpenAI ChatGPT Enterprise Memory Deleted
 * OpenAI ChatGPT Enterprise Multiple Authentication Failures
 * OpenAI ChatGPT Enterprise Repeated Assistant Refusals
@@ -391,6 +417,7 @@ invalid-syntax
 * Successful AMQP Multi-Queue Purge Burst
 * Suspected Lateral Movement from Compromised Host
 * Suspicious AWS S3 Connection via Script Interpreter
+* Suspicious Command Execution from Visual Studio Code
 * Suspicious Python Shell Command Execution
 * Suspicious TCC Access Granted for User Folders
 * Unusual Azure VM Extension Detected
@@ -405,9 +432,9 @@ invalid-syntax
 * Web Server Potential Spike in Error Response Codes
 * Web Server Suspicious User Agent Requests
 
-### Unsupported rule type: new_terms (256)
+### Unsupported rule type: new_terms (258)
 
-256 rules:
+258 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Backup Recovery Point Deleted by Unusual User
@@ -472,7 +499,6 @@ invalid-syntax
 * Azure Compute Restore Point Collection Deleted by Unusual User
 * Azure Compute Snapshot Deletion by Unusual User and Resource Group
 * Azure Compute VM Command Executed
-* Azure Diagnostic Settings Deleted
 * Azure Key Vault Modified
 * Azure Key Vault Unusual Secret Key Usage
 * Azure Storage Account Blob Public Access Enabled
@@ -535,6 +561,7 @@ invalid-syntax
 * First Seen SonicWall Remote Access Login by User and Source
 * First Time AWS CloudFormation Stack Creation
 * First Time GCP Vertex AI Agent Engine Sandbox Code Execution by User and Source ASN
+* First Time GCP Vertex AI Inference by Caller from Source ASN
 * First Time Python Accessed Sensitive Credential Files
 * First Time Python Created a LaunchAgent or LaunchDaemon
 * First Time Python Spawned a Shell on Host
@@ -560,6 +587,7 @@ invalid-syntax
 * GKE User Exec into Pod
 * GenAI Process Connection to Unusual Domain
 * GitHub Actions Unusual Bot Push to Repository
+* GitHub Protected Branch Settings Changed
 * Github Activity on a Private Repository from an Unusual IP
 * Google Workspace User Login with Unusual ASN
 * Google Workspace User Sign-in from Atypical Device Type
@@ -589,6 +617,7 @@ invalid-syntax
 * M365 SharePoint/OneDrive File Access via PowerShell
 * Microsoft Build Engine Started an Unusual Process
 * Microsoft Build Engine Started by a Script Process
+* Microsoft Foundry Keys or Connection Secrets Accessed by New Principal
 * Microsoft Graph Email Access by Unusual User and Client
 * Microsoft Graph Request User Impersonation by Unusual Client
 * Modification of Dynamic Linker Preload Shared Object
@@ -794,9 +823,9 @@ invalid-syntax
 * Okta Multiple OS Names Detected for a Single DT Hash
 * Potential Buffer Overflow Attack Detected
 * Potential LSASS Memory Dump via PssCaptureSnapShot
+* Potential Low-Packet Port Scan Detected
 * Potential Network Scan Executed From Host
 * Potential Network Sweep Detected
-* Potential SYN-Based Port Scan Detected
 * Potential macOS SSH Brute Force Detected
 * Suspicious Proc Pseudo File System Enumeration
 
@@ -810,6 +839,12 @@ invalid-syntax
 * Threat Intel IP Address Indicator Match
 * Threat Intel URL Indicator Match
 * Threat Intel Windows Registry Indicator Match
+
+### 'KvTree' object has no attribute 'line' (1)
+
+1 rules:
+
+* GCP Vertex AI Role Granted to Principal
 
 ### Error at line:14,column:51
 Invalid syntax
@@ -903,12 +938,13 @@ Invalid syntax
 * Unusual Network Connection via RunDLL32
 * Unusual Process Execution Path - Alternate Data Stream
 
-### Root with too many branches (limit: 10000) (25)
+### Root with too many branches (limit: 10000) (26)
 
-25 rules:
+26 rules:
 * Connection to Common Large Language Model Endpoints
 * Connection to Commonly Abused Web Services
 * Execution from Unusual Directory - Command Line
+* Execution via GitHub Actions Runner
 * External IP Lookup from Non-Browser Process
 * File with Suspicious Double Extension Created by Web Server
 * GenAI or MCP Server Child Process Execution
@@ -1162,6 +1198,11 @@ Invalid syntax
 1 rules:
 * Cassandra JavaScript UDF Creation
 
+### Unsolvable constraints: network_traffic.http.request.original (not in Strings({'MSOTlPn_Uri'}): ('DisplayMode')) (1)
+
+1 rules:
+* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
+
 ### Unsolvable constraints: network_traffic.redis.query (not in Strings({'*CONFIG SET dir*'}): ('*/.ssh*')) (1)
 
 1 rules:
@@ -1271,11 +1312,6 @@ Invalid syntax
 
 1 rules:
 * Service Creation via Local Kerberos Authentication
-
-### Unsolvable constraints: request (not in Strings({'*MSOTlPn_Uri*'}): ('*DisplayMode*')) (1)
-
-1 rules:
-* Potential Toolshell Initial Exploit (CVE-2025-53770 & CVE-2025-53771)
 
 ### Unsolvable constraints: winlog.event_data.AttributeValue (not in Strings({'*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*'}): ('*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2;;S-1-5-21-*')) (1)
 
