@@ -15,6 +15,12 @@
 
 LICENSE.txt
 Makefile
+pipes/Dockerfile
+charts/obvious-tool-geneve/Chart.yaml
+charts/obvious-tool-geneve/obvious-manifest.yaml
+charts/obvious-tool-geneve/values.yaml
+charts/obvious-tool-geneve/templates/deployment.yaml
+charts/obvious-tool-geneve/templates/pipes-config.yaml
 catalog-info.yaml
 renovate.json
 requirements.txt
