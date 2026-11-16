@@ -106,18 +106,31 @@ def expand_matrix(name_template: str, matrix: dict) -> list[str]:
     if list(matrix.keys()) == ["include"]:
         combos = [{k: str(v) for k, v in entry.items() if k in keys_in_name} for entry in matrix["include"]]
     else:
-        # Dimension-style: cartesian product of the list-valued keys
+        # GitHub evaluates include entries against the original cartesian
+        # combinations. An entry augments every non-conflicting combination;
+        # it can overwrite values added by an earlier include entry, but not
+        # original matrix dimensions. An entry that conflicts with every
+        # original combination creates an additional combination.
         dim_keys = [k for k in matrix if k not in ("include", "exclude")]
-        combos = [dict(zip(dim_keys, (str(v) for v in vals))) for vals in itertools.product(*[matrix[k] for k in dim_keys])]
-        # Apply exclude entries before processing includes
-        for exc in matrix.get("exclude", []):
-            exc_str = {k: str(v) for k, v in exc.items()}
-            combos = [c for c in combos if not all(c.get(k) == v for k, v in exc_str.items())]
-        # Additional 'include' entries may introduce extra combinations
+        original_combos = [dict(zip(dim_keys, (str(v) for v in values))) for values in itertools.product(*[matrix[k] for k in dim_keys])]
+        combos = [dict(combo) for combo in original_combos]
         for entry in matrix.get("include", []):
             extra = {k: str(v) for k, v in entry.items()}
-            if extra not in combos:
+            matching_indices = [
+                index
+                for index, original in enumerate(original_combos)
+                if all(key not in original or original[key] == value for key, value in extra.items())
+            ]
+            if matching_indices:
+                for index in matching_indices:
+                    combos[index].update(extra)
+            else:
                 combos.append(extra)
+
+        # Exclusions apply to both the original and additional combinations.
+        for exc in matrix.get("exclude", []):
+            exc_str = {k: str(v) for k, v in exc.items()}
+            combos = [combo for combo in combos if not all(combo.get(key) == value for key, value in exc_str.items())]
 
     names: list[str] = []
     seen: set[str] = set()
