@@ -16,6 +16,16 @@
     },
     {
       "matchPackageNames": [
+        "ubuntu"
+      ],
+      "matchDepTypes": [
+        "github-runner"
+      ],
+      "matchCurrentValue": "/^24\\.04$/",
+      "enabled": false
+    },
+    {
+      "matchPackageNames": [
         "actions/cache",
         "actions/checkout",
         "actions/download-artifact",
