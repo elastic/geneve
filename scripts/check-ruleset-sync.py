@@ -88,8 +88,8 @@ def buildkite_checks_from_catalog(path: Path) -> set[str]:
             spec = doc.get("spec") or {}
             if spec.get("type") != "buildkite-pipeline":
                 continue
-            impl_spec = ((spec.get("implementation") or {}).get("spec") or {})
-            trigger_mode = ((impl_spec.get("provider_settings") or {}).get("trigger_mode"))
+            impl_spec = (spec.get("implementation") or {}).get("spec") or {}
+            trigger_mode = (impl_spec.get("provider_settings") or {}).get("trigger_mode")
             if trigger_mode == "none":
                 continue
             name = ((spec.get("implementation") or {}).get("metadata") or {}).get("name")

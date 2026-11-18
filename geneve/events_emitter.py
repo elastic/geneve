@@ -74,15 +74,21 @@ def guess_from_query(query):
     raise ValueError(f"{lang} query error: {error}") from error
 
 
+def ast_from_query(query, language=None):
+    if language is None:
+        return guess_from_query(query).ast
+    elif language == "eql":
+        return ast_from_eql_query(query)
+    elif language == "kuery":
+        return ast_from_kql_query(query)
+    else:
+        raise NotImplementedError(f"Unsupported query language: {language}")
+
+
 def ast_from_rule(rule):
     if rule.type not in ("query", "eql"):
         raise NotImplementedError(f"Unsupported rule type: {rule.type}")
-    elif rule.language == "eql":
-        return ast_from_eql_query(rule.query)
-    elif rule.language == "kuery":
-        return ast_from_kql_query(rule.query)
-    else:
-        raise NotImplementedError(f"Unsupported query language: {rule.language}")
+    return ast_from_query(rule.query, rule.language)
 
 
 def emit_mappings(fields, schema):
@@ -140,7 +146,7 @@ class SourceEvents:
 
     def __init__(self, schema=None, *, corpus=None, strict=None):
         self.__roots = []
-        self.__environment = {}
+        self.__environment = {"fields_history": {}}
 
         if schema is not None:
             self.schema = schema
@@ -167,23 +173,30 @@ class SourceEvents:
         se.add_rule(rule, meta=meta)
         return se
 
-    def add_ast(self, ast, *, meta=None):
+    def add_ast(self, ast, *, meta=None, glue=None):
+        """Prepare the IR of a query.
+
+        `glue` names fields that every document must carry even if the query
+        does not mention them, so that an attack backpack can pin them.
+        """
         root = collect_constraints_eql(ast, max_branches=self.max_branches)
         if len(root) == 0:
             raise ValueError("Root without branches")
+        if glue:
+            root.glue(glue)
         root.meta = meta
         root.optimize(self.schema, self.stack_version, strict=self.strict)
         self.try_emit(root)
         self.__roots.append(root)
         return root
 
-    def add_query(self, query, *, meta=None):
-        ast = guess_from_query(query).ast
-        return self.add_ast(ast, meta=meta)
+    def add_query(self, query, *, language=None, meta=None, glue=None):
+        ast = ast_from_query(query, language)
+        return self.add_ast(ast, meta=meta, glue=glue)
 
-    def add_rule(self, rule, *, meta=None):
+    def add_rule(self, rule, *, meta=None, glue=None):
         ast = ast_from_rule(rule)
-        return self.add_ast(ast, meta=meta)
+        return self.add_ast(ast, meta=meta, glue=glue)
 
     def fields(self):
         return set(chain(*(root.fields() for root in self.__roots)))
@@ -197,21 +210,27 @@ class SourceEvents:
     def roots(self):
         return iter(self.__roots)
 
-    def emit(self, root=None, *, timestamp=True, complete=False, count=1, corpus=None):
+    def emit(self, root=None, *, timestamp=True, complete=False, count=1, corpus=None, backpack=None):
         corpus = iter(corpus) if corpus else self.corpus
-        if timestamp:
+        if isinstance(timestamp, datetime):
+            timestamp = [timestamp]
+        elif timestamp:
             timestamp = [datetime.now(timezone.utc).astimezone()]
+        environment = self.__environment
+        if backpack is not None:
+            # a shallow copy still shares the fields history, the backpack is private to this call
+            environment = dict(environment, backpack=dict(backpack))
         if complete:
             if root:
-                events = (events_from_root(root, self.__environment, timestamp, corpus) for _ in range(count))
+                events = (events_from_root(root, environment, timestamp, corpus) for _ in range(count))
             else:
-                events = (events_from_root(root, self.__environment, timestamp, corpus) for _ in range(count) for root in self.__roots)
+                events = (events_from_root(root, environment, timestamp, corpus) for _ in range(count) for root in self.__roots)
         else:
             if root:
-                events = (events_from_branch(random.choice(root), self.__environment, timestamp, root.meta, corpus) for _ in range(count))
+                events = (events_from_branch(random.choice(root), environment, timestamp, root.meta, corpus) for _ in range(count))
             else:
                 events = (
-                    events_from_branch(random.choice(root), self.__environment, timestamp, root.meta, corpus)
+                    events_from_branch(random.choice(root), environment, timestamp, root.meta, corpus)
                     for root in random.choices(self.__roots, k=count)
                 )
         return chain(*events)

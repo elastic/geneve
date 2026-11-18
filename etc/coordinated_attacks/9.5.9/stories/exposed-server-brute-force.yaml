@@ -1,0 +1,66 @@
+# Licensed to Elasticsearch B.V. under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Elasticsearch B.V. licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# 	http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# Attack story draft: the intermediate artifact between the AI proposal and
+# the runtime coordinated attack. Reviewed by a human before it is compiled.
+id: exposed-server-brute-force
+title: Exposed server brute force to shadow copy deletion
+rules_version: 9.5.9
+platform: windows
+size: medium
+
+narrative: >
+  A file server with SMB exposed to the internet is brute-forced from a single
+  address until a local administrator's password gives in. The same address
+  logs in over the network and installs a service that runs the payload; the
+  payload turns Windows Defender off in the registry and deletes the shadow
+  copies before encrypting the shares.
+
+# The attacker is an `ip` role seen as `source.ip` by the server's rules; the
+# brute-forced account is bound by name where the rule constrains `user.name`.
+roles:
+  srv: { kind: host, description: the internet-exposed file server }
+  admin: { kind: user, description: the local administrator whose password was guessed }
+  attacker: { kind: ip, description: the address the brute force and the logon come from }
+
+members:
+  - rule: Multiple Logon Failure Followed by Logon Success
+    stage: initial access
+    host: srv
+    bindings: { host.id: srv.id, source.ip: attacker.ip, user.name: admin.name, user.id: admin.id }
+  - rule: Remote Windows Service Installed
+    stage: execution
+    host: srv
+    bindings: { host.id: srv.id, source.ip: attacker.ip, user.name: admin.name }
+    after: { member: Multiple Logon Failure Followed by Logon Success, within: 10m }
+  - rule: Windows Defender Disabled via Registry Modification
+    stage: defense evasion
+    host: srv
+    bindings: { host.id: srv.id, user.id: admin.id }
+    after: { member: Remote Windows Service Installed, within: 5m }
+  - rule: Volume Shadow Copy Deletion via PowerShell
+    stage: impact
+    host: srv
+    bindings: { host.id: srv.id, user.id: admin.id }
+    after: { member: Windows Defender Disabled via Registry Modification, within: 30m }
+
+expected_alerts: 4
+
+provenance:
+  proposed_by: { backend: file, model: claude (cursor session), prompt: traces/exposed-server-brute-force/prompt.md }
+  response: traces/exposed-server-brute-force/response.md
+  reviewed_by: null

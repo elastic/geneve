@@ -126,6 +126,15 @@ class Document:
             doc.append_constraint(field, "join_value", (self, alias))
         return doc
 
+    def glue(self, fields):
+        """Require the fields to be present (non-null) without constraining them further.
+
+        Fields that the document already constrains are left alone, a field
+        the document requires null is a conflict.
+        """
+        for field in fields:
+            self.append_constraint(field, "!=", None)
+
     def get_join_doc(self):
         for field, constraints in self.__constraints.items():  # noqa: PERF102
             for k, v, *_ in constraints or []:
@@ -155,6 +164,10 @@ class Branch(List[Document]):
 
     def fields(self):
         return set(chain(*(constraints.fields() for constraints in self)))
+
+    def glue(self, fields):
+        for constraints in self:
+            constraints.glue(fields)
 
     def __get_join_doc(self):
         for constraints in self:
@@ -186,6 +199,10 @@ class Root(List[Branch]):
 
     def constraints(self):
         return chain(*self)
+
+    def glue(self, fields):
+        for branch in self:
+            branch.glue(fields)
 
     def optimize(self, *args, strict=False, **kwargs):
         """Prepare the solvers of every branch, dropping the branches that cannot be solved.

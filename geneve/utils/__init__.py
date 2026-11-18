@@ -39,7 +39,7 @@ def has_wildcards(s):
         return bool(wc_re.search(s))
 
 
-def expand_wildcards(s, alphabet, min_star_len, max_star_len):
+def expand_wildcards(s, alphabet, min_star_len, max_star_len, random=random):
     if not isinstance(s, str):
         return s
     chars = []

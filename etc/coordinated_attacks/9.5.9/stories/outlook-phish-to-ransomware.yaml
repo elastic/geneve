@@ -1,0 +1,108 @@
+# Licensed to Elasticsearch B.V. under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Elasticsearch B.V. licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# 	http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# Attack story draft: the intermediate artifact between the AI proposal and
+# the runtime coordinated attack. Reviewed by a human before it is compiled.
+id: outlook-phish-to-ransomware
+title: Outlook phish to ransomware
+rules_version: 9.5.9
+platform: windows
+size: large
+
+narrative: >
+  An accountant opens an attachment from Outlook; the dropper runs from the
+  browser cache and registers a DLL with regsvr32, which calls the operator's
+  server. The operator excludes their working directory from Defender, plants
+  a Run key, maps the domain with AdFind and lists the saved credentials. A
+  service created remotely with sc.exe moves them to the file server, where the
+  shares are archived with a password, pushed out with rclone, and the shadow
+  copies are deleted before the encryptor runs.
+
+roles:
+  ws: { kind: host, description: the accountant's workstation }
+  fs: { kind: host, description: the file server holding the department shares }
+  acct: { kind: user, description: the accountant }
+  c2: { kind: ip, description: the operator's command and control server }
+
+members:
+  - rule: Suspicious MS Outlook Child Process
+    stage: initial access
+    host: ws
+    bindings: { host.id: ws.id, user.id: acct.id }
+  - rule: Suspicious Execution from INET Cache
+    stage: execution
+    host: ws
+    bindings: { host.id: ws.id, user.id: acct.id }
+    after: { member: Suspicious MS Outlook Child Process, within: 1m }
+  - rule: Network Connection via Registration Utility
+    stage: command and control
+    host: ws
+    bindings: { host.id: ws.id, user.id: acct.id, destination.ip: c2.ip }
+    after: { member: Suspicious Execution from INET Cache, within: 1m }
+  - rule: Windows Defender Exclusions Added via PowerShell
+    stage: defense evasion
+    host: ws
+    bindings: { host.id: ws.id, user.id: acct.id }
+    after: { member: Network Connection via Registration Utility, within: 5m }
+  - rule: Startup or Run Key Registry Modification
+    stage: persistence
+    host: ws
+    bindings: { host.id: ws.id, user.id: acct.id }
+    after: { member: Windows Defender Exclusions Added via PowerShell, within: 2m }
+  - rule: AdFind Command Activity
+    stage: discovery
+    host: ws
+    bindings: { host.id: ws.id, user.id: acct.id }
+    after: { member: Startup or Run Key Registry Modification, within: 30m }
+  - rule: Searching for Saved Credentials via VaultCmd
+    stage: credential access
+    host: ws
+    bindings: { host.id: ws.id, user.id: acct.id }
+    after: { member: AdFind Command Activity, within: 5m }
+  - rule: Service Command Lateral Movement
+    stage: lateral movement
+    host: ws
+    bindings: { host.id: ws.id, user.id: acct.id, destination.ip: fs.ip }
+    after: { member: Searching for Saved Credentials via VaultCmd, within: 1h }
+  - rule: Encrypting Files with WinRar or 7z
+    stage: collection
+    host: fs
+    bindings: { host.id: fs.id, user.id: acct.id }
+    after: { member: Service Command Lateral Movement, within: 30m }
+  - rule: Potential Data Exfiltration via Rclone
+    stage: exfiltration
+    host: fs
+    bindings: { host.id: fs.id, user.id: acct.id }
+    after: { member: Encrypting Files with WinRar or 7z, within: 1h }
+  - rule: Volume Shadow Copy Deleted or Resized via VssAdmin
+    stage: impact
+    host: fs
+    bindings: { host.id: fs.id, user.id: acct.id }
+    after: { member: Potential Data Exfiltration via Rclone, within: 3h }
+  - rule: Potential Ransomware Note File Dropped via SMB
+    stage: impact
+    host: fs
+    optional: true  # the encryptor's notes landing on the shares, measures the branch-limit gap
+    bindings: { host.id: fs.id }
+    after: { member: Volume Shadow Copy Deleted or Resized via VssAdmin, within: 10m }
+
+expected_alerts: 11  # 12 with the optional member
+
+provenance:
+  proposed_by: { backend: file, model: claude (cursor session), prompt: traces/outlook-phish-to-ransomware/prompt.md }
+  response: traces/outlook-phish-to-ransomware/response.md
+  reviewed_by: null

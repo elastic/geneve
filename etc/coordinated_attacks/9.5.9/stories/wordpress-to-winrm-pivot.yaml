@@ -1,0 +1,81 @@
+# Licensed to Elasticsearch B.V. under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Elasticsearch B.V. licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# 	http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# Attack story draft: the intermediate artifact between the AI proposal and
+# the runtime coordinated attack. Reviewed by a human before it is compiled.
+id: wordpress-to-winrm-pivot
+title: WordPress web shell to WinRM pivot
+rules_version: 9.5.9
+platform: linux+windows
+size: medium
+
+narrative: >
+  A vulnerable WordPress plugin lets the operator drop a PHP web shell on the
+  Linux web server. The web shell spawns a reverse shell; the operator scrapes
+  process memory for credentials and finds the operations account that backs
+  up the site to a Windows file server. With it they open a WinRM shell on the
+  file server from the web server, make a symbolic link to a shadow copy to
+  lift the SAM database, and clear the event logs on the way out.
+
+# Members on both platforms, on different hosts: the Linux members constrain
+# `host.os.type == "linux"`, the Windows ones `host.os.type == "windows"`. The
+# web server is `host.id` in its own rules and `source.ip` in the file
+# server's.
+roles:
+  web: { kind: host, description: the Linux web server running WordPress }
+  fs: { kind: host, description: the Windows file server the site is backed up to }
+  www: { kind: user, description: the web server's service account }
+  ops: { kind: user, description: the operations account found in memory }
+  c2: { kind: ip, description: the operator's callback address }
+
+members:
+  - rule: PHP File Creation in WordPress Plugin Directory
+    stage: initial access
+    host: web
+    bindings: { host.id: web.id, user.id: www.id }
+  - rule: Potential Reverse Shell via Child
+    stage: command and control
+    host: web
+    bindings: { host.id: web.id, user.id: www.id, destination.ip: c2.ip }
+    after: { member: PHP File Creation in WordPress Plugin Directory, within: 1m }
+  - rule: Potential Linux Credential Dumping via Proc Filesystem
+    stage: credential access
+    host: web
+    bindings: { host.id: web.id, user.id: www.id }
+    after: { member: Potential Reverse Shell via Child, within: 20m }
+  - rule: Incoming Execution via WinRM Remote Shell
+    stage: lateral movement
+    host: fs
+    bindings: { host.id: fs.id, source.ip: web.ip, user.id: ops.id }
+    after: { member: Potential Linux Credential Dumping via Proc Filesystem, within: 1h }
+  - rule: Symbolic Link to Shadow Copy Created
+    stage: credential access
+    host: fs
+    bindings: { host.id: fs.id, user.id: ops.id }
+    after: { member: Incoming Execution via WinRM Remote Shell, within: 5m }
+  - rule: Clearing Windows Event Logs
+    stage: defense evasion
+    host: fs
+    bindings: { host.id: fs.id, user.id: ops.id }
+    after: { member: Symbolic Link to Shadow Copy Created, within: 15m }
+
+expected_alerts: 6
+
+provenance:
+  proposed_by: { backend: file, model: claude (cursor session), prompt: traces/wordpress-to-winrm-pivot/prompt.md }
+  response: traces/wordpress-to-winrm-pivot/response.md
+  reviewed_by: null

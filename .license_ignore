@@ -23,6 +23,7 @@ setup.cfg
 
 docs/on-the-rocks/**/*.log
 geneve/solver/datasets/*
+etc/coordinated_attacks/*/inventory.json
 
 scripts/generate-alerts.sh
 scripts/generate-network-events.sh
