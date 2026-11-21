@@ -5,13 +5,13 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 9.6.1
+Rules version: 9.6.2
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: esql (368)](#unsupported-rule-type-esql-368)
-      1. [Unsupported rule type: new_terms (267)](#unsupported-rule-type-new_terms-267)
-      1. ['types.SimpleNamespace' object has no attribute 'type' (132)](#typessimplenamespace-object-has-no-attribute-type-132)
+      1. [Unsupported rule type: esql (382)](#unsupported-rule-type-esql-382)
+      1. [Unsupported rule type: new_terms (268)](#unsupported-rule-type-new_terms-268)
+      1. ['types.SimpleNamespace' object has no attribute 'type' (133)](#typessimplenamespace-object-has-no-attribute-type-133)
       1. [Unsupported rule type: machine_learning (109)](#unsupported-rule-type-machine_learning-109)
       1. [Unsupported rule type: threshold (30)](#unsupported-rule-type-threshold-30)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -137,9 +137,9 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: esql (368)
+### Unsupported rule type: esql (382)
 
-368 rules:
+382 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -235,6 +235,7 @@ invalid-syntax
 * Azure Run Command Correlated with Process Execution
 * Cobalt Strike Command and Control Beacon
 * Command Line Obfuscation via Whitespace Padding
+* Container Image Built Inside a Container
 * Correlated Alerts on Similar User Identities
 * Curl Download Activity from npm Package Install
 * Detection Alert on a Process Exhibiting CPU Spike
@@ -259,6 +260,7 @@ invalid-syntax
 * Entra ID OAuth Device Code Flow with Concurrent Sign-ins
 * Entra ID OAuth Flow by Microsoft Authentication Broker to Device Registration Service (DRS)
 * Entra ID OAuth User Impersonation to Microsoft Graph
+* Entra ID Potential Passkey Downgrade
 * Entra ID Privileged Role Assigned to Another Account
 * Entra ID Sign-in Brute Force Attempted (Microsoft 365)
 * Entra ID User Sign-in Brute Force Attempted
@@ -296,23 +298,34 @@ invalid-syntax
 * GitHub API Failed Access Burst
 * GitHub API Sensitive Resource Enumeration
 * GitHub Actions Workflow Modification Blocked
+* GitHub Actions Workflow Run Rapidly Deleted
+* GitHub Actions or Integration Secret Created
+* GitHub Activity from Credential Scanner User Agent
 * GitHub Activity on a Private Repository from an Unusual ASN
 * GitHub Advanced Security Disabled
 * GitHub Audit Log Streaming Configuration Modified or Deleted
 * GitHub Dependabot Alerts or Security Updates Disabled
 * GitHub Exfiltration via High Number of Repository Clones by User
+* GitHub Exfiltration via High Number of Repository ZIP Downloads
 * GitHub Fine-Grained PAT Auto-Approve Enabled
 * GitHub IP Allow List Modified
 * GitHub MFA Requirement Disabled
 * GitHub OAuth App Access Restrictions Disabled
 * GitHub OAuth Application Authorized
+* GitHub Organization Removed or Transferred from Enterprise
+* GitHub Outside Collaborator Added to Repository
 * GitHub PAT Access Restriction Disabled
+* GitHub Payment Method Removed
 * GitHub Private Repository Forking Enabled
+* GitHub Repository Transferred Out of Organization
 * GitHub SAML SSO Disabled
 * GitHub SSH Certificate Authority or Requirement Modified
+* GitHub SSH or Deploy Key Added
 * GitHub SSO Recovery Codes Activity
 * GitHub Secret Scanning Alert for a Publicly Leaked Secret
 * GitHub Secret Scanning Push Protection Bypassed or Disabled
+* GitHub Sign-in from Unrecognized Device
+* GitHub Token Clone Push or ZIP from Unusual ASN
 * GitHub Webhook Created or Configuration Changed
 * Google Workspace Device Registration Burst for Single User
 * Google Workspace Impossible Travel Login
@@ -482,6 +495,7 @@ invalid-syntax
 * Repeated Stalled TLS Handshakes via ALPN acme-tls/1 Extension
 * SSFileCopyReceiver Writing to Common Persistence Locations
 * SSFileCopySender Executed as Root
+* Scheduled Job Creation via At Utility Inside a Container
 * Sensitive Audit Policy Sub-Category Disabled
 * Several Failed Protected Branch Force Pushes by User
 * Shell or Suspicious Process Spawned by Ray Worker
@@ -510,9 +524,9 @@ invalid-syntax
 * Web Server Potential Spike in Error Response Codes
 * Web Server Suspicious User Agent Requests
 
-### Unsupported rule type: new_terms (267)
+### Unsupported rule type: new_terms (268)
 
-267 rules:
+268 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Account Discovery By Rare User
@@ -673,6 +687,7 @@ invalid-syntax
 * GenAI Process Connection to Unusual Domain
 * GitHub Actions Unusual Bot Push to Repository
 * GitHub Protected Branch Settings Changed
+* GitHub Token Activity from Unusual User Agent
 * Google Workspace User Login with Unusual ASN
 * Google Workspace User Sign-in from Atypical Device Type
 * Interactive Shell Launched via Unusual Parent Process in a Container
@@ -782,9 +797,9 @@ invalid-syntax
 * Web Shell Detection: Script Process Child of Common Web Processes
 * dMSA Account Creation by an Unusual User
 
-### 'types.SimpleNamespace' object has no attribute 'type' (132)
+### 'types.SimpleNamespace' object has no attribute 'type' (133)
 
-132 rules:
+133 rules:
 
 * AWS RDS Snapshot Export
 * Attempt to Disable IPTables or Firewall
@@ -820,6 +835,7 @@ invalid-syntax
 * Deprecated - Modification of Standard Authentication Module or Configuration
 * Deprecated - Network Connection via Sudo Binary
 * Deprecated - Potential DNS Tunneling via Iodine
+* Deprecated - Potential Execution via SSH Backdoor
 * Deprecated - Potential Non-Standard Port HTTP/HTTPS connection
 * Deprecated - Potential Non-Standard Port SSH connection
 * Deprecated - Potential Password Spraying of Microsoft 365 User Accounts

@@ -5,12 +5,12 @@ can learn what rules are still problematic and for which no documents can be gen
 
 Curious about the inner workings? Read [here](signals_generation.md).
 
-Rules version: 8.19.37
+Rules version: 8.19.38
 
 ## Table of contents
    1. [Skipped rules](#skipped-rules)
-      1. [Unsupported rule type: esql (291)](#unsupported-rule-type-esql-291)
-      1. [Unsupported rule type: new_terms (258)](#unsupported-rule-type-new_terms-258)
+      1. [Unsupported rule type: esql (301)](#unsupported-rule-type-esql-301)
+      1. [Unsupported rule type: new_terms (259)](#unsupported-rule-type-new_terms-259)
       1. [Unsupported rule type: machine_learning (95)](#unsupported-rule-type-machine_learning-95)
       1. [Unsupported rule type: threshold (29)](#unsupported-rule-type-threshold-29)
       1. [Unsupported rule type: threat_match (6)](#unsupported-rule-type-threat_match-6)
@@ -136,9 +136,9 @@ invalid-syntax
 
 ## Skipped rules
 
-### Unsupported rule type: esql (291)
+### Unsupported rule type: esql (301)
 
-291 rules:
+301 rules:
 
 * AWS Access Token Used from Multiple Addresses
 * AWS Bedrock API Key Used for Destructive or Anti-Recovery Action
@@ -258,20 +258,30 @@ invalid-syntax
 * GitHub API Failed Access Burst
 * GitHub API Sensitive Resource Enumeration
 * GitHub Actions Workflow Modification Blocked
+* GitHub Actions Workflow Run Rapidly Deleted
+* GitHub Actions or Integration Secret Created
+* GitHub Activity from Credential Scanner User Agent
 * GitHub Advanced Security Disabled
 * GitHub Dependabot Alerts or Security Updates Disabled
 * GitHub Exfiltration via High Number of Repository Clones by User
+* GitHub Exfiltration via High Number of Repository ZIP Downloads
 * GitHub Fine-Grained PAT Auto-Approve Enabled
 * GitHub IP Allow List Modified
 * GitHub MFA Requirement Disabled
 * GitHub OAuth App Access Restrictions Disabled
 * GitHub OAuth Application Authorized
+* GitHub Organization Removed or Transferred from Enterprise
+* GitHub Outside Collaborator Added to Repository
+* GitHub Payment Method Removed
 * GitHub Private Repository Forking Enabled
+* GitHub Repository Transferred Out of Organization
 * GitHub SAML SSO Disabled
 * GitHub SSH Certificate Authority or Requirement Modified
+* GitHub SSH or Deploy Key Added
 * GitHub SSO Recovery Codes Activity
 * GitHub Secret Scanning Alert for a Publicly Leaked Secret
 * GitHub Secret Scanning Push Protection Bypassed or Disabled
+* GitHub Sign-in from Unrecognized Device
 * GitHub Webhook Created or Configuration Changed
 * Google Workspace Device Registration Burst for Single User
 * Halfbaked Command and Control Beacon
@@ -432,9 +442,9 @@ invalid-syntax
 * Web Server Potential Spike in Error Response Codes
 * Web Server Suspicious User Agent Requests
 
-### Unsupported rule type: new_terms (258)
+### Unsupported rule type: new_terms (259)
 
-258 rules:
+259 rules:
 
 * AWS API Activity from Uncommon S3 Client by Rare User
 * AWS Backup Recovery Point Deleted by Unusual User
@@ -588,6 +598,7 @@ invalid-syntax
 * GenAI Process Connection to Unusual Domain
 * GitHub Actions Unusual Bot Push to Repository
 * GitHub Protected Branch Settings Changed
+* GitHub Token Activity from Unusual User Agent
 * Github Activity on a Private Repository from an Unusual IP
 * Google Workspace User Login with Unusual ASN
 * Google Workspace User Sign-in from Atypical Device Type
